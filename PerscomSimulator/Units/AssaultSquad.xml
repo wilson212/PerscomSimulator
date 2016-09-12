@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Unit>
+  <info name="AssaultSquad">
+    <positions>
+      <position name="Squad Leader" rank="e6" />
+    </positions>
+    <subunits>
+      <unit type="AssaultFireteam" name="A Team"/>
+      <unit type="AssaultFireteam" name="B Team"/>
+    </subunits>
+  </info>
+</Unit>

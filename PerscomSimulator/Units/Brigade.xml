@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Unit>
+  <info name="Brigade">
+    <positions>
+      <!-- Officers -->
+      <position name="Commander" rank="o6" />
+      <position name="Executive Officer" rank="o5" />
+      <position name="S1 - Adjuntant" rank="o4" />
+      <position name="S2 - Intel Officer" rank="o4" />
+      <position name="S3 - Plans Officer" rank="o5" />
+      <position name="S4 - Logistics Officer" rank="o4" />
+      <position name="S5 - Public Affairs Officer" rank="o3" />
+      <position name="S6 - Communication Officer" rank="o4" />
+      <position name="Fire Support Officer" rank="o4" />
+      <position name="Staff Support Officer" rank="o3" />
+      <position name="Security and Liason Officer" rank="o3" />
+      <!-- Enlisted -->
+      <position name="Command Sergeant Major" rank="e9" />
+      <position name="Operations Sergeant Major" rank="e9" />
+      <position name="Assistant Ops NCO" rank="e8" />
+      <position name="S1 NCOIC" rank="e8" />
+      <position name="S2 NCOIC" rank="e8" />
+      <position name="Retention NCO" rank="e7" />
+      <!-- Warrant -->
+      <position name="Network Management Technician" rank="w3" notes="S6 Communications WOIC"/>
+      <position name="Systems Technician" rank="w3" />
+      <position name="Engineering Technician" rank="w2" />
+    </positions>
+    <subunits>
+      <unit type="AssaultBattalion" name="1st Battalion"/>
+      <unit type="AssaultBattalion" name="2nd Battalion"/>
+      <unit type="SupportBattalion" name="Brigade Support Battalion"/>
+    </subunits>
+  </info>
+</Unit>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Unit>
+  <info name="Special Forces Group">
+    <positions>
+      <!-- Officers -->
+      <position name="Detachment Commander" rank="o6" />
+      <position name="Executive Officer" rank="o5" />
+      <position name="S1 - Adjuntant" rank="o4" />
+      <position name="S2 - Intel Coordinator" rank="o4" />
+      <position name="S3 - Training and Operations Officer" rank="o5" />
+      <position name="S4 - Logistics Coordinator" rank="o4" />
+      <!-- Warrant Officers -->
+      <position name="S6 - Communications Expert" rank="w4" />
+      <!-- Enlisted -->
+      <position name="Detachment Command Sergeant Major" rank="e9" />
+      <position name="Training Sergeant Major" rank="e9" />
+    </positions>
+    <subunits>
+      <unit type="SpecialForcesODB" name="1st Operation Detachment Bravo"/>
+      <unit type="SpecialForcesODB" name="2nd Operation Detachment Bravo"/>
+      <unit type="SpecialForcesODB" name="3rd Operation Detachment Bravo"/>
+    </subunits>
+  </info>
+</Unit>

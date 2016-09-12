@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Unit>
+  <info name="AssaultFireteam">
+    <positions>
+      <position name="Fireteam Leader" rank="e5" />
+      <position name="Fireteam Member" rank="e4" entryLevel="true" />
+      <position name="Fireteam Member" rank="e4" entryLevel="true" />
+      <position name="Fireteam Member" rank="e4" entryLevel="true" />
+    </positions>
+    <subunits />
+  </info>
+</Unit>

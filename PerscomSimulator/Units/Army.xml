@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Unit>
+  <info name="Army">
+    <positions>
+      <position name="Commander" rank="o9" />
+      <position name="Chief Of Staff" rank="o8" />
+      <position name="Adjuntant" rank="o7" />
+      <position name="Inspector General" rank="o7" />
+      <position name="Public Affairs" rank="o7" />
+      <position name="Logistics General" rank="o7" />
+    </positions>
+    <subunits>
+      <unit type="Division" name="1st Division"/>
+      <unit type="Division" name="2nd Division"/>
+      <unit type="Division" name="3rd Division"/>
+      <unit type="SpecialForcesGroup" name="Special Operations Command"/>
+    </subunits>
+  </info>
+</Unit>

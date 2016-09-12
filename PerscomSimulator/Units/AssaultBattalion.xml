@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Unit>
+  <info name="AssaultBattalion">
+    <positions>
+       <!-- Officers -->
+      <position name="Commander" rank="o5" />
+      <position name="Executive Officer" rank="o4" />
+      <position name="S1 - Adjuntant" rank="o3" />
+      <position name="S2 - Intel Coordinator" rank="o3" />
+      <position name="S3 - Plans Officer" rank="o4" />
+      <position name="S4 - Logistics Coordinator" rank="o3" />
+      <position name="S6 - Signal Coordinator" rank="o3" />
+      <!-- Enlisted -->
+      <position name="Command Sergeant Major" rank="e9" />
+      <position name="Operations Sergeant Major" rank="e9" />
+      <position name="Training NCO" rank="e8" />
+      <position name="S1 NCOIC" rank="e7" />
+      <position name="S2 NCOIC" rank="e7" />
+      <position name="Retention NCO" rank="e6" />
+      <position name="Retention NCO" rank="e6" />
+      <!-- Warrant -->
+      <position name="Systems Technician" rank="w2" />
+    </positions>
+    <subunits>
+      <unit type="AssaultCompany" name="A Company"/>
+      <unit type="AssaultCompany" name="B Company"/>
+      <unit type="AssaultCompany" name="C Company"/>
+    </subunits>
+  </info>
+</Unit>

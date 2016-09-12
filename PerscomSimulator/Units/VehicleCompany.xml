@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Unit>
+  <info name="Vehicles Company">
+    <positions>
+      <position name="Commander" rank="o3" />
+      <position name="Executive Officer" rank="o2" />
+      <position name="Company 1SG" rank="e8" />
+    </positions>
+    <subunits>
+      <unit type="AssaultPlatoon" name="1st Platoon (Logistics)"/>
+      <unit type="AssaultPlatoon" name="2nd Platoon (Hmmvv Combat Support)"/>
+      <unit type="AssaultPlatoon" name="3rd Platoon (Apc / Hmmvv)"/>
+    </subunits>
+  </info>
+</Unit>

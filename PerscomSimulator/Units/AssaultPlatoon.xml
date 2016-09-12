@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Unit>
+  <info name="AssaultPlatoon">
+    <positions>
+      <position name="Platoon Sergeant" rank="e7" />
+      <position name="Platoon Leader" rank="o2" />
+    </positions>
+    <subunits>
+      <unit type="AssaultSquad" name="1st Squad"/>
+      <unit type="AssaultSquad" name="2nd Squad"/>
+      <unit type="AssaultSquad" name="3rd Squad"/>
+    </subunits>
+  </info>
+</Unit>

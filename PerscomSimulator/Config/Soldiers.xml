@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Probability>
+  <enlisted>
+    <soldier minTime="1" maxTime="24" probability="400" />
+    <soldier minTime="25" maxTime="36" probability="170" />
+    <soldier minTime="37" maxTime="48" probability="150" />
+    <soldier minTime="49" maxTime="60" probability="100" />
+    <soldier minTime="61" maxTime="72" probability="50" />
+    <soldier minTime="73" maxTime="84" probability="23" />
+    <soldier minTime="85" maxTime="96" probability="20" />
+    <soldier minTime="97" maxTime="108" probability="15" />
+    <soldier minTime="109" maxTime="120" probability="25" />
+    <soldier minTime="121" maxTime="132" probability="15" />
+    <soldier minTime="133" maxTime="144" probability="10" />
+    <soldier minTime="145" maxTime="156" probability="8" />
+    <soldier minTime="157" maxTime="168" probability="6" />
+    <soldier minTime="169" maxTime="180" probability="5" />
+    <soldier minTime="181" maxTime="192" probability="3" />
+  </enlisted>
+  <officer>
+    <soldier minTime="3" maxTime="24" probability="100" />
+    <soldier minTime="25" maxTime="48" probability="220" />
+    <soldier minTime="49" maxTime="72" probability="260" />
+    <soldier minTime="73" maxTime="96" probability="180" />
+    <soldier minTime="97" maxTime="108" probability="120" />
+    <soldier minTime="109" maxTime="120" probability="60" />
+    <soldier minTime="121" maxTime="132" probability="25" />
+    <soldier minTime="133" maxTime="144" probability="10" />
+    <soldier minTime="145" maxTime="156" probability="2" />
+    <soldier minTime="157" maxTime="168" probability="5" />
+    <soldier minTime="169" maxTime="180" probability="4" />
+    <soldier minTime="181" maxTime="192" probability="3" />
+    <soldier minTime="193" maxTime="204" probability="3" />
+    <soldier minTime="205" maxTime="216" probability="2" />
+    <soldier minTime="217" maxTime="228" probability="3" />
+    <soldier minTime="229" maxTime="240" probability="3" />
+  </officer>
+  <warrant>
+    <soldier minTime="3" maxTime="24" probability="100" />
+    <soldier minTime="25" maxTime="48" probability="300" />
+    <soldier minTime="49" maxTime="72" probability="220" />
+    <soldier minTime="73" maxTime="96" probability="170" />
+    <soldier minTime="97" maxTime="108" probability="70" />
+    <soldier minTime="109" maxTime="120" probability="50" />
+    <soldier minTime="121" maxTime="132" probability="25" />
+    <soldier minTime="133" maxTime="144" probability="20" />
+    <soldier minTime="145" maxTime="156" probability="10" />
+    <soldier minTime="157" maxTime="168" probability="10" />
+    <soldier minTime="169" maxTime="180" probability="10" />
+    <soldier minTime="181" maxTime="192" probability="5" />
+    <soldier minTime="193" maxTime="204" probability="3" />
+    <soldier minTime="205" maxTime="216" probability="3" />
+    <soldier minTime="217" maxTime="228" probability="2" />
+    <soldier minTime="229" maxTime="240" probability="2" />
+  </warrant>
+</Probability>
