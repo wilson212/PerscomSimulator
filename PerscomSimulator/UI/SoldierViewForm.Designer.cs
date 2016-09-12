@@ -33,8 +33,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.headerPanel = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.CustomPanel();
             this.ttrLabel = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -50,16 +48,18 @@
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.headerPanel = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
             this.rankLabel = new System.Windows.Forms.ShadowLabel();
             this.mainPanel.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.headerPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel3.SuspendLayout();
             this.customPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.headerPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // mainPanel
@@ -114,29 +114,6 @@
             this.label2.Size = new System.Drawing.Size(96, 17);
             this.label2.TabIndex = 0;
             this.label2.Text = "Vital Statistics";
-            // 
-            // headerPanel
-            // 
-            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.headerPanel.Controls.Add(this.pictureBox1);
-            this.headerPanel.Controls.Add(this.nameLabel);
-            this.headerPanel.Controls.Add(this.rankLabel);
-            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.headerPanel.Location = new System.Drawing.Point(0, 0);
-            this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(684, 75);
-            this.headerPanel.TabIndex = 6;
-            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.pictureBox1.Location = new System.Drawing.Point(16, 6);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
             // 
             // panel3
             // 
@@ -297,6 +274,29 @@
             this.Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column4.Width = 120;
             // 
+            // headerPanel
+            // 
+            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
+            this.headerPanel.Controls.Add(this.pictureBox1);
+            this.headerPanel.Controls.Add(this.nameLabel);
+            this.headerPanel.Controls.Add(this.rankLabel);
+            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerPanel.Location = new System.Drawing.Point(0, 0);
+            this.headerPanel.Name = "headerPanel";
+            this.headerPanel.Size = new System.Drawing.Size(684, 75);
+            this.headerPanel.TabIndex = 6;
+            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
+            this.pictureBox1.Location = new System.Drawing.Point(16, 6);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
+            // 
             // nameLabel
             // 
             this.nameLabel.BackColor = System.Drawing.Color.Transparent;
@@ -342,12 +342,12 @@
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.headerPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.customPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.headerPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }

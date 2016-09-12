@@ -6,7 +6,7 @@
       <position name="Detachment Commander" rank="o4" />
       <position name="Executive Officer" rank="o3" />
       <!-- Warrant Officers -->
-      <position name="Communications Expert" rank="w3" />
+      <position name="Systems Technician" rank="w3" />
       <position name="Explosives Expert" rank="w3" />
       <!-- Enlisted -->
       <position name="Operations Sergeant" rank="e9" />

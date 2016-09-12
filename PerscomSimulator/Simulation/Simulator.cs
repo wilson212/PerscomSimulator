@@ -13,7 +13,7 @@ namespace Perscom
         /// <summary>
         /// The starting date for a simulation
         /// </summary>
-        public DateTime StartDate { get; set; } = DateTime.Now;
+        public DateTime StartDate { get; protected set; } = DateTime.Now;
 
         /// <summary>
         /// Gets the current Simulation date
@@ -57,12 +57,12 @@ namespace Perscom
         /// <summary>
         /// Gets the all personel related statistics
         /// </summary>
-        public RetirementInfo GlobalRetirements { get; set; } = new RetirementInfo();
+        public RetirementInfo GlobalRetirements { get; protected set; } = new RetirementInfo();
 
         /// <summary>
         /// The Unit that is processing in this Simulator instance
         /// </summary>
-        public Unit ProcessingUnit { get; set; }
+        public Unit ProcessingUnit { get; protected set; }
 
         /// <summary>
         /// The number of years to skip in the simulation before logging
@@ -102,10 +102,10 @@ namespace Perscom
             XmlDocument document = new XmlDocument();
             document.Load(filePath);
             var root = document.DocumentElement;
-            Type enumType = typeof(RankType);
-            foreach (RankType type in Enum.GetValues(enumType))
+            
+            foreach (RankType type in Enum.GetValues(typeof(RankType)))
             {
-                XmlNodeList items = root.SelectNodes($"{Enum.GetName(enumType, type).ToLower()}/soldier");
+                XmlNodeList items = root.SelectNodes($"{Enum.GetName(typeof(RankType), type).ToLower()}/soldier");
                 foreach (XmlElement element in items)
                 {
                     int prob = Int32.Parse(element.Attributes["probability"].Value);
@@ -147,12 +147,12 @@ namespace Perscom
                 // Update the date
                 CurrentDate = CurrentDate.AddMonths(1);
 
-                // Update progress?
+                // Update progress window every 1 year of simulation
                 double yearsDone = CurrentDate.Year - StartDate.Year;
                 if (progress != null && CurrentDate.Month == 1 && yearsDone > 0)
                 {
                     TaskProgressUpdate update = new TaskProgressUpdate();
-                    update.MessageText = $"Processing year {yearsDone++} of {totalYears}";
+                    update.MessageText = $"Processing year {yearsDone} of {totalYears}";
                     progress.Report(update);
                 }
 
@@ -161,12 +161,6 @@ namespace Perscom
 
                 // Now do promotions
                 ProcessPromotions();
-
-                // Garbage collections every 10 years
-                if (yearsDone % 10 == 0)
-                {
-                    GC.Collect();
-                }
 
                 // If an entire years has gone by, subtract a skip year
                 // so we can begin logging again when the time comes.

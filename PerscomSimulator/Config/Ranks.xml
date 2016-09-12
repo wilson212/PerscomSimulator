@@ -14,7 +14,7 @@
       
     maxTimeInGrade:
       Soldiers that sit at this rank for the specified amount of months
-      will be forcefully retired.
+      will be forcefully retired. Retirement date is otherwise un-modified.
       
     stature: 
       Adjusts the soldier retirement date to meet the minimum amount if less

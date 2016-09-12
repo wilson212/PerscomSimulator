@@ -17,6 +17,8 @@
       <position name="S1 NCOIC" rank="e7" />
       <position name="Retention NCO" rank="e6" />
       <position name="Retention NCO" rank="e6" />
+      <!-- Warrant -->
+      <position name="Vehicles Systems Technician" rank="w3" />
     </positions>
     <subunits>
       <unit type="VehicleCompany" name="Vehicle Company" notes="Shuttle, Light Armor HMMVV, APCs"/>

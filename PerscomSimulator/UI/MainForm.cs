@@ -104,7 +104,10 @@ namespace Perscom
             rankTypeBox3.SelectedIndex = 0;
             rankTypeBox4.SelectedIndex = 0;
             rankTypeBox5.SelectedIndex = 0;
+            toolStripComboBox1.SelectedIndex = 0;
         }
+
+        #region Report Functions
 
         private void FillTab1Report()
         {
@@ -161,7 +164,7 @@ namespace Perscom
                 point.Color = (i % 2 == 1) ? CHART_COLOR_DARK : CHART_COLOR_LIGHT;
             }
 
-            // Add SGM for shits
+            // Add the highest grade for the rank type as well
             soldierData = Simulation.Promotions[type];
             int maxRank = soldierData.Keys.OrderByDescending(x => x).FirstOrDefault();
             if (maxRank > lastRank)
@@ -204,7 +207,7 @@ namespace Perscom
 
             foreach (var rank in Simulation.Retirements[type].OrderBy(x => x.Key))
             {
-                // Skip if this is the last rank
+                // Skip if this is the last grade for this rank type
                 if (!Simulation.Promotions[type].ContainsKey(rank.Key)) continue;
 
                 int p = 0;
@@ -214,13 +217,13 @@ namespace Perscom
                 // Prevent a division by zero exception here
                 if (promoted.TotalPersonel > 0)
                 {
-                    // Total
+                    // Total Personel that held this rank/grade (including non-promotables)
                     int total = promoted.TotalPersonel + retired.TotalPersonel;
                     double rate = Math.Round((double)promoted.TotalPersonel / total, 2) * 100;
                     p = chart4.Series[1].Points.AddY(rate);
                     chart4.Series[1].Points[p].Label = $"{rate}%";
 
-                    // Promotable
+                    // Promotable soldiers whom did, or could have been promoted but retired too soon
                     total = promoted.TotalPersonel + retired.TotalPromotable;
                     rate = Math.Round((double)promoted.TotalPersonel / total, 2) * 100;
                     p = chart4.Series[0].Points.AddY(rate);
@@ -238,79 +241,10 @@ namespace Perscom
                 chart4.Series[0].Points[p].LegendText = ranks[rank.Key].Name;
             }
         }
-        
 
-        private void MainForm_Shown(object sender, EventArgs e)
-        {
-            unitSelect.SelectedIndex = 0;
-            rankTypeBox.SelectedIndex = 0;
-            rankTypeBox.SelectedIndexChanged += rankTypeBox_SelectedIndexChanged;
-        }
+        #endregion Report Functions
 
-        private async void generateButton_Click(object sender, EventArgs e)
-        {
-            generateButton.Enabled = false;
-
-            try
-            {
-                // Load the Unit and Soldier xml files
-                Unit brigade = Unit.Load(unitSelect.SelectedItem.ToString());
-                Simulation = new Simulator(brigade);
-                SimulatorSettings settings = new SimulatorSettings()
-                {
-                    ProcessEnlisted = enlistedMenuItem.Checked,
-                    ProcessOfficers = officerMenuItem.Checked,
-                    ProcessWarrant = warrantMenuItem.Checked
-                };
-
-                // Run the simulation
-                TaskForm.Show(this, "Running Simulation", "Running Simulation... Please Wait.", false);
-                await Task.Run(() =>
-                {
-                    Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, settings);
-                });
-                SimulationRan = true;
-
-                // Fill Charts
-                FillTab1Report();
-                FillTab2Report();
-                FillTab3Report();
-                FillTab4Report();
-
-                // Combine officers and soldiers
-                var list = new List<Soldier>();
-                foreach (var typesGrades in Simulation.Soldiers)
-                {
-                    foreach (var gradesSoldiers in typesGrades.Value)
-                        list.AddRange(gradesSoldiers.Value);
-                }
-
-                // Fill in the Soldier Viewer
-                Soldiers = new List<SoldierWrapper>();
-                foreach (Soldier s in list.OrderBy(x => x.ServiceEntryDate))
-                {
-                    var soldier = new SoldierWrapper(s, Simulation.CurrentDate);
-                    Soldiers.Add(soldier);
-                }
-
-                // Setup the data view grid
-                bindingSource1.DataSource = new PageOffsetList(Soldiers.Count);
-                bindingSource1.MoveFirst();
-
-                // Finally, close the task form
-                TaskForm.CloseForm();
-            }
-            catch (Exception ex)
-            {
-                TaskForm.CloseForm();
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                // Enable Button
-                generateButton.Enabled = true;
-            }
-        }
+        #region Tab Controls Events
 
         private void unitSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -347,13 +281,6 @@ namespace Perscom
                 series.Points[i].LegendText = Enum.GetName(typeof(RankType), rType) + ": " + total;
             }
         }
-
-        /// <summary>
-        /// Exit application menu button click
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void closeMenuItem_Click(object sender, EventArgs e) =>  this.Close();
 
         private void rankTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -449,18 +376,9 @@ namespace Perscom
             }
         }
 
-        private void soldierConfigMenuItem_Click(object sender, EventArgs e)
-        {
-            using (SoldierConfigForm form = new SoldierConfigForm())
-            {
-                form.ShowDialog();
-            }
-        }
+        #endregion Tab Controls Events
 
-        private void openRootMenuItem_Click(object sender, EventArgs e)
-        {
-            Process.Start(Program.RootPath);
-        }
+        #region Soldier Data View
 
         /// <summary>
         /// Event triggered when a soldier view row is clicked
@@ -483,12 +401,13 @@ namespace Perscom
         {
             // Always clear the current rows!
             dataGridView1.Rows.Clear();
+            var soldiers = ((PageOffsetList)bindingSource1.DataSource).Soldiers;
 
             // The desired page has changed, so fetch the page of records using the "Current" offset 
             int offset = (int)bindingSource1.Current;
-            for (int i = offset; i < offset + DATA_GRID_PAGE_SIZE && i < Soldiers.Count; i++)
+            for (int i = offset; i < offset + DATA_GRID_PAGE_SIZE && i < soldiers.Count; i++)
             {
-                SoldierWrapper soldier = Soldiers[i];
+                SoldierWrapper soldier = soldiers[i];
                 DataGridViewRow row = new DataGridViewRow();
                 row.CreateCells(dataGridView1);
                 row.Tag = soldier;
@@ -502,6 +421,36 @@ namespace Perscom
                 dataGridView1.Rows.Add(row);
             }
         }
+
+        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!SimulationRan) return;
+
+            List<SoldierWrapper> newList = null;
+            switch (toolStripComboBox1.SelectedIndex)
+            {
+                case 0:
+                    newList = Soldiers;
+                    break;
+                case 2:
+                    newList = Soldiers.Where(x => x.Soldier.RankInfo.Type == RankType.Officer).ToList();
+                    break;
+                case 3:
+                    newList = Soldiers.Where(x => x.Soldier.RankInfo.Type == RankType.Warrant).ToList();
+                    break;
+                default:
+                    newList = Soldiers.Where(x => x.Soldier.RankInfo.Type == RankType.Enlisted).ToList();
+                    break;
+            }
+
+            // Setup the data view grid
+            bindingSource1.DataSource = new PageOffsetList(newList);
+            bindingSource1.MoveFirst();
+        }
+
+        #endregion Soldier Data View
+
+        #region Form Window Events
 
         /// <summary>
         /// Adds the darker border line color between the header panel and the contents
@@ -555,10 +504,105 @@ namespace Perscom
             e.Graphics.DrawLine(greyPen, point1, point2);
         }
 
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            unitSelect.SelectedIndex = 0;
+            rankTypeBox.SelectedIndex = 0;
+            rankTypeBox.SelectedIndexChanged += rankTypeBox_SelectedIndexChanged;
+        }
+
         private void MainForm_SizeChanged(object sender, EventArgs e)
         {
             panel2.Left = (this.ClientSize.Width - panel2.Width) / 2;
             generateButton.Left = (this.ClientSize.Width - generateButton.Width) / 2;
+        }
+
+        private async void generateButton_Click(object sender, EventArgs e)
+        {
+            generateButton.Enabled = false;
+
+            try
+            {
+                // Load the Unit and Soldier xml files
+                Unit brigade = Unit.Load(unitSelect.SelectedItem.ToString());
+                Simulation = new Simulator(brigade);
+                SimulatorSettings settings = new SimulatorSettings()
+                {
+                    ProcessEnlisted = enlistedMenuItem.Checked,
+                    ProcessOfficers = officerMenuItem.Checked,
+                    ProcessWarrant = warrantMenuItem.Checked
+                };
+
+                // Run the simulation
+                TaskForm.Show(this, "Running Simulation", "Running Simulation... Please Wait.", false);
+                await Task.Run(() =>
+                {
+                    Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, settings);
+                });
+                SimulationRan = true;
+
+                // Fill Charts
+                FillTab1Report();
+                FillTab2Report();
+                FillTab3Report();
+                FillTab4Report();
+
+                // Combine officers and soldiers
+                var list = new List<Soldier>();
+                foreach (var typesGrades in Simulation.Soldiers)
+                    foreach (var gradesSoldiers in typesGrades.Value)
+                    {
+                        list.AddRange(gradesSoldiers.Value);
+                    }
+
+                // Fill in the Soldier Viewer
+                Soldiers = new List<SoldierWrapper>(list.Count);
+                foreach (Soldier s in list.OrderBy(x => x.ServiceEntryDate))
+                {
+                    var soldier = new SoldierWrapper(s, Simulation.CurrentDate);
+                    Soldiers.Add(soldier);
+                }
+
+                // Setup the data view grid
+                toolStripComboBox1_SelectedIndexChanged(this, EventArgs.Empty);
+
+                // Finally, close the task form
+                TaskForm.CloseForm();
+            }
+            catch (Exception ex)
+            {
+                TaskForm.CloseForm();
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                // Enable Button
+                generateButton.Enabled = true;
+            }
+        }
+
+        #endregion Form Events
+
+        #region Menu Items
+
+        /// <summary>
+        /// Exit application menu button click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void closeMenuItem_Click(object sender, EventArgs e) => this.Close();
+
+        private void soldierConfigMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SoldierConfigForm form = new SoldierConfigForm())
+            {
+                form.ShowDialog();
+            }
+        }
+
+        private void openRootMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start(Program.RootPath);
         }
 
         private void enlistedMenuItem_Click(object sender, EventArgs e)
@@ -576,6 +620,8 @@ namespace Perscom
             warrantMenuItem.Checked = !warrantMenuItem.Checked;
         }
 
+        #endregion Menu Items
+
         /// <summary>
         /// A class used to specify the total records in a <see cref="BindingNavigator"/>
         /// </summary>
@@ -586,18 +632,23 @@ namespace Perscom
             /// <summary>
             /// Gets the total number of records
             /// </summary>
-            public int TotalRecords { get; protected set; }
+            public int TotalRecords => Soldiers.Count;
 
-            public PageOffsetList(int totalRecords)
+            /// <summary>
+            /// Gets the internal list
+            /// </summary>
+            public List<SoldierWrapper> Soldiers { get; protected set; }
+
+            public PageOffsetList(List<SoldierWrapper> soldiers)
             {
-                TotalRecords = totalRecords;
+                Soldiers = soldiers;
             }
 
             public IList GetList()
             {
                 // Return a list of page offsets based on "totalRecords" and "pageSize"
                 var pageOffsets = new List<int>();
-                for (int offset = 0; offset < TotalRecords; offset += DATA_GRID_PAGE_SIZE)
+                for (int offset = 0; offset < Soldiers.Count; offset += DATA_GRID_PAGE_SIZE)
                     pageOffsets.Add(offset);
                 return pageOffsets;
             }

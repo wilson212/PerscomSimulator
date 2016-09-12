@@ -8,6 +8,7 @@
       <position name="Inspector General" rank="o7" />
       <position name="Public Affairs" rank="o7" />
       <position name="Logistics General" rank="o7" />
+      <position name="Command and Control Systems Technician" rank="w4" />
     </positions>
     <subunits>
       <unit type="Division" name="1st Division"/>

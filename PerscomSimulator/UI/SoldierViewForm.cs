@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -29,29 +30,29 @@ namespace Perscom
             entryLabel.Text = soldier.ServiceEntryDate.ToShortDateString();
 
             // Time in Service
-            LocalDate entry = new LocalDate(soldier.ServiceEntryDate.Year, soldier.ServiceEntryDate.Month, 1);
-            LocalDate current = entry.PlusYears(currentDate.Year - entry.Year).PlusMonths(currentDate.Month - entry.Month);
-            Period timeFram = Period.Between(entry, current);
-            tisLabel.Text = $"{timeFram.Years} year(s) and {timeFram.Months} month(s)";
+            LocalDate startDate = new LocalDate(soldier.ServiceEntryDate.Year, soldier.ServiceEntryDate.Month, 1);
+            LocalDate endDate = startDate.PlusYears(currentDate.Year - startDate.Year).PlusMonths(currentDate.Month - startDate.Month);
+            Period timeFrame = Period.Between(startDate, endDate);
+            tisLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
 
             // Time to retire
-            current = new LocalDate(currentDate.Year, currentDate.Month, 1);
-            entry = new LocalDate(soldier.Soldier.ExitServiceDate.Year, soldier.Soldier.ExitServiceDate.Month, 1);
-            timeFram = Period.Between(current, entry);
-            if (timeFram.Years > 0)
-                ttrLabel.Text = $"{timeFram.Years} year(s) and {timeFram.Months} month(s)";
+            startDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
+            endDate = new LocalDate(soldier.Soldier.ExitServiceDate.Year, soldier.Soldier.ExitServiceDate.Month, 1);
+            timeFrame = Period.Between(startDate, endDate);
+            if (timeFrame.Years > 0)
+                ttrLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
             else
-                ttrLabel.Text = $"{timeFram.Months} month(s)";
+                ttrLabel.Text = $"{timeFrame.Months} month(s)";
 
             // Time in Grade
             DateTime lastPromo = soldier.Soldier.LastPromotionDate;
-            current = new LocalDate(currentDate.Year, currentDate.Month, 1);
-            entry = new LocalDate(lastPromo.Year, lastPromo.Month, 1);
-            timeFram = Period.Between(entry, current);
-            if (timeFram.Years > 0)
-                tigLabel.Text = $"{timeFram.Years} year(s) and {timeFram.Months} month(s)";
+            startDate = new LocalDate(lastPromo.Year, lastPromo.Month, 1);
+            endDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
+            timeFrame = Period.Between(startDate, endDate);
+            if (timeFrame.Years > 0)
+                tigLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
             else
-                tigLabel.Text = $"{timeFram.Months} month(s)";
+                tigLabel.Text = $"{timeFrame.Months} month(s)";
 
 
             // Fill Data grid with promotion data
@@ -148,6 +149,18 @@ namespace Perscom
             e.Graphics.DrawLine(greyPen, point1, point2);
 
             base.OnPaint(e);
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                panel2.ClientRectangle,
+                Color.Gray,
+                Color.Black,
+                90F))
+            {
+                e.Graphics.FillRectangle(brush, panel2.ClientRectangle);
+            }
         }
     }
 }
