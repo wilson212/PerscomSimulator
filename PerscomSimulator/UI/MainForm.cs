@@ -639,6 +639,10 @@ namespace Perscom
             /// </summary>
             public List<SoldierWrapper> Soldiers { get; protected set; }
 
+            /// <summary>
+            /// Creates a new instance of PageOffsetList
+            /// </summary>
+            /// <param name="soldiers"></param>
             public PageOffsetList(List<SoldierWrapper> soldiers)
             {
                 Soldiers = soldiers;
