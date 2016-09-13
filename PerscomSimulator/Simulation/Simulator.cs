@@ -105,7 +105,8 @@ namespace Perscom
             
             foreach (RankType type in Enum.GetValues(typeof(RankType)))
             {
-                XmlNodeList items = root.SelectNodes($"{Enum.GetName(typeof(RankType), type).ToLower()}/soldier");
+                string name = Enum.GetName(typeof(RankType), type).ToLower();
+                XmlNodeList items = root.SelectNodes($"{name}/soldier");
                 foreach (XmlElement element in items)
                 {
                     int prob = Int32.Parse(element.Attributes["probability"].Value);
@@ -258,28 +259,30 @@ namespace Perscom
                         List<Soldier> selected = new List<Soldier>(openings);
                         if (toRank.MinTimeForConsideration > 0)
                         {
+                            // Soldiers who do not meet the Min Time till Retirement are selected after
+                            // those who do, so we order promotions by those who are staying awhile, 
+                            // then by seniority (Time in grade)
                             selected.AddRange(
-                                (from x in Soldiers[type][fromRank.Grade]
-                                 let t2r = x.ExitServiceDate.MonthDifference(CurrentDate)
-                                 where t2r >= toRank.MinTimeForConsideration
-                                 select x
+                                (from soldier in Soldiers[type][fromRank.Grade]
+                                 let t2r = soldier.ExitServiceDate.MonthDifference(CurrentDate)
+                                 let qualified = (t2r >= toRank.MinTimeForConsideration) ? 0 : 1 // Reversed
+                                 orderby qualified, soldier.LastPromotionDate
+                                 select soldier
+                                ).Take(openings)
+                            );
+                        }
+                        else
+                        {
+                            selected.AddRange(
+                                (from soldier in Soldiers[type][fromRank.Grade]
+                                 orderby soldier.LastPromotionDate
+                                 select soldier
                                 ).Take(openings)
                             );
                         }
 
-                        // If we didn't have enough qualified soldiers for promotion via time considerations,
-                        // than we must select people anyways
-                        openings = openings - selected.Count;
-                        if (openings > 0)
-                        {
-                            selected.AddRange(
-                                Soldiers[type][fromRank.Grade]
-                                .OrderBy(x => x.LastPromotionDate)
-                                .Take(openings)
-                            );
-                        }
-
-                        foreach (Soldier soldier in selected.OrderBy(x => x.LastPromotionDate))
+                        // Now we promote the selected soldiers for promotion
+                        foreach (Soldier soldier in selected)
                         {
                             // Log statistic data?
                             if (SkipYears == 0)
@@ -340,10 +343,10 @@ namespace Perscom
         /// <summary>
         /// Creates a new soldier based on the parameters provided
         /// </summary>
-        /// <param name="rank">The rank this new soldier will start out as</param>
-        /// <param name="officer">True of this is an officer, false otherwise</param>
+        /// <param name="grade">The rank level this new soldier will start out as</param>
+        /// <param name="type">Indicates the rank classification for this soldier</param>
         /// <returns></returns>
-        private Soldier CreateSoldier(int rank, RankType type)
+        private Soldier CreateSoldier(int grade, RankType type)
         {
             Soldier soldier = Generator[type].Spawn();
             soldier.SpawnId = Interlocked.Increment(ref totalSoldiers) + 1;
@@ -351,11 +354,11 @@ namespace Perscom
             soldier.LastName = NameGenerator.GenerateRandomLastName();
             soldier.ServiceEntryDate = CurrentDate;
             soldier.LastPromotionDate = CurrentDate;
-            soldier.RankInfo = Ranks.GetRank(type, rank);
+            soldier.RankInfo = Ranks.GetRank(type, grade);
 
             // Here we figure out just how many months the soldier will stay in service.
-            //  - Soldier.TimeToLive is set by the the Probability.xml and the SpawnGenerator 
-            // class when initialized.
+            //  - Soldier.TimeToLive is set by the the Soldier.xml and the SpawnGenerator 
+            //    class when initialized.
             CryptoRandom r = new CryptoRandom();
             int toAdd = r.Next(soldier.TimeToLive.Minimum, soldier.TimeToLive.Maximum);
             soldier.ExitServiceDate = CurrentDate.AddMonths(toAdd);

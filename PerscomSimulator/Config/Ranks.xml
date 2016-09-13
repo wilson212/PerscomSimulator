@@ -1,12 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!--
   Attributes:
+    name: required
+      Specifies the title of the rank
+      
     grade: required
       Specifies the rank "level" or grade
     
     promotableAt: 
       Specifies the time in grade to be promotable to the next
-      rank. Defaults to 12 if excluded (not required)
+      rank. This value only affects the Selection Rates graph and
+      does not prevent the simulator from processing the promotion.
+      Defaults to 12 if excluded (not required)
       
     minTimeForRet: 
       Soldiers with at least this amount of time left (in months)
@@ -27,26 +32,26 @@
     <!-- Skip automatic promotions (e1-e4) -->
     <rank name="Junior Enlisted" grade="4" promotableAt="24"/>
     <rank name="Sergeant" grade="5" />
-    <rank name="Staff Sergeant" grade="6" />
-    <rank name="Sergeant First Class" grade="7" />
-    <rank name="Master Sergeant" grade="8" />
-    <rank name="Sergeant Major" grade="9" minTimeForRet="3" />
+    <rank name="Staff Sergeant" grade="6" minTimeForRet="3"/>
+    <rank name="Sergeant First Class" grade="7" minTimeForRet="3"/>
+    <rank name="Master Sergeant" grade="8" minTimeForRet="3" stature="6"/>
+    <rank name="Sergeant Major" grade="9" minTimeForRet="3" stature="12"/>
   </enlisted>
   <officer>
     <rank name="1st Lieutenant" grade="2" promotableAt="24"/>
-    <rank name="Captain" grade="3" />
-    <rank name="Major" grade="4" minTimeForRet="3" />
-    <rank name="Lieutenant Colonel" grade="5" minTimeForRet="3" />
-    <rank name="Colonel" grade="6" minTimeForRet="3" stature="12"/>
+    <rank name="Captain" grade="3" promotableAt="18"/>
+    <rank name="Major" grade="4" minTimeForRet="3" promotableAt="18"/>
+    <rank name="Lieutenant Colonel" grade="5" minTimeForRet="3" promotableAt="24"/>
+    <rank name="Colonel" grade="6" minTimeForRet="3" stature="12" maxTimeInGrade="30"/>
     <rank name="Brigadier General" grade="7" minTimeForRet="3" stature="12"/>
     <rank name="Major General" grade="8" minTimeForRet="3" stature="12"/>
     <rank name="Lieutenant General" grade="9" minTimeForRet="3" stature="12"/>
     <rank name="General" grade="10" minTimeForRet="3" stature="12,24"/>
   </officer>
   <warrant>
-    <rank name="Chief Warrant 2" grade="2" />
-    <rank name="Chief Warrant 3" grade="3" />
-    <rank name="Chief Warrant 4" grade="4" />
+    <rank name="Chief Warrant 2" grade="2" minTimeForRet="3"/>
+    <rank name="Chief Warrant 3" grade="3" minTimeForRet="3"/>
+    <rank name="Chief Warrant 4" grade="4" minTimeForRet="3"/>
     <rank name="Chief Warrant 5" grade="5" stature="12"/>
   </warrant>
 </Ranks>
