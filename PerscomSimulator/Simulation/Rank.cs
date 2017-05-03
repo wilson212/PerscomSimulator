@@ -8,6 +8,11 @@
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or Sets the rank abbreviation name
+        /// </summary>
+        public string Abbreviation { get; set; }
+
+        /// <summary>
         /// Gets or Sets the grade of this rank
         /// </summary>
         public int Grade { get; set; }

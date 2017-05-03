@@ -52,6 +52,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
             this.rankLabel = new System.Windows.Forms.ShadowLabel();
+            this.linkChangeName = new System.Windows.Forms.LinkLabel();
             this.mainPanel.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -278,6 +279,7 @@
             // 
             this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
+            this.headerPanel.Controls.Add(this.linkChangeName);
             this.headerPanel.Controls.Add(this.pictureBox1);
             this.headerPanel.Controls.Add(this.nameLabel);
             this.headerPanel.Controls.Add(this.rankLabel);
@@ -325,6 +327,19 @@
             this.rankLabel.TabIndex = 1;
             this.rankLabel.Text = "Sergeant";
             // 
+            // linkChangeName
+            // 
+            this.linkChangeName.AutoSize = true;
+            this.linkChangeName.LinkColor = System.Drawing.SystemColors.Control;
+            this.linkChangeName.Location = new System.Drawing.Point(592, 54);
+            this.linkChangeName.Name = "linkChangeName";
+            this.linkChangeName.Size = new System.Drawing.Size(75, 13);
+            this.linkChangeName.TabIndex = 3;
+            this.linkChangeName.TabStop = true;
+            this.linkChangeName.Text = "Change Name";
+            this.linkChangeName.VisitedLinkColor = System.Drawing.SystemColors.Control;
+            this.linkChangeName.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkChangeName_LinkClicked);
+            // 
             // SoldierViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -347,6 +362,7 @@
             this.customPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.headerPanel.ResumeLayout(false);
+            this.headerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
@@ -378,5 +394,6 @@
         private System.Windows.Forms.Label entryLabel;
         private System.Windows.Forms.Label ttrLabel;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.LinkLabel linkChangeName;
     }
 }

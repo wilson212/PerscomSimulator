@@ -4,6 +4,9 @@
     name: required
       Specifies the title of the rank
       
+    abbreviation: required
+      Specifies the rank abbreviation
+      
     grade: required
       Specifies the rank "level" or grade
     
@@ -30,28 +33,28 @@
 <Ranks>
   <enlisted>
     <!-- Skip automatic promotions (e1-e4) -->
-    <rank name="Junior Enlisted" grade="4" promotableAt="24"/>
-    <rank name="Sergeant" grade="5" />
-    <rank name="Staff Sergeant" grade="6" minTimeForRet="3"/>
-    <rank name="Sergeant First Class" grade="7" minTimeForRet="3"/>
-    <rank name="Master Sergeant" grade="8" minTimeForRet="3" stature="6"/>
-    <rank name="Sergeant Major" grade="9" minTimeForRet="3" stature="12"/>
+    <rank name="Junior Enlisted" abbreviation="E1-4" grade="4" promotableAt="24"/>
+    <rank name="Sergeant" abbreviation="SGT" grade="5" />
+    <rank name="Staff Sergeant" abbreviation="SSG" grade="6" minTimeForRet="3"/>
+    <rank name="Sergeant First Class" abbreviation="SFC" grade="7" minTimeForRet="3"/>
+    <rank name="Master Sergeant" abbreviation="MSG" grade="8" minTimeForRet="3" stature="6"/>
+    <rank name="Sergeant Major" abbreviation="SGM" grade="9" minTimeForRet="3" stature="12"/>
   </enlisted>
   <officer>
-    <rank name="1st Lieutenant" grade="2" promotableAt="24"/>
-    <rank name="Captain" grade="3" promotableAt="18"/>
-    <rank name="Major" grade="4" minTimeForRet="3" promotableAt="18"/>
-    <rank name="Lieutenant Colonel" grade="5" minTimeForRet="3" promotableAt="24"/>
-    <rank name="Colonel" grade="6" minTimeForRet="3" stature="12" maxTimeInGrade="30"/>
-    <rank name="Brigadier General" grade="7" minTimeForRet="3" stature="12"/>
-    <rank name="Major General" grade="8" minTimeForRet="3" stature="12"/>
-    <rank name="Lieutenant General" grade="9" minTimeForRet="3" stature="12"/>
-    <rank name="General" grade="10" minTimeForRet="3" stature="12,24"/>
+    <rank name="1st Lieutenant" abbreviation="2/1LT" grade="2" promotableAt="24"/>
+    <rank name="Captain" abbreviation="CPT" grade="3" promotableAt="18"/>
+    <rank name="Major" abbreviation="MAJ" grade="4" minTimeForRet="3" promotableAt="18"/>
+    <rank name="Lieutenant Colonel" abbreviation="LTC" grade="5" minTimeForRet="3" promotableAt="24"/>
+    <rank name="Colonel" abbreviation="COL" grade="6" minTimeForRet="3" stature="12" maxTimeInGrade="30"/>
+    <rank name="Brigadier General" abbreviation="BG" grade="7" minTimeForRet="3" stature="12"/>
+    <rank name="Major General" abbreviation="MG" grade="8" minTimeForRet="3" stature="12"/>
+    <rank name="Lieutenant General" abbreviation="LTG" grade="9" minTimeForRet="3" stature="12"/>
+    <rank name="General" abbreviation="GEN" grade="10" minTimeForRet="3" stature="12,24"/>
   </officer>
   <warrant>
-    <rank name="Chief Warrant 2" grade="2" minTimeForRet="3"/>
-    <rank name="Chief Warrant 3" grade="3" minTimeForRet="3"/>
-    <rank name="Chief Warrant 4" grade="4" minTimeForRet="3"/>
-    <rank name="Chief Warrant 5" grade="5" stature="12"/>
+    <rank name="Chief Warrant 2" abbreviation="CW2" grade="2" minTimeForRet="3"/>
+    <rank name="Chief Warrant 3" abbreviation="CW3" grade="3" minTimeForRet="3"/>
+    <rank name="Chief Warrant 4" abbreviation="CW4" grade="4" minTimeForRet="3"/>
+    <rank name="Chief Warrant 5" abbreviation="CW5" grade="5" stature="12"/>
   </warrant>
 </Ranks>

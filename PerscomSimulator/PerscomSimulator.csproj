@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>perscom_icon_sv6_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
       <HintPath>..\packages\NodaTime.1.3.2\lib\net35-Client\NodaTime.dll</HintPath>
@@ -71,9 +74,16 @@
     <Compile Include="Application\SyncProgress.cs" />
     <Compile Include="Application\TaskProgressUpdate.cs" />
     <Compile Include="Application\DateTimeExt.cs" />
+    <Compile Include="Simulation\RankGradeStatistics.cs" />
     <Compile Include="Simulation\RandomNameGenerator.cs" />
     <Compile Include="Simulation\Rank.cs" />
     <Compile Include="Simulation\SimulatorSettings.cs" />
+    <Compile Include="UI\SoldierEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SoldierEditForm.Designer.cs">
+      <DependentUpon>SoldierEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\SoldierViewForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,12 +105,10 @@
     <Compile Include="Application\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulation\Promotion.cs" />
-    <Compile Include="Simulation\PromotionInfo.cs" />
     <Compile Include="Simulation\ISpawnable.cs" />
     <Compile Include="Simulation\CryptoRandom.cs" />
     <Compile Include="Simulation\Range.cs" />
     <Compile Include="Simulation\Ranks.cs" />
-    <Compile Include="Simulation\RetirementInfo.cs" />
     <Compile Include="Simulation\Simulator.cs" />
     <Compile Include="Simulation\SpawnGenerator.cs" />
     <Compile Include="Simulation\Unit.cs" />
@@ -127,6 +135,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UI\SoldierEditForm.resx">
+      <DependentUpon>SoldierEditForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\SoldierViewForm.resx">
       <DependentUpon>SoldierViewForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -244,6 +255,7 @@
     <Content Include="Images\large\w1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="perscom_icon_sv6_icon.ico" />
     <Content Include="Units\EngineerCompany.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -351,7 +363,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Database\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

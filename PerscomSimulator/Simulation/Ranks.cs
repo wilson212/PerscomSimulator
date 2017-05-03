@@ -54,6 +54,7 @@ namespace Perscom.Simulation
                     {
                         Type = type,
                         Name = element.Attributes["name"].Value,
+                        Abbreviation = element.Attributes["abbreviation"].Value,
                         Grade = rank,
                         MinTimeForConsideration = t2r,
                         PromotableAt = tig,
@@ -89,11 +90,60 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public static Dictionary<int, Rank> GetRankListByType(RankType type) => RankList[type];
 
+        /// <summary>
+        /// Fetches a rank by grade and type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="grade"></param>
+        /// <returns></returns>
         public static Rank GetRank(RankType type, int grade) => RankList[type][grade];
 
+        /// <summary>
+        /// Gets the entry level rank for the specified rank type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static Rank GetEntryLevelRank(RankType type) => RankList[type].First().Value;
 
+        /// <summary>
+        /// Returns whether the specified rank and grade exists
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="grade"></param>
+        /// <returns></returns>
         public static bool GradeExists(RankType type, int grade) => RankList[type].ContainsKey(grade);
+
+        /// <summary>
+        /// Gets the previous rank grade
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="grade"></param>
+        /// <returns></returns>
+        public static Rank GetPreviousGrade(RankType type, int grade)
+        {
+            return GetPrevousGrades(type, grade).LastOrDefault();
+        }
+
+        /// <summary>
+        /// Gets a list of all previous grades to the specified rank grade
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="grade"></param>
+        /// <returns></returns>
+        public static Rank[] GetPrevousGrades(RankType type, int grade)
+        {
+            var prev = new List<Rank>();
+
+            foreach (var rank in RankList[type].OrderBy(x => x.Key))
+            {
+                if (rank.Key >= grade)
+                    break;
+
+                prev.Add(rank.Value);
+            }
+
+            return prev.ToArray();
+        }
 
         /// <summary>
         /// Gets the <see cref="RankType"/> based on the type <see cref="char"/> code.

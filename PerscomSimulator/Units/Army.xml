@@ -3,10 +3,9 @@
   <info name="Army">
     <positions>
       <position name="Commander" rank="o9" />
-      <position name="Chief Of Staff" rank="o8" />
+      <position name="Executive Officer" rank="o8" />
       <position name="Adjuntant" rank="o7" />
       <position name="Inspector General" rank="o7" />
-      <position name="Public Affairs" rank="o7" />
       <position name="Logistics General" rank="o7" />
       <position name="Command and Control Systems Technician" rank="w4" />
     </positions>

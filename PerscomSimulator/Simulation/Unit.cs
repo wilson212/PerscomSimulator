@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Perscom.Simulation
@@ -12,6 +9,7 @@ namespace Perscom.Simulation
     {
 
         #region Statics
+
         protected static Dictionary<string, Unit> UnitCache { get; set; }
 
         static Unit()

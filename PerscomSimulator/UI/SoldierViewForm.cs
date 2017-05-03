@@ -10,12 +10,15 @@ namespace Perscom
 {
     public partial class SoldierViewForm : Form
     {
+        protected SoldierWrapper Soldier { get; set; }
+
         public SoldierViewForm(SoldierWrapper soldier, DateTime currentDate)
         {
             InitializeComponent();
-            headerPanel.BackColor = MainForm.THEME_COLOR_DARK;
+            this.Soldier = soldier;
 
             // Setup the styling of the panels
+            headerPanel.BackColor = MainForm.THEME_COLOR_DARK;
             panel1.BackColor = MainForm.CHART_COLOR_DARK;
             panel2.BackColor = MainForm.CHART_COLOR_DARK;
 
@@ -74,6 +77,23 @@ namespace Perscom
             // Hide selection on the data view grid
             dataGridView1.DefaultCellStyle.SelectionBackColor = dataGridView1.DefaultCellStyle.BackColor;
             dataGridView1.DefaultCellStyle.SelectionForeColor = dataGridView1.DefaultCellStyle.ForeColor;
+        }
+
+        /// <summary>
+        /// Event fired when the Change Name link is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void linkChangeName_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (SoldierEditForm frm = new SoldierEditForm(this.Soldier.Soldier))
+            {
+                var result = frm.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    nameLabel.Text = this.Soldier.Name;
+                }
+            }
         }
 
         /// <summary>

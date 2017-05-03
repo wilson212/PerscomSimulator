@@ -5,7 +5,8 @@
       <!-- Officer -->
       <position name="Commander" rank="o8" />
       <position name="Deputy Commander - Operations" rank="o7" />
-      <position name="Deputy Commander - Support" rank="o6" />
+      <position name="Deputy Commander - Support" rank="o7" />
+      <position name="Staff Officer" rank="o6" />
       <!-- Warrant -->
       <position name="Command and Control Systems Technician" rank="w4" />
     </positions>

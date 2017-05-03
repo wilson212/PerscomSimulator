@@ -25,8 +25,11 @@ namespace Perscom
         /// </summary>
         public DateTime EndDate { get; protected set; }
 
+        /// <summary>
+        /// The total number of soldier objects created by this simulation, used
+        /// for setting the SpawnID of a soldier
+        /// </summary>
         private int totalSoldiers = 0;
-        private int totalMaxMonths = 0;
 
         /// <summary>
         /// Gets the <see cref="SimulatorSettings"/> for the last simulation
@@ -43,21 +46,10 @@ namespace Perscom
         /// </summary>
         protected Dictionary<RankType, SpawnGenerator<Soldier>> Generator { get; set; }
 
-        ///<summary>
-        /// Gets the promotion info going FROM this grade to the next
-        /// RankType => [Grade => PromotionInfo (for grade)]
-        /// </summary>
-        public Dictionary<RankType, Dictionary<int, PromotionInfo>> Promotions { get; protected set; }
-
-        ///<summary>
-        /// RankType => [Grade => PromotionInfo (for grade)]
-        /// </summary>
-        public Dictionary<RankType, Dictionary<int, PromotionInfo>> Retirements { get; protected set; }
-
         /// <summary>
-        /// Gets the all personel related statistics
+        /// RankType => [Grade => PromotionInfo (for grade)]
         /// </summary>
-        public RetirementInfo GlobalRetirements { get; protected set; } = new RetirementInfo();
+        public Dictionary<RankType, Dictionary<int, RankGradeStatistics>> RankStatistics { get; protected set; }
 
         /// <summary>
         /// The Unit that is processing in this Simulator instance
@@ -76,6 +68,10 @@ namespace Perscom
         /// </summary>
         protected RandomNameGenerator NameGenerator { get; set; }
 
+        /// <summary>
+        /// Creates a new Simulator instance
+        /// </summary>
+        /// <param name="unit">The unit to run the simulation on</param>
         public Simulator(Unit unit)
         {
             ProcessingUnit = unit;
@@ -113,7 +109,6 @@ namespace Perscom
                     int min = Int32.Parse(element.Attributes["minTime"].Value);
                     int max = Int32.Parse(element.Attributes["maxTime"].Value);
                     Generator[type].Add(new Soldier(prob, new Range<int>(min, max)));
-                    if (max > totalMaxMonths) totalMaxMonths = max;
                 }
             }
         }
@@ -126,7 +121,7 @@ namespace Perscom
         /// How many years to skip before logging statistical data. This is done to
         /// alleviate bad data at the start of a simulation due to low soldier movement.
         /// </param>
-        public void Run(int totalYears, int skipYears, IProgress<TaskProgressUpdate> progress, SimulatorSettings settings)
+        public void Run(int totalYears, int skipYears, IProgress<TaskProgressUpdate> progress, SimulatorSettings settings, CancellationToken token)
         {
             // Check data
             if (totalYears < skipYears)
@@ -145,19 +140,23 @@ namespace Perscom
             // Main Loop
             while (EndDate != CurrentDate)
             {
+                // Quit if cancelled
+                if (token.IsCancellationRequested)
+                    return;
+
                 // Update the date
                 CurrentDate = CurrentDate.AddMonths(1);
 
                 // Update progress window every 1 year of simulation
-                double yearsDone = CurrentDate.Year - StartDate.Year;
-                if (progress != null && CurrentDate.Month == 1 && yearsDone > 0)
+                int yearsDone = CurrentDate.Year - StartDate.Year;
+                if (CurrentDate.Month == startMonth && yearsDone > 0)
                 {
                     TaskProgressUpdate update = new TaskProgressUpdate();
                     update.MessageText = $"Processing year {yearsDone} of {totalYears}";
                     progress.Report(update);
                 }
 
-                // Process Soldiers
+                // Process Retirements first!
                 ProcessRetirements();
 
                 // Now do promotions
@@ -165,11 +164,43 @@ namespace Perscom
 
                 // If an entire years has gone by, subtract a skip year
                 // so we can begin logging again when the time comes.
-                if (SkipYears > 0 && CurrentDate.Month % startMonth == 0)
+                if (SkipYears > 0 && CurrentDate.Month == startMonth)
                 {
                     SkipYears -= 1;
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns the total percentage of players who made it to the specified
+        /// rank and grade in the simulation
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="grade"></param>
+        /// <returns></returns>
+        public double TotalSelectionRate(RankType type, int grade)
+        {
+            // Make sure the rank exists in the simulation
+            if (totalSoldiers == 0 || !RankStatistics[type].ContainsKey(grade))
+                return 0;
+
+            // Set math variables
+            int cumulative = 0;
+            Rank current = Ranks.GetRank(type, grade);
+            double total = RankStatistics[type][grade].TotalSoldiers;
+
+            foreach (Rank r in Ranks.GetPrevousGrades(type, grade))
+            {
+                // Add grade statistics if missing
+                if (!RankStatistics[type].ContainsKey(r.Grade))
+                    continue;
+
+                // Log retirement data for current rank/grade
+                var info = RankStatistics[type][r.Grade];
+                cumulative += info.TotalRetirements;
+            }
+
+            return (cumulative == 0) ? 0 : Math.Round(total / (total + cumulative), 5) * 100;
         }
 
         /// <summary>
@@ -185,39 +216,33 @@ namespace Perscom
                 if (!Settings.ProcessRankType(type))
                     continue;
 
-                // Itterate through each Grade
+                // Itterate through each Soldier in each Grade
                 foreach (KeyValuePair<int, List<Soldier>> data in Soldiers[type])
-                for (int i = data.Value.Count; i > 0; i--)
                 {
-                    // check retirement
-                    if (data.Value[i - 1].IsRetiring(CurrentDate))
+                    // Use a FOR loop here so we can remove soldiers as we itterate
+                    for (int i = data.Value.Count; i > 0; i--)
                     {
-                        int rank = data.Key;
+                        // Extract rank grade and soldier object
+                        int grade = data.Key;
+                        Soldier soldier = Soldiers[type][grade][i - 1];
 
-                        // Do not log skiped months
-                        if (SkipYears == 0)
+                        // check retirement
+                        if (soldier.IsRetiring(CurrentDate))
                         {
-                            Soldier s = Soldiers[type][rank][i - 1];
-                            var list = Retirements[s.RankInfo.Type];
-                            if (!list.ContainsKey(s.RankInfo.Grade))
-                                list[s.RankInfo.Grade] = new RetirementInfo();
+                            // Do not log skiped months
+                            if (SkipYears == 0)
+                            {
+                                // Add grade statistics if missing
+                                if (!RankStatistics[type].ContainsKey(grade))
+                                    RankStatistics[type].Add(grade, new RankGradeStatistics());
 
-                            // local vars
-                            int grade = s.RankInfo.Grade;
+                                // Log retirement data for current rank/grade
+                                RankStatistics[type][grade].AddRetiree(soldier, CurrentDate);
+                            }
 
-                            // Log retirement data
-                            list[grade].TotalPersonel += 1;
-                            list[grade].TotalMonthsInService += s.ServiceEntryDate.MonthDifference(CurrentDate);
-                            list[grade].TotalMonthsInGrade += s.LastPromotionDate.MonthDifference(CurrentDate);
-                            if (s.IsPromotable(CurrentDate))
-                                list[grade].TotalPromotable += 1;
-
-                            GlobalRetirements.TotalPersonel += 1;
-                            GlobalRetirements.TotalMonthsInGrade += s.LastPromotionDate.MonthDifference(CurrentDate);
-                            GlobalRetirements.TotalMonthsInService += s.ServiceEntryDate.MonthDifference(CurrentDate);
+                            // Finally, remove the retired soldier
+                            Soldiers[type][grade].RemoveAt(i - 1);
                         }
-
-                        Soldiers[type][rank].RemoveAt(i - 1);
                     }
                 }
             }
@@ -287,14 +312,12 @@ namespace Perscom
                             // Log statistic data?
                             if (SkipYears == 0)
                             {
-                                var list = Promotions[type];
-                                if (!list.ContainsKey(soldier.RankInfo.Grade))
-                                    list[soldier.RankInfo.Grade] = new PromotionInfo();
+                                // Add grade statistics if missing
+                                if (!RankStatistics[type].ContainsKey(fromRank.Grade))
+                                    RankStatistics[type].Add(fromRank.Grade, new RankGradeStatistics());
 
-                                // Log data
-                                list[soldier.RankInfo.Grade].TotalPersonel += 1;
-                                list[soldier.RankInfo.Grade].TotalMonthsInService += soldier.ServiceEntryDate.MonthDifference(CurrentDate);
-                                list[soldier.RankInfo.Grade].TotalMonthsInGrade += soldier.LastPromotionDate.MonthDifference(CurrentDate);
+                                // Log retirement data for current rank/grade
+                                RankStatistics[type][fromRank.Grade].TrackPromotionToNextGrade(soldier, CurrentDate);
                             }
 
                             // Promote soldier, and move him to the new ranking list
@@ -315,16 +338,14 @@ namespace Perscom
         {
             // Clear out old data
             Soldiers = new Dictionary<RankType, Dictionary<int, List<Soldier>>>();
-            Promotions = new Dictionary<RankType, Dictionary<int, PromotionInfo>>();
-            Retirements = new Dictionary<RankType, Dictionary<int, PromotionInfo>>();
+            RankStatistics = new Dictionary<RankType, Dictionary<int, RankGradeStatistics>>();
 
             // Soldiers
             foreach (RankType type in Enum.GetValues(typeof(RankType)))
             {
                 // Initiate data
                 Soldiers.Add(type, new Dictionary<int, List<Soldier>>());
-                Promotions.Add(type, new Dictionary<int, PromotionInfo>());
-                Retirements.Add(type, new Dictionary<int, PromotionInfo>());
+                RankStatistics.Add(type, new Dictionary<int, RankGradeStatistics>());
 
                 // Ensure we are setup to run this rank type
                 if (!Settings.ProcessRankType(type))

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using Perscom.Simulation;
+using System.Threading;
 
 namespace Perscom
 {
@@ -28,6 +29,8 @@ namespace Perscom
         #endregion
 
         public Simulator Simulation { get; protected set; }
+
+        protected CancellationTokenSource CancelToken { get; set; }
 
         /// <summary>
         /// Indicates whether the simulation has been ran
@@ -48,6 +51,7 @@ namespace Perscom
         {
             // Create form controls
             InitializeComponent();
+            this.Height = 750;
 
             // Header background color
             headerPanel.BackColor = THEME_COLOR_DARK;
@@ -109,93 +113,82 @@ namespace Perscom
 
         #region Report Functions
 
+        /// <summary>
+        /// Time In Grade Report Tab
+        /// </summary>
         private void FillTab1Report()
         {
             // === TAB 1 ====================================================
             // Clear chart
             chart1.Series[0].Points.Clear();
             RankType type = (RankType)rankTypeBox1.SelectedItem;
-            var soldierData = Simulation.Promotions[type];
+            var soldierData = Simulation.RankStatistics[type];
             var ranks = Ranks.RankList[type];
-            int lastRank = 0;
 
+            // Plot the average time in grade for each grade
             foreach (var rank in soldierData.OrderBy(x => x.Key))
             {
                 int i = chart1.Series[0].Points.AddY((double)rank.Value.AverageTimeInGrade);
+
                 DataPoint point = chart1.Series[0].Points[i];
                 point.AxisLabel = ranks[rank.Key].ToString();
                 point.LegendText = ranks[rank.Key].ToString();
                 point.Label = rank.Value.AverageTimeInGrade.ToString();
                 point.Color = (i % 2 == 1) ? CHART_COLOR_DARK : CHART_COLOR_LIGHT;
-                lastRank = rank.Key;
-            }
-
-            // Add SGM for shits
-            soldierData = Simulation.Retirements[type];
-            int maxRank = soldierData.Keys.OrderByDescending(x => x).FirstOrDefault();
-            if (maxRank > lastRank)
-            {
-                int j = chart1.Series[0].Points.AddY((double)soldierData[maxRank].AverageTimeInGrade);
-                DataPoint point = chart1.Series[0].Points[j];
-                point.AxisLabel = ranks[maxRank].ToString();
-                point.LegendText = ranks[maxRank].ToString();
-                point.Label = soldierData[maxRank].AverageTimeInGrade.ToString();
-                point.Color = (j % 2 == 1) ? CHART_COLOR_DARK : CHART_COLOR_LIGHT;
             }
         }
 
+        /// <summary>
+        /// Time In Service Tab
+        /// </summary>
         private void FillTab2Report()
         {
             // === TAB 2 ====================================================
             // Clear chart
             chart2.Series[0].Points.Clear();
             RankType type = (RankType)rankTypeBox2.SelectedItem;
-            var soldierData = Simulation.Promotions[type];
+            var soldierData = Simulation.RankStatistics[type];
             var ranks = Ranks.RankList[type];
-            int lastRank = 0;
+
+            // Plot the average time in service (years) for each grade
             foreach (var rank in soldierData.OrderBy(x => x.Key))
             {
                 int i = chart2.Series[0].Points.AddY((double)rank.Value.AverageYearsInService);
+
                 DataPoint point = chart2.Series[0].Points[i];
                 point.AxisLabel = ranks[rank.Key].ToString();
                 point.LegendText = ranks[rank.Key].ToString();
                 point.Label = rank.Value.AverageYearsInService.ToString();
-                lastRank = rank.Key;
                 point.Color = (i % 2 == 1) ? CHART_COLOR_DARK : CHART_COLOR_LIGHT;
-            }
-
-            // Add the highest grade for the rank type as well
-            soldierData = Simulation.Promotions[type];
-            int maxRank = soldierData.Keys.OrderByDescending(x => x).FirstOrDefault();
-            if (maxRank > lastRank)
-            {
-                int j = chart2.Series[0].Points.AddY((double)soldierData[maxRank].AverageYearsInService);
-                DataPoint point = chart2.Series[0].Points[j];
-                point.AxisLabel = ranks[maxRank].ToString();
-                point.LegendText = ranks[maxRank].ToString();
-                point.Label = soldierData[maxRank].AverageYearsInService.ToString();
-                point.Color = (j % 2 == 1) ? CHART_COLOR_DARK : CHART_COLOR_LIGHT;
             }
         }
 
+        /// <summary>
+        /// Discharges Report
+        /// </summary>
         private void FillTab3Report()
         {
             // === TAB 3 ====================================================
             // Clear chart
             chart3.Series[0].Points.Clear();
             RankType type = (RankType)rankTypeBox3.SelectedItem;
-            var soldierData = Simulation.Retirements[type];
+            var soldierData = Simulation.RankStatistics[type];
             var ranks = Ranks.RankList[type];
+
+            // Plot the tptal number of retirements by rank/grade
             foreach (var rank in soldierData.OrderBy(x => x.Key))
             {
-                int i = chart3.Series[0].Points.AddY((double)rank.Value.TotalPersonel);
+                int i = chart3.Series[0].Points.AddY((double)rank.Value.TotalRetirements);
                 DataPoint point = chart3.Series[0].Points[i];
                 point.AxisLabel = ranks[rank.Key].Name;
                 point.LegendText = ranks[rank.Key].Name;
-                point.Label = rank.Value.TotalPersonel.ToString();
+                point.Label = rank.Value.TotalRetirements.ToString();
             }
         }
 
+        /// <summary>
+        /// Selection Rates Chart
+        /// </summary>
         private void FillTab4Report()
         {
             // === TAB 4 ====================================================
@@ -204,41 +197,28 @@ namespace Perscom
             chart4.Series[1].Points.Clear();
             RankType type = (RankType)rankTypeBox4.SelectedItem;
             var ranks = Ranks.RankList[type];
+            int count = Simulation.RankStatistics[type].Count;
 
-            foreach (var rank in Simulation.Retirements[type].OrderBy(x => x.Key))
+            // Take all but the last grade!
+            foreach (var rank in Simulation.RankStatistics[type].OrderBy(x => x.Key).Take(count - 1))
             {
-                // Skip if this is the last grade for this rank type
-                if (!Simulation.Promotions[type].ContainsKey(rank.Key)) continue;
-
                 int p = 0;
-                PromotionInfo promoted = Simulation.Promotions[type][rank.Key];
-                PromotionInfo retired = rank.Value;
+                var stats = rank.Value;
 
-                // Prevent a division by zero exception here
-                if (promoted.TotalPersonel > 0)
-                {
-                    // Total Personel that held this rank/grade (including non-promotables)
-                    int total = promoted.TotalPersonel + retired.TotalPersonel;
-                    double rate = Math.Round((double)promoted.TotalPersonel / total, 2) * 100;
-                    p = chart4.Series[1].Points.AddY(rate);
-                    chart4.Series[1].Points[p].Label = $"{rate}%";
+                // Total Personel that held this rank/grade (including non-promotables)
+                double rate = (double)stats.PromotionRate;
+                p = chart4.Series[1].Points.AddY(rate);
+                chart4.Series[1].Points[p].Label = $"{rate}%";
 
-                    // Promotable soldiers whom did, or could have been promoted but retired too soon
-                    total = promoted.TotalPersonel + retired.TotalPromotable;
-                    rate = Math.Round((double)promoted.TotalPersonel / total, 2) * 100;
-                    p = chart4.Series[0].Points.AddY(rate);
-                    chart4.Series[0].Points[p].Label = $"{rate}%";
-                }
-                else
-                {
-                    p = chart4.Series[0].Points.AddY(0.00);
-                    chart4.Series[0].Points[p].Label = "0%";
-                    p = chart4.Series[1].Points.AddY(0.00);
-                    chart4.Series[1].Points[p].Label = "0%";
-                }
+                // Promotable soldiers whom did, or could have been promoted but retired too soon
+                rate = (double)stats.SelectionRate;
+                p = chart4.Series[0].Points.AddY(rate);
+                chart4.Series[0].Points[p].Label = $"{rate}%";
 
-                chart4.Series[0].Points[p].AxisLabel = ranks[rank.Key].Name;
-                chart4.Series[0].Points[p].LegendText = ranks[rank.Key].Name;
+                // Format labels
+                string text = String.Format("{0} -> {1}", ranks[rank.Key].Abbreviation, ranks[rank.Key + 1].Abbreviation);
+                chart4.Series[0].Points[p].AxisLabel = text;
+                chart4.Series[0].Points[p].LegendText = text;
             }
         }
 
@@ -340,6 +320,11 @@ namespace Perscom
             }
         }
 
+        /// <summary>
+        /// Grade selection change in Tab 5
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void rankSelectionBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (rankSelectionBox.SelectedItem == null)
@@ -349,30 +334,31 @@ namespace Perscom
             Series series = promotionPieChart.Series[0];
             Rank rank = (Rank)rankSelectionBox.SelectedItem;
             RankType type = (RankType)rankTypeBox5.SelectedItem;
-            var promotions = Simulation.Promotions[type];
-            var retirements = Simulation.Retirements[type];
+            var rankData = Simulation.RankStatistics[type];
             int totalYears = (int)(yearsOfSimulate.Value - yearsToSkip.Value);
 
             // Clear Chart
             series.Points.Clear();
             promotionPieChart.Titles[1].Text = rank.Name;
 
-            if (promotions.ContainsKey(rank.Grade))
+            // Make sure grade exists
+            if (rankData.ContainsKey(rank.Grade))
             {
-                double promoted = Math.Round((double)promotions[rank.Grade].TotalPersonel / totalYears, 2);
-                double retired = Math.Round((double)retirements[rank.Grade].TotalPersonel / totalYears, 2);
+                var stats = rankData[rank.Grade];
+                var rate = Simulation.TotalSelectionRate(type, rank.Grade);
 
-                int i = series.Points.AddY(promoted);
+                int i = series.Points.AddY(stats.PromotionsToNextGrade / totalYears);
                 series.Points[i].LegendText = "Promoted";
 
-                i = series.Points.AddY(retired);
+                i = series.Points.AddY(stats.TotalRetirements / totalYears);
                 series.Points[i].LegendText = "Retired";
-            }
-            else if (retirements.ContainsKey(rank.Grade))
-            {
-                double retired = Math.Round((double)retirements[rank.Grade].TotalPersonel / totalYears, 2);
-                int i = series.Points.AddY(retired);
-                series.Points[i].LegendText = "Retired";
+
+                // Set label texts for statistical data
+                labelTotalSelectRate.Text = String.Format("{0}%", rate);
+                labelAvgTiS_Promoted.Text = String.Format("{0} years", Math.Round(stats.PromotedAverageTimeInService / 12, 1));
+                labelAvgTiS_Retirement.Text = String.Format("{0} years", Math.Round(stats.RetiredAverageTimeInService / 12, 1));
+                labelAvgTiG_Promotion.Text = String.Format("{0} months", Math.Round(stats.PromotedAverageTimeInGrade));
+                labelAvgTiG_Retirement.Text = String.Format("{0} months", Math.Round(stats.RetiredAverageTimeInGrade));
             }
         }
 
@@ -387,10 +373,24 @@ namespace Perscom
         {
             if (dataGridView1.SelectedRows.Count == 0) return;
 
-            var soldier = (SoldierWrapper)dataGridView1.SelectedRows[0].Tag;
+            var row = dataGridView1.SelectedRows[0];
+            var soldier = (SoldierWrapper)row.Tag;
             using (SoldierViewForm form = new SoldierViewForm(soldier, Simulation.CurrentDate))
             {
+                // Show soldier dialog
                 form.ShowDialog();
+
+                // Invalidate the row, so that if the name changed, we can update it with
+                // the new name!
+                int index = dataGridView1.SelectedRows[0].Index;
+                row.SetValues(new object[]
+                {
+                    soldier.RankIcon,
+                    soldier.Name,
+                    Math.Round((double)soldier.TimeInService / 12, 2).ToString(),
+                    soldier.TimeInGrade
+                });
+                dataGridView1.InvalidateRow(index);
             }
         }
 
@@ -534,10 +534,13 @@ namespace Perscom
                 };
 
                 // Run the simulation
-                TaskForm.Show(this, "Running Simulation", "Running Simulation... Please Wait.", false);
+                TaskForm.Show(this, "Running Simulation", "Running Simulation... Please Wait.", true);
+                TaskForm.Cancelled += TaskForm_Cancelled;
+                CancelToken = new CancellationTokenSource();
+
                 await Task.Run(() =>
                 {
-                    Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, settings);
+                    Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, settings, CancelToken.Token);
                 });
                 SimulationRan = true;
 
@@ -550,10 +553,12 @@ namespace Perscom
                 // Combine officers and soldiers
                 var list = new List<Soldier>();
                 foreach (var typesGrades in Simulation.Soldiers)
+                {
                     foreach (var gradesSoldiers in typesGrades.Value)
                     {
                         list.AddRange(gradesSoldiers.Value);
                     }
+                }
 
                 // Fill in the Soldier Viewer
                 Soldiers = new List<SoldierWrapper>(list.Count);
@@ -567,10 +572,12 @@ namespace Perscom
                 toolStripComboBox1_SelectedIndexChanged(this, EventArgs.Empty);
 
                 // Finally, close the task form
+                TaskForm.Cancelled -= TaskForm_Cancelled;
                 TaskForm.CloseForm();
             }
             catch (Exception ex)
             {
+                TaskForm.Cancelled -= TaskForm_Cancelled;
                 TaskForm.CloseForm();
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -579,6 +586,16 @@ namespace Perscom
                 // Enable Button
                 generateButton.Enabled = true;
             }
+        }
+
+        /// <summary>
+        /// Event fired when the Cancel button is pushed during a simulation
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TaskForm_Cancelled(object sender, CancelEventArgs e)
+        {
+            CancelToken.Cancel();
         }
 
         #endregion Form Events

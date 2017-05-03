@@ -29,42 +29,41 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea15 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend15 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series17 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title25 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea16 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend16 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series18 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title26 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea17 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend17 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series19 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title27 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.Title title28 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea18 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend18 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series20 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title29 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.Title title30 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea19 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend19 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series21 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title31 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.Title title32 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea20 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend20 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series22 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series23 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title33 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.Title title34 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea21 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend21 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series24 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title35 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.Title title36 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title3 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.Title title4 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title5 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.Title title6 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title7 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.Title title8 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title9 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.Title title10 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend7 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title11 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.Title title12 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.generateButton = new System.Windows.Forms.Button();
             this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.openRootMenuItem = new System.Windows.Forms.MenuItem();
@@ -75,19 +74,18 @@
             this.enlistedMenuItem = new System.Windows.Forms.MenuItem();
             this.officerMenuItem = new System.Windows.Forms.MenuItem();
             this.warrantMenuItem = new System.Windows.Forms.MenuItem();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.headerPanel = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.generateButton = new System.Windows.Forms.Button();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
+            this.unitSelect = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.yearsToSkip = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.unitSelect = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.yearsOfSimulate = new System.Windows.Forms.NumericUpDown();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.CustomPanel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -108,6 +106,17 @@
             this.rankTypeBox4 = new System.Windows.Forms.ComboBox();
             this.chart4 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.labelAvgTiS_Promoted = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.labelAvgTiG_Promotion = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.labelAvgTiG_Retirement = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.labelAvgTiS_Retirement = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.labelTotalSelectRate = new System.Windows.Forms.Label();
             this.promotionPieChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -116,6 +125,7 @@
             this.rankSelectionBox = new System.Windows.Forms.ComboBox();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.bindingNavigator1 = new System.Windows.Forms.BindingNavigator(this.components);
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.bindingNavigatorCountItem = new System.Windows.Forms.ToolStripLabel();
             this.bindingNavigatorMoveFirstItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorMovePreviousItem = new System.Windows.Forms.ToolStripButton();
@@ -132,14 +142,13 @@
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.headerPanel = new System.Windows.Forms.Panel();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
-            this.headerPanel.SuspendLayout();
+            this.panel4.SuspendLayout();
+            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yearsOfSimulate)).BeginInit();
-            this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -154,23 +163,16 @@
             this.tabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart4)).BeginInit();
             this.tabPage6.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.promotionPieChart)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tabPage7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).BeginInit();
             this.bindingNavigator1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.headerPanel.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // generateButton
-            // 
-            this.generateButton.Location = new System.Drawing.Point(417, 9);
-            this.generateButton.Name = "generateButton";
-            this.generateButton.Size = new System.Drawing.Size(150, 32);
-            this.generateButton.TabIndex = 2;
-            this.generateButton.Text = "Begin Simulation";
-            this.generateButton.UseVisualStyleBackColor = true;
-            this.generateButton.Click += new System.EventHandler(this.generateButton_Click);
             // 
             // mainMenu1
             // 
@@ -242,32 +244,45 @@
             this.warrantMenuItem.Text = "Warrant";
             this.warrantMenuItem.Click += new System.EventHandler(this.warrantMenuItem_Click);
             // 
-            // panel1
+            // panel4
             // 
-            this.panel1.BackgroundImage = global::Perscom.Properties.Resources.background;
-            this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.panel1.Controls.Add(this.panel2);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 75);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(984, 616);
-            this.panel1.TabIndex = 3;
+            this.panel4.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.panel4.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
+            this.panel4.Controls.Add(this.generateButton);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel4.Location = new System.Drawing.Point(0, 662);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(984, 50);
+            this.panel4.TabIndex = 5;
+            this.panel4.Paint += new System.Windows.Forms.PaintEventHandler(this.panel4_Paint);
             // 
-            // bindingSource1
+            // generateButton
             // 
-            this.bindingSource1.CurrentChanged += new System.EventHandler(this.BindingSource1_CurrentChanged);
+            this.generateButton.Location = new System.Drawing.Point(417, 9);
+            this.generateButton.Name = "generateButton";
+            this.generateButton.Size = new System.Drawing.Size(150, 32);
+            this.generateButton.TabIndex = 2;
+            this.generateButton.Text = "Begin Simulation";
+            this.generateButton.UseVisualStyleBackColor = true;
+            this.generateButton.Click += new System.EventHandler(this.generateButton_Click);
             // 
-            // headerPanel
+            // panel3
             // 
-            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.headerPanel.Controls.Add(this.nameLabel);
-            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.headerPanel.Location = new System.Drawing.Point(0, 0);
-            this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(984, 75);
-            this.headerPanel.TabIndex = 0;
-            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
+            this.panel3.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.panel3.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
+            this.panel3.Controls.Add(this.label3);
+            this.panel3.Controls.Add(this.unitSelect);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Controls.Add(this.yearsToSkip);
+            this.panel3.Controls.Add(this.label1);
+            this.panel3.Controls.Add(this.label2);
+            this.panel3.Controls.Add(this.label7);
+            this.panel3.Controls.Add(this.yearsOfSimulate);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 75);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(984, 40);
+            this.panel3.TabIndex = 4;
             // 
             // label3
             // 
@@ -280,6 +295,16 @@
             this.label3.Size = new System.Drawing.Size(41, 15);
             this.label3.TabIndex = 14;
             this.label3.Text = "years";
+            // 
+            // unitSelect
+            // 
+            this.unitSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.unitSelect.FormattingEnabled = true;
+            this.unitSelect.Location = new System.Drawing.Point(159, 10);
+            this.unitSelect.Name = "unitSelect";
+            this.unitSelect.Size = new System.Drawing.Size(174, 21);
+            this.unitSelect.TabIndex = 0;
+            this.unitSelect.SelectedIndexChanged += new System.EventHandler(this.unitSelect_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -312,17 +337,17 @@
             0,
             0});
             // 
-            // label7
+            // label1
             // 
-            this.label7.AutoSize = true;
-            this.label7.BackColor = System.Drawing.Color.Transparent;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label7.Location = new System.Drawing.Point(593, 11);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(41, 15);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "years";
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.label1.Location = new System.Drawing.Point(82, 11);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(71, 15);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Unit Type:";
             // 
             // label2
             // 
@@ -336,27 +361,17 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Time to Run Simulation:";
             // 
-            // label1
+            // label7
             // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label1.Location = new System.Drawing.Point(82, 11);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 15);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Unit Type:";
-            // 
-            // unitSelect
-            // 
-            this.unitSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.unitSelect.FormattingEnabled = true;
-            this.unitSelect.Location = new System.Drawing.Point(159, 10);
-            this.unitSelect.Name = "unitSelect";
-            this.unitSelect.Size = new System.Drawing.Size(174, 21);
-            this.unitSelect.TabIndex = 0;
-            this.unitSelect.SelectedIndexChanged += new System.EventHandler(this.unitSelect_SelectedIndexChanged);
+            this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.Color.Transparent;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.label7.Location = new System.Drawing.Point(593, 11);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(41, 15);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "years";
             // 
             // yearsOfSimulate
             // 
@@ -377,35 +392,16 @@
             0,
             0});
             // 
-            // panel3
+            // panel1
             // 
-            this.panel3.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.panel3.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.panel3.Controls.Add(this.label3);
-            this.panel3.Controls.Add(this.unitSelect);
-            this.panel3.Controls.Add(this.label4);
-            this.panel3.Controls.Add(this.yearsToSkip);
-            this.panel3.Controls.Add(this.label1);
-            this.panel3.Controls.Add(this.label2);
-            this.panel3.Controls.Add(this.label7);
-            this.panel3.Controls.Add(this.yearsOfSimulate);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(0, 75);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(984, 40);
-            this.panel3.TabIndex = 4;
-            // 
-            // panel4
-            // 
-            this.panel4.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
-            this.panel4.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.panel4.Controls.Add(this.generateButton);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 641);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(984, 50);
-            this.panel4.TabIndex = 5;
-            this.panel4.Paint += new System.Windows.Forms.PaintEventHandler(this.panel4_Paint);
+            this.panel1.BackgroundImage = global::Perscom.Properties.Resources.background;
+            this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.panel1.Controls.Add(this.panel2);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 75);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(984, 637);
+            this.panel1.TabIndex = 3;
             // 
             // panel2
             // 
@@ -469,49 +465,49 @@
             // 
             // unitPersonelPieChart
             // 
-            chartArea15.Name = "ChartArea1";
-            this.unitPersonelPieChart.ChartAreas.Add(chartArea15);
-            legend15.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend15.Name = "Legend1";
-            this.unitPersonelPieChart.Legends.Add(legend15);
+            chartArea1.Name = "ChartArea1";
+            this.unitPersonelPieChart.ChartAreas.Add(chartArea1);
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend1.Name = "Legend1";
+            this.unitPersonelPieChart.Legends.Add(legend1);
             this.unitPersonelPieChart.Location = new System.Drawing.Point(473, 90);
             this.unitPersonelPieChart.Name = "unitPersonelPieChart";
-            series17.ChartArea = "ChartArea1";
-            series17.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series17.Legend = "Legend1";
-            series17.Name = "Series1";
-            series17.YValuesPerPoint = 4;
-            this.unitPersonelPieChart.Series.Add(series17);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            series1.YValuesPerPoint = 4;
+            this.unitPersonelPieChart.Series.Add(series1);
             this.unitPersonelPieChart.Size = new System.Drawing.Size(345, 330);
             this.unitPersonelPieChart.TabIndex = 1;
             this.unitPersonelPieChart.Text = "chart3";
-            title25.Name = "Title1";
-            title25.Text = "Soldier Type Breakdown";
-            title25.Visible = false;
-            this.unitPersonelPieChart.Titles.Add(title25);
+            title1.Name = "Title1";
+            title1.Text = "Soldier Type Breakdown";
+            title1.Visible = false;
+            this.unitPersonelPieChart.Titles.Add(title1);
             // 
             // unitRankPieChart
             // 
-            chartArea16.Name = "ChartArea1";
-            this.unitRankPieChart.ChartAreas.Add(chartArea16);
-            legend16.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend16.Name = "Legend1";
-            this.unitRankPieChart.Legends.Add(legend16);
+            chartArea2.Name = "ChartArea1";
+            this.unitRankPieChart.ChartAreas.Add(chartArea2);
+            legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend2.Name = "Legend1";
+            this.unitRankPieChart.Legends.Add(legend2);
             this.unitRankPieChart.Location = new System.Drawing.Point(17, 90);
             this.unitRankPieChart.Name = "unitRankPieChart";
-            series18.ChartArea = "ChartArea1";
-            series18.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series18.Legend = "Legend1";
-            series18.Name = "Series1";
-            series18.YValuesPerPoint = 4;
-            this.unitRankPieChart.Series.Add(series18);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            series2.YValuesPerPoint = 4;
+            this.unitRankPieChart.Series.Add(series2);
             this.unitRankPieChart.Size = new System.Drawing.Size(345, 330);
             this.unitRankPieChart.TabIndex = 0;
             this.unitRankPieChart.Text = "chart3";
-            title26.Name = "Title1";
-            title26.Text = "Enlisted Breakdown";
-            title26.Visible = false;
-            this.unitRankPieChart.Titles.Add(title26);
+            title2.Name = "Title1";
+            title2.Text = "Enlisted Breakdown";
+            title2.Visible = false;
+            this.unitRankPieChart.Titles.Add(title2);
             // 
             // tabPage2
             // 
@@ -537,29 +533,29 @@
             // 
             // chart1
             // 
-            chartArea17.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea17.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea17.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea17);
-            legend17.Enabled = false;
-            legend17.Name = "Legend1";
-            this.chart1.Legends.Add(legend17);
+            chartArea3.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea3.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea3.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea3);
+            legend3.Enabled = false;
+            legend3.Name = "Legend1";
+            this.chart1.Legends.Add(legend3);
             this.chart1.Location = new System.Drawing.Point(38, 58);
             this.chart1.Name = "chart1";
-            series19.ChartArea = "ChartArea1";
-            series19.Legend = "Legend1";
-            series19.Name = "Series1";
-            this.chart1.Series.Add(series19);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chart1.Series.Add(series3);
             this.chart1.Size = new System.Drawing.Size(759, 329);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "Time In Grade for Promotion";
-            title27.Name = "Title1";
-            title27.Text = "Average Time in Grade for Promotion";
-            title28.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
-            title28.Name = "Title2";
-            title28.Text = "Months";
-            this.chart1.Titles.Add(title27);
-            this.chart1.Titles.Add(title28);
+            title3.Name = "Title1";
+            title3.Text = "Average Time in Grade for Promotion";
+            title4.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
+            title4.Name = "Title2";
+            title4.Text = "Months";
+            this.chart1.Titles.Add(title3);
+            this.chart1.Titles.Add(title4);
             // 
             // tabPage3
             // 
@@ -585,29 +581,29 @@
             // 
             // chart2
             // 
-            chartArea18.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea18.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea18.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea18);
-            legend18.Enabled = false;
-            legend18.Name = "Legend1";
-            this.chart2.Legends.Add(legend18);
+            chartArea4.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea4.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea4.Name = "ChartArea1";
+            this.chart2.ChartAreas.Add(chartArea4);
+            legend4.Enabled = false;
+            legend4.Name = "Legend1";
+            this.chart2.Legends.Add(legend4);
             this.chart2.Location = new System.Drawing.Point(38, 58);
             this.chart2.Name = "chart2";
-            series20.ChartArea = "ChartArea1";
-            series20.Legend = "Legend1";
-            series20.Name = "Series1";
-            this.chart2.Series.Add(series20);
+            series4.ChartArea = "ChartArea1";
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chart2.Series.Add(series4);
             this.chart2.Size = new System.Drawing.Size(759, 329);
             this.chart2.TabIndex = 1;
             this.chart2.Text = "Average Time in Service For Promotion";
-            title29.Name = "Title1";
-            title29.Text = "Average Time in Service For Promotion";
-            title30.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
-            title30.Name = "Title2";
-            title30.Text = "Years";
-            this.chart2.Titles.Add(title29);
-            this.chart2.Titles.Add(title30);
+            title5.Name = "Title1";
+            title5.Text = "Average Time in Service For Promotion";
+            title6.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
+            title6.Name = "Title2";
+            title6.Text = "Years";
+            this.chart2.Titles.Add(title5);
+            this.chart2.Titles.Add(title6);
             // 
             // tabPage4
             // 
@@ -633,43 +629,43 @@
             // 
             // chart3
             // 
-            chartArea19.AxisX.IsMarginVisible = false;
-            chartArea19.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea19.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea19.Name = "ChartArea1";
-            this.chart3.ChartAreas.Add(chartArea19);
-            legend19.Enabled = false;
-            legend19.Name = "Legend1";
-            this.chart3.Legends.Add(legend19);
+            chartArea5.AxisX.IsMarginVisible = false;
+            chartArea5.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea5.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea5.Name = "ChartArea1";
+            this.chart3.ChartAreas.Add(chartArea5);
+            legend5.Enabled = false;
+            legend5.Name = "Legend1";
+            this.chart3.Legends.Add(legend5);
             this.chart3.Location = new System.Drawing.Point(38, 58);
             this.chart3.Name = "chart3";
-            series21.BorderWidth = 2;
-            series21.ChartArea = "ChartArea1";
-            series21.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series21.Legend = "Legend1";
-            series21.MarkerBorderWidth = 0;
-            series21.MarkerColor = System.Drawing.Color.Black;
-            series21.MarkerSize = 7;
-            series21.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series21.Name = "Series1";
-            series21.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
-            series21.SmartLabelStyle.MinMovingDistance = 10D;
-            series21.SmartLabelStyle.MovingDirection = ((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles)((((((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Top | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Bottom) 
+            series5.BorderWidth = 2;
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+            series5.Legend = "Legend1";
+            series5.MarkerBorderWidth = 0;
+            series5.MarkerColor = System.Drawing.Color.Black;
+            series5.MarkerSize = 7;
+            series5.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series5.Name = "Series1";
+            series5.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
+            series5.SmartLabelStyle.MinMovingDistance = 10D;
+            series5.SmartLabelStyle.MovingDirection = ((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles)((((((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Top | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Bottom) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Right) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Left) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.TopLeft) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.TopRight)));
-            this.chart3.Series.Add(series21);
+            this.chart3.Series.Add(series5);
             this.chart3.Size = new System.Drawing.Size(759, 329);
             this.chart3.TabIndex = 1;
             this.chart3.Text = "Time In Grade for Promotion";
-            title31.Name = "Title1";
-            title31.Text = "Total Discharges";
-            title32.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
-            title32.Name = "Title2";
-            title32.Text = "Number of Personnel ";
-            this.chart3.Titles.Add(title31);
-            this.chart3.Titles.Add(title32);
+            title7.Name = "Title1";
+            title7.Text = "Total Discharges";
+            title8.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
+            title8.Name = "Title2";
+            title8.Text = "Number of Personnel ";
+            this.chart3.Titles.Add(title7);
+            this.chart3.Titles.Add(title8);
             // 
             // tabPage5
             // 
@@ -694,65 +690,66 @@
             // 
             // chart4
             // 
-            chartArea20.AxisX.IsMarginVisible = false;
-            chartArea20.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea20.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea20.Name = "ChartArea1";
-            this.chart4.ChartAreas.Add(chartArea20);
-            legend20.DockedToChartArea = "ChartArea1";
-            legend20.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend20.Name = "Legend1";
-            this.chart4.Legends.Add(legend20);
+            chartArea6.AxisX.IsMarginVisible = false;
+            chartArea6.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea6.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea6.Name = "ChartArea1";
+            this.chart4.ChartAreas.Add(chartArea6);
+            legend6.DockedToChartArea = "ChartArea1";
+            legend6.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend6.Name = "Legend1";
+            this.chart4.Legends.Add(legend6);
             this.chart4.Location = new System.Drawing.Point(38, 58);
             this.chart4.Name = "chart4";
-            series22.BorderWidth = 2;
-            series22.ChartArea = "ChartArea1";
-            series22.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series22.Legend = "Legend1";
-            series22.MarkerBorderWidth = 0;
-            series22.MarkerColor = System.Drawing.Color.Black;
-            series22.MarkerSize = 7;
-            series22.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series22.Name = "Promotable";
-            series22.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
-            series22.SmartLabelStyle.MinMovingDistance = 10D;
-            series22.SmartLabelStyle.MovingDirection = ((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles)((((((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Top | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Bottom) 
+            series6.BorderWidth = 2;
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+            series6.Legend = "Legend1";
+            series6.MarkerBorderWidth = 0;
+            series6.MarkerColor = System.Drawing.Color.Black;
+            series6.MarkerSize = 7;
+            series6.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series6.Name = "Promotable";
+            series6.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
+            series6.SmartLabelStyle.MinMovingDistance = 10D;
+            series6.SmartLabelStyle.MovingDirection = ((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles)((((((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Top | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Bottom) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Right) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Left) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.TopLeft) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.TopRight)));
-            series22.YValuesPerPoint = 2;
-            series23.BorderWidth = 2;
-            series23.ChartArea = "ChartArea1";
-            series23.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series23.Legend = "Legend1";
-            series23.MarkerBorderColor = System.Drawing.Color.Black;
-            series23.MarkerColor = System.Drawing.Color.White;
-            series23.MarkerSize = 7;
-            series23.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series23.Name = "Total";
-            series23.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
-            series23.SmartLabelStyle.CalloutLineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
-            series23.SmartLabelStyle.MinMovingDistance = 15D;
-            series23.SmartLabelStyle.MovingDirection = ((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles)(((((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Bottom | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Right) 
+            series6.YValuesPerPoint = 2;
+            series7.BorderWidth = 2;
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+            series7.Legend = "Legend1";
+            series7.MarkerBorderColor = System.Drawing.Color.Black;
+            series7.MarkerColor = System.Drawing.Color.White;
+            series7.MarkerSize = 7;
+            series7.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series7.Name = "Total";
+            series7.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
+            series7.SmartLabelStyle.CalloutLineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+            series7.SmartLabelStyle.MinMovingDistance = 15D;
+            series7.SmartLabelStyle.MovingDirection = ((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles)(((((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Bottom | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Right) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Left) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.BottomLeft) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.BottomRight)));
-            this.chart4.Series.Add(series22);
-            this.chart4.Series.Add(series23);
+            this.chart4.Series.Add(series6);
+            this.chart4.Series.Add(series7);
             this.chart4.Size = new System.Drawing.Size(759, 329);
             this.chart4.TabIndex = 7;
             this.chart4.Text = "Time In Grade for Promotion";
-            title33.Name = "Title1";
-            title33.Text = "Promotion Selection Rates";
-            title34.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
-            title34.Name = "Title2";
-            title34.Text = "Percent";
-            this.chart4.Titles.Add(title33);
-            this.chart4.Titles.Add(title34);
+            title9.Name = "Title1";
+            title9.Text = "Promotion Selection Rates";
+            title10.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
+            title10.Name = "Title2";
+            title10.Text = "Percent";
+            this.chart4.Titles.Add(title9);
+            this.chart4.Titles.Add(title10);
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.groupBox2);
             this.tabPage6.Controls.Add(this.promotionPieChart);
             this.tabPage6.Controls.Add(this.groupBox1);
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
@@ -760,33 +757,142 @@
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage6.Size = new System.Drawing.Size(835, 445);
             this.tabPage6.TabIndex = 5;
-            this.tabPage6.Text = "Yearly Promotion Rates";
+            this.tabPage6.Text = "Rank Statistics";
             this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.labelAvgTiS_Promoted);
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.labelAvgTiG_Promotion);
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.labelAvgTiG_Retirement);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.labelAvgTiS_Retirement);
+            this.groupBox2.Controls.Add(this.label9);
+            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Controls.Add(this.labelTotalSelectRate);
+            this.groupBox2.Location = new System.Drawing.Point(538, 194);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(264, 217);
+            this.groupBox2.TabIndex = 2;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Statistical Data";
+            // 
+            // labelAvgTiS_Promoted
+            // 
+            this.labelAvgTiS_Promoted.AutoSize = true;
+            this.labelAvgTiS_Promoted.Location = new System.Drawing.Point(159, 83);
+            this.labelAvgTiS_Promoted.Name = "labelAvgTiS_Promoted";
+            this.labelAvgTiS_Promoted.Size = new System.Drawing.Size(13, 13);
+            this.labelAvgTiS_Promoted.TabIndex = 9;
+            this.labelAvgTiS_Promoted.Text = "0";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(24, 83);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(128, 13);
+            this.label10.TabIndex = 8;
+            this.label10.Text = "Average TiS (Promotion): ";
+            // 
+            // labelAvgTiG_Promotion
+            // 
+            this.labelAvgTiG_Promotion.AutoSize = true;
+            this.labelAvgTiG_Promotion.Location = new System.Drawing.Point(159, 107);
+            this.labelAvgTiG_Promotion.Name = "labelAvgTiG_Promotion";
+            this.labelAvgTiG_Promotion.Size = new System.Drawing.Size(13, 13);
+            this.labelAvgTiG_Promotion.TabIndex = 7;
+            this.labelAvgTiG_Promotion.Text = "0";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(24, 171);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(133, 13);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "Average TiG (Retirement): ";
+            // 
+            // labelAvgTiG_Retirement
+            // 
+            this.labelAvgTiG_Retirement.AutoSize = true;
+            this.labelAvgTiG_Retirement.Location = new System.Drawing.Point(159, 171);
+            this.labelAvgTiG_Retirement.Name = "labelAvgTiG_Retirement";
+            this.labelAvgTiG_Retirement.Size = new System.Drawing.Size(13, 13);
+            this.labelAvgTiG_Retirement.TabIndex = 5;
+            this.labelAvgTiG_Retirement.Text = "0";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(23, 107);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(129, 13);
+            this.label12.TabIndex = 6;
+            this.label12.Text = "Average TiG (Promotion): ";
+            // 
+            // labelAvgTiS_Retirement
+            // 
+            this.labelAvgTiS_Retirement.AutoSize = true;
+            this.labelAvgTiS_Retirement.Location = new System.Drawing.Point(159, 148);
+            this.labelAvgTiS_Retirement.Name = "labelAvgTiS_Retirement";
+            this.labelAvgTiS_Retirement.Size = new System.Drawing.Size(13, 13);
+            this.labelAvgTiS_Retirement.TabIndex = 3;
+            this.labelAvgTiS_Retirement.Text = "0";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(23, 148);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(132, 13);
+            this.label9.TabIndex = 2;
+            this.label9.Text = "Average TiS (Retirement): ";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(24, 42);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(110, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "Total Selection Rate: ";
+            // 
+            // labelTotalSelectRate
+            // 
+            this.labelTotalSelectRate.AutoSize = true;
+            this.labelTotalSelectRate.Location = new System.Drawing.Point(158, 42);
+            this.labelTotalSelectRate.Name = "labelTotalSelectRate";
+            this.labelTotalSelectRate.Size = new System.Drawing.Size(21, 13);
+            this.labelTotalSelectRate.TabIndex = 0;
+            this.labelTotalSelectRate.Text = "0%";
             // 
             // promotionPieChart
             // 
-            chartArea21.Name = "ChartArea1";
-            this.promotionPieChart.ChartAreas.Add(chartArea21);
-            legend21.Alignment = System.Drawing.StringAlignment.Center;
-            legend21.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend21.Name = "Legend1";
-            this.promotionPieChart.Legends.Add(legend21);
+            chartArea7.Name = "ChartArea1";
+            this.promotionPieChart.ChartAreas.Add(chartArea7);
+            legend7.Alignment = System.Drawing.StringAlignment.Center;
+            legend7.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend7.Name = "Legend1";
+            this.promotionPieChart.Legends.Add(legend7);
             this.promotionPieChart.Location = new System.Drawing.Point(63, 31);
             this.promotionPieChart.Name = "promotionPieChart";
-            series24.ChartArea = "ChartArea1";
-            series24.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series24.Legend = "Legend1";
-            series24.Name = "Series1";
-            series24.YValuesPerPoint = 4;
-            this.promotionPieChart.Series.Add(series24);
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series8.Legend = "Legend1";
+            series8.Name = "Series1";
+            series8.YValuesPerPoint = 4;
+            this.promotionPieChart.Series.Add(series8);
             this.promotionPieChart.Size = new System.Drawing.Size(345, 380);
             this.promotionPieChart.TabIndex = 1;
             this.promotionPieChart.Text = "chart3";
-            title35.Name = "Title1";
-            title35.Text = "Average Yearly Promotion / Discharge Rate";
-            title36.Name = "Title2";
-            this.promotionPieChart.Titles.Add(title35);
-            this.promotionPieChart.Titles.Add(title36);
+            title11.Name = "Title1";
+            title11.Text = "Average Yearly Promotion / Discharge Rate";
+            title12.Name = "Title2";
+            this.promotionPieChart.Titles.Add(title11);
+            this.promotionPieChart.Titles.Add(title12);
             // 
             // groupBox1
             // 
@@ -882,6 +988,10 @@
             this.bindingNavigator1.TabIndex = 1;
             this.bindingNavigator1.Text = "bindingNavigator1";
             // 
+            // bindingSource1
+            // 
+            this.bindingSource1.CurrentChanged += new System.EventHandler(this.BindingSource1_CurrentChanged);
+            // 
             // bindingNavigatorCountItem
             // 
             this.bindingNavigatorCountItem.Name = "bindingNavigatorCountItem";
@@ -965,7 +1075,7 @@
             "Officer",
             "Warrant"});
             this.toolStripComboBox1.Name = "toolStripComboBox1";
-            this.toolStripComboBox1.Size = new System.Drawing.Size(121, 23);
+            this.toolStripComboBox1.Size = new System.Drawing.Size(121, 25);
             this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox1_SelectedIndexChanged);
             // 
             // dataGridView1
@@ -1020,6 +1130,18 @@
             this.Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column4.Width = 150;
             // 
+            // headerPanel
+            // 
+            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
+            this.headerPanel.Controls.Add(this.nameLabel);
+            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerPanel.Location = new System.Drawing.Point(0, 0);
+            this.headerPanel.Name = "headerPanel";
+            this.headerPanel.Size = new System.Drawing.Size(984, 75);
+            this.headerPanel.TabIndex = 0;
+            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
+            // 
             // nameLabel
             // 
             this.nameLabel.BackColor = System.Drawing.Color.Transparent;
@@ -1039,26 +1161,26 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(984, 691);
+            this.ClientSize = new System.Drawing.Size(984, 712);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.headerPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu1;
+            this.MinimumSize = new System.Drawing.Size(16, 750);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Military Personnel  Movement Simulator";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
-            this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
-            this.headerPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yearsOfSimulate)).EndInit();
+            this.panel4.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            this.panel4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yearsOfSimulate)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -1073,6 +1195,8 @@
             this.tabPage5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chart4)).EndInit();
             this.tabPage6.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.promotionPieChart)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -1080,7 +1204,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).EndInit();
             this.bindingNavigator1.ResumeLayout(false);
             this.bindingNavigator1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.headerPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1156,6 +1282,17 @@
         private System.Windows.Forms.ComboBox rankTypeBox;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label labelTotalSelectRate;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label labelAvgTiG_Promotion;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label labelAvgTiG_Retirement;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label labelAvgTiS_Retirement;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label labelAvgTiS_Promoted;
+        private System.Windows.Forms.Label label10;
     }
 }
 

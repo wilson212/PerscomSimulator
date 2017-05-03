@@ -13,17 +13,17 @@
       <!-- Enlisted -->
       <position name="Battalion Sergeant Major" rank="e9" />
       <position name="Operations Sergeant Major" rank="e9" />
-      <position name="Readiness NCO" rank="e8" />
+      <position name="Chief Engineer" rank="e8" />
       <position name="S1 NCOIC" rank="e7" />
       <position name="Retention NCO" rank="e6" />
-      <position name="Retention NCO" rank="e6" />
+      <position name="Soldier Development Coordinator" rank="e6" />
       <!-- Warrant -->
       <position name="Vehicles Systems Technician" rank="w3" />
     </positions>
     <subunits>
-      <unit type="VehicleCompany" name="Vehicle Company" notes="Shuttle, Light Armor HMMVV, APCs"/>
-      <unit type="RangerCompany" name="Ranger Company" notes="Rangers (Recon, Assault), Snipers"/>
-      <unit type="EngineerCompany" name="Engineer Company" notes="Engineers, Anti Armor"/>
+      <unit type="VehicleCompany" name="Vehicle Company" notes="Transport, Light Armor HMMVV, Light Armor Reconnaissance"/>
+      <unit type="RangerCompany" name="Ranger Company" notes="Recon, Assault, Special Weapons (Snipers)"/>
+      <unit type="EngineerCompany" name="Combat Engineer Company" notes="Engineers, Anti Armor"/>
     </subunits>
   </info>
 </Unit>
