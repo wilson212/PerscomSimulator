@@ -126,14 +126,18 @@ namespace Perscom
             var ranks = Ranks.RankList[type];
 
             // Plot the average time in grade for each grade
-            foreach (var rank in soldierData.OrderBy(x => x.Key))
+            foreach (var rank in soldierData.OrderBy(x => x.Key).Take(soldierData.Count - 1))
             {
-                int i = chart1.Series[0].Points.AddY((double)rank.Value.AverageTimeInGrade);
+                // Assign plot variables
+                string rankName = ranks[rank.Key].ToString();
+                double roundedVal = (double)rank.Value.PromotedAverageTimeInGrade;
+                int i = chart1.Series[0].Points.AddY(roundedVal);
 
+                // Create Plot
                 DataPoint point = chart1.Series[0].Points[i];
-                point.AxisLabel = ranks[rank.Key].ToString();
-                point.LegendText = ranks[rank.Key].ToString();
-                point.Label = rank.Value.AverageTimeInGrade.ToString();
+                point.AxisLabel = rankName;
+                point.LegendText = rankName;
+                point.Label = roundedVal.ToString();
                 point.Color = (i % 2 == 1) ? CHART_COLOR_DARK : CHART_COLOR_LIGHT;
             }
         }
@@ -151,14 +155,18 @@ namespace Perscom
             var ranks = Ranks.RankList[type];
 
             // Plot the average time in service (years) for each grade
-            foreach (var rank in soldierData.OrderBy(x => x.Key))
+            foreach (var rank in soldierData.OrderBy(x => x.Key).Take(soldierData.Count - 1))
             {
-                int i = chart2.Series[0].Points.AddY((double)rank.Value.AverageYearsInService);
+                // Assign plot variables
+                string rankName = ranks[rank.Key].ToString();
+                double roundedVal = (double)rank.Value.PromotedAverageYearsInService;
+                int i = chart2.Series[0].Points.AddY(roundedVal);
 
+                // Create Plot
                 DataPoint point = chart2.Series[0].Points[i];
-                point.AxisLabel = ranks[rank.Key].ToString();
-                point.LegendText = ranks[rank.Key].ToString();
-                point.Label = rank.Value.AverageYearsInService.ToString();
+                point.AxisLabel = rankName;
+                point.LegendText = rankName;
+                point.Label = roundedVal.ToString();
                 point.Color = (i % 2 == 1) ? CHART_COLOR_DARK : CHART_COLOR_LIGHT;
             }
         }
@@ -355,6 +363,9 @@ namespace Perscom
 
                 // Set label texts for statistical data
                 labelTotalSelectRate.Text = String.Format("{0}%", rate);
+                labelRankTotalSelected.Text = String.Format("{0:N0}", stats.TotalSoldiers);
+                labelRankPromotions.Text = String.Format("{0:N0}", stats.PromotionsToNextGrade);
+                labelRankRetirements.Text = String.Format("{0:N0}", stats.TotalRetirements);
                 labelAvgTiS_Promoted.Text = String.Format("{0} years", Math.Round(stats.PromotedAverageTimeInService / 12, 1));
                 labelAvgTiS_Retirement.Text = String.Format("{0} years", Math.Round(stats.RetiredAverageTimeInService / 12, 1));
                 labelAvgTiG_Promotion.Text = String.Format("{0} months", Math.Round(stats.PromotedAverageTimeInGrade));

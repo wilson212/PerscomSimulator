@@ -28,7 +28,8 @@
       Adjusts the soldier retirement date to meet the minimum amount if less
       than the stature number. Two numbers may be listed, seperated by a comma
       to indicate a minimum and maximum adjustment (a range), which is chosen
-      at random.
+      at random. This does NOT adjust the retirement date of the soldier if their 
+      remaining time is greater than the stature minimum.
 -->
 <Ranks>
   <enlisted>
@@ -37,19 +38,19 @@
     <rank name="Sergeant" abbreviation="SGT" grade="5" />
     <rank name="Staff Sergeant" abbreviation="SSG" grade="6" minTimeForRet="3"/>
     <rank name="Sergeant First Class" abbreviation="SFC" grade="7" minTimeForRet="3"/>
-    <rank name="Master Sergeant" abbreviation="MSG" grade="8" minTimeForRet="3" stature="6"/>
+    <rank name="Master Sergeant" abbreviation="MSG" grade="8" minTimeForRet="3" stature="6,12"/>
     <rank name="Sergeant Major" abbreviation="SGM" grade="9" minTimeForRet="3" stature="12"/>
   </enlisted>
   <officer>
     <rank name="1st Lieutenant" abbreviation="2/1LT" grade="2" promotableAt="24"/>
-    <rank name="Captain" abbreviation="CPT" grade="3" promotableAt="18"/>
-    <rank name="Major" abbreviation="MAJ" grade="4" minTimeForRet="3" promotableAt="18"/>
-    <rank name="Lieutenant Colonel" abbreviation="LTC" grade="5" minTimeForRet="3" promotableAt="24"/>
-    <rank name="Colonel" abbreviation="COL" grade="6" minTimeForRet="3" stature="12" maxTimeInGrade="30"/>
-    <rank name="Brigadier General" abbreviation="BG" grade="7" minTimeForRet="3" stature="12"/>
-    <rank name="Major General" abbreviation="MG" grade="8" minTimeForRet="3" stature="12"/>
-    <rank name="Lieutenant General" abbreviation="LTG" grade="9" minTimeForRet="3" stature="12"/>
-    <rank name="General" abbreviation="GEN" grade="10" minTimeForRet="3" stature="12,24"/>
+    <rank name="Captain" abbreviation="CPT" grade="3" promotableAt="18" stature="6"/>
+    <rank name="Major" abbreviation="MAJ" grade="4" minTimeForRet="6" promotableAt="18"/>
+    <rank name="Lieutenant Colonel" abbreviation="LTC" grade="5" minTimeForRet="3" promotableAt="18" stature="12,24"/>
+    <rank name="Colonel" abbreviation="COL" grade="6" stature="12,30" maxTimeInGrade="30" promotableAt="18"/>
+    <rank name="Brigadier General" abbreviation="BG" grade="7" minTimeForRet="3" promotableAt="12" stature="12"/>
+    <rank name="Major General" abbreviation="MG" grade="8" minTimeForRet="3" promotableAt="12" stature="12"/>
+    <rank name="Lieutenant General" abbreviation="LTG" grade="9" minTimeForRet="3" promotableAt="12" stature="12"/>
+    <rank name="General" abbreviation="GEN" grade="10" minTimeForRet="3" stature="18,24" maxTimeInGrade="24"/>
   </officer>
   <warrant>
     <rank name="Chief Warrant 2" abbreviation="CW2" grade="2" minTimeForRet="3"/>

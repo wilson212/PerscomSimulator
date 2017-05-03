@@ -117,13 +117,11 @@ namespace Perscom
             // Adjust retirement date if we are on stature
             if (toRank.Stature != null)
             {
+                // Get remaining months before retirement
                 int monthsToGo = currentDate.MonthDifference(ExitServiceDate);
-                if (toRank.Stature.Maximum != 0 && monthsToGo > toRank.Stature.Maximum)
-                {
-                    // If we are over max stature, adjust the retirement date to be the maximum
-                    ExitServiceDate = currentDate.AddMonths(toRank.Stature.Maximum);
-                }
-                else if (monthsToGo < toRank.Stature.Minimum)
+
+                // If the months to go is less than the minimum, adjust it
+                if (monthsToGo < toRank.Stature.Minimum)
                 {
                     if (toRank.Stature.Maximum == 0)
                     {

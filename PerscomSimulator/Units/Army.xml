@@ -4,9 +4,10 @@
     <positions>
       <position name="Commander" rank="o9" />
       <position name="Executive Officer" rank="o8" />
-      <position name="Adjuntant" rank="o7" />
+      <position name="Adjuntant General" rank="o7" />
       <position name="Inspector General" rank="o7" />
-      <position name="Logistics General" rank="o7" />
+      <position name="Logistics" rank="o6" />
+      <position name="Staff Officer" rank="o6" />
       <position name="Command and Control Systems Technician" rank="w4" />
     </positions>
     <subunits>
