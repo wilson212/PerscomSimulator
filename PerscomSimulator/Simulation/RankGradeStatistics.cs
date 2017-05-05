@@ -165,7 +165,7 @@ namespace Perscom.Simulation
         /// </summary>
         /// <param name="soldier">The soldier being retired</param>
         /// <param name="currentDate">The current simulation date</param>
-        public void AddRetiree(Soldier soldier, DateTime currentDate)
+        public void TrackRetiree(Soldier soldier, DateTime currentDate)
         {
             // Get time in service and grade in months
             int tis = soldier.ServiceEntryDate.MonthDifference(currentDate);

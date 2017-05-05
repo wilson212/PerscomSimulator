@@ -282,7 +282,7 @@ namespace Perscom
                         {
                             // Log retirement data for current rank/grade
                             if (SkipYears == 0)
-                                RankStatistics[type][soldier.RankInfo.Grade].AddRetiree(soldier, CurrentDate);
+                                RankStatistics[type][soldier.RankInfo.Grade].TrackRetiree(soldier, CurrentDate);
 
                             // Remove the retired soldier from the roster
                             Soldiers[type][soldier.RankInfo.Grade].Remove(soldier);
@@ -303,24 +303,21 @@ namespace Perscom
                                 RankStatistics[type][soldier.Position.Grade].Deficit += 1;
                         }
 
-                        // Check for auto promotion
-                        if (soldier.RankInfo.AutoPromotion)
+                        // Check for auto promotion and under-staff promotion
+                        PromotableStatus status;
+                        if (soldier.IsPromotable(CurrentDate, out status) && (status == PromotableStatus.Automatic || status == PromotableStatus.Position))
                         {
-                            PromotableStatus status;
-                            if (soldier.IsPromotable(CurrentDate, out status) && (status == PromotableStatus.Automatic || status == PromotableStatus.Position))
-                            {
-                                // Log promotion data for current rank/grade
-                                if (SkipYears == 0)
-                                    RankStatistics[type][soldier.RankInfo.Grade].TrackPromotionToNextGrade(soldier, CurrentDate);
+                            // Log promotion data for current rank/grade
+                            if (SkipYears == 0)
+                                RankStatistics[type][soldier.RankInfo.Grade].TrackPromotionToNextGrade(soldier, CurrentDate);
 
-                                // Move soldier to the new rank roster
-                                Rank toRank = Ranks.GetRank(type, soldier.RankInfo.Grade + 1);
-                                Soldiers[type][soldier.RankInfo.Grade].Remove(soldier);
-                                Soldiers[type][toRank.Grade].Add(soldier);
+                            // Move soldier to the new rank roster
+                            Rank toRank = Ranks.GetRank(type, soldier.RankInfo.Grade + 1);
+                            Soldiers[type][soldier.RankInfo.Grade].Remove(soldier);
+                            Soldiers[type][toRank.Grade].Add(soldier);
 
-                                // Promotion soldier
-                                soldier.Promote(CurrentDate, toRank);
-                            }
+                            // Promotion soldier
+                            soldier.Promote(CurrentDate, toRank);
                         }
                     }
                 }
@@ -397,10 +394,9 @@ namespace Perscom
                                 // then by seniority (Time in grade)
                                 selected = (
                                     from soldier in Soldiers[type][prevGrade]
-                                    let promotable = soldier.IsPromotable(CurrentDate) ? 1 : 2
                                     let t2r = soldier.ExitServiceDate.MonthDifference(CurrentDate)
                                     let qualified = (t2r >= toRank.MinTimeForConsideration) ? 1 : 2
-                                    orderby promotable, qualified, soldier.LastPromotionDate
+                                    orderby qualified, soldier.LastPromotionDate
                                     select soldier
                                 ).Take(positions.Count);
                             }
@@ -408,8 +404,7 @@ namespace Perscom
                             {
                                 selected = (
                                     from soldier in Soldiers[type][prevGrade]
-                                    let promotable = soldier.IsPromotable(CurrentDate) ? 1 : 2
-                                    orderby promotable, soldier.LastPromotionDate
+                                    orderby soldier.LastPromotionDate
                                     select soldier
                                 ).Take(positions.Count);
                             }

@@ -16,6 +16,10 @@
       does not prevent the simulator from processing the promotion.
       Defaults to 12 if excluded (not required)
       
+    autoPromote:
+      Indicates whether the soldiers of THAT grade get automatically
+      promoted to the next rank when they reach the promotableAt value.
+      
     minTimeForRet: 
       Soldiers with at least this amount of time left (in months)
       before retirement will get priority for promotion to THAT rank.
