@@ -3,7 +3,7 @@
   <info name="AssaultPlatoon">
     <positions>
       <position name="Platoon Sergeant" rank="e7" />
-      <position name="Platoon Leader" rank="o2" />
+      <position name="Platoon Leader" rank="o1" />
     </positions>
     <subunits>
       <unit type="AssaultSquad" name="1st Squad"/>

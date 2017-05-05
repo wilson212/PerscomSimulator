@@ -109,6 +109,14 @@
             this.chart4 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.labelAvgDeficitRate = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.labelRankTotalSelected = new System.Windows.Forms.Label();
+            this.labelRankRetirements = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.labelRankPromotions = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             this.labelAvgTiS_Promoted = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.labelAvgTiG_Promotion = new System.Windows.Forms.Label();
@@ -144,12 +152,6 @@
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
-            this.labelRankPromotions = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.labelRankRetirements = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.labelRankTotalSelected = new System.Windows.Forms.Label();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).BeginInit();
@@ -338,7 +340,7 @@
             this.yearsToSkip.Size = new System.Drawing.Size(65, 20);
             this.yearsToSkip.TabIndex = 12;
             this.yearsToSkip.Value = new decimal(new int[] {
-            250,
+            50,
             0,
             0,
             0});
@@ -393,7 +395,7 @@
             this.yearsOfSimulate.Size = new System.Drawing.Size(65, 20);
             this.yearsOfSimulate.TabIndex = 2;
             this.yearsOfSimulate.Value = new decimal(new int[] {
-            500,
+            150,
             0,
             0,
             0});
@@ -784,6 +786,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label15);
+            this.groupBox2.Controls.Add(this.labelAvgDeficitRate);
             this.groupBox2.Controls.Add(this.label13);
             this.groupBox2.Controls.Add(this.labelRankTotalSelected);
             this.groupBox2.Controls.Add(this.labelRankRetirements);
@@ -800,17 +804,89 @@
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.labelTotalSelectRate);
-            this.groupBox2.Location = new System.Drawing.Point(538, 168);
+            this.groupBox2.Location = new System.Drawing.Point(538, 164);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(264, 243);
+            this.groupBox2.Size = new System.Drawing.Size(264, 260);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Statistical Data";
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(24, 74);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(112, 13);
+            this.label15.TabIndex = 17;
+            this.label15.Text = "Average Deficit Rate: ";
+            // 
+            // labelAvgDeficitRate
+            // 
+            this.labelAvgDeficitRate.AutoSize = true;
+            this.labelAvgDeficitRate.Location = new System.Drawing.Point(158, 74);
+            this.labelAvgDeficitRate.Name = "labelAvgDeficitRate";
+            this.labelAvgDeficitRate.Size = new System.Drawing.Size(21, 13);
+            this.labelAvgDeficitRate.TabIndex = 16;
+            this.labelAvgDeficitRate.Text = "0%";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(24, 26);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(82, 13);
+            this.label13.TabIndex = 15;
+            this.label13.Text = "Total Selected: ";
+            // 
+            // labelRankTotalSelected
+            // 
+            this.labelRankTotalSelected.AutoSize = true;
+            this.labelRankTotalSelected.Location = new System.Drawing.Point(158, 26);
+            this.labelRankTotalSelected.Name = "labelRankTotalSelected";
+            this.labelRankTotalSelected.Size = new System.Drawing.Size(13, 13);
+            this.labelRankTotalSelected.TabIndex = 14;
+            this.labelRankTotalSelected.Text = "0";
+            // 
+            // labelRankRetirements
+            // 
+            this.labelRankRetirements.AutoSize = true;
+            this.labelRankRetirements.Location = new System.Drawing.Point(159, 186);
+            this.labelRankRetirements.Name = "labelRankRetirements";
+            this.labelRankRetirements.Size = new System.Drawing.Size(13, 13);
+            this.labelRankRetirements.TabIndex = 13;
+            this.labelRankRetirements.Text = "0";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(24, 186);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(69, 13);
+            this.label16.TabIndex = 12;
+            this.label16.Text = "Retirements: ";
+            // 
+            // labelRankPromotions
+            // 
+            this.labelRankPromotions.AutoSize = true;
+            this.labelRankPromotions.Location = new System.Drawing.Point(159, 106);
+            this.labelRankPromotions.Name = "labelRankPromotions";
+            this.labelRankPromotions.Size = new System.Drawing.Size(13, 13);
+            this.labelRankPromotions.TabIndex = 11;
+            this.labelRankPromotions.Text = "0";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(24, 106);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(65, 13);
+            this.label14.TabIndex = 10;
+            this.label14.Text = "Promotions: ";
+            // 
             // labelAvgTiS_Promoted
             // 
             this.labelAvgTiS_Promoted.AutoSize = true;
-            this.labelAvgTiS_Promoted.Location = new System.Drawing.Point(159, 108);
+            this.labelAvgTiS_Promoted.Location = new System.Drawing.Point(159, 128);
             this.labelAvgTiS_Promoted.Name = "labelAvgTiS_Promoted";
             this.labelAvgTiS_Promoted.Size = new System.Drawing.Size(13, 13);
             this.labelAvgTiS_Promoted.TabIndex = 9;
@@ -819,7 +895,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(24, 108);
+            this.label10.Location = new System.Drawing.Point(24, 128);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(128, 13);
             this.label10.TabIndex = 8;
@@ -828,7 +904,7 @@
             // labelAvgTiG_Promotion
             // 
             this.labelAvgTiG_Promotion.AutoSize = true;
-            this.labelAvgTiG_Promotion.Location = new System.Drawing.Point(159, 132);
+            this.labelAvgTiG_Promotion.Location = new System.Drawing.Point(159, 152);
             this.labelAvgTiG_Promotion.Name = "labelAvgTiG_Promotion";
             this.labelAvgTiG_Promotion.Size = new System.Drawing.Size(13, 13);
             this.labelAvgTiG_Promotion.TabIndex = 7;
@@ -837,7 +913,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(24, 212);
+            this.label11.Location = new System.Drawing.Point(24, 231);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(133, 13);
             this.label11.TabIndex = 4;
@@ -846,7 +922,7 @@
             // labelAvgTiG_Retirement
             // 
             this.labelAvgTiG_Retirement.AutoSize = true;
-            this.labelAvgTiG_Retirement.Location = new System.Drawing.Point(159, 212);
+            this.labelAvgTiG_Retirement.Location = new System.Drawing.Point(159, 231);
             this.labelAvgTiG_Retirement.Name = "labelAvgTiG_Retirement";
             this.labelAvgTiG_Retirement.Size = new System.Drawing.Size(13, 13);
             this.labelAvgTiG_Retirement.TabIndex = 5;
@@ -855,7 +931,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(23, 132);
+            this.label12.Location = new System.Drawing.Point(23, 152);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(129, 13);
             this.label12.TabIndex = 6;
@@ -864,7 +940,7 @@
             // labelAvgTiS_Retirement
             // 
             this.labelAvgTiS_Retirement.AutoSize = true;
-            this.labelAvgTiS_Retirement.Location = new System.Drawing.Point(159, 189);
+            this.labelAvgTiS_Retirement.Location = new System.Drawing.Point(159, 208);
             this.labelAvgTiS_Retirement.Name = "labelAvgTiS_Retirement";
             this.labelAvgTiS_Retirement.Size = new System.Drawing.Size(13, 13);
             this.labelAvgTiS_Retirement.TabIndex = 3;
@@ -873,7 +949,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(23, 189);
+            this.label9.Location = new System.Drawing.Point(23, 208);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(132, 13);
             this.label9.TabIndex = 2;
@@ -882,7 +958,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(24, 30);
+            this.label8.Location = new System.Drawing.Point(24, 50);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(110, 13);
             this.label8.TabIndex = 1;
@@ -891,7 +967,7 @@
             // labelTotalSelectRate
             // 
             this.labelTotalSelectRate.AutoSize = true;
-            this.labelTotalSelectRate.Location = new System.Drawing.Point(158, 30);
+            this.labelTotalSelectRate.Location = new System.Drawing.Point(158, 50);
             this.labelTotalSelectRate.Name = "labelTotalSelectRate";
             this.labelTotalSelectRate.Size = new System.Drawing.Size(21, 13);
             this.labelTotalSelectRate.TabIndex = 0;
@@ -928,7 +1004,7 @@
             this.groupBox1.Controls.Add(this.rankTypeBox5);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.rankSelectionBox);
-            this.groupBox1.Location = new System.Drawing.Point(538, 31);
+            this.groupBox1.Location = new System.Drawing.Point(538, 27);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(265, 123);
             this.groupBox1.TabIndex = 0;
@@ -1168,60 +1244,6 @@
             this.nameLabel.TabIndex = 1;
             this.nameLabel.Text = "Perscom Movement Simulator";
             // 
-            // labelRankPromotions
-            // 
-            this.labelRankPromotions.AutoSize = true;
-            this.labelRankPromotions.Location = new System.Drawing.Point(159, 86);
-            this.labelRankPromotions.Name = "labelRankPromotions";
-            this.labelRankPromotions.Size = new System.Drawing.Size(13, 13);
-            this.labelRankPromotions.TabIndex = 11;
-            this.labelRankPromotions.Text = "0";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(24, 86);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(65, 13);
-            this.label14.TabIndex = 10;
-            this.label14.Text = "Promotions: ";
-            // 
-            // labelRankRetirements
-            // 
-            this.labelRankRetirements.AutoSize = true;
-            this.labelRankRetirements.Location = new System.Drawing.Point(159, 167);
-            this.labelRankRetirements.Name = "labelRankRetirements";
-            this.labelRankRetirements.Size = new System.Drawing.Size(13, 13);
-            this.labelRankRetirements.TabIndex = 13;
-            this.labelRankRetirements.Text = "0";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(24, 167);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(69, 13);
-            this.label16.TabIndex = 12;
-            this.label16.Text = "Retirements: ";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(23, 52);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(82, 13);
-            this.label13.TabIndex = 15;
-            this.label13.Text = "Total Selected: ";
-            // 
-            // labelRankTotalSelected
-            // 
-            this.labelRankTotalSelected.AutoSize = true;
-            this.labelRankTotalSelected.Location = new System.Drawing.Point(157, 52);
-            this.labelRankTotalSelected.Name = "labelRankTotalSelected";
-            this.labelRankTotalSelected.Size = new System.Drawing.Size(13, 13);
-            this.labelRankTotalSelected.TabIndex = 14;
-            this.labelRankTotalSelected.Text = "0";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1365,6 +1387,8 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label labelRankTotalSelected;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label labelAvgDeficitRate;
     }
 }
 

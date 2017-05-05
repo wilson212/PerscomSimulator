@@ -49,10 +49,12 @@
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.headerPanel = new System.Windows.Forms.Panel();
+            this.linkChangeName = new System.Windows.Forms.LinkLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
             this.rankLabel = new System.Windows.Forms.ShadowLabel();
-            this.linkChangeName = new System.Windows.Forms.LinkLabel();
+            this.label6 = new System.Windows.Forms.Label();
+            this.labelPosition = new System.Windows.Forms.Label();
             this.mainPanel.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -72,7 +74,7 @@
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 75);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(684, 412);
+            this.mainPanel.Size = new System.Drawing.Size(684, 437);
             this.mainPanel.TabIndex = 8;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.dropShadow);
             // 
@@ -80,7 +82,7 @@
             // 
             this.panel1.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Location = new System.Drawing.Point(15, 153);
+            this.panel1.Location = new System.Drawing.Point(15, 171);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(654, 40);
             this.panel1.TabIndex = 2;
@@ -122,6 +124,8 @@
             this.panel3.BorderRoundRadius = 5;
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel3.BorderWidth = 1;
+            this.panel3.Controls.Add(this.labelPosition);
+            this.panel3.Controls.Add(this.label6);
             this.panel3.Controls.Add(this.ttrLabel);
             this.panel3.Controls.Add(this.label7);
             this.panel3.Controls.Add(this.tigLabel);
@@ -132,7 +136,7 @@
             this.panel3.Controls.Add(this.label3);
             this.panel3.Location = new System.Drawing.Point(15, 52);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(652, 75);
+            this.panel3.Size = new System.Drawing.Size(652, 104);
             this.panel3.TabIndex = 4;
             // 
             // ttrLabel
@@ -214,7 +218,7 @@
             this.customPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.customPanel1.BorderWidth = 1;
             this.customPanel1.Controls.Add(this.dataGridView1);
-            this.customPanel1.Location = new System.Drawing.Point(15, 190);
+            this.customPanel1.Location = new System.Drawing.Point(15, 208);
             this.customPanel1.Name = "customPanel1";
             this.customPanel1.Size = new System.Drawing.Size(652, 208);
             this.customPanel1.TabIndex = 5;
@@ -290,6 +294,19 @@
             this.headerPanel.TabIndex = 6;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
+            // linkChangeName
+            // 
+            this.linkChangeName.AutoSize = true;
+            this.linkChangeName.LinkColor = System.Drawing.SystemColors.Control;
+            this.linkChangeName.Location = new System.Drawing.Point(592, 54);
+            this.linkChangeName.Name = "linkChangeName";
+            this.linkChangeName.Size = new System.Drawing.Size(75, 13);
+            this.linkChangeName.TabIndex = 3;
+            this.linkChangeName.TabStop = true;
+            this.linkChangeName.Text = "Change Name";
+            this.linkChangeName.VisitedLinkColor = System.Drawing.SystemColors.Control;
+            this.linkChangeName.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkChangeName_LinkClicked);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
@@ -327,25 +344,30 @@
             this.rankLabel.TabIndex = 1;
             this.rankLabel.Text = "Sergeant";
             // 
-            // linkChangeName
+            // label6
             // 
-            this.linkChangeName.AutoSize = true;
-            this.linkChangeName.LinkColor = System.Drawing.SystemColors.Control;
-            this.linkChangeName.Location = new System.Drawing.Point(592, 54);
-            this.linkChangeName.Name = "linkChangeName";
-            this.linkChangeName.Size = new System.Drawing.Size(75, 13);
-            this.linkChangeName.TabIndex = 3;
-            this.linkChangeName.TabStop = true;
-            this.linkChangeName.Text = "Change Name";
-            this.linkChangeName.VisitedLinkColor = System.Drawing.SystemColors.Control;
-            this.linkChangeName.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkChangeName_LinkClicked);
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(21, 71);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(87, 13);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "Current Position: ";
+            // 
+            // labelPosition
+            // 
+            this.labelPosition.AutoSize = true;
+            this.labelPosition.Location = new System.Drawing.Point(160, 71);
+            this.labelPosition.Name = "labelPosition";
+            this.labelPosition.Size = new System.Drawing.Size(43, 13);
+            this.labelPosition.TabIndex = 9;
+            this.labelPosition.Text = "position";
             // 
             // SoldierViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(684, 487);
+            this.ClientSize = new System.Drawing.Size(684, 512);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.headerPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -395,5 +417,7 @@
         private System.Windows.Forms.Label ttrLabel;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.LinkLabel linkChangeName;
+        private System.Windows.Forms.Label labelPosition;
+        private System.Windows.Forms.Label label6;
     }
 }

@@ -241,7 +241,7 @@ namespace Perscom
             series.Points.Clear();
 
             // Load the unit, so the soldier counts can be fetched
-            Unit unit = Unit.Load(unitSelect.SelectedItem.ToString());
+            UnitTemplate unit = UnitTemplate.Load(unitSelect.SelectedItem.ToString());
             labelTotalSoldiers.Text = "Total Unit Soldiers: " + unit.TotalSoldiers;
             RankType type = (rankTypeBox.SelectedIndex == -1) ? RankType.Enlisted : (RankType)rankTypeBox.SelectedItem;
 
@@ -276,7 +276,7 @@ namespace Perscom
             Series series = unitRankPieChart.Series[0];
             series.Points.Clear();
 
-            Unit unit = Unit.Load(unitSelect.SelectedItem.ToString());
+            UnitTemplate unit = UnitTemplate.Load(unitSelect.SelectedItem.ToString());
             RankType type = (RankType)rankTypeBox.SelectedItem;
 
             // Setup the enlisted pie chart
@@ -321,6 +321,17 @@ namespace Perscom
             rankSelectionBox.Items.Clear();
             rankSelectionBox.SelectedItem = null;
 
+            // ReSet label texts for statistical data
+            labelTotalSelectRate.Text = "0%";
+            labelAvgDeficitRate.Text = "0%";
+            labelRankTotalSelected.Text = "0";
+            labelRankPromotions.Text = "0";
+            labelRankRetirements.Text = "0";
+            labelAvgTiS_Promoted.Text = "0";
+            labelAvgTiS_Retirement.Text = "0";
+            labelAvgTiG_Promotion.Text = "0";
+            labelAvgTiG_Retirement.Text = "0";
+
             RankType type = (RankType)rankTypeBox5.SelectedItem;
             foreach (KeyValuePair<int, Rank> rank in Ranks.GetRankListByType(type))
             {
@@ -353,7 +364,8 @@ namespace Perscom
             if (rankData.ContainsKey(rank.Grade))
             {
                 var stats = rankData[rank.Grade];
-                var rate = Simulation.TotalSelectionRate(type, rank.Grade);
+                var rate = Simulation.TotalPromotionRate(type, rank.Grade);
+                var deficit = Simulation.GetAverageDeficitRate(type, rank.Grade);
 
                 int i = series.Points.AddY(stats.PromotionsToNextGrade / totalYears);
                 series.Points[i].LegendText = "Promoted";
@@ -363,6 +375,7 @@ namespace Perscom
 
                 // Set label texts for statistical data
                 labelTotalSelectRate.Text = String.Format("{0}%", rate);
+                labelAvgDeficitRate.Text = String.Format("{0}%", deficit);
                 labelRankTotalSelected.Text = String.Format("{0:N0}", stats.TotalSoldiers);
                 labelRankPromotions.Text = String.Format("{0:N0}", stats.PromotionsToNextGrade);
                 labelRankRetirements.Text = String.Format("{0:N0}", stats.TotalRetirements);
@@ -535,8 +548,7 @@ namespace Perscom
             try
             {
                 // Load the Unit and Soldier xml files
-                Unit brigade = Unit.Load(unitSelect.SelectedItem.ToString());
-                Simulation = new Simulator(brigade);
+                Unit unit = Unit.CreateType(unitSelect.SelectedItem.ToString());
                 SimulatorSettings settings = new SimulatorSettings()
                 {
                     ProcessEnlisted = enlistedMenuItem.Checked,
@@ -544,14 +556,16 @@ namespace Perscom
                     ProcessWarrant = warrantMenuItem.Checked
                 };
 
-                // Run the simulation
-                TaskForm.Show(this, "Running Simulation", "Running Simulation... Please Wait.", true);
+                // Show the TaskForm
+                TaskForm.Show(this, "Running Simulation", "Filling The Ranks...", true);
                 TaskForm.Cancelled += TaskForm_Cancelled;
                 CancelToken = new CancellationTokenSource();
 
+                // Run the simulation
                 await Task.Run(() =>
                 {
-                    Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, settings, CancelToken.Token);
+                    Simulation = new Simulator(unit, settings);
+                    Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, CancelToken.Token);
                 });
                 SimulationRan = true;
 

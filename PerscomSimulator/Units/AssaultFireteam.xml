@@ -3,9 +3,9 @@
   <info name="AssaultFireteam">
     <positions>
       <position name="Fireteam Leader" rank="e5" />
-      <position name="Fireteam Member" rank="e4" entryLevel="true" />
-      <position name="Fireteam Member" rank="e4" entryLevel="true" />
-      <position name="Fireteam Member" rank="e4" entryLevel="true" />
+      <position name="Fireteam Member" rank="e1" entryLevel="true" />
+      <position name="Fireteam Member" rank="e1" entryLevel="true" />
+      <position name="Fireteam Member" rank="e1" entryLevel="true" />
     </positions>
     <subunits />
   </info>

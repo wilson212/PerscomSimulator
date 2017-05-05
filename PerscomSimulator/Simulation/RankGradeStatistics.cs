@@ -155,6 +155,12 @@ namespace Perscom.Simulation
         }
 
         /// <summary>
+        /// The total number of open positions (per month) that cannot be filled due to lack
+        /// of lower grade soldiers being promotable.
+        /// </summary>
+        public int Deficit { get; set; } = 0;
+
+        /// <summary>
         /// Adds a soldier's statistical data as a retirement, holding this rank/grade
         /// </summary>
         /// <param name="soldier">The soldier being retired</param>
@@ -176,7 +182,8 @@ namespace Perscom.Simulation
             RetiredTotalMonthsInService += tis;
 
             // Promotable?
-            if (soldier.IsPromotable(currentDate))
+            PromotableStatus type;
+            if (soldier.IsPromotable(currentDate, out type))
                 TotalPromotableRetirees += 1;
         }
 

@@ -50,6 +50,11 @@
         public int PromotableAt { get; set; } = 12;
 
         /// <summary>
+        /// Indicates whether the promotion to the NEXT grade is automatic
+        /// </summary>
+        public bool AutoPromotion { get; set; } = false;
+
+        /// <summary>
         /// Indicates the maximum time in grade
         /// </summary>
         public int MaxTimeInGrade { get; set; } = 0;

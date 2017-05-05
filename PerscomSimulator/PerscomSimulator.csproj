@@ -59,6 +59,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\ListExtensions.cs" />
     <Compile Include="Controls\CustomPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -74,10 +75,14 @@
     <Compile Include="Application\SyncProgress.cs" />
     <Compile Include="Application\TaskProgressUpdate.cs" />
     <Compile Include="Application\DateTimeExt.cs" />
+    <Compile Include="Simulation\Billet.cs" />
+    <Compile Include="Simulation\PromotableStatus.cs" />
     <Compile Include="Simulation\RankGradeStatistics.cs" />
     <Compile Include="Simulation\RandomNameGenerator.cs" />
     <Compile Include="Simulation\Rank.cs" />
     <Compile Include="Simulation\SimulatorSettings.cs" />
+    <Compile Include="Simulation\Unit.cs" />
+    <Compile Include="Simulation\UnitPosition.cs" />
     <Compile Include="UI\SoldierEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -111,7 +116,7 @@
     <Compile Include="Simulation\Ranks.cs" />
     <Compile Include="Simulation\Simulator.cs" />
     <Compile Include="Simulation\SpawnGenerator.cs" />
-    <Compile Include="Simulation\Unit.cs" />
+    <Compile Include="Simulation\UnitTemplate.cs" />
     <Compile Include="Simulation\Soldier.cs" />
     <Compile Include="UI\TaskForm.cs">
       <SubType>Form</SubType>
@@ -363,9 +368,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Database\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

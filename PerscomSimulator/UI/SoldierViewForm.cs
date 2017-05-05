@@ -37,6 +37,7 @@ namespace Perscom
             LocalDate endDate = startDate.PlusYears(currentDate.Year - startDate.Year).PlusMonths(currentDate.Month - startDate.Month);
             Period timeFrame = Period.Between(startDate, endDate);
             tisLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
+            labelPosition.Text = soldier.Soldier.Position?.ToString() ?? "";
 
             // Time to retire
             startDate = new LocalDate(currentDate.Year, currentDate.Month, 1);

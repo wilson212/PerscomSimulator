@@ -10,6 +10,11 @@ namespace Perscom.Simulation
     {
         public static Dictionary<RankType, Dictionary<int, Rank>> RankList { get; set; }
 
+        static Ranks()
+        {
+            Load();
+        }
+
         /// <summary>
         /// Loads the Ranks.xml file
         /// </summary>
@@ -45,6 +50,7 @@ namespace Perscom.Simulation
                     int t2r = Int32.Parse(element.Attributes["minTimeForRet"]?.Value ?? "0");
                     int tig = Int32.Parse(element.Attributes["promotableAt"]?.Value ?? "12");
                     int max = Int32.Parse(element.Attributes["maxTimeInGrade"]?.Value ?? "0");
+                    bool auto = element.Attributes["autoPromote"]?.Value != null;
                     Range<int> stature = (element.Attributes["stature"]?.Value != null)
                         ? ParseStature(element.Attributes["stature"].Value)
                         : null;
@@ -58,6 +64,7 @@ namespace Perscom.Simulation
                         Grade = rank,
                         MinTimeForConsideration = t2r,
                         PromotableAt = tig,
+                        AutoPromotion = auto,
                         MaxTimeInGrade = max,
                         Stature = stature
                     });
