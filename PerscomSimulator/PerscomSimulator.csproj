@@ -75,6 +75,7 @@
     <Compile Include="Application\SyncProgress.cs" />
     <Compile Include="Application\TaskProgressUpdate.cs" />
     <Compile Include="Application\DateTimeExt.cs" />
+    <Compile Include="Database\AppData.cs" />
     <Compile Include="Simulation\Billet.cs" />
     <Compile Include="Simulation\PromotableStatus.cs" />
     <Compile Include="Simulation\RankGradeStatistics.cs" />
