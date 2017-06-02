@@ -44,6 +44,10 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\CrossLite\packages\System.Data.SQLite.Core.1.0.103\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -59,6 +63,8 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\Epoch.cs" />
+    <Compile Include="Application\ExceptionHandler.cs" />
     <Compile Include="Application\ListExtensions.cs" />
     <Compile Include="Controls\CustomPanel.cs">
       <SubType>Component</SubType>
@@ -75,7 +81,27 @@
     <Compile Include="Application\SyncProgress.cs" />
     <Compile Include="Application\TaskProgressUpdate.cs" />
     <Compile Include="Application\DateTimeExt.cs" />
-    <Compile Include="Database\AppData.cs" />
+    <Compile Include="Database\AppDatabase.cs" />
+    <Compile Include="Database\Entities\Assignment.cs" />
+    <Compile Include="Database\Entities\Billet.cs" />
+    <Compile Include="Database\Entities\Echelon.cs" />
+    <Compile Include="Database\Entities\DbVersion.cs" />
+    <Compile Include="Database\MigrationWizard.cs" />
+    <Compile Include="Database\Entities\UnitType.cs" />
+    <Compile Include="Database\Entities\Unit.cs" />
+    <Compile Include="Database\Entities\Position.cs" />
+    <Compile Include="Database\Entities\Soldier.cs" />
+    <Compile Include="Database\Entities\UnitAttachment.cs" />
+    <Compile Include="Database\Entities\UnitTypeAttachment.cs" />
+    <Compile Include="Database\Entities\Promotion.cs" />
+    <Compile Include="Database\Entities\Rank.cs" />
+    <Compile Include="Database\Entities\PastAssignment.cs" />
+    <Compile Include="UI\ExceptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ExceptionForm.Designer.cs">
+      <DependentUpon>ExceptionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Simulation\Billet.cs" />
     <Compile Include="Simulation\PromotableStatus.cs" />
     <Compile Include="Simulation\RankGradeStatistics.cs" />
@@ -263,6 +289,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="perscom_icon_sv6_icon.ico" />
+    <None Include="Resources\vistaerror.png" />
+    <None Include="Resources\vistaInfo.png" />
+    <None Include="Resources\vistaWarning.png" />
+    <Content Include="SQLite.Interop.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Units\EngineerCompany.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -296,7 +328,6 @@
     </Content>
     <None Include="Resources\BannerTopSecond.png" />
     <None Include="Resources\mainPattern.png" />
-    <None Include="Resources\vistaInfo.png" />
     <Content Include="Config\Names.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -369,6 +400,12 @@
     <Content Include="Units\Brigade.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CrossLite\CrossLite\CrossLite.csproj">
+      <Project>{19f0606e-4bdf-4e58-a722-4100c92f90c4}</Project>
+      <Name>CrossLite</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

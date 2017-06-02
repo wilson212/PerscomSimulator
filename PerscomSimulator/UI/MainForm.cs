@@ -109,6 +109,12 @@ namespace Perscom
             rankTypeBox4.SelectedIndex = 0;
             rankTypeBox5.SelectedIndex = 0;
             toolStripComboBox1.SelectedIndex = 0;
+
+            // Fill form fields under 1 database connection
+            using (Perscom.Database.AppDatabase db = new Perscom.Database.AppDatabase())
+            {
+
+            }
         }
 
         #region Report Functions

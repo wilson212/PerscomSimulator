@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Perscom
@@ -16,8 +13,15 @@ namespace Perscom
         [STAThread]
         static void Main()
         {
+            // Setup visual styles
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            // Set Exception Handler
+            Application.ThreadException += ExceptionHandler.OnThreadException;
+            AppDomain.CurrentDomain.UnhandledException += ExceptionHandler.OnUnhandledException;
+
+            // Run the main GUI
             Application.Run(new MainForm());
         }
     }
