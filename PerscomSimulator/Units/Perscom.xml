@@ -4,18 +4,20 @@
     <positions>
       <!-- Officers -->
       <position name="Commander" rank="o10" />
-      <position name="Executive Officer" rank="o10" />
+      <position name="Chief of Staff" rank="o10" />
       <position name="Adjuntant General" rank="o9" />
       <position name="Inspector General" rank="o9" />
       <!-- Enlisted -->
-      <position name="Senior Enlisted Advisor to the Chairman" rank="e9" />
+      <position name="Senior Enlisted Advisor to the Joint Staff" rank="e9" />
       <!-- Warrant Officers -->
-      <position name="Chief of Information" rank="w5" />
+      <position name="Chief of Information Systems" rank="w5" />
+      <position name="Chief of Engineers" rank="w5" />
       <position name="Chief of Engineers" rank="w5" />
     </positions>
     <subunits>
-      <unit type="Army" name="BluFor"/>
-      <unit type="Army" name="OpFor"/>
+      <unit type="Army" name="European Union"/>
+      <unit type="Army" name="Pan-Asian Coalition"/>
+      <unit type="Army" name="North American Coalition"/>
     </subunits>
   </info>
 </Unit>

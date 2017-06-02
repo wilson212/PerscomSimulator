@@ -37,7 +37,7 @@
 -->
 <Ranks>
   <enlisted>
-    <rank name="Private" abbreviation="PVT" grade="1" promotableAt="6" autoPromote="true"/>
+    <rank name="Recruit" abbreviation="PVT" grade="1" promotableAt="6" autoPromote="true"/>
     <rank name="Private" abbreviation="PV2" grade="2" promotableAt="6" autoPromote="true"/>
     <rank name="Private 1st Class" abbreviation="PFC" grade="3" promotableAt="6" autoPromote="true"/>
     <rank name="Corporal" abbreviation="CPL" grade="4" promotableAt="6"/>

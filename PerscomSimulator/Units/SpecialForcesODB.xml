@@ -6,8 +6,8 @@
       <position name="Detachment Commander" rank="o4" />
       <position name="Executive Officer" rank="o3" />
       <!-- Warrant Officers -->
-      <position name="Systems Technician" rank="w3" />
-      <position name="Explosives Expert" rank="w3" />
+      <position name="Special Warfare Technician" rank="w3" />
+      <position name="Ordanance Technician" rank="w3" />
       <!-- Enlisted -->
       <position name="Operations Sergeant" rank="e9" />
     </positions>
@@ -15,7 +15,6 @@
       <unit type="SpecialForcesODA" name="1st Operation Detachment Alpha"/>
       <unit type="SpecialForcesODA" name="2nd Operation Detachment Alpha"/>
       <unit type="SpecialForcesODA" name="3rd Operation Detachment Alpha"/>
-      <unit type="SpecialForcesODA" name="4th Operation Detachment Alpha"/>
     </subunits>
   </info>
 </Unit>

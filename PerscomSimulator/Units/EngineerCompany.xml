@@ -5,6 +5,8 @@
       <position name="Commander" rank="o3" />
       <position name="Executive Officer" rank="o2" />
       <position name="Company 1SG" rank="e8" />
+      <!-- Warrant -->
+      <position name="Ordanance Technician" rank="w1" />
     </positions>
     <subunits>
       <unit type="AssaultPlatoon" name="1st Platoon"/>

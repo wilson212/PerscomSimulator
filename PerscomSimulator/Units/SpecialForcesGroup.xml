@@ -10,7 +10,8 @@
       <position name="S3 - Training and Operations Officer" rank="o5" />
       <position name="S4 - Logistics Coordinator" rank="o4" />
       <!-- Warrant Officers -->
-      <position name="Command and Control Systems Technician" rank="w4" />
+      <position name="Special Warfare Technician" rank="w4" />
+      <position name="Information Systems Technician" rank="w4" />
       <!-- Enlisted -->
       <position name="Detachment Command Sergeant Major" rank="e9" />
       <position name="Training Sergeant Major" rank="e9" />
