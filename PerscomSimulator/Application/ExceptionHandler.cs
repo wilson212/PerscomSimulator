@@ -17,6 +17,37 @@ namespace Perscom
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="t"></param>
+        public static void ShowException(Exception t)
+        {
+            // Create Trace Log
+            string FileName = GenerateFileName();
+            try
+            {
+                // Try to generate a trace log
+                GenerateExceptionLog(FileName, t);
+            }
+            catch { }
+
+            // Display the Exception Form
+            using (ExceptionForm EForm = new ExceptionForm(t, true))
+            {
+                EForm.Message = "An unhandled exception was thrown while trying to preform the requested task.\r\n"
+                    + "If you click Continue, the application will attempt to ignore this error, and continue. "
+                    + "If you click Quit, the application will close immediatly.";
+                EForm.TraceLog = FileName;
+                DialogResult Result = EForm.ShowDialog();
+
+                // Kill the form on abort
+                if (Result == DialogResult.Abort)
+                    Application.Exit();
+            }
+        }
+
+        /// <summary>
+        /// Handles an exception on the main thread.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="t"></param>
         public static void OnThreadException(object sender, ThreadExceptionEventArgs t)
         {
             // Create Trace Log

@@ -50,7 +50,7 @@ namespace Perscom
         private static Bitmap GetFromDisk(string filePath)
         {
             filePath = Path.Combine(Program.RootPath, "Images", filePath);
-            return (File.Exists(filePath)) ? new Bitmap(filePath) : new Bitmap(25, 25);
+            return (File.Exists(filePath)) ? new Bitmap(filePath) : null;
         }
     }
 }

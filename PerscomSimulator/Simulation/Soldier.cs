@@ -59,7 +59,7 @@ namespace Perscom
         /// <summary>
         /// Gets the probability value of this soldier
         /// </summary>
-        public int OneInThousandProbability { get; set; }
+        public int Probability { get; set; }
 
         /// <summary>
         /// A list of all the soldiers promotions
@@ -78,7 +78,7 @@ namespace Perscom
         /// <param name="timeToLive">The time (in months) this soldier will live before retiring</param>
         public Soldier(int oneInThousandProbability, Range<int> timeToLive)
         {
-            OneInThousandProbability = oneInThousandProbability;
+            Probability = oneInThousandProbability;
             TimeToLive = timeToLive;
         }
 
@@ -235,10 +235,10 @@ namespace Perscom
 
         /// <summary>
         /// Returns a new instance of <see cref="Soldier"/> using the exact values of
-        /// <see cref="Soldier.TimeToLive"/> and <see cref="Soldier.OneInThousandProbability"/>
+        /// <see cref="Soldier.TimeToLive"/> and <see cref="Soldier.Probability"/>
         /// </summary>
         /// <returns></returns>
-        public object Clone() => new Soldier(OneInThousandProbability, TimeToLive);
+        public object Clone() => new Soldier(Probability, TimeToLive);
 
         /// <summary>
         /// Converts this object into the soldiers name

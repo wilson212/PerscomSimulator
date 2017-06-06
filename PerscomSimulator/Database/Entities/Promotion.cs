@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CrossLite;
 using CrossLite.CodeFirst;
 
@@ -12,7 +8,7 @@ namespace Perscom.Database
     /// Represents a relationship between a <see cref="Database.Soldier"/> and his past <see cref="Promotion"/>
     /// </summary>
     [Table]
-    public class Promotion
+    public class Promotion : IEquatable<Promotion>
     {
         #region Columns
 
@@ -101,9 +97,19 @@ namespace Perscom.Database
 
         #endregion
 
-        public override string ToString()
+        public bool Equals(Promotion other)
         {
-            return Date.ToShortDateString();
+            if (other == null) return false;
+            return (Id == other.Id);
         }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Promotion);
+        }
+
+        public override int GetHashCode() => Id;
+
+        public override string ToString() => Date.ToShortDateString();
     }
 }

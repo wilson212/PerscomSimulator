@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CrossLite;
 using CrossLite.CodeFirst;
 
@@ -8,7 +9,7 @@ namespace Perscom.Database
     /// Represents a structure that contains child <see cref="Unit"/>s and <see cref="Billet"/>s.
     /// </summary>
     [Table]
-    public class Unit
+    public class Unit : IEquatable<Unit>
     {
         #region Columns
 
@@ -19,7 +20,7 @@ namespace Perscom.Database
         public int Id { get; protected set; }
 
         /// <summary>
-        /// Gets or Sets the <see cref="UnitType"/> object
+        /// Gets or Sets the <see cref="UnitTemplate"/> object
         /// ID that this entity references
         /// </summary>
         [Column, Required]
@@ -36,7 +37,7 @@ namespace Perscom.Database
         #region Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="UnitType"/> entity that this entity references.
+        /// Gets the <see cref="UnitTemplate"/> entity that this entity references.
         /// </summary>
         /// <remarks>Eager loaded because it should never be changed!</remarks>
         [InverseKey("Id")]
@@ -44,7 +45,7 @@ namespace Perscom.Database
             OnDelete = ReferentialIntegrity.Cascade,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        public virtual UnitType Type { get; private set; }
+        public virtual UnitTemplate Type { get; private set; }
 
         #endregion
 
@@ -61,5 +62,20 @@ namespace Perscom.Database
         public virtual IEnumerable<UnitAttachment> Attachments { get; set; }
 
         #endregion
+
+        public bool Equals(Unit other)
+        {
+            if (other == null) return false;
+            return (Id == other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Unit);
+        }
+
+        public override int GetHashCode() => Id;
+
+        public override string ToString() => Name;
     }
 }

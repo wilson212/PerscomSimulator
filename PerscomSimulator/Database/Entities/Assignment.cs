@@ -1,28 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CrossLite;
 using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
     [Table]
-    public class Assignment
+    [CompositeUnique(nameof(SoldierId), nameof(PositionId))]
+    public class Assignment : IEquatable<Assignment>
     {
         #region Column Properties
 
         /// <summary>
+        /// The Unique Assignment ID
+        /// </summary>
+        [Column, PrimaryKey]
+        public int Id { get; protected set; }
+
+        /// <summary>
         /// Gets or sets the parent <see cref="Soldier.Id"/>
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, Required]
         public int SoldierId { get; set; }
 
         /// <summary>
         /// Gets or sets the parent <see cref="Position.Id"/>
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, Required]
         public int PositionId { get; set; }
 
         /// <summary>
@@ -89,5 +92,18 @@ namespace Perscom.Database
         }
 
         #endregion
+
+        public bool Equals(Assignment other)
+        {
+            if (other == null) return false;
+            return (Id == other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Assignment);
+        }
+
+        public override int GetHashCode() => Id;
     }
 }

@@ -69,7 +69,8 @@ namespace Perscom.Simulation
                           select s.Spawnable).FirstOrDefault();
 
             // Note that it can spawn null (no spawn) if probabilities dont add up to 1000
-            return TypeIsCloneable ? (T)retVal.Clone() : retVal;
+            //return TypeIsCloneable ? (T)retVal.Clone() : retVal;
+            return retVal;
         }
 
         private class SpawnableWrapper
@@ -82,7 +83,7 @@ namespace Perscom.Simulation
             {
                 Spawnable = spawnable;
                 MinThreshold = minThreshold;
-                MaxThreshold = MinThreshold + spawnable.OneInThousandProbability;
+                MaxThreshold = MinThreshold + spawnable.Probability;
             }
         }
     }

@@ -69,11 +69,14 @@
             this.openRootMenuItem = new System.Windows.Forms.MenuItem();
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
-            this.soldierConfigMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.enlistedMenuItem = new System.Windows.Forms.MenuItem();
             this.officerMenuItem = new System.Windows.Forms.MenuItem();
             this.warrantMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem4 = new System.Windows.Forms.MenuItem();
+            this.soldierConfigMenuItem = new System.Windows.Forms.MenuItem();
+            this.manageRanksMenuItem = new System.Windows.Forms.MenuItem();
+            this.manageTemplatesMenuItem = new System.Windows.Forms.MenuItem();
             this.panel4 = new System.Windows.Forms.Panel();
             this.generateButton = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -86,8 +89,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.yearsOfSimulate = new System.Windows.Forms.NumericUpDown();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.headerPanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.CustomPanel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -135,6 +136,7 @@
             this.rankSelectionBox = new System.Windows.Forms.ComboBox();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.bindingNavigator1 = new System.Windows.Forms.BindingNavigator(this.components);
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.bindingNavigatorCountItem = new System.Windows.Forms.ToolStripLabel();
             this.bindingNavigatorMoveFirstItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorMovePreviousItem = new System.Windows.Forms.ToolStripButton();
@@ -151,14 +153,14 @@
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.headerPanel = new System.Windows.Forms.Panel();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
+            this.manageSpecialsMenuItem = new System.Windows.Forms.MenuItem();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yearsOfSimulate)).BeginInit();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
-            this.headerPanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -179,7 +181,9 @@
             this.tabPage7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).BeginInit();
             this.bindingNavigator1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.headerPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu1
@@ -212,19 +216,17 @@
             // 
             this.menuItem2.Index = 1;
             this.menuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem3,
+            this.menuItem4,
             this.soldierConfigMenuItem,
-            this.menuItem3});
+            this.manageSpecialsMenuItem,
+            this.manageRanksMenuItem,
+            this.manageTemplatesMenuItem});
             this.menuItem2.Text = "Settings";
-            // 
-            // soldierConfigMenuItem
-            // 
-            this.soldierConfigMenuItem.Index = 0;
-            this.soldierConfigMenuItem.Text = "Soldier Spawn Rates";
-            this.soldierConfigMenuItem.Click += new System.EventHandler(this.soldierConfigMenuItem_Click);
             // 
             // menuItem3
             // 
-            this.menuItem3.Index = 1;
+            this.menuItem3.Index = 0;
             this.menuItem3.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.enlistedMenuItem,
             this.officerMenuItem,
@@ -252,13 +254,36 @@
             this.warrantMenuItem.Text = "Warrant";
             this.warrantMenuItem.Click += new System.EventHandler(this.warrantMenuItem_Click);
             // 
+            // menuItem4
+            // 
+            this.menuItem4.Index = 1;
+            this.menuItem4.Text = "-";
+            // 
+            // soldierConfigMenuItem
+            // 
+            this.soldierConfigMenuItem.Index = 2;
+            this.soldierConfigMenuItem.Text = "Manage Soldier Career Lengths";
+            this.soldierConfigMenuItem.Click += new System.EventHandler(this.soldierConfigMenuItem_Click);
+            // 
+            // manageRanksMenuItem
+            // 
+            this.manageRanksMenuItem.Index = 4;
+            this.manageRanksMenuItem.Text = "Manage Ranks";
+            this.manageRanksMenuItem.Click += new System.EventHandler(this.manageRanksMenuItem_Click);
+            // 
+            // manageTemplatesMenuItem
+            // 
+            this.manageTemplatesMenuItem.Index = 5;
+            this.manageTemplatesMenuItem.Text = "Manage Unit Templates";
+            this.manageTemplatesMenuItem.Click += new System.EventHandler(this.manageTemplatesMenuItem_Click);
+            // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.panel4.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
             this.panel4.Controls.Add(this.generateButton);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 641);
+            this.panel4.Location = new System.Drawing.Point(0, 662);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(984, 50);
             this.panel4.TabIndex = 5;
@@ -408,24 +433,8 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 75);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(984, 616);
+            this.panel1.Size = new System.Drawing.Size(984, 637);
             this.panel1.TabIndex = 3;
-            // 
-            // bindingSource1
-            // 
-            this.bindingSource1.CurrentChanged += new System.EventHandler(this.BindingSource1_CurrentChanged);
-            // 
-            // headerPanel
-            // 
-            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.headerPanel.Controls.Add(this.nameLabel);
-            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.headerPanel.Location = new System.Drawing.Point(0, 0);
-            this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(984, 75);
-            this.headerPanel.TabIndex = 0;
-            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
             // panel2
             // 
@@ -1092,6 +1101,10 @@
             this.bindingNavigator1.TabIndex = 1;
             this.bindingNavigator1.Text = "bindingNavigator1";
             // 
+            // bindingSource1
+            // 
+            this.bindingSource1.CurrentChanged += new System.EventHandler(this.BindingSource1_CurrentChanged);
+            // 
             // bindingNavigatorCountItem
             // 
             this.bindingNavigatorCountItem.Name = "bindingNavigatorCountItem";
@@ -1230,6 +1243,18 @@
             this.Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column4.Width = 150;
             // 
+            // headerPanel
+            // 
+            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
+            this.headerPanel.Controls.Add(this.nameLabel);
+            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerPanel.Location = new System.Drawing.Point(0, 0);
+            this.headerPanel.Name = "headerPanel";
+            this.headerPanel.Size = new System.Drawing.Size(984, 75);
+            this.headerPanel.TabIndex = 0;
+            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
+            // 
             // nameLabel
             // 
             this.nameLabel.BackColor = System.Drawing.Color.Transparent;
@@ -1244,12 +1269,18 @@
             this.nameLabel.TabIndex = 1;
             this.nameLabel.Text = "Perscom Movement Simulator";
             // 
+            // manageSpecialsMenuItem
+            // 
+            this.manageSpecialsMenuItem.Index = 3;
+            this.manageSpecialsMenuItem.Text = "Manage Specialties";
+            this.manageSpecialsMenuItem.Click += new System.EventHandler(this.manageSpecialsMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(984, 691);
+            this.ClientSize = new System.Drawing.Size(984, 712);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
@@ -1269,8 +1300,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yearsOfSimulate)).EndInit();
             this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
-            this.headerPanel.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -1294,7 +1323,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).EndInit();
             this.bindingNavigator1.ResumeLayout(false);
             this.bindingNavigator1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.headerPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1389,6 +1420,10 @@
         private System.Windows.Forms.Label labelRankTotalSelected;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label labelAvgDeficitRate;
+        private System.Windows.Forms.MenuItem manageRanksMenuItem;
+        private System.Windows.Forms.MenuItem manageTemplatesMenuItem;
+        private System.Windows.Forms.MenuItem menuItem4;
+        private System.Windows.Forms.MenuItem manageSpecialsMenuItem;
     }
 }
 

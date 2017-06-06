@@ -66,6 +66,30 @@
     <Compile Include="Application\Epoch.cs" />
     <Compile Include="Application\ExceptionHandler.cs" />
     <Compile Include="Application\ListExtensions.cs" />
+    <Compile Include="Application\IntExtensions.cs" />
+    <Compile Include="Database\Entities\BilletSpecialty.cs" />
+    <Compile Include="Database\Entities\BilletRequirement.cs" />
+    <Compile Include="Database\Entities\BilletCatagory.cs" />
+    <Compile Include="Database\Entities\SoldierSpawnRate.cs" />
+    <Compile Include="Database\Entities\Specialty.cs" />
+    <Compile Include="UI\SpecialtyEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SpecialtyEditorForm.Designer.cs">
+      <DependentUpon>SpecialtyEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SpawnEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SpawnEditorForm.Designer.cs">
+      <DependentUpon>SpawnEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\BilletEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\BilletEditorForm.Designer.cs">
+      <DependentUpon>BilletEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CustomPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -87,15 +111,21 @@
     <Compile Include="Database\Entities\Echelon.cs" />
     <Compile Include="Database\Entities\DbVersion.cs" />
     <Compile Include="Database\MigrationWizard.cs" />
-    <Compile Include="Database\Entities\UnitType.cs" />
+    <Compile Include="Database\Entities\UnitTemplate.cs" />
     <Compile Include="Database\Entities\Unit.cs" />
     <Compile Include="Database\Entities\Position.cs" />
     <Compile Include="Database\Entities\Soldier.cs" />
     <Compile Include="Database\Entities\UnitAttachment.cs" />
-    <Compile Include="Database\Entities\UnitTypeAttachment.cs" />
+    <Compile Include="Database\Entities\UnitTemplateAttachment.cs" />
     <Compile Include="Database\Entities\Promotion.cs" />
     <Compile Include="Database\Entities\Rank.cs" />
     <Compile Include="Database\Entities\PastAssignment.cs" />
+    <Compile Include="UI\RankEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\RankEditorForm.Designer.cs">
+      <DependentUpon>RankEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ExceptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -122,12 +152,6 @@
     <Compile Include="UI\SoldierViewForm.Designer.cs">
       <DependentUpon>SoldierViewForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\SoldierConfigForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SoldierConfigForm.Designer.cs">
-      <DependentUpon>SoldierConfigForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,8 +175,23 @@
     <Compile Include="UI\TaskForm.Designer.cs">
       <DependentUpon>TaskForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UI\SoldierConfigForm.resx">
-      <DependentUpon>SoldierConfigForm.cs</DependentUpon>
+    <Compile Include="UI\UnitTypeManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\UnitTypeManagerForm.Designer.cs">
+      <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="UI\SpecialtyEditorForm.resx">
+      <DependentUpon>SpecialtyEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SpawnEditorForm.resx">
+      <DependentUpon>SpawnEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\BilletEditorForm.resx">
+      <DependentUpon>BilletEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\RankEditorForm.resx">
+      <DependentUpon>RankEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -173,6 +212,9 @@
     <EmbeddedResource Include="UI\SoldierViewForm.resx">
       <DependentUpon>SoldierViewForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\UnitTypeManagerForm.resx">
+      <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -188,7 +230,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\Mos.xml" />
     <Content Include="Config\Soldiers.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -217,6 +258,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\icons\w5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\large\e8a.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\large\e9a.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\large\w2.png">

@@ -10,7 +10,7 @@ namespace Perscom.Database
     /// was once held by the <see cref="Database.Soldier"/> during his career.
     /// </summary>
     [Table]
-    public class PastAssignment
+    public class PastAssignment : IEquatable<PastAssignment>
     {
         #region Column Properties
 
@@ -103,5 +103,18 @@ namespace Perscom.Database
         }
 
         #endregion
+
+        public bool Equals(PastAssignment other)
+        {
+            if (other == null) return false;
+            return (Id == other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as PastAssignment);
+        }
+
+        public override int GetHashCode() => Id;
     }
 }

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Perscom.Simulation
+﻿namespace Perscom.Simulation
 {
-    public interface ISpawnable : ICloneable
+    public interface ISpawnable
     {
-        int OneInThousandProbability { get; }
+        int Probability { get; }
     }
 }

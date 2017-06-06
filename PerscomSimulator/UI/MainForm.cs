@@ -642,7 +642,31 @@ namespace Perscom
 
         private void soldierConfigMenuItem_Click(object sender, EventArgs e)
         {
-            using (SoldierConfigForm form = new SoldierConfigForm())
+            using (SpawnEditorForm form = new SpawnEditorForm())
+            {
+                form.ShowDialog();
+            }
+        }
+
+        private void manageSpecialsMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SpecialtyEditorForm form = new SpecialtyEditorForm())
+            {
+                form.ShowDialog();
+            }
+        }
+
+        private void manageRanksMenuItem_Click(object sender, EventArgs e)
+        {
+            using (RankEditorForm form = new RankEditorForm())
+            {
+                form.ShowDialog();
+            }
+        }
+
+        private void manageTemplatesMenuItem_Click(object sender, EventArgs e)
+        {
+            using (UnitTypeManagerForm form = new UnitTypeManagerForm())
             {
                 form.ShowDialog();
             }

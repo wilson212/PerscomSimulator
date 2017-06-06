@@ -1,32 +1,41 @@
-﻿using CrossLite;
+﻿using System;
+using CrossLite;
 using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
     /// <summary>
-    /// Represents a relationship between 2 <see cref="Database.UnitType"/>'s
+    /// Represents a relationship between 2 <see cref="Database.UnitTemplate"/>'s
     /// </summary>
     [Table]
-    public class UnitTypeAttachment
+    [CompositeUnique(nameof(ParentId), nameof(ChildId))]
+    public class UnitTemplateAttachment : IEquatable<UnitTemplateAttachment>
     {
         #region Column Properties
 
         /// <summary>
-        /// Gets or sets the parent <see cref="UnitType.Id"/>
+        /// The Unique UnitTemplateAttachment ID (Row ID)
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, PrimaryKey]
+        public int Id { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the parent <see cref="UnitTemplate.Id"/>
+        /// </summary>
+        [Column, Required]
         public int ParentId { get; set; }
 
         /// <summary>
-        /// Gets or sets the child <see cref="UnitType.Id"/>
+        /// Gets or sets the child <see cref="UnitTemplate.Id"/>
         /// </summary>
-        [Column, Required, Unique, PrimaryKey]
+        [Column, Required]
         public int ChildId { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of child <see cref="UnitType"/> units attached
-        /// to this parent <see cref="UnitType"/>
+        /// Gets or sets the number of child <see cref="UnitTemplate"/> units attached
+        /// to this parent <see cref="UnitTemplate"/>
         /// </summary>
+        [Column, Required, Default(0)]
         public int Count { get; set; }
 
         #endregion
@@ -38,14 +47,14 @@ namespace Perscom.Database
             OnDelete = ReferentialIntegrity.Cascade,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        protected virtual ForeignKey<UnitType> FK_Parent { get; set; }
+        protected virtual ForeignKey<UnitTemplate> FK_Parent { get; set; }
 
         [InverseKey("Id")]
         [ForeignKey("ChildId",
             OnDelete = ReferentialIntegrity.Cascade,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        protected virtual ForeignKey<UnitType> FK_Child { get; set; }
+        protected virtual ForeignKey<UnitTemplate> FK_Child { get; set; }
 
         #endregion
 
@@ -55,7 +64,7 @@ namespace Perscom.Database
         /// Gets or Sets the <see cref="Perscom.Database.Soldier"/> that 
         /// this position will hold.
         /// </summary>
-        public UnitType ParentUnitType
+        public UnitTemplate ParentUnitType
         {
             get
             {
@@ -72,7 +81,7 @@ namespace Perscom.Database
         /// Gets or Sets the <see cref="Perscom.Database.Position"/> that 
         /// this soldier holds.
         /// </summary>
-        public UnitType ChildUnitType
+        public UnitTemplate ChildUnitType
         {
             get
             {
@@ -86,5 +95,18 @@ namespace Perscom.Database
         }
 
         #endregion
+
+        public bool Equals(UnitTemplateAttachment other)
+        {
+            if (other == null) return false;
+            return (Id == other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as UnitTemplateAttachment);
+        }
+
+        public override int GetHashCode() => Id;
     }
 }

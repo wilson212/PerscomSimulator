@@ -1,4 +1,6 @@
-﻿using CrossLite;
+﻿using System;
+using System.Collections.Generic;
+using CrossLite;
 using CrossLite.CodeFirst;
 using Perscom.Simulation;
 
@@ -8,7 +10,7 @@ namespace Perscom.Database
     /// Represents a rank, and it's rules that <see cref="Soldier"/>'s will adhere to.
     /// </summary>
     [Table]
-    public class Rank
+    public class Rank : IEquatable<Rank>
     {
         #region Columns
 
@@ -70,6 +72,52 @@ namespace Perscom.Database
         [Column, Required, Default(0)]
         public bool AutoPromote { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets the image name of this Rank
+        /// </summary>
+        [Column, Default("")]
+        public string Image { get; set; }
+
         #endregion
+
+        #region Child Database Sets
+
+        /// <summary>
+        /// Gets a list of <see cref="Soldier"/> entities that hold this 
+        /// <see cref="Rank"/>, including retirees. Use with caution as
+        /// the result set can get very big.
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration that fetches all Torque Ratios
+        /// that are bound by the foreign key and this Engine.Id.
+        /// </remarks>
+        public virtual IEnumerable<Soldier> Soldiers { get; set; }
+
+        /// <summary>
+        /// Gets a list of <see cref="Billet"/> entities that require this 
+        /// <see cref="Rank"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration that fetches all Torque Ratios
+        /// that are bound by the foreign key and this Engine.Id.
+        /// </remarks>
+        public virtual IEnumerable<Billet> Billets { get; set; }
+
+        #endregion
+
+        public bool Equals(Rank other)
+        {
+            if (other == null) return false;
+            return (Id == other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Rank);
+        }
+
+        public override int GetHashCode() => Id;
+
+        public override string ToString() => Name;
     }
 }

@@ -58,29 +58,23 @@ namespace Perscom.Database
         public DateTime LastPromotionDate { get; set; }
 
         /// <summary>
-        /// Gets the probability value of this soldier
+        /// Gets or sets whether this soldier is retired
         /// </summary>
-        [Column, Required]
-        public int OneInThousandProbability { get; set; }
+        [Column, Default(false)]
+        public bool Retired { get; set; }
 
         /// <summary>
-        /// Gets the minimum time to live for this soldier (months)
+        /// Gets or sets the <see cref="SoldierSpawnRate.Id"/>
         /// </summary>
         [Column, Required]
-        public int MinTimeToLive { get; set; }
-
-        /// <summary>
-        /// Gets the minimum time to live for this soldier (months)
-        /// </summary>
-        [Column, Required]
-        public int MaxTimeToLive { get; set; }
+        public int SpawnRateId { get; set; }
 
         #endregion
 
         #region Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="Rank"/> entity that this entity references.
+        /// Gets the <see cref="Database.Rank"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
         [ForeignKey("RankId",
@@ -88,6 +82,16 @@ namespace Perscom.Database
             OnUpdate = ReferentialIntegrity.Cascade
         )]
         protected virtual ForeignKey<Rank> FK_Rank { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="SoldierSpawnRate"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("SpawnRateId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<SoldierSpawnRate> FK_SpawnRate { get; set; }
 
         #endregion
 
@@ -107,6 +111,23 @@ namespace Perscom.Database
             {
                 RankId = value.Id;
                 FK_Rank?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or Sets the <see cref="SoldierSpawnRate"/> that 
+        /// this soldier is created with
+        /// </summary>
+        public SoldierSpawnRate SpawnRate
+        {
+            get
+            {
+                return FK_SpawnRate?.Fetch();
+            }
+            set
+            {
+                SpawnRateId = value.Id;
+                FK_SpawnRate?.Refresh();
             }
         }
 

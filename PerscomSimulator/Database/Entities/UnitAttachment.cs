@@ -12,9 +12,16 @@ namespace Perscom.Database
     /// Represents a relationship between 2 <see cref="Unit"/>'s
     /// </summary>
     [Table]
-    public class UnitAttachment
+    [CompositeUnique(nameof(ParentId), nameof(ChildId))]
+    public class UnitAttachment : IEquatable<UnitAttachment>
     {
         #region Column Properties
+
+        /// <summary>
+        /// The Unique UnitAttachment ID (Row ID)
+        /// </summary>
+        [Column, PrimaryKey]
+        public int Id { get; protected set; }
 
         /// <summary>
         /// Gets or sets the parent <see cref="Unit.Id"/>
@@ -85,5 +92,18 @@ namespace Perscom.Database
         }
 
         #endregion
+
+        public bool Equals(UnitAttachment other)
+        {
+            if (other == null) return false;
+            return (Id == other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as UnitAttachment);
+        }
+
+        public override int GetHashCode() => Id;
     }
 }

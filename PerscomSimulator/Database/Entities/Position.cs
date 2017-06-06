@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CrossLite;
 using CrossLite.CodeFirst;
 
@@ -9,7 +10,7 @@ namespace Perscom.Database
     /// <see cref="Database.Soldier"/> will occupy.
     /// </summary>
     [Table]
-    public class Position
+    public class Position : IEquatable<Position>
     {
         #region Columns
 
@@ -125,5 +126,20 @@ namespace Perscom.Database
         public virtual IEnumerable<PastAssignment> PastAssignments { get; set; }
 
         #endregion
+
+        public bool Equals(Position other)
+        {
+            if (other == null) return false;
+            return (Id == other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Position);
+        }
+
+        public override int GetHashCode() => Id;
+
+        public override string ToString() => Name;
     }
 }
