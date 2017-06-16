@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Perscom.Simulation
+namespace Perscom
 {
     /// <summary>The Range class.</summary>
     /// <typeparam name="T">Generic parameter.</typeparam>

@@ -4,22 +4,20 @@ using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
-    /// <summary>
-    /// Represents a [1:{0,1}] relationship bewteen a <see cref="Database.Billet"/> 
-    /// and a <see cref="Database.Specialty"/>.
-    /// </summary>
-    /// <remarks>
-    /// If this entity exists, that means a Billet will set the Specialty of
-    /// the Soldier who enters the Billet.
-    /// </remarks>
     [Table]
-    public class BilletSpecialty : IEquatable<BilletSpecialty>
+    public class BilletSpawnSetting : IEquatable<BilletSpawnSetting>
     {
         /// <summary>
         /// The Unique Billet ID (Row ID)
         /// </summary>
         [Column, PrimaryKey]
         public int BilletId { get; protected set; }
+
+        /// <summary>
+        /// The Unique Soldier Generator ID
+        /// </summary>
+        [Column]
+        public int GeneratorId { get; set; }
 
         /// <summary>
         /// The Unique Specialty ID
@@ -30,7 +28,7 @@ namespace Perscom.Database
         #region Virtual Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="Billet"/> entity that this entity references.
+        /// Gets the <see cref="Database.Billet"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
         [ForeignKey("BilletId",
@@ -40,7 +38,17 @@ namespace Perscom.Database
         protected virtual ForeignKey<Billet> FK_Billet { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Specialty"/> entity that this entity references.
+        /// Gets the <see cref="Database.SoldierGenerator"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("GeneratorId",
+            OnDelete = ReferentialIntegrity.Cascade,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<SoldierGenerator> FK_Generator { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="Database.Specialty"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
         [ForeignKey("SpecialtyId",
@@ -70,6 +78,23 @@ namespace Perscom.Database
         }
 
         /// <summary>
+        /// Gets or Sets the <see cref="Perscom.Database.SoldierGenerator"/> that 
+        /// this Billit uses.
+        /// </summary>
+        public SoldierGenerator Generator
+        {
+            get
+            {
+                return FK_Generator?.Fetch();
+            }
+            set
+            {
+                GeneratorId = value.Id;
+                FK_Generator?.Refresh();
+            }
+        }
+
+        /// <summary>
         /// Gets or Sets the <see cref="Perscom.Database.Specialty"/> that 
         /// this Billit falls under.
         /// </summary>
@@ -88,7 +113,7 @@ namespace Perscom.Database
 
         #endregion
 
-        public bool Equals(BilletSpecialty other)
+        public bool Equals(BilletSpawnSetting other)
         {
             if (other == null) return false;
             return (BilletId == other.BilletId);
@@ -96,9 +121,10 @@ namespace Perscom.Database
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as BilletSpecialty);
+            return this.Equals(obj as BilletSpawnSetting);
         }
 
         public override int GetHashCode() => BilletId;
+
     }
 }

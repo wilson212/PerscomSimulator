@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using CrossLite;
 using CrossLite.CodeFirst;
 
@@ -32,30 +28,36 @@ namespace Perscom.Database
         public string LastName { get; set; }
 
         /// <summary>
-        /// Gets or Sets the <see cref="Rank.Id"/> this <see cref="Soldier"/>
+        /// Gets or sets the <see cref="Rank.Id"/> this <see cref="Soldier"/>
         /// was promoted from
         /// </summary>
         [Column, Required]
         public int RankId { get; set; }
 
         /// <summary>
+        /// Gets or sets the <see cref="Specialty.Id"/> for this <see cref="Soldier"/>
+        /// </summary>
+        [Column, Required]
+        public int SpecialtyId { get; set; }
+
+        /// <summary>
         /// Gets or sets the the <see cref="DateTime"/> the soldier was created in
         /// the <see cref="Simulator"/>
         /// </summary>
         [Column, Required]
-        public DateTime ServiceEntryDate { get; set; }
+        public int EntryIterationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the assigned end date for this soldier
+        /// Gets or sets the <see cref="Simulator.Iteration"/> that this soldier will retire on
         /// </summary>
         [Column, Required]
-        public DateTime ExitServiceDate { get; set; }
+        public int ExitIterationId { get; set; }
 
         /// <summary>
         /// Gets the last promotion date for this soldier
         /// </summary>
         [Column, Required]
-        public DateTime LastPromotionDate { get; set; }
+        public int LastPromotionIterationId { get; set; }
 
         /// <summary>
         /// Gets or sets whether this soldier is retired
@@ -64,7 +66,7 @@ namespace Perscom.Database
         public bool Retired { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="SoldierSpawnRate.Id"/>
+        /// Gets or sets the <see cref="CareerSpawnRate.Id"/>
         /// </summary>
         [Column, Required]
         public int SpawnRateId { get; set; }
@@ -84,21 +86,52 @@ namespace Perscom.Database
         protected virtual ForeignKey<Rank> FK_Rank { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="SoldierSpawnRate"/> entity that this entity references.
+        /// Gets the <see cref="Database.Specialty"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("SpecialtyId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<Specialty> FK_Specialty { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref=IterationDate"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("EntryIterationId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<IterationDate> FK_Entry { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref=IterationDate"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("LastPromotionIterationId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<IterationDate> FK_Promotion { get; set; }
+
+
+        /// <summary>
+        /// Gets the <see cref="CareerSpawnRate"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
         [ForeignKey("SpawnRateId",
             OnDelete = ReferentialIntegrity.Restrict,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        protected virtual ForeignKey<SoldierSpawnRate> FK_SpawnRate { get; set; }
+        protected virtual ForeignKey<CareerSpawnRate> FK_SpawnRate { get; set; }
 
         #endregion
 
         #region Foreign Key Properties
 
         /// <summary>
-        /// Gets or Sets the <see cref="Perscom.Database.Rank"/> that 
+        /// Gets or sets the <see cref="Perscom.Database.Rank"/> that 
         /// this position will hold.
         /// </summary>
         public Rank Rank
@@ -115,10 +148,61 @@ namespace Perscom.Database
         }
 
         /// <summary>
-        /// Gets or Sets the <see cref="SoldierSpawnRate"/> that 
+        /// Gets or sets the <see cref="Perscom.Database.Specialty"/> that 
+        /// this soldier holds.
+        /// </summary>
+        public Specialty Specialty
+        {
+            get
+            {
+                return FK_Specialty?.Fetch();
+            }
+            set
+            {
+                SpecialtyId = value.Id;
+                FK_Specialty?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IterationDate"/> that this <see cref="Soldier"/> 
+        /// was created during the simulation
+        /// </summary>
+        public IterationDate EntryServiceDate
+        {
+            get
+            {
+                return FK_Entry?.Fetch();
+            }
+            set
+            {
+                EntryIterationId = value.Id;
+                FK_Entry?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IterationDate"/> that this <see cref="Soldier"/> 
+        /// earned his last <see cref="Promotion"/>
+        /// </summary>
+        public IterationDate LastPromotionDate
+        {
+            get
+            {
+                return FK_Promotion?.Fetch();
+            }
+            set
+            {
+                LastPromotionIterationId = value.Id;
+                FK_Promotion?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="CareerSpawnRate"/> that 
         /// this soldier is created with
         /// </summary>
-        public SoldierSpawnRate SpawnRate
+        public CareerSpawnRate SpawnRate
         {
             get
             {
@@ -136,22 +220,29 @@ namespace Perscom.Database
         #region Child Database Sets
 
         /// <summary>
+        /// Gets a list of current <see cref="Assignment"/> entities that reference this 
+        /// <see cref="Soldier"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<Assignment> Assignments { get; set; }
+
+        /// <summary>
         /// Gets a list of <see cref="PastAssignment"/> entities that reference this 
         /// <see cref="Soldier"/>
         /// </summary>
         /// <remarks>
-        /// A lazy loaded enumeration that fetches all Torque Ratios
-        /// that are bound by the foreign key and this Engine.Id.
+        /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<PastAssignment> Assignments { get; set; }
+        public virtual IEnumerable<PastAssignment> PastAssignments { get; set; }
 
         /// <summary>
         /// Gets a list of <see cref="Promotion"/> entities that reference this 
         /// <see cref="Soldier"/>
         /// </summary>
         /// <remarks>
-        /// A lazy loaded enumeration that fetches all Torque Ratios
-        /// that are bound by the foreign key and this Engine.Id.
+        /// A lazy loaded enumeration
         /// </remarks>
         public virtual IEnumerable<Promotion> Promotions { get; set; }
 

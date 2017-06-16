@@ -7,7 +7,7 @@ namespace Perscom.Database
     /// <summary>
     /// Represents a relationship between a <see cref="Database.Soldier"/> and his past <see cref="Promotion"/>
     /// </summary>
-    [Table]
+    [Table(BuildInstanceRelationships = false)]
     public class Promotion : IEquatable<Promotion>
     {
         #region Columns
@@ -40,10 +40,10 @@ namespace Perscom.Database
         public int ToRankId { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="DateTime"/> of this promotion
+        /// Gets or sets the <see cref="IterationDate"/> of this promotion
         /// </summary>
         [Column, Required]
-        public DateTime Date { get; set; }
+        public int IterationId { get; set; }
 
         /// <summary>
         /// Gets or sets the number of months Time in Grade this <see cref="Soldier"/>
@@ -56,6 +56,7 @@ namespace Perscom.Database
         /// Gets or sets the number of months Time in Service this <see cref="Soldier"/>
         /// had when promoted to the <see cref="ToRank"/>
         /// </summary>
+        [Column, Required]
         public int TimeInService { get; set; }
 
         #endregion
@@ -95,6 +96,17 @@ namespace Perscom.Database
         )]
         public virtual Rank ToRank { get; private set; }
 
+        /// <summary>
+        /// Gets the <see cref="IterationDate"/> of when this promotion was recieved
+        /// </summary>
+        /// <remarks>Eager loaded because it should never be changed!</remarks>
+        [InverseKey("Id")]
+        [ForeignKey("IterationId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        public virtual IterationDate Date { get; private set; }
+
         #endregion
 
         public bool Equals(Promotion other)
@@ -110,6 +122,6 @@ namespace Perscom.Database
 
         public override int GetHashCode() => Id;
 
-        public override string ToString() => Date.ToShortDateString();
+        public override string ToString() => Date?.Date.ToShortDateString() ?? IterationId.ToString();
     }
 }

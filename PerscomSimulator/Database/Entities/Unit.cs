@@ -24,7 +24,7 @@ namespace Perscom.Database
         /// ID that this entity references
         /// </summary>
         [Column, Required]
-        public int UnitTypeId { get; set; }
+        public int UnitTemplateId { get; set; }
 
         /// <summary>
         /// Gets or Sets the string name of this Unit
@@ -41,7 +41,7 @@ namespace Perscom.Database
         /// </summary>
         /// <remarks>Eager loaded because it should never be changed!</remarks>
         [InverseKey("Id")]
-        [ForeignKey("UnitTypeId",
+        [ForeignKey("UnitTemplateId",
             OnDelete = ReferentialIntegrity.Cascade,
             OnUpdate = ReferentialIntegrity.Cascade
         )]

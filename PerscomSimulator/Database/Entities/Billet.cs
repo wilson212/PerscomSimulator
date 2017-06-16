@@ -48,6 +48,13 @@ namespace Perscom.Database
         public int MaxRankId { get; set; }
 
         /// <summary>
+        /// Gets or sets the <see cref="Echelon"/> level in which we will find soldiers
+        /// to fill this position
+        /// </summary>
+        [Column, Required]
+        public int PromotionPoolId { get; set; }
+
+        /// <summary>
         /// Gets or Sets the string name of this Unit
         /// </summary>
         [Column, Required]
@@ -84,23 +91,22 @@ namespace Perscom.Database
         /// Indicates whether the soldier holding this <see cref="Billet"/> can retire before
         /// meeting the <see cref="MinTourLength"/>.
         /// </summary>
-        [Column, Required, Default(1)]
+        [Column, Default(1)]
         public bool CanRetireEarly { get; set; } = true;
 
         /// <summary>
-        /// Indicates whether this <see cref="Billet"/> is entry level. If true,
-        /// this <see cref="Billet"/> will be filled with freshly spawned <see cref="Soldier"/>
-        /// entities when vacant.
+        /// Indicates whether the soldier holding this <see cref="Billet"/> is limited to
+        /// just 1 tour, and 1 tour only
         /// </summary>
-        [Column, Required]
-        public bool EntryLevel { get; set; }
+        [Column, Default(1)]
+        public bool Repeatable { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the <see cref="Echelon"/> level in which we will find soldiers
-        /// to fill this position
+        /// Indicates whether <see cref="Soldier"/>s whom never held this <see cref="Billet"/> 
+        /// before have priority over repeat <see cref="Soldier"/>s
         /// </summary>
-        [Column, Required]
-        public int PromotionPoolId { get; set; }
+        [Column, Default(0)]
+        public bool PreferNonRepeats { get; set; }
 
         /// <summary>
         /// Gets or sets the order in which this Billet will display in the Billet List View
@@ -271,6 +277,15 @@ namespace Perscom.Database
         /// that are bound by the foreign key and this Engine.Id.
         /// </remarks>
         public virtual IEnumerable<BilletRequirement> Requirements { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="BilletSpawnSetting"/> entity that reference this 
+        /// <see cref="Billet"/>, if any
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<BilletSpawnSetting> SpawnSettings { get; set; }
 
         /// <summary>
         /// Gets the <see cref="BilletSpecialty"/> entity that reference this 

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Xml;
+using Perscom.Database;
 using Perscom.Simulation;
 
 namespace Perscom
 {
     public class Simulator
     {
+        protected SimDatabase Database { get; set; }
+
         /// <summary>
         /// The starting date for a simulation
         /// </summary>
@@ -20,16 +21,12 @@ namespace Perscom
         /// </summary>
         public DateTime CurrentDate { get; protected set; } = DateTime.Now;
 
+        public IterationDate CurrentIterationDate { get; set; }
+
         /// <summary>
         /// Gets the End Date for the simulation
         /// </summary>
         public DateTime EndDate { get; protected set; }
-
-        /// <summary>
-        /// The total number of soldier objects created by this simulation, used
-        /// for setting the SpawnID of a soldier
-        /// </summary>
-        protected int _soldiersSpawned = 0;
 
         /// <summary>
         /// Gets the <see cref="SimulatorSettings"/> for the last simulation
@@ -39,22 +36,47 @@ namespace Perscom
         /// <summary>
         /// Grade => Soldier Array
         /// </summary>
-        public Dictionary<RankType, Dictionary<int, List<Soldier>>> Soldiers { get; protected set; }
+        public Dictionary<int, SoldierWrapper> ActiveDutySoldiers { get; protected set; }
+
+        /// <summary>
+        /// Grade => Soldier Array
+        /// </summary>
+        public List<PositionWrapper> Positions { get; protected set; }
 
         /// <summary>
         /// Soldier Generator
         /// </summary>
-        protected Dictionary<RankType, SpawnGenerator<Soldier>> Generator { get; set; }
+        protected Dictionary<RankType, SpawnGenerator<CareerSpawnRate>> CareerGenerators { get; set; }
 
         /// <summary>
-        /// RankType => [Grade => PromotionInfo (for grade)]
+        /// Soldier Generator
         /// </summary>
-        public Dictionary<RankType, Dictionary<int, RankGradeStatistics>> RankStatistics { get; protected set; }
+        protected Dictionary<int, SoldierGenerator> SoldierGenerators { get; set; }
+
+        /// <summary>
+        /// UnitTemplateId => [RankType => [Rank.Grade => RankGradeStatistics]]
+        /// </summary>
+        public Dictionary<int, Dictionary<RankType, Dictionary<int, RankGradeStatistics>>> RankStatistics
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// UnitTemplateId => [RankType => [Rank.Grade => [SpecialtyId => SpecialtyGradeStatistics]]]
+        /// </summary>
+        public Dictionary<int, Dictionary<RankType, Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>>> SpecialtyStatistics
+        {
+            get;
+            protected set;
+        }
+
+        public UnitTemplate Template { get; set; }
 
         /// <summary>
         /// The Unit that is processing in this Simulator instance
         /// </summary>
-        public Unit ProcessingUnit { get; protected set; }
+        public UnitWrapper ProcessingUnit { get; protected set; }
 
         /// <summary>
         /// The number of years to skip in the simulation before logging
@@ -68,64 +90,56 @@ namespace Perscom
         protected int TotalYearsRan { get; set; } = 0;
 
         /// <summary>
+        /// The total number of years the simulation was ran
+        /// </summary>
+        protected int Iteration { get; set; } = 1;
+
+        /// <summary>
         /// Gets or Sets the <see cref="RandomNameGenerator"/> used to assign
         /// names to <see cref="Soldier"/>s when they spawn
         /// </summary>
         protected RandomNameGenerator NameGenerator { get; set; }
 
         /// <summary>
-        /// Type => [Grade => Stack]
-        /// </summary>
-        protected Dictionary<RankType, Dictionary<int, Stack<UnitPosition>>> AvailablePositions { get; set; }
-
-        /// <summary>
         /// Contains an enumerable array of RankTypes
         /// </summary>
-        protected static RankType[] RankTypes = Enum.GetValues(typeof(RankType)).Cast<RankType>().ToArray();
+        protected static RankType[] RankTypes { get; set; } = Enum.GetValues(typeof(RankType)).Cast<RankType>().ToArray();
 
         /// <summary>
         /// Creates a new Simulator instance
         /// </summary>
         /// <param name="unit">The unit to run the simulation on</param>
-        public Simulator(Unit unit, SimulatorSettings settings)
+        public Simulator(SimDatabase db, UnitWrapper unit, SimulatorSettings settings)
         {
+            Database = db;
             ProcessingUnit = unit;
+            Template = unit.Unit.Type;
             Settings = settings;
+
+            // Check if new simulation by checking dates and unit id's
+
+            // Create name generator
             NameGenerator = new RandomNameGenerator();
-            Generator = new Dictionary<RankType, SpawnGenerator<Soldier>>();
-            foreach (RankType type in Enum.GetValues(typeof(RankType)))
-                Generator[type] = new SpawnGenerator<Soldier>();
 
-            // Load probabilities from xml file
-            LoadSoldierSettings();
-        }
+            // Load Generators
+            SoldierGenerators = new Dictionary<int, SoldierGenerator>();
+            foreach (var generator in db.SoldierGenerators)
+            {
+                generator.Initialize();
+                SoldierGenerators.Add(generator.Id, generator);
+            }
 
-        /// <summary>
-        /// Loads the Probabilities.xml file to establish the soldier probability values
-        /// </summary>
-        private void LoadSoldierSettings()
-        {
-            // Ensure the unit exists
-            string filePath = Path.Combine(Program.RootPath, "Config", "Soldiers.xml");
-            if (!File.Exists(filePath))
-                throw new Exception($"Soldiers.xml file is missing!");
-
-            // Load the document
-            XmlDocument document = new XmlDocument();
-            document.Load(filePath);
-            var root = document.DocumentElement;
-            
+            // Load soldier career probabilities
+            var list = db.CareerSpawnRates.ToArray();
+            CareerGenerators = new Dictionary<RankType, SpawnGenerator<CareerSpawnRate>>();
             foreach (RankType type in RankTypes)
             {
-                string name = Enum.GetName(typeof(RankType), type).ToLower();
-                XmlNodeList items = root.SelectNodes($"{name}/soldier");
-                foreach (XmlElement element in items)
-                {
-                    int prob = Int32.Parse(element.Attributes["probability"].Value);
-                    int min = Int32.Parse(element.Attributes["minTime"].Value);
-                    int max = Int32.Parse(element.Attributes["maxTime"].Value);
-                    Generator[type].Add(new Soldier(prob, new Range<int>(min, max)));
-                }
+                // Create Spawn Generator
+                var generator = new SpawnGenerator<CareerSpawnRate>();
+                generator.AddRange(list.Where(x => x.Type == type));
+
+                // Create dictionary record
+                CareerGenerators.Add(type, generator);
             }
         }
 
@@ -144,183 +158,158 @@ namespace Perscom
                 throw new ArgumentException("skipYears cannot be less than totalYears", "skipYears");
 
             // First, set the end date
-            int startMonth = DateTime.Now.Month;
-            EndDate = new DateTime(DateTime.Now.Year, startMonth, 1);
-            CurrentDate = StartDate = EndDate.AddYears(-totalYears);
             SkipYears = skipYears;
             TotalYearsRan = 0;
 
-            // Populate soldiers if we need to
-            PopulateSoldiers();
+            // Set initial dates
+            EndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            StartDate = EndDate.AddYears(-totalYears);
+            CurrentDate = StartDate;
+
+            // Set Iteration ID if we are continuing from a previous sim
+            var date = Database.Query<IterationDate>("SELECT * FROM IterationDate ORDER BY Id DESC LIMIT 1").FirstOrDefault();
+            if (date != null)
+            {
+                StartDate = new DateTime(date.Date.Year, date.Date.Month, 1).AddMonths(1);
+                CurrentDate = StartDate;
+                EndDate = StartDate.AddYears(totalYears);
+                CurrentIterationDate = date;
+            }
+            else
+            {
+                // Create Iteration Date
+                CurrentIterationDate = new IterationDate() { Date = CurrentDate };
+                Database.IterationDates.Add(CurrentIterationDate);
+            }
 
             // Update progress
+            token.ThrowIfCancellationRequested();
             TaskProgressUpdate update = new TaskProgressUpdate();
-            update.HeaderText = "Running Simulation... Please Wait.";
+            update.MessageText = "Ordering soldier positions by grade and stature...";
             progress.Report(update);
+
+            // Get all positions
+            Positions = ProcessingUnit.GetAllPositions()
+                .OrderBy(x => x.Billet.Rank.Grade)
+                .ThenByDescending(x => x.Billet.Stature)
+                .ToList();
+
+            token.ThrowIfCancellationRequested();
+            update = new TaskProgressUpdate();
+            update.MessageText = "Populating soldier seats...";
+            progress.Report(update);
+
+            // Populate soldiers if we need to
+            using (var trans = Database.BeginTransaction())
+            {
+                PopulateSoldiers();
+                trans.Commit();
+            }
+
+            // Update progress
+            token.ThrowIfCancellationRequested();
+            update = new TaskProgressUpdate();
+            update.HeaderText = "Running Simulation... Please Wait.";
+            update.MessageText = $"Processing year {TotalYearsRan + 1} of {totalYears}";
+            progress.Report(update);
+
+            // Variable holder for the month name
+            string name = String.Empty;
 
             // Main Loop
             while (EndDate != CurrentDate)
             {
                 // Quit if cancelled
-                if (token.IsCancellationRequested)
-                    return;
+                token.ThrowIfCancellationRequested();
 
-                // Update the date
-                CurrentDate = CurrentDate.AddMonths(1);
-
-                // Update progress window every 1 year of simulation
-                int yearsDone = CurrentDate.Year - StartDate.Year;
-                if (CurrentDate.Month == startMonth && yearsDone > 0)
+                using (var trans = Database.BeginTransaction())
                 {
-                    TotalYearsRan = yearsDone;
-                    update = new TaskProgressUpdate();
-                    update.MessageText = $"Processing year {yearsDone} of {totalYears}";
-                    progress.Report(update);
-                }
-
-                // Process Retirements first!
-                PerformStartOfMonthDuties();
-
-                // Now do promotions
-                ProcessPromotions();
-
-                // If an entire years has gone by, subtract a skip year
-                // so we can begin logging again when the time comes.
-                if (SkipYears > 0 && CurrentDate.Month == startMonth)
-                {
-                    SkipYears -= 1;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns the total percentage of soldiers who made it to the specified
-        /// rank and grade in the simulation
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="grade"></param>
-        /// <returns></returns>
-        public double TotalPromotionRate(RankType type, int grade)
-        {
-            // Make sure the rank exists in the simulation
-            if (_soldiersSpawned == 0 || !RankStatistics[type].ContainsKey(grade))
-                return 0;
-
-            // Total number of soldiers who did NOT make this rank/grade
-            int totalPriorGradeRetirements = 0;
-
-            // Total number of soldiers who DID make this rank/grade
-            int totalAtThisRank = RankStatistics[type][grade].TotalSoldiers;
-
-            // Add up the total number of soldiers who did NOT make this
-            // grade in the specified rank type
-            foreach (Rank r in Ranks.GetPrevousGrades(type, grade))
-            {
-                // If no soldiers ever made this rank/grade, skip
-                if (!RankStatistics[type].ContainsKey(r.Grade))
-                    continue;
-
-                // Add total retirements at this grade to the total cumulative retirements
-                var info = RankStatistics[type][r.Grade];
-                totalPriorGradeRetirements += info.TotalRetirements;
-            }
-
-            // Get the total number of soldiers up to this rank and grade point
-            double totalSoldiers = totalAtThisRank + totalPriorGradeRetirements;
-
-            // Prevent div by zero exception
-            return (totalSoldiers == 0) ? 0 : Math.Round((totalAtThisRank / totalSoldiers) * 100, 2);
-        }
-
-        /// <summary>
-        /// Gets the percentage of positions at the specified rank / grade that
-        /// are understaffed on average
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="grade"></param>
-        /// <returns></returns>
-        public double GetAverageDeficitRate(RankType type, int grade)
-        {
-            UnitTemplate template = UnitTemplate.Load(ProcessingUnit.TemplateName);
-            int positions = template.SoldierCounts[type][grade];
-            int cumulative = positions * (TotalYearsRan * 12);
-
-            // Total number of soldiers who DID make this rank/grade
-            int totalDeficit = RankStatistics[type][grade].Deficit;
-
-            if (cumulative == 0 || totalDeficit == 0) return 0;
-
-            return Math.Round(((double)totalDeficit / cumulative) * 100, 2);
-        }
-
-        /// <summary>
-        /// Each soldier is given a TimeToLive when created, this method will clear them
-        /// out to make room for new soldiers and also process automatic promotions
-        /// </summary>
-        /// <param name="soldiers"></param>
-        private void PerformStartOfMonthDuties()
-        {
-            foreach (RankType type in RankTypes)
-            {
-                // Ensure we are setup to run this rank type
-                if (!Settings.ProcessRankType(type))
-                    continue;
-
-                // Itterate through each Grade, except the last
-                foreach (KeyValuePair<int, List<Soldier>> data in Soldiers[type])
-                {
-                    // Create a shallow copy of the soldiers at this grade, so we
-                    // can enumerate and still modify the soldier list
-                    Soldier[] soldiers = new Soldier[Soldiers[type][data.Key].Count];
-                    Soldiers[type][data.Key].CopyTo(soldiers);
-
-                    // Now we promote the selected soldiers for promotion
-                    foreach (Soldier soldier in soldiers)
+                    // Update the date
+                    if (Iteration > 1)
                     {
-                        // Check for retirement
-                        if (soldier.IsRetiring(CurrentDate))
-                        {
-                            // Log retirement data for current rank/grade
-                            if (SkipYears == 0)
-                                RankStatistics[type][soldier.RankInfo.Grade].TrackRetiree(soldier, CurrentDate);
+                        CurrentDate = CurrentDate.AddMonths(1);
 
-                            // Remove the retired soldier from the roster
-                            Soldiers[type][soldier.RankInfo.Grade].Remove(soldier);
-
-                            // Forfeit the soldiers position
-                            AvailablePositions[type][soldier.Position.Grade].Push(soldier.Position);
-
-                            // Say goodbye!
-                            soldier.Retire();
-                            continue;
-                        }
-
-                        // Check for rank deficit before processing auto promotions
-                        if (soldier.Position.Grade > soldier.RankInfo.Grade)
-                        {
-                            // Log retirement data for current rank/grade
-                            if (SkipYears == 0)
-                                RankStatistics[type][soldier.Position.Grade].Deficit += 1;
-                        }
-
-                        // Check for auto promotion and under-staff promotion
-                        PromotableStatus status;
-                        if (soldier.IsPromotable(CurrentDate, out status) && (status == PromotableStatus.Automatic || status == PromotableStatus.Position))
-                        {
-                            // Log promotion data for current rank/grade
-                            if (SkipYears == 0)
-                                RankStatistics[type][soldier.RankInfo.Grade].TrackPromotionToNextGrade(soldier, CurrentDate);
-
-                            // Move soldier to the new rank roster
-                            Rank toRank = Ranks.GetRank(type, soldier.RankInfo.Grade + 1);
-                            Soldiers[type][soldier.RankInfo.Grade].Remove(soldier);
-                            Soldiers[type][toRank.Grade].Add(soldier);
-
-                            // Promotion soldier
-                            soldier.Promote(CurrentDate, toRank);
-                        }
+                        // Create Iteration Date
+                        CurrentIterationDate = new IterationDate() { Date = CurrentDate };
+                        Database.IterationDates.Add(CurrentIterationDate);
                     }
+
+                    // Ensure we are not screwed up here
+                    if (Iteration != CurrentIterationDate.Id)
+                    {
+                        throw new Exception("Date and Iteration dont match!");
+                    }
+
+                    // Update progress window
+                    name = CurrentDate.ToString("MMMM");
+                    update = new TaskProgressUpdate();
+                    update.MessageText = $"Processing {name} of year {TotalYearsRan + 1} of {totalYears}";
+                    progress.Report(update);
+
+                    // Now do promotions
+                    DoMontlyPositionChecks(token);
+
+                    // If an entire years has gone by, subtract a skip year
+                    // so we can begin logging again when the time comes.
+                    if (CurrentDate.Month == StartDate.Month && Iteration > 2)
+                    {
+                        TotalYearsRan = CurrentDate.Year - StartDate.Year;
+                        if (SkipYears > 0)
+                            SkipYears--;
+
+                        GC.Collect();
+                    }
+
+                    // Commit changes
+                    trans.Commit();
+
+                    // Increment our iteration Id
+                    Iteration++;
                 }
+            }
+
+            // Update progress
+            update = new TaskProgressUpdate();
+            update.HeaderText = "Saving Simulation Results... Please Wait.";
+            progress.Report(update);
+
+            // Save statistics
+            try
+            {
+                using (var trans = Database.BeginTransaction())
+                {
+                    // Save soldiers and their relevant data
+                    foreach (SoldierWrapper s in ActiveDutySoldiers.Values)
+                    {
+                        s.Save(Database, CurrentIterationDate);
+                        s.Dispose();
+                    }
+
+                    // Save rank stats data
+                    foreach (var template in RankStatistics.Values)
+                    foreach (var grade in template.Values)
+                    foreach (var stat in grade.Values)
+                    {
+                        Database.RankGradeStatistics.Add(stat);
+                    }
+
+                    // Save specialty data
+                    foreach (var template in SpecialtyStatistics)
+                    foreach (var spec in template.Value.Values)
+                    foreach (var grade in spec.Values)
+                    foreach (var stat in grade.Values)
+                    {
+                        Database.SpecialtyGradeStatistics.Add(stat);
+                    }
+
+                    // Save
+                    trans.Commit();
+                }
+            }
+            catch(Exception ex)
+            {
+                ExceptionHandler.GenerateExceptionLog(ex);
+                throw;
             }
         }
 
@@ -328,120 +317,275 @@ namespace Perscom
         /// This method is called after <see cref="PerformStartOfMonthDuties()"/> is 
         /// called, so we can promote soldiers to fill those new empty slots.
         /// </summary>
-        private void ProcessPromotions()
+        private void DoMontlyPositionChecks(CancellationToken token)
         {
-            foreach (RankType type in RankTypes)
+            // Loop through each position
+            // Sorted by [RankType -> Grade -> Stature]
+            foreach (var position in Positions)
             {
+                // Quit if we cancelled
+                token.ThrowIfCancellationRequested();
+
                 // Ensure we are setup to run this rank type
-                if (!Settings.ProcessRankType(type))
+                if (!Settings.ProcessRankType(position.Billet.Rank.Type))
                     continue;
 
-                // Get the grade of the entry level rank
-                Rank entryRank = Ranks.GetEntryLevelRank(type);
-                Queue<UnitPosition> positions = new Queue<UnitPosition>();
+                // Grab current holder
+                SoldierWrapper soldier = position.Holder;
+                RankType type = position.Billet.Rank.Type;
 
-                // Itterate through each Grade in Reverse
-                foreach (KeyValuePair<int, List<Soldier>> data in Soldiers[type].OrderByDescending(x => x.Key))
+                // Check if position is empty
+                if (position.IsEmpty)
                 {
-                    // Grab number of open positions for this grade
-                    Rank toRank = Ranks.GetRank(type, data.Key);
-                    
-                    // Add positions from this grade to the Queue
-                    while (AvailablePositions[type][toRank.Grade].Count > 0)
+                    // Is this an entry level position?
+                    if (position.Billet.IsEntryLevel)
                     {
-                        UnitPosition pos = AvailablePositions[type][toRank.Grade].Pop();
-                        positions.Enqueue(pos);
+                        soldier = CreateSoldier(SoldierGenerators[position.Billet.SpawnSetting.GeneratorId], position);
+                        soldier.AssignPosition(position, CurrentIterationDate, Database);
+                        continue;
                     }
-
-                    // If this is an entry level rank, we handle things differently
-                    if (!Ranks.GradeExists(type, data.Key - 1))
+                    else
                     {
-                        // throw error if this is not an entry level rank!
-                        if (toRank.Grade != entryRank.Grade)
+                        // Grab soldier pool
+                        soldier = FindBestSoldierFor(position);
+                        if (soldier != null)
                         {
-                            string name = Enum.GetName(typeof(RankType), type);
-                            throw new Exception(String.Format("There seems to be a Grade gap in the RankType {0}", name));
-                        }
-
-                        // Create new soldiers!
-                        while (positions.Count > 0)
-                        {
-                            Soldier soldier = CreateSoldier(toRank.Grade, type);
-                            soldier.AssignPosition(positions.Dequeue(), CurrentDate);
-                            Soldiers[type][toRank.Grade].Add(soldier);
+                            soldier.AssignPosition(position, CurrentIterationDate, Database);
                         }
                     }
-                    else if (positions.Count > 0)
+                }
+
+                // If we could not find someone to fill the position
+                if (soldier == null)
+                    continue;
+
+                // Define soldier vars
+                PromotableStatus status;
+                int grade = soldier.Rank.Grade;
+                int specId = soldier.Soldier.SpecialtyId;
+
+                // Check for retirement
+                if (soldier.IsRetiring(CurrentIterationDate))
+                {
+                    // Log retirement data for current rank/grade
+                    LogRetiree(soldier);
+
+                    // Remove the retired soldier from the roster
+                    ActiveDutySoldiers.Remove(soldier.Soldier.Id);
+
+                    // Say goodbye!
+                    soldier.Retire(CurrentIterationDate, Database);
+
+                    // Update soldier record
+                    soldier.Save(Database, CurrentIterationDate);
+
+                    // Call dispose!
+                    soldier.Dispose();
+                }
+
+                // Check for auto promotion and under-staff promotion
+                else if (soldier.IsPromotable(CurrentIterationDate, out status))
+                {
+                    if (status == PromotableStatus.Automatic || status == PromotableStatus.Position)
                     {
-                        // Grab previous grade
-                        Rank fromRank = Ranks.GetPreviousGrade(type, toRank.Grade);
-                        int prevGrade = fromRank.Grade;
-                        int currGrade = toRank.Grade;
+                        // Log promotion data for current rank/grade
+                        LogPromotion(soldier);
 
-                        // In order to fill higher level positions, we may need to look
-                        // further down than 1 grade if the deficit is high.
-                        while (positions.Count > 0 && Ranks.GradeExists(type, prevGrade))
+                        // Get the expected soldier rank/grade to promote from
+                        var expectedGrade = position.Billet.Rank.Grade - 1;
+
+                        // Promote soldier. Do not skip rank grades!
+                        if (soldier.Rank.Grade == expectedGrade)
                         {
-                            // Update to Rank
-                            toRank = Ranks.GetRank(type, currGrade);
-
-                            // Next we select which soldiers are getting promoted
-                            IEnumerable<Soldier> selected;
-                            if (toRank.MinTimeForConsideration > 0)
-                            {
-                                // Soldiers who do not meet the Min Time till Retirement are selected after
-                                // those who do, so we order promotions by those who are staying awhile, 
-                                // then by seniority (Time in grade)
-                                selected = (
-                                    from soldier in Soldiers[type][prevGrade]
-                                    let t2r = soldier.ExitServiceDate.MonthDifference(CurrentDate)
-                                    let qualified = (t2r >= toRank.MinTimeForConsideration) ? 1 : 2
-                                    orderby qualified, soldier.LastPromotionDate
-                                    select soldier
-                                ).Take(positions.Count);
-                            }
+                            // Billet grade is 1 level higher
+                            soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
+                        }
+                        else
+                        {
+                            // Billet grade is multiple levels higher
+                            Rank toRank = RankCache.GetNextGradeRanks(soldier.Rank).FirstOrDefault();
+                            if (toRank != null)
+                                soldier.PromoteTo(CurrentIterationDate, toRank, Database);
                             else
-                            {
-                                selected = (
-                                    from soldier in Soldiers[type][prevGrade]
-                                    orderby soldier.LastPromotionDate
-                                    select soldier
-                                ).Take(positions.Count);
-                            }
-
-                            // Break if we could not find anyone!
-                            if (selected.Count() > 0)
-                            {
-                                // Now we promote the selected soldiers for promotion
-                                foreach (Soldier soldier in selected)
-                                {
-                                    // Grab new job
-                                    UnitPosition newPosition = positions.Dequeue();
-                                    UnitPosition oldPosition = soldier.Position;
-
-                                    // Assign soldiers new position
-                                    soldier.AssignPosition(newPosition, CurrentDate);
-                                    AvailablePositions[type][oldPosition.Grade].Push(oldPosition);
-
-                                    // Promote soldier, and move him to the new ranking list
-                                    if (soldier.IsPromotable(CurrentDate))
-                                    {
-                                        // Log Promotion?
-                                        if (SkipYears == 0)
-                                            RankStatistics[type][prevGrade].TrackPromotionToNextGrade(soldier, CurrentDate);
-
-                                        soldier.Promote(CurrentDate, toRank);
-                                        Soldiers[type][prevGrade].Remove(soldier);
-                                        Soldiers[type][currGrade].Add(soldier);
-                                    }
-                                }
-                            }
-
-                            // Decrement values
-                            currGrade--;
-                            prevGrade--;
+                                throw new Exception("Ran out of ranks? wtf");
                         }
                     }
+                    else if (status == PromotableStatus.Lateral)
+                    {
+                        // Do not log promotion since this is lateral
+                        soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
+                    }
+                }
+
+                // Check if soldier hit MaxTourLength
+            }
+        }
+
+        /// <summary>
+        /// This method is used to iterate through all of the soldiers in a promotion pool,
+        /// and returns the most qualified soldier for the specified <see cref="PositionWrapper"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method will start from the highest ranked soldiers first, and work its way downwards
+        /// until it finds someone who can fill the slot. If absolutly no soldiers can fill the slot,
+        /// null is returned.
+        /// </remarks>
+        /// <param name="position">The open position we are trying to fill</param>
+        /// <returns></returns>
+        private SoldierWrapper FindBestSoldierFor(PositionWrapper position)
+        {
+            // Define position specific vars
+            UnitWrapper topUnit = position.PromotionPoolUnit;
+            RankType type = position.Billet.Rank.Type;
+            int grade = position.Billet.Rank.Grade;
+
+            // Keep searching until we either find a soldier to
+            // fill the slot, or run out of rank/grades to pull from.
+            while (grade > 0)
+            {
+                //
+                // === Apply Filters === //
+                //
+                // TODO: Apply filters to force lateral promotions
+                //
+                var soldiers = topUnit.SoldiersByGrade[type][grade].Values
+                    .Where(x => IsCandidateFor(x, position))
+                    .OrderBy(x => x.LastPromotionDate.Id);
+
+                // If we have no soldiers, downgrade
+                if (soldiers.FirstOrDefault() == null)
+                {
+                    --grade;
+                    continue;
+                }
+
+                // Check for repeatable preference
+                if (position.Billet.Billet.PreferNonRepeats)
+                {
+                    soldiers = soldiers.ThenBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0);
+                }
+
+                // Fetch soldier list without checking LockedIn
+                var primeSoldiers = soldiers.Where(x => !x.Position.IsLockedIn(CurrentIterationDate));
+
+                // Check for an un-restricted soldier first
+                var wrapper = primeSoldiers.FirstOrDefault();
+                if (wrapper != null)
+                {
+                    return wrapper;
+                }
+
+                wrapper = soldiers.FirstOrDefault();
+                if (wrapper != null && grade < position.Billet.Rank.Grade)
+                {
+                    // Never laterally move a locked in soldier from the same 
+                    // Rank grade as the positon calls for, otherwise we could 
+                    // have a game of musical chairs happening EVERY month.
+                    return wrapper;
+                }
+
+                // Lower grade, and try again
+                --grade;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// This method determines if the specified soldier is a good candidate
+        /// for the specified position.
+        /// </summary>
+        /// <param name="soldier"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        private bool IsCandidateFor(SoldierWrapper soldier, PositionWrapper position)
+        {
+            // A soldier can only can move once per iteration!
+            // Positions are ordered at the start of the simulation by
+            // Grade and Stature anyways, so it works out
+            if (soldier.Assignment.AssignedIteration == CurrentIterationDate.Id)
+                return false;
+
+            // Don't move to the same billet we already sitting in
+            if (position.Billet.Id == soldier.Position.Billet.Id)
+                return false;
+
+            // Is there a MOS requirement?
+            if (position.Billet.RequiredSpecialties.Length > 0)
+            {
+                if (!position.Billet.RequiredSpecialties.Contains(soldier.Soldier.SpecialtyId))
+                    return false;
+            }
+
+            // Check for repeatable position
+            if (!position.Billet.Billet.Repeatable)
+            {
+                if (soldier.BilletsHeld.ContainsKey(position.Billet.Id))
+                    return false;
+            }
+
+            // If this is a lateral move, only select it IF the stature is higher
+            if (soldier.Position.Billet.Rank.Grade == position.Billet.Rank.Grade)
+            {
+                return (soldier.Position.Billet.Stature < position.Billet.Stature);
+            }
+
+            // If this is a promotion, then hell yes!
+            else if (position.Billet.Rank.Grade > soldier.Rank.Grade)
+            {
+                return true;
+            }
+
+            // Do not promote downwards on stature
+            else if (soldier.Position.Billet.Rank.Grade > position.Billet.Rank.Grade)
+            {
+                return false;
+            }
+
+            // if we are here, then fuck it, why not?
+            return true;
+        }
+
+        private void LogRetiree(SoldierWrapper soldier)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                int grade = soldier.Rank.Grade;
+                var type = soldier.Rank.Type;
+                int specId = soldier.Soldier.SpecialtyId;
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+                    RankStatistics[templateId][type][grade].TrackRetiree(soldier, CurrentIterationDate);
+                    SpecialtyStatistics[templateId][type][grade][specId].TrackRetiree(soldier, CurrentIterationDate);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
+            }
+        }
+
+        private void LogPromotion(SoldierWrapper soldier)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                int grade = soldier.Rank.Grade;
+                var type = soldier.Rank.Type;
+                int specId = soldier.Soldier.SpecialtyId;
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+                    RankStatistics[templateId][type][grade].TrackPromotionToNextGrade(soldier, CurrentDate);
+                    SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionToNextGrade(soldier, CurrentDate);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
                 }
             }
         }
@@ -451,43 +595,65 @@ namespace Perscom
         /// </summary>
         private void PopulateSoldiers()
         {
-            // Get all positions
-            var positions = ProcessingUnit.GetAllPositions();
+            // Get all specialties
+            var specialties = Database.Specialties.ToArray();
 
-            // Clear out old data
-            Soldiers = new Dictionary<RankType, Dictionary<int, List<Soldier>>>();
-            RankStatistics = new Dictionary<RankType, Dictionary<int, RankGradeStatistics>>();
-            AvailablePositions = new Dictionary<RankType, Dictionary<int, Stack<UnitPosition>>>();
+            // Create our soldier dictionaries
+            ActiveDutySoldiers = new Dictionary<int, SoldierWrapper>();
+            RankStatistics = new Dictionary<int, Dictionary<RankType, Dictionary<int, RankGradeStatistics>>>();
+            SpecialtyStatistics = new Dictionary<int, Dictionary<RankType, Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>>>();
 
-            // Soldiers
-            foreach (RankType type in RankTypes)
+            // Build our Statistics Dictionaries
+            foreach (UnitTemplate template in Database.UnitTemplates)
             {
-                // Initiate data
-                Soldiers.Add(type, new Dictionary<int, List<Soldier>>());
-                RankStatistics.Add(type, new Dictionary<int, RankGradeStatistics>());
-                AvailablePositions.Add(type, new Dictionary<int, Stack<UnitPosition>>());
+                RankStatistics.Add(template.Id, new Dictionary<RankType, Dictionary<int, RankGradeStatistics>>());
+                SpecialtyStatistics.Add(template.Id, new Dictionary<RankType, Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>>());
 
-                // Add all grades
-                foreach (Rank rank in Ranks.GetRankListByType(type).Select(x => x.Value).OrderBy(x => x.Grade))
+                // Soldiers
+                foreach (RankType type in RankTypes)
                 {
-                    Soldiers[type].Add(rank.Grade, new List<Soldier>());
-                    RankStatistics[type].Add(rank.Grade, new RankGradeStatistics());
-                    AvailablePositions[type].Add(rank.Grade, new Stack<UnitPosition>());
-                }
+                    // Initiate data
+                    RankStatistics[template.Id].Add(type, new Dictionary<int, RankGradeStatistics>());
+                    SpecialtyStatistics[template.Id].Add(type, new Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>());
 
-                // Ensure we are setup to run this rank type
-                if (!Settings.ProcessRankType(type))
-                    continue;
-
-                for (int i = 0; i < positions.Count; i++)
-                {
-                    var pos = positions[i];
-                    if (pos.RankType == type)
+                    // Add all grades
+                    var range = RankCache.GetRankGradesByType(type);
+                    for (int i = range.Minimum; i <= range.Maximum; i++)
                     {
-                        var soldier = CreateSoldier(pos.Grade, type);
-                        soldier.AssignPosition(pos, CurrentDate);
-                        Soldiers[type][pos.Grade].Add(soldier);
+                        RankStatistics[template.Id][type].Add(i, new RankGradeStatistics()
+                        {
+                            UnitTemplateId = template.Id,
+                            RankGrade = i,
+                            RankType = type
+                        }
+                        );
+
+                        var dict = new Dictionary<int, SpecialtyGradeStatistics>();
+                        foreach (Specialty spec in specialties)
+                        {
+                            dict.Add(spec.Id, new SpecialtyGradeStatistics()
+                            {
+                                UnitTemplateId = template.Id,
+                                SpecialtyId = spec.Id,
+                                RankGrade = i,
+                                RankType = type
+                            }
+                            );
+                        }
+
+                        SpecialtyStatistics[template.Id][type].Add(i, dict);
                     }
+                }
+            }
+
+            // Build initial roster
+            foreach (var pos in Positions)
+            {
+                // Only fill entry positions!
+                if (pos.Billet.IsEntryLevel && Settings.ProcessRankType(pos.Billet.Rank.Type))
+                {
+                    var soldier = CreateSoldier(SoldierGenerators.Values.First(), pos);
+                    soldier.AssignPosition(pos, CurrentIterationDate, Database);
                 }
             }
         }
@@ -498,25 +664,94 @@ namespace Perscom
         /// <param name="grade">The rank level this new soldier will start out as</param>
         /// <param name="type">Indicates the rank classification for this soldier</param>
         /// <returns></returns>
-        private Soldier CreateSoldier(int grade, RankType type)
+        private SoldierWrapper CreateSoldier(SoldierGenerator generator, PositionWrapper position)
         {
-            Soldier soldier = Generator[type].Spawn();
-            soldier.SpawnId = Interlocked.Increment(ref _soldiersSpawned) + 1;
-            soldier.FirstName = NameGenerator.GenerateRandomFirstName();
-            soldier.LastName = NameGenerator.GenerateRandomLastName();
-            soldier.ServiceEntryDate = CurrentDate;
-            soldier.LastPromotionDate = CurrentDate;
-            soldier.RankInfo = Ranks.GetRank(type, grade);
+            // Ensure the postion is empty! IF not, we will have soldiers
+            // floating around never ever moving
+            if (position.Holder != null)
+                throw new ArgumentException("Position holder must be null before creating a new soldier!", "position");
 
-            // Here we figure out just how many months the soldier will stay in service.
-            //  - Soldier.TimeToLive is set by the the Soldier.xml and the SpawnGenerator 
-            //    class when initialized.
-            CryptoRandom r = new CryptoRandom();
-            int toAdd = r.Next(soldier.TimeToLive.Minimum, soldier.TimeToLive.Maximum);
-            soldier.ExitServiceDate = CurrentDate.AddMonths(toAdd);
+            // Spawn a soldier generator setting
+            SoldierGeneratorSetting setting = generator.Spawn();
+            bool newCareer = setting.NewCareerLength;
+            SoldierWrapper wrapper = null;
+
+            // If rankId is 0, then we create new
+            if (setting.RankId == 0)
+            {
+                Soldier soldier = new Soldier();
+                soldier.FirstName = NameGenerator.GenerateRandomFirstName();
+                soldier.LastName = NameGenerator.GenerateRandomLastName();
+                soldier.EntryIterationId = CurrentIterationDate.Id;
+                soldier.LastPromotionIterationId = CurrentIterationDate.Id;
+                soldier.RankId = position.Billet.Rank.Id;
+                soldier.SpecialtyId = position.Billet.Specialty.Id;
+
+                // Assign the soldiers new career length
+                var career = CareerGenerators[position.Billet.Rank.Type].Spawn();
+                soldier.SpawnRateId = career.Id;
+
+                // Here we figure out just how many months the soldier will stay in service.
+                CryptoRandom r = new CryptoRandom();
+                int toAdd = r.Next(career.MinCareerLength, career.MaxCareerLength);
+                soldier.ExitIterationId = CurrentIterationDate.Id + toAdd;
+
+                // Add soldier to database
+                Database.Soldiers.Add(soldier);
+
+                // Create soldier wrapper
+                wrapper = new SoldierWrapper(soldier, position.Billet.Rank, CurrentIterationDate);
+                ActiveDutySoldiers.Add(soldier.Id, wrapper);
+
+                newCareer = false;
+            }
+            else
+            {
+                // Fetch promotion pool
+                UnitWrapper topUnit = position.PromotionPoolUnit;
+                RankType type = setting.Rank?.Type ?? position.Billet.Rank.Type;
+                int grade = setting.Rank?.Grade ?? position.Billet.Rank.Grade;
+
+                var soldiers = topUnit.SoldiersByGrade[type][grade];
+                foreach (var s in soldiers)
+                {
+                    int id = s.Key;
+                    wrapper = s.Value;
+
+                    // Only if the soldier has reached their tour requirements
+                    if (!wrapper.Position.IsLockedIn(CurrentIterationDate))
+                    {
+                        Soldier soldier = wrapper.Soldier;
+                        wrapper.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
+
+                        // Specialty change required?
+                        var specialty = position.Billet.Specialty;
+                        if (specialty != null)
+                            soldier.Specialty = specialty;
+
+                        // Quit looping
+                        break;
+                    }
+                }
+            }
+
+            // Does this soldier get assigned a new career?
+            if (newCareer)
+            {
+                Soldier soldier = wrapper.Soldier;
+
+                // Assign the soldiers new career length
+                var career = CareerGenerators[wrapper.Rank.Type].Spawn();
+                soldier.SpawnRateId = career.Id;
+
+                // Here we figure out just how many months the soldier will stay in service.
+                CryptoRandom r = new CryptoRandom();
+                int toAdd = r.Next(career.MinCareerLength, career.MaxCareerLength);
+                soldier.ExitIterationId = CurrentIterationDate.Id + toAdd;
+            }
 
             // Send him to duty!
-            return soldier;
+            return wrapper;
         }
     }
 }

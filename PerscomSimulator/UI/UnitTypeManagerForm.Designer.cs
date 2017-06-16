@@ -36,6 +36,8 @@
             this.mainPanel = new System.Windows.Forms.Panel();
             this.applyButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.promotionPoolSelect = new System.Windows.Forms.ComboBox();
             this.referencesLabel = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.unitNameBox = new System.Windows.Forms.TextBox();
@@ -63,8 +65,10 @@
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.promotionPoolSelect = new System.Windows.Forms.ComboBox();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.viewModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.largeIconsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -164,6 +168,24 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Details";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(23, 176);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(81, 13);
+            this.label4.TabIndex = 34;
+            this.label4.Text = "Promotion Pool:";
+            // 
+            // promotionPoolSelect
+            // 
+            this.promotionPoolSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.promotionPoolSelect.FormattingEnabled = true;
+            this.promotionPoolSelect.Location = new System.Drawing.Point(129, 173);
+            this.promotionPoolSelect.Name = "promotionPoolSelect";
+            this.promotionPoolSelect.Size = new System.Drawing.Size(189, 21);
+            this.promotionPoolSelect.TabIndex = 33;
+            // 
             // referencesLabel
             // 
             this.referencesLabel.AutoSize = true;
@@ -194,9 +216,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(23, 140);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(100, 13);
+            this.label2.Size = new System.Drawing.Size(98, 13);
             this.label2.TabIndex = 30;
-            this.label2.Text = "Default Unit Name: ";
+            this.label2.Text = "Unit Name Format: ";
             // 
             // label7
             // 
@@ -256,6 +278,7 @@
             this.listView2.Size = new System.Drawing.Size(437, 411);
             this.listView2.TabIndex = 1;
             this.listView2.UseCompatibleStateImageBehavior = false;
+            this.listView2.DoubleClick += new System.EventHandler(this.listView2_DoubleClick);
             // 
             // columnHeader2
             // 
@@ -271,22 +294,24 @@
             // 
             this.billetsContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addBilletMenuItem,
-            this.removeBilletMenuItem});
+            this.removeBilletMenuItem,
+            this.toolStripSeparator2,
+            this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(147, 48);
+            this.billetsContextMenu.Size = new System.Drawing.Size(153, 98);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
             // 
             this.addBilletMenuItem.Name = "addBilletMenuItem";
-            this.addBilletMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.addBilletMenuItem.Size = new System.Drawing.Size(152, 22);
             this.addBilletMenuItem.Text = "Add Billet";
             this.addBilletMenuItem.Click += new System.EventHandler(this.addBilletMenuItem_Click);
             // 
             // removeBilletMenuItem
             // 
             this.removeBilletMenuItem.Name = "removeBilletMenuItem";
-            this.removeBilletMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.removeBilletMenuItem.Size = new System.Drawing.Size(152, 22);
             this.removeBilletMenuItem.Text = "Remove Billet";
             this.removeBilletMenuItem.Click += new System.EventHandler(this.removeBilletMenuItem_Click);
             // 
@@ -404,23 +429,35 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Unit Template Manager";
             // 
-            // label4
+            // toolStripSeparator2
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(23, 176);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(81, 13);
-            this.label4.TabIndex = 34;
-            this.label4.Text = "Promotion Pool:";
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
             // 
-            // promotionPoolSelect
+            // viewModeToolStripMenuItem
             // 
-            this.promotionPoolSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.promotionPoolSelect.FormattingEnabled = true;
-            this.promotionPoolSelect.Location = new System.Drawing.Point(129, 173);
-            this.promotionPoolSelect.Name = "promotionPoolSelect";
-            this.promotionPoolSelect.Size = new System.Drawing.Size(189, 21);
-            this.promotionPoolSelect.TabIndex = 33;
+            this.viewModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.largeIconsToolStripMenuItem,
+            this.tilesToolStripMenuItem});
+            this.viewModeToolStripMenuItem.Name = "viewModeToolStripMenuItem";
+            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewModeToolStripMenuItem.Text = "View Mode";
+            // 
+            // largeIconsToolStripMenuItem
+            // 
+            this.largeIconsToolStripMenuItem.Checked = true;
+            this.largeIconsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.largeIconsToolStripMenuItem.Name = "largeIconsToolStripMenuItem";
+            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.largeIconsToolStripMenuItem.Text = "Large Icons";
+            this.largeIconsToolStripMenuItem.Click += new System.EventHandler(this.largeIconsToolStripMenuItem_Click);
+            // 
+            // tilesToolStripMenuItem
+            // 
+            this.tilesToolStripMenuItem.Name = "tilesToolStripMenuItem";
+            this.tilesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tilesToolStripMenuItem.Text = "Tiles";
+            this.tilesToolStripMenuItem.Click += new System.EventHandler(this.tilesToolStripMenuItem_Click);
             // 
             // UnitTypeManagerForm
             // 
@@ -487,5 +524,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox promotionPoolSelect;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem viewModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem largeIconsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tilesToolStripMenuItem;
     }
 }

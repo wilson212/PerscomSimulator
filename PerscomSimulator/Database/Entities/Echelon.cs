@@ -38,8 +38,7 @@ namespace Perscom.Database
         /// <see cref="Echelon"/>
         /// </summary>
         /// <remarks>
-        /// A lazy loaded enumeration that fetches all Torque Ratios
-        /// that are bound by the foreign key and this Engine.Id.
+        /// A lazy loaded enumeration
         /// </remarks>
         public virtual IEnumerable<UnitTemplate> UnitTypes { get; set; }
 

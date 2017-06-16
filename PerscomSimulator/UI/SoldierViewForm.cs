@@ -4,15 +4,18 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using CrossLite;
 using NodaTime;
+using Perscom.Database;
+using Perscom.Simulation;
 
 namespace Perscom
 {
     public partial class SoldierViewForm : Form
     {
-        protected SoldierWrapper Soldier { get; set; }
+        protected SoldierWrapper2 Soldier { get; set; }
 
-        public SoldierViewForm(SoldierWrapper soldier, DateTime currentDate)
+        public SoldierViewForm(SoldierWrapper2 soldier, DateTime currentDate)
         {
             InitializeComponent();
             this.Soldier = soldier;
@@ -21,35 +24,41 @@ namespace Perscom
             headerPanel.BackColor = MainForm.THEME_COLOR_DARK;
             panel1.BackColor = MainForm.CHART_COLOR_DARK;
             panel2.BackColor = MainForm.CHART_COLOR_DARK;
+            panel4.BackColor = MainForm.CHART_COLOR_DARK;
 
             // Round corners on panels
             panel1.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel1.Width, panel1.Height, 5, 5));
-            panel2.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel1.Width, panel1.Height, 5, 5));
+            panel2.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel2.Width, panel2.Height, 5, 5));
+            panel4.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel4.Width, panel4.Height, 5, 5));
 
             // Begin filling label text values
             nameLabel.Text = soldier.Name;
-            rankLabel.Text = soldier.Soldier.RankInfo.Name;
+            rankLabel.Text = soldier.Soldier.Rank.Name;
             pictureBox1.Image = soldier.RankImage;
-            entryLabel.Text = soldier.ServiceEntryDate.ToShortDateString();
+            entryLabel.Text = soldier.Soldier.EntryServiceDate.Date.ToShortDateString();
 
             // Time in Service
-            LocalDate startDate = new LocalDate(soldier.ServiceEntryDate.Year, soldier.ServiceEntryDate.Month, 1);
+            LocalDate startDate = new LocalDate(
+                soldier.EntryServiceDate.Year,
+                soldier.EntryServiceDate.Month, 
+                1
+            );
             LocalDate endDate = startDate.PlusYears(currentDate.Year - startDate.Year).PlusMonths(currentDate.Month - startDate.Month);
             Period timeFrame = Period.Between(startDate, endDate);
             tisLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
-            labelPosition.Text = soldier.Soldier.Position?.ToString() ?? "";
+            labelPosition.Text = soldier.Position?.ToString() ?? "";
 
             // Time to retire
             startDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
-            endDate = new LocalDate(soldier.Soldier.ExitServiceDate.Year, soldier.Soldier.ExitServiceDate.Month, 1);
+            endDate = new LocalDate(soldier.ExitServiceDate.Date.Year, soldier.ExitServiceDate.Date.Month, 1);
             timeFrame = Period.Between(startDate, endDate);
-            if (timeFrame.Years > 0)
+            if (timeFrame.Years != 0)
                 ttrLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
             else
                 ttrLabel.Text = $"{timeFrame.Months} month(s)";
 
             // Time in Grade
-            DateTime lastPromo = soldier.Soldier.LastPromotionDate;
+            DateTime lastPromo = soldier.Soldier.LastPromotionDate.Date;
             startDate = new LocalDate(lastPromo.Year, lastPromo.Month, 1);
             endDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
             timeFrame = Period.Between(startDate, endDate);
@@ -60,24 +69,64 @@ namespace Perscom
 
 
             // Fill Data grid with promotion data
-            foreach (Promotion info in soldier.Soldier.Promotions.OrderByDescending(x => x.ToRank.Grade))
+            var table = EntityCache.GetTableMap(typeof(Promotion));
+            table.BuildInstanceForeignKeys = true;
+
+            foreach (Promotion info in soldier.Soldier.Promotions.OrderByDescending(x => x.IterationId))
             {
-                char code = char.ToUpper(info.ToRank.TypeCode);
+                Rank toRank = info.ToRank;
+                Rank fromRank = info.FromRank;
+                char code = char.ToUpper(RankCache.GetCodeByRankType(info.ToRank.Type));
+                string desc = String.Empty;
+
+                // Get description of the move
+                if (toRank.Grade > fromRank.Grade)
+                {
+                    desc = $"Promoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
+                }
+                else if (toRank.Grade < fromRank.Grade)
+                {
+                    desc = $"Demoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
+                }
+                else
+                {
+                    desc = $"Laterally Promoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
+                }
+
                 DataGridViewRow row = new DataGridViewRow();
                 row.CreateCells(dataGridView1);
                 row.SetValues(new object[]
                 {
-                    info.Date.ToShortDateString(),
-                    $"Promoted to {info.ToRank.Name} ({code}-{info.ToRank.Grade})",
+                    info.Date.Date.ToShortDateString(),
+                    desc,
                     Math.Round((double)info.TimeInService / 12, 2).ToString(),
                     info.PreviousTimeInGrade
                 });
                 dataGridView1.Rows.Add(row);
             }
 
+            table = EntityCache.GetTableMap(typeof(PastAssignment));
+            table.BuildInstanceForeignKeys = true;
+            foreach (var pos in soldier.Soldier.PastAssignments.OrderByDescending(x => x.Id))
+            {
+                int monthsHeld = pos.RemovedIteration - pos.StartIteration;
+
+                DataGridViewRow row = new DataGridViewRow();
+                row.CreateCells(dataGridView2);
+                row.SetValues(new object[]
+                {
+                    pos.StartDate.Date.ToShortDateString(),
+                    pos.Position.Name,
+                    monthsHeld
+                });
+                dataGridView2.Rows.Add(row);
+            }
+            
             // Hide selection on the data view grid
             dataGridView1.DefaultCellStyle.SelectionBackColor = dataGridView1.DefaultCellStyle.BackColor;
             dataGridView1.DefaultCellStyle.SelectionForeColor = dataGridView1.DefaultCellStyle.ForeColor;
+            dataGridView2.DefaultCellStyle.SelectionBackColor = dataGridView2.DefaultCellStyle.BackColor;
+            dataGridView2.DefaultCellStyle.SelectionForeColor = dataGridView2.DefaultCellStyle.ForeColor;
         }
 
         /// <summary>

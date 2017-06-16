@@ -1,6 +1,6 @@
 ﻿namespace Perscom
 {
-    partial class SpawnEditorForm
+    partial class CareerLengthEditorForm
     {
         /// <summary>
         /// Required designer variable.

@@ -5,7 +5,7 @@ using CrossLite.CodeFirst;
 namespace Perscom.Database
 {
     /// <summary>
-    /// Represents a relationship between 2 <see cref="Database.UnitTemplate"/>'s
+    /// Represents a relationship bewteen a number of <see cref="Database.UnitTemplate"/>'s
     /// </summary>
     [Table]
     [CompositeUnique(nameof(ParentId), nameof(ChildId))]
@@ -64,7 +64,7 @@ namespace Perscom.Database
         /// Gets or Sets the <see cref="Perscom.Database.Soldier"/> that 
         /// this position will hold.
         /// </summary>
-        public UnitTemplate ParentUnitType
+        public UnitTemplate Parent
         {
             get
             {
@@ -81,7 +81,7 @@ namespace Perscom.Database
         /// Gets or Sets the <see cref="Perscom.Database.Position"/> that 
         /// this soldier holds.
         /// </summary>
-        public UnitTemplate ChildUnitType
+        public UnitTemplate Child
         {
             get
             {

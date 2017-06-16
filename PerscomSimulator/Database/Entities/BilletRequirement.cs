@@ -5,7 +5,8 @@ using CrossLite.CodeFirst;
 namespace Perscom.Database
 {
     /// <summary>
-    /// Represents a <see cref="Billet"/> and <see cref="Specialty"/> constraint
+    /// Represents a constraint that signifies that a <see cref="Database.Billet"/> requires 
+    /// a <see cref="Soldier"/> to have a specific <see cref="Database.Specialty"/> to enter it.
     /// </summary>
     [Table]
     [CompositeUnique(nameof(BilletId), nameof(SpecialtyId))]

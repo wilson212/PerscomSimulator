@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CrossLite;
 using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
     /// <summary>
-    /// Represents a relationship between 2 <see cref="Unit"/>'s
+    /// Represents a relationship between <see cref="Unit"/>'s
     /// </summary>
     [Table]
-    [CompositeUnique(nameof(ParentId), nameof(ChildId))]
     public class UnitAttachment : IEquatable<UnitAttachment>
     {
         #region Column Properties
@@ -26,13 +21,13 @@ namespace Perscom.Database
         /// <summary>
         /// Gets or sets the parent <see cref="Unit.Id"/>
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, Required]
         public int ParentId { get; set; }
 
         /// <summary>
         /// Gets or sets the child <see cref="Unit.Id"/>
         /// </summary>
-        [Column, Required, Unique, PrimaryKey]
+        [Column, Required, Unique]
         public int ChildId { get; set; }
 
         #endregion

@@ -12,9 +12,9 @@ namespace Perscom.Database
     /// </summary>
     class MigrationWizard
     {
-        protected AppDatabase Database { get; set; }
+        protected BaseDatabase Database { get; set; }
 
-        public MigrationWizard(AppDatabase db)
+        public MigrationWizard(BaseDatabase db)
         {
             Database = db;
         }

@@ -25,6 +25,12 @@
         /// Should be promoted because they are in a position greater
         /// than their Rank/Grade
         /// </summary>
-        Position
+        Position,
+
+        /// <summary>
+        /// Should be laterally promoted because they are in a position of 
+        /// the same grade as their current rank, but different variant.
+        /// </summary>
+        Lateral
     }
 }

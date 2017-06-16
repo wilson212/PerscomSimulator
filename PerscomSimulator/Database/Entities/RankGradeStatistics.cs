@@ -1,26 +1,52 @@
 ﻿using System;
+using CrossLite;
+using CrossLite.CodeFirst;
+using Perscom.Simulation;
 
-namespace Perscom.Simulation
+namespace Perscom.Database
 {
+    [Table]
     public class RankGradeStatistics
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        [Column, Required, PrimaryKey]
+        public RankType RankType { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Column, Required, PrimaryKey]
+        public int RankGrade { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Column, Required, PrimaryKey]
+        public int UnitTemplateId { get; set; }
+
         #region Total Statistics 
+
         /// <summary>
         /// Gets or Sets the total number of soldiers who held this grade, and were
         /// either promoted or retired out.
         /// </summary>
+        [Column, Required]
         public int TotalSoldiers { get; set; } = 0;
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in grade for all
         /// soldiers who held this grade and were either promoted or retired out.
         /// </summary>
+        [Column, Required]
         public int TotalMonthsInGrade { get; set; } = 0;
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in service for all
         /// soldiers who held this grade this grade and were either promoted or retired out.
         /// </summary>
+        [Column, Required]
         public int TotalMonthsInService { get; set; } = 0;
 
         /// <summary>
@@ -46,19 +72,22 @@ namespace Perscom.Simulation
         /// Gets or Sets the total number of soldiers who held this grade, and were
         /// then promoted to the next grade.
         /// </summary>
-        public int PromotionsToNextGrade = 0;
+        [Column, Required]
+        public int PromotionsToNextGrade { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in grade for all
         /// soldiers who held this grade, just before being promoted
         /// </summary>
-        public int PromotedTotalMonthsInGrade { get; set; } = 0;
+        [Column, Required]
+        public int PromotedTotalMonthsInGrade { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in service for all
         /// soldiers who held this grade, just before being promoted
         /// </summary>
-        public int PromotedTotalMonthsInService { get; set; } = 0;
+        [Column, Required]
+        public int PromotedTotalMonthsInService { get; set; }
 
         /// <summary>
         /// Gets the average time in grade (months) for all soldiers 
@@ -88,25 +117,29 @@ namespace Perscom.Simulation
         /// <summary>
         /// Gets or Sets the total number of soldiers who retired as this rank/grade
         /// </summary>
-        public int TotalRetirements = 0;
+        [Column, Required]
+        public int TotalRetirements { get; set; }
 
         /// <summary>
         /// Gets or Sets the total number of retired personel who held this grade and
         /// met the requirements to be promotable to the next rank
         /// </summary>
-        public int TotalPromotableRetirees { get; set; } = 0;
+        [Column, Required]
+        public int TotalPromotableRetirees { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in grade for all
         /// soldiers who held this grade, just before retiring
         /// </summary>
-        public int RetiredTotalMonthsInGrade { get; set; } = 0;
+        [Column, Required]
+        public int RetiredTotalMonthsInGrade { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in service for all
         /// soldiers who held this grade, just before retiring
         /// </summary>
-        public int RetiredTotalMonthsInService { get; set; } = 0;
+        [Column, Required]
+        public int RetiredTotalMonthsInService { get; set; }
 
         /// <summary>
         /// Gets the average time in grade (months) for all soldiers 
@@ -158,18 +191,19 @@ namespace Perscom.Simulation
         /// The total number of open positions (per month) that cannot be filled due to lack
         /// of lower grade soldiers being promotable.
         /// </summary>
-        public int Deficit { get; set; } = 0;
+        [Column, Required]
+        public int Deficit { get; set; }
 
         /// <summary>
         /// Adds a soldier's statistical data as a retirement, holding this rank/grade
         /// </summary>
         /// <param name="soldier">The soldier being retired</param>
         /// <param name="currentDate">The current simulation date</param>
-        public void TrackRetiree(Soldier soldier, DateTime currentDate)
+        public void TrackRetiree(SoldierWrapper soldier, IterationDate currentDate)
         {
             // Get time in service and grade in months
-            int tis = soldier.ServiceEntryDate.MonthDifference(currentDate);
-            int tig = soldier.LastPromotionDate.MonthDifference(currentDate);
+            int tis = soldier.EntryServiceDate.Date.MonthDifference(currentDate.Date);
+            int tig = soldier.LastPromotionDate.Date.MonthDifference(currentDate.Date);
 
             // Increment total values
             TotalSoldiers += 1;
@@ -192,11 +226,11 @@ namespace Perscom.Simulation
         /// </summary>
         /// <param name="soldier">The soldier being promoted from this grade to the next</param>
         /// <param name="currentDate">The current simulation date</param>
-        public void TrackPromotionToNextGrade(Soldier soldier, DateTime currentDate)
+        public void TrackPromotionToNextGrade(SoldierWrapper soldier, DateTime currentDate)
         {
             // Get time in service and grade in months
-            int tis = soldier.ServiceEntryDate.MonthDifference(currentDate);
-            int tig = soldier.LastPromotionDate.MonthDifference(currentDate);
+            int tis = soldier.EntryServiceDate.Date.MonthDifference(currentDate);
+            int tig = soldier.LastPromotionDate.Date.MonthDifference(currentDate);
 
             // Increment total values
             TotalSoldiers += 1;

@@ -5,35 +5,28 @@ using CrossLite.CodeFirst;
 namespace Perscom.Database
 {
     [Table]
-    [CompositeUnique(nameof(SoldierId), nameof(PositionId))]
     public class Assignment : IEquatable<Assignment>
     {
         #region Column Properties
 
         /// <summary>
-        /// The Unique Assignment ID
-        /// </summary>
-        [Column, PrimaryKey]
-        public int Id { get; protected set; }
-
-        /// <summary>
         /// Gets or sets the parent <see cref="Soldier.Id"/>
         /// </summary>
-        [Column, Required]
+        [Column, PrimaryKey]
         public int SoldierId { get; set; }
 
         /// <summary>
         /// Gets or sets the parent <see cref="Position.Id"/>
         /// </summary>
-        [Column, Required]
+        [Column, PrimaryKey, Unique]
         public int PositionId { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="DateTime"/> this position was assigned to the 
+        /// Gets or sets the <see cref="IterationDate.Id"/> this position was assigned to the 
         /// <see cref="Soldier"/>
         /// </summary>
         [Column, Required]
-        public DateTime AssignedOn { get; set; }
+        public int AssignedIteration { get; set; }
 
         #endregion
 
@@ -52,6 +45,13 @@ namespace Perscom.Database
             OnUpdate = ReferentialIntegrity.Cascade
         )]
         protected virtual ForeignKey<Position> FK_Position { get; set; }
+
+        [InverseKey("Id")]
+        [ForeignKey("AssignedIteration",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<IterationDate> FK_Iteration { get; set; }
 
         #endregion
 
@@ -91,12 +91,29 @@ namespace Perscom.Database
             }
         }
 
+        /// <summary>
+        /// Gets or Sets the <see cref="Perscom.Database.IterationDate"/> that 
+        /// this soldier was assigned this <see cref="Assignment"/>.
+        /// </summary>
+        public IterationDate AssignedOn
+        {
+            get
+            {
+                return FK_Iteration?.Fetch();
+            }
+            set
+            {
+                AssignedIteration = value.Id;
+                FK_Iteration?.Refresh();
+            }
+        }
+
         #endregion
 
         public bool Equals(Assignment other)
         {
             if (other == null) return false;
-            return (Id == other.Id);
+            return (SoldierId == other.SoldierId);
         }
 
         public override bool Equals(object obj)
@@ -104,6 +121,6 @@ namespace Perscom.Database
             return this.Equals(obj as Assignment);
         }
 
-        public override int GetHashCode() => Id;
+        public override int GetHashCode() => SoldierId;
     }
 }

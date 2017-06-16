@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Perscom.Database;
 using Perscom.Simulation;
 
 namespace Perscom
 {
-    public partial class SpawnEditorForm : Form
+    public partial class CareerLengthEditorForm : Form
     {
-        private SoldierSpawnRate SelectedRate { get; set; }
+        private CareerSpawnRate SelectedRate { get; set; }
 
-        public SpawnEditorForm()
+        public CareerLengthEditorForm()
         {
             // Setup form controls
             InitializeComponent();
@@ -59,10 +56,10 @@ namespace Perscom
             treeView1.Nodes.Clear();
 
             // Load all ranks
-            List<SoldierSpawnRate> rates;
+            List<CareerSpawnRate> rates;
             using (AppDatabase db = new AppDatabase())
             {
-                rates = db.SoldierSpawnRates.ToList();
+                rates = db.CareerSpawnRates.ToList();
             }
 
             // Keep track of the total spawn probability
@@ -122,7 +119,7 @@ namespace Perscom
         private void newButton_Click(object sender, EventArgs e)
         {
             // Reset
-            SelectedRate = new SoldierSpawnRate();
+            SelectedRate = new CareerSpawnRate();
 
             // Reset Details
             probInput.Value = 1;
@@ -139,7 +136,7 @@ namespace Perscom
 
             // Get selected node and rank
             var selected = treeView1.SelectedNode;
-            SelectedRate = selected.Tag as SoldierSpawnRate;
+            SelectedRate = selected.Tag as CareerSpawnRate;
 
             // Ignore if null
             if (SelectedRate == null) return;
@@ -154,7 +151,7 @@ namespace Perscom
             // Delete rank
             using (AppDatabase db = new AppDatabase())
             {
-                db.SoldierSpawnRates.Remove(SelectedRate);
+                db.CareerSpawnRates.Remove(SelectedRate);
             }
 
             // Update label
@@ -181,12 +178,12 @@ namespace Perscom
                 if (SelectedRate.Id == 0)
                 {
                     // Insert New
-                    db.SoldierSpawnRates.Add(SelectedRate);
+                    db.CareerSpawnRates.Add(SelectedRate);
                 }
                 else
                 {
                     // Update
-                    db.SoldierSpawnRates.Update(SelectedRate);
+                    db.CareerSpawnRates.Update(SelectedRate);
                 }
             }
 
@@ -204,7 +201,7 @@ namespace Perscom
             foreach (var node in parent.Nodes)
             {
                 TreeNode n = (TreeNode)node;
-                var rate = (SoldierSpawnRate)n.Tag;
+                var rate = (CareerSpawnRate)n.Tag;
                 total += rate.Probability;
             }
 
@@ -227,7 +224,7 @@ namespace Perscom
             // Context menu
             // Get selected node and rank
             var selected = e.Node;
-            SelectedRate = (SoldierSpawnRate)selected.Tag;
+            SelectedRate = (CareerSpawnRate)selected.Tag;
 
             // Fill Rank Details
             rankTypeSelect.SelectedIndex = (int)SelectedRate.Type;

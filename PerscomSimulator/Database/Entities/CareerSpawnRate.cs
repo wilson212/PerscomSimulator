@@ -12,7 +12,7 @@ namespace Perscom.Database
     /// career lengths for a <see cref="Database.Soldier"/> entity.
     /// </summary>
     [Table]
-    public class SoldierSpawnRate : ISpawnable, IEquatable<SoldierSpawnRate>
+    public class CareerSpawnRate : ISpawnable, IEquatable<CareerSpawnRate>
     {
         #region Columns
 
@@ -29,30 +29,30 @@ namespace Perscom.Database
         public RankType Type { get; set; }
 
         /// <summary>
-        /// Gets the probability value of this <see cref="SoldierSpawnRate"/>
+        /// Gets the probability value of this <see cref="CareerSpawnRate"/>
         /// spawning in the <see cref="SpawnGenerator{T}"/> relative to the
-        /// other <see cref="SoldierSpawnRate"/> entities.
+        /// other <see cref="CareerSpawnRate"/> entities.
         /// </summary>
         [Column, Required]
         public int Probability { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum time (months) a soldier will live using this
-        /// <see cref="SoldierSpawnRate"/>
+        /// <see cref="CareerSpawnRate"/>
         /// </summary>
         [Column, Required]
         public int MinCareerLength { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the maximum time (months) a soldier will live using this
-        /// <see cref="SoldierSpawnRate"/>
+        /// <see cref="CareerSpawnRate"/>
         /// </summary>
         [Column, Required]
         public int MaxCareerLength { get; set; } = 0;
 
         #endregion
 
-        public bool Equals(SoldierSpawnRate other)
+        public bool Equals(CareerSpawnRate other)
         {
             if (other == null) return false;
             return (Id == other.Id);
@@ -60,7 +60,7 @@ namespace Perscom.Database
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as SoldierSpawnRate);
+            return this.Equals(obj as CareerSpawnRate);
         }
 
         public override int GetHashCode() => Id;

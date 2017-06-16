@@ -37,6 +37,9 @@ namespace Perscom
             treeView1.Dock = DockStyle.Left;
             treeView1.Width = sidePanel.Width - (2 + sidePanel.Padding.Left);
 
+            // Initialize the tile size.
+            listView2.TileSize = new Size(400, 64);
+
             // Disable fields
             ToggleFields(false);
 
@@ -211,6 +214,8 @@ namespace Perscom
         {
             echelonTypeSelect.Enabled = enabled;
             templateNameBox.Enabled = enabled;
+            unitNameBox.Enabled = enabled;
+            promotionPoolSelect.Enabled = enabled;
             listView1.Enabled = enabled;
             listView2.Enabled = enabled;
             applyButton.Enabled = enabled;
@@ -385,7 +390,7 @@ namespace Perscom
             Echelon pool = (Echelon)promotionPoolSelect.SelectedItem;
             SelectedTemplate.Echelon = echelon;
             SelectedTemplate.Name = templateNameBox.Text;
-            SelectedTemplate.DefaultUnitName = unitNameBox.Text;
+            SelectedTemplate.UnitNameFormat = unitNameBox.Text;
             SelectedTemplate.PromotionPool = pool;
 
             // Ensure that no sub units are of higher echelon that our current unit,
@@ -431,7 +436,7 @@ namespace Perscom
 
                         // Get a list of sub units that do not exist in the current list
                         var formVals = SubUnits.Select(x => x.Key).ToList();
-                        var current = SelectedTemplate.UnitTemplateAttachments.Select(x => x.ChildUnitType).ToList();
+                        var current = SelectedTemplate.UnitTemplateAttachments.Select(x => x.Child).ToList();
 
                         // Add the added sub units, if any
                         foreach (var item in formVals.Except(current))
@@ -543,11 +548,10 @@ namespace Perscom
                 return;
 
             // Grab UnitTemplate from selected item tag
-            var template = listView1.SelectedItems[0].Tag as UnitTemplate;
-            if (template == null) return;
+            var template = (KeyValuePair<UnitTemplate, int>)listView1.SelectedItems[0].Tag;
 
             // Remove the unit tempalate from the list
-            SubUnits.Remove(template);
+            SubUnits.Remove(template.Key);
 
             // Now redraw the sub units listView
             FillUnitsListView();
@@ -630,13 +634,16 @@ namespace Perscom
 
             // Get echelon index
             int index = echelonTypeSelect.Items.IndexOf(SelectedTemplate.Echelon);
-            if (index < 0) index = 0;
 
             // Fill Template Details
-            echelonTypeSelect.SelectedIndex = index;
+            echelonTypeSelect.SelectedIndex = (index < 0) ? 0 : index; ;
             templateNameBox.Text = SelectedTemplate.Name;
-            unitNameBox.Text = SelectedTemplate.DefaultUnitName;
+            unitNameBox.Text = SelectedTemplate.UnitNameFormat;
             referencesLabel.Text = SelectedTemplate.UnitTemplateAttachments.Count().ToString();
+
+            // Get promotion pool index
+            index = promotionPoolSelect.Items.IndexOf(SelectedTemplate.PromotionPool);
+            promotionPoolSelect.SelectedIndex = (index < 0) ? 0 : index;
 
             // Add Sub Units
             Billets.Clear();
@@ -646,7 +653,8 @@ namespace Perscom
             SubUnits.Clear();
             foreach (var unit in SelectedTemplate.UnitTemplateAttachments)
             {
-                SubUnits.Add(unit.ChildUnitType, unit.Count);
+                if (unit.ParentId == SelectedTemplate.Id)
+                    SubUnits.Add(unit.Child, unit.Count);
             }
 
             // Fill List Views
@@ -658,6 +666,29 @@ namespace Perscom
             applyButton.Text = "Apply Changes";
 
             treeView1.Enabled = true;
+        }
+
+        private void listView2_DoubleClick(object sender, EventArgs e)
+        {
+            // Ensure we have a selected item
+            if (listView2.SelectedItems.Count == 0)
+                return;
+
+            // Grab Billet from selected item tag
+            var billet = listView2.SelectedItems[0].Tag as Billet;
+            if (billet == null) return;
+
+            // Get the selected billet
+
+            using (var form = new BilletEditorForm(SelectedTemplate, billet))
+            {
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Refill List Views
+                    FillBilletsListView();
+                }
+            }
         }
 
         private void ShowErrorMessage(string message)
@@ -680,6 +711,24 @@ namespace Perscom
         {
             adjustUnitCountToolStripMenuItem.Enabled = (listView1.SelectedItems.Count > 0);
             removeSubUnitToolStripMenuItem.Enabled = (listView1.SelectedItems.Count > 0);
+        }
+
+        private void largeIconsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (largeIconsToolStripMenuItem.Checked) return;
+
+            largeIconsToolStripMenuItem.Checked = true;
+            tilesToolStripMenuItem.Checked = false;
+            listView2.View = View.LargeIcon;
+        }
+
+        private void tilesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tilesToolStripMenuItem.Checked) return;
+
+            tilesToolStripMenuItem.Checked = true;
+            largeIconsToolStripMenuItem.Checked = false;
+            listView2.View = View.Tile;
         }
     }
 }

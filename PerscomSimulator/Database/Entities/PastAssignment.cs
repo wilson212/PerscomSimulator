@@ -9,7 +9,7 @@ namespace Perscom.Database
     /// <see cref="Database.Position"/>, where the <see cref="Database.Position"/> 
     /// was once held by the <see cref="Database.Soldier"/> during his career.
     /// </summary>
-    [Table]
+    [Table(BuildInstanceRelationships = false)]
     public class PastAssignment : IEquatable<PastAssignment>
     {
         #region Column Properties
@@ -37,14 +37,14 @@ namespace Perscom.Database
         /// <see cref="Soldier"/>
         /// </summary>
         [Column, Required]
-        public DateTime AssignedOn { get; set; }
+        public int StartIteration { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="DateTime"/> this position was removed from the 
         /// <see cref="Soldier"/>
         /// </summary>
         [Column, Required]
-        public DateTime RemovedFrom { get; set; }
+        public int RemovedIteration { get; set; }
 
         #endregion
 
@@ -63,6 +63,20 @@ namespace Perscom.Database
             OnUpdate = ReferentialIntegrity.Cascade
         )]
         protected virtual ForeignKey<Position> FK_Position { get; set; }
+
+        [InverseKey("Id")]
+        [ForeignKey("StartIteration",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<IterationDate> FK_Start { get; set; }
+
+        [InverseKey("Id")]
+        [ForeignKey("RemovedIteration",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<IterationDate> FK_End { get; set; }
 
         #endregion
 
@@ -99,6 +113,19 @@ namespace Perscom.Database
             {
                 PositionId = value.Id;
                 FK_Position?.Refresh();
+            }
+        }
+
+        public IterationDate StartDate
+        {
+            get
+            {
+                return FK_Start?.Fetch();
+            }
+            set
+            {
+                StartIteration = value.Id;
+                FK_Start?.Refresh();
             }
         }
 

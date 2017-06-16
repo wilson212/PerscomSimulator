@@ -23,7 +23,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets or sets the code of this Occupational Specialty
         /// </summary>
-        [Column, Unique, Required]
+        [Column, Required, Unique, Collation(Collation.NoCase)]
         public string Code { get; set; }
 
         /// <summary>
