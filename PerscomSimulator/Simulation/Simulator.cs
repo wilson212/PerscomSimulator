@@ -21,6 +21,9 @@ namespace Perscom
         /// </summary>
         public DateTime CurrentDate { get; protected set; } = DateTime.Now;
 
+        /// <summary>
+        /// Gets or sets the current DateTime in the simulation
+        /// </summary>
         public IterationDate CurrentIterationDate { get; set; }
 
         /// <summary>
@@ -71,8 +74,6 @@ namespace Perscom
             protected set;
         }
 
-        public UnitTemplate Template { get; set; }
-
         /// <summary>
         /// The Unit that is processing in this Simulator instance
         /// </summary>
@@ -113,7 +114,6 @@ namespace Perscom
         {
             Database = db;
             ProcessingUnit = unit;
-            Template = unit.Unit.Type;
             Settings = settings;
 
             // Check if new simulation by checking dates and unit id's
@@ -210,7 +210,7 @@ namespace Perscom
             token.ThrowIfCancellationRequested();
             update = new TaskProgressUpdate();
             update.HeaderText = "Running Simulation... Please Wait.";
-            update.MessageText = $"Processing year {TotalYearsRan + 1} of {totalYears}";
+            update.MessageText = "";
             progress.Report(update);
 
             // Variable holder for the month name
@@ -700,7 +700,7 @@ namespace Perscom
                 Database.Soldiers.Add(soldier);
 
                 // Create soldier wrapper
-                wrapper = new SoldierWrapper(soldier, position.Billet.Rank, CurrentIterationDate);
+                wrapper = new SoldierWrapper(soldier, position.Billet.Rank, CurrentIterationDate, Database);
                 ActiveDutySoldiers.Add(soldier.Id, wrapper);
 
                 newCareer = false;
@@ -723,11 +723,6 @@ namespace Perscom
                     {
                         Soldier soldier = wrapper.Soldier;
                         wrapper.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
-
-                        // Specialty change required?
-                        var specialty = position.Billet.Specialty;
-                        if (specialty != null)
-                            soldier.Specialty = specialty;
 
                         // Quit looping
                         break;

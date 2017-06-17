@@ -70,17 +70,12 @@
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
+            this.labelYearsRan = new System.Windows.Forms.Label();
             this.unitSelect = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.yearsToSkip = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.yearsOfSimulate = new System.Windows.Forms.NumericUpDown();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.headerPanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.CustomPanel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -128,6 +123,7 @@
             this.rankSelectionBox = new System.Windows.Forms.ComboBox();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.bindingNavigator1 = new System.Windows.Forms.BindingNavigator(this.components);
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.bindingNavigatorCountItem = new System.Windows.Forms.ToolStripLabel();
             this.bindingNavigatorMoveFirstItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorMovePreviousItem = new System.Windows.Forms.ToolStripButton();
@@ -144,13 +140,11 @@
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.headerPanel = new System.Windows.Forms.Panel();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
+            this.specialtySelect = new System.Windows.Forms.ComboBox();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yearsOfSimulate)).BeginInit();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
-            this.headerPanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -171,7 +165,9 @@
             this.tabPage7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).BeginInit();
             this.bindingNavigator1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.headerPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu1
@@ -202,7 +198,7 @@
             this.panel4.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.panel4.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 641);
+            this.panel4.Location = new System.Drawing.Point(0, 662);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(984, 50);
             this.panel4.TabIndex = 9;
@@ -212,37 +208,35 @@
             // 
             this.panel3.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.panel3.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.panel3.Controls.Add(this.label3);
+            this.panel3.Controls.Add(this.specialtySelect);
+            this.panel3.Controls.Add(this.labelYearsRan);
             this.panel3.Controls.Add(this.unitSelect);
             this.panel3.Controls.Add(this.label4);
-            this.panel3.Controls.Add(this.yearsToSkip);
             this.panel3.Controls.Add(this.label1);
             this.panel3.Controls.Add(this.label2);
-            this.panel3.Controls.Add(this.label7);
-            this.panel3.Controls.Add(this.yearsOfSimulate);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 75);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(984, 40);
             this.panel3.TabIndex = 8;
             // 
-            // label3
+            // labelYearsRan
             // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label3.Location = new System.Drawing.Point(862, 11);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 15);
-            this.label3.TabIndex = 14;
-            this.label3.Text = "years";
+            this.labelYearsRan.AutoSize = true;
+            this.labelYearsRan.BackColor = System.Drawing.Color.Transparent;
+            this.labelYearsRan.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelYearsRan.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.labelYearsRan.Location = new System.Drawing.Point(838, 11);
+            this.labelYearsRan.Name = "labelYearsRan";
+            this.labelYearsRan.Size = new System.Drawing.Size(69, 15);
+            this.labelYearsRan.TabIndex = 14;
+            this.labelYearsRan.Text = "150 years";
             // 
             // unitSelect
             // 
             this.unitSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.unitSelect.FormattingEnabled = true;
-            this.unitSelect.Location = new System.Drawing.Point(159, 10);
+            this.unitSelect.Location = new System.Drawing.Point(196, 10);
             this.unitSelect.Name = "unitSelect";
             this.unitSelect.Size = new System.Drawing.Size(174, 21);
             this.unitSelect.TabIndex = 0;
@@ -254,30 +248,11 @@
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label4.Location = new System.Drawing.Point(646, 11);
+            this.label4.Location = new System.Drawing.Point(697, 11);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(139, 15);
+            this.label4.Size = new System.Drawing.Size(142, 15);
             this.label4.TabIndex = 13;
-            this.label4.Text = "Initial Years To Skip:";
-            // 
-            // yearsToSkip
-            // 
-            this.yearsToSkip.BackColor = System.Drawing.SystemColors.Window;
-            this.yearsToSkip.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.yearsToSkip.Location = new System.Drawing.Point(791, 8);
-            this.yearsToSkip.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.yearsToSkip.Name = "yearsToSkip";
-            this.yearsToSkip.Size = new System.Drawing.Size(65, 20);
-            this.yearsToSkip.TabIndex = 12;
-            this.yearsToSkip.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
+            this.label4.Text = "Simulation Rank For:";
             // 
             // label1
             // 
@@ -287,9 +262,9 @@
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.label1.Location = new System.Drawing.Point(82, 11);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 15);
+            this.label1.Size = new System.Drawing.Size(108, 15);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Unit Type:";
+            this.label1.Text = "Unit Type Filter:";
             // 
             // label2
             // 
@@ -297,42 +272,11 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label2.Location = new System.Drawing.Point(354, 11);
+            this.label2.Location = new System.Drawing.Point(390, 11);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(162, 15);
+            this.label2.Size = new System.Drawing.Size(106, 15);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Time to Run Simulation:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.BackColor = System.Drawing.Color.Transparent;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label7.Location = new System.Drawing.Point(593, 11);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(41, 15);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "years";
-            // 
-            // yearsOfSimulate
-            // 
-            this.yearsOfSimulate.BackColor = System.Drawing.SystemColors.Window;
-            this.yearsOfSimulate.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.yearsOfSimulate.Location = new System.Drawing.Point(522, 8);
-            this.yearsOfSimulate.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.yearsOfSimulate.Name = "yearsOfSimulate";
-            this.yearsOfSimulate.Size = new System.Drawing.Size(65, 20);
-            this.yearsOfSimulate.TabIndex = 2;
-            this.yearsOfSimulate.Value = new decimal(new int[] {
-            150,
-            0,
-            0,
-            0});
+            this.label2.Text = "Specialty Filter:";
             // 
             // panel1
             // 
@@ -342,24 +286,8 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 75);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(984, 616);
+            this.panel1.Size = new System.Drawing.Size(984, 637);
             this.panel1.TabIndex = 7;
-            // 
-            // bindingSource1
-            // 
-            this.bindingSource1.CurrentChanged += new System.EventHandler(this.BindingSource1_CurrentChanged);
-            // 
-            // headerPanel
-            // 
-            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.headerPanel.Controls.Add(this.nameLabel);
-            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.headerPanel.Location = new System.Drawing.Point(0, 0);
-            this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(984, 75);
-            this.headerPanel.TabIndex = 6;
-            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
             // panel2
             // 
@@ -388,6 +316,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(843, 471);
             this.tabControl1.TabIndex = 0;
+            this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
             // 
             // tabPage1
             // 
@@ -1026,6 +955,10 @@
             this.bindingNavigator1.TabIndex = 1;
             this.bindingNavigator1.Text = "bindingNavigator1";
             // 
+            // bindingSource1
+            // 
+            this.bindingSource1.CurrentChanged += new System.EventHandler(this.BindingSource1_CurrentChanged);
+            // 
             // bindingNavigatorCountItem
             // 
             this.bindingNavigatorCountItem.Name = "bindingNavigatorCountItem";
@@ -1164,6 +1097,18 @@
             this.Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column4.Width = 150;
             // 
+            // headerPanel
+            // 
+            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
+            this.headerPanel.Controls.Add(this.nameLabel);
+            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerPanel.Location = new System.Drawing.Point(0, 0);
+            this.headerPanel.Name = "headerPanel";
+            this.headerPanel.Size = new System.Drawing.Size(984, 75);
+            this.headerPanel.TabIndex = 6;
+            this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
+            // 
             // nameLabel
             // 
             this.nameLabel.BackColor = System.Drawing.Color.Transparent;
@@ -1178,12 +1123,22 @@
             this.nameLabel.TabIndex = 1;
             this.nameLabel.Text = "Simulation Results";
             // 
+            // specialtySelect
+            // 
+            this.specialtySelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.specialtySelect.FormattingEnabled = true;
+            this.specialtySelect.Location = new System.Drawing.Point(502, 10);
+            this.specialtySelect.Name = "specialtySelect";
+            this.specialtySelect.Size = new System.Drawing.Size(174, 21);
+            this.specialtySelect.TabIndex = 15;
+            this.specialtySelect.SelectedIndexChanged += new System.EventHandler(this.specialtySelect_SelectedIndexChanged);
+            // 
             // SimResultViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(984, 691);
+            this.ClientSize = new System.Drawing.Size(984, 712);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
@@ -1196,11 +1151,7 @@
             this.Text = "SimResultViewForm";
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yearsOfSimulate)).EndInit();
             this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
-            this.headerPanel.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -1224,7 +1175,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).EndInit();
             this.bindingNavigator1.ResumeLayout(false);
             this.bindingNavigator1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.headerPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1237,14 +1190,11 @@
         private System.Windows.Forms.MenuItem closeMenuItem;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label labelYearsRan;
         private System.Windows.Forms.ComboBox unitSelect;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown yearsToSkip;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.NumericUpDown yearsOfSimulate;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.CustomPanel panel2;
         private System.Windows.Forms.TabControl tabControl1;
@@ -1312,5 +1262,6 @@
         private System.Windows.Forms.Panel headerPanel;
         private System.Windows.Forms.ShadowLabel nameLabel;
         private System.Windows.Forms.BindingSource bindingSource1;
+        private System.Windows.Forms.ComboBox specialtySelect;
     }
 }

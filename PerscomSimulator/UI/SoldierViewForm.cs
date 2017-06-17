@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 using CrossLite;
 using NodaTime;
@@ -25,17 +26,39 @@ namespace Perscom
             panel1.BackColor = MainForm.CHART_COLOR_DARK;
             panel2.BackColor = MainForm.CHART_COLOR_DARK;
             panel4.BackColor = MainForm.CHART_COLOR_DARK;
+            panel5.BackColor = MainForm.CHART_COLOR_DARK;
 
             // Round corners on panels
             panel1.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel1.Width, panel1.Height, 5, 5));
             panel2.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel2.Width, panel2.Height, 5, 5));
             panel4.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel4.Width, panel4.Height, 5, 5));
+            panel5.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel5.Width, panel5.Height, 5, 5));
 
             // Begin filling label text values
             nameLabel.Text = soldier.Name;
             rankLabel.Text = soldier.Soldier.Rank.Name;
             pictureBox1.Image = soldier.RankImage;
             entryLabel.Text = soldier.Soldier.EntryServiceDate.Date.ToShortDateString();
+
+            // Extract data
+            var position = soldier.Position;
+            var unit = position.Unit;
+            var assignment = soldier.Soldier.Assignments.First();
+            var spec = soldier.Soldier.Specialty;
+
+            // Specialty
+            specLabel.Text = $"{spec.Code} - {spec.Name}";
+
+            // Unit
+            var builder = new StringBuilder();
+            while (unit != null)
+            {
+                builder.Append(unit.Name);
+                unit = unit.Attachments.Where(x => x.ChildId == unit.Id).Select(x => x.ParentUnit).FirstOrDefault();
+                if (unit != null)
+                    builder.Append(", ");
+            }
+            unitLabel.Text = builder.ToString();
 
             // Time in Service
             LocalDate startDate = new LocalDate(
@@ -48,7 +71,19 @@ namespace Perscom
             tisLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
             labelPosition.Text = soldier.Position?.ToString() ?? "";
 
-            // Time to retire
+            // AddCurrent Assignment to the Assignment history
+            DataGridViewRow row = new DataGridViewRow();
+            row.CreateCells(dataGridView2);
+            row.SetValues(new object[]
+            {
+                    assignment.AssignedOn.Date.ToShortDateString(),
+                    position.Name,
+                    builder.ToString(),
+                    "--"
+            });
+            dataGridView2.Rows.Add(row);
+
+            // Time to retire label
             startDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
             endDate = new LocalDate(soldier.ExitServiceDate.Date.Year, soldier.ExitServiceDate.Date.Month, 1);
             timeFrame = Period.Between(startDate, endDate);
@@ -57,16 +92,18 @@ namespace Perscom
             else
                 ttrLabel.Text = $"{timeFrame.Months} month(s)";
 
-            // Time in Grade
-            DateTime lastPromo = soldier.Soldier.LastPromotionDate.Date;
-            startDate = new LocalDate(lastPromo.Year, lastPromo.Month, 1);
+            // Time in Billet label
+            var ad = assignment.AssignedOn;
+            startDate = new LocalDate(ad.Date.Year, ad.Date.Month, 1);
             endDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
             timeFrame = Period.Between(startDate, endDate);
-            if (timeFrame.Years > 0)
-                tigLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
+            if (timeFrame.Years != 0)
+                labelTIB.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
             else
-                tigLabel.Text = $"{timeFrame.Months} month(s)";
+                labelTIB.Text = $"{timeFrame.Months} month(s)";
 
+            // Time in Grade
+            DateTime lastPromo = soldier.EntryServiceDate;
 
             // Fill Data grid with promotion data
             var table = EntityCache.GetTableMap(typeof(Promotion));
@@ -78,6 +115,11 @@ namespace Perscom
                 Rank fromRank = info.FromRank;
                 char code = char.ToUpper(RankCache.GetCodeByRankType(info.ToRank.Type));
                 string desc = String.Empty;
+
+                if (toRank.Grade == soldier.Rank.Grade)
+                {
+                    lastPromo = info.Date.Date;
+                }
 
                 // Get description of the move
                 if (toRank.Grade > fromRank.Grade)
@@ -93,7 +135,7 @@ namespace Perscom
                     desc = $"Laterally Promoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
                 }
 
-                DataGridViewRow row = new DataGridViewRow();
+                row = new DataGridViewRow();
                 row.CreateCells(dataGridView1);
                 row.SetValues(new object[]
                 {
@@ -105,28 +147,68 @@ namespace Perscom
                 dataGridView1.Rows.Add(row);
             }
 
+            // Fill TIG label
+            startDate = new LocalDate(lastPromo.Year, lastPromo.Month, 1);
+            endDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
+            timeFrame = Period.Between(startDate, endDate);
+            if (timeFrame.Years > 0)
+                tigLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
+            else
+                tigLabel.Text = $"{timeFrame.Months} month(s)";
+
+            // Fill Past Assignments
             table = EntityCache.GetTableMap(typeof(PastAssignment));
             table.BuildInstanceForeignKeys = true;
             foreach (var pos in soldier.Soldier.PastAssignments.OrderByDescending(x => x.Id))
             {
                 int monthsHeld = pos.RemovedIteration - pos.StartIteration;
+                builder.Clear();
 
-                DataGridViewRow row = new DataGridViewRow();
+                // build unitname
+                unit = pos.Position.Unit;
+                while (unit != null)
+                {
+                    builder.Append(unit.Name);
+                    unit = unit.Attachments.Where(x => x.ChildId == unit.Id).Select(x => x.ParentUnit).FirstOrDefault();
+                    if (unit != null)
+                        builder.Append(", ");
+                }
+
+                row = new DataGridViewRow();
                 row.CreateCells(dataGridView2);
                 row.SetValues(new object[]
                 {
                     pos.StartDate.Date.ToShortDateString(),
                     pos.Position.Name,
+                    builder.ToString(),
                     monthsHeld
                 });
                 dataGridView2.Rows.Add(row);
             }
-            
+
+            // Fill Past Assignments
+            table = EntityCache.GetTableMap(typeof(SpecialtyAssignment));
+            table.BuildInstanceForeignKeys = true;
+            foreach (var pos in soldier.Soldier.SpecialtyAssignments.OrderByDescending(x => x.Id))
+            {
+                spec = pos.Specialty;
+                row = new DataGridViewRow();
+                row.CreateCells(dataGridView3);
+                row.SetValues(new object[]
+                {
+                    pos.AssignedOn.Date.ToShortDateString(),
+                    $"{spec.Code} - {spec.Name}"
+                });
+                dataGridView3.Rows.Add(row);
+            }
+
             // Hide selection on the data view grid
             dataGridView1.DefaultCellStyle.SelectionBackColor = dataGridView1.DefaultCellStyle.BackColor;
             dataGridView1.DefaultCellStyle.SelectionForeColor = dataGridView1.DefaultCellStyle.ForeColor;
             dataGridView2.DefaultCellStyle.SelectionBackColor = dataGridView2.DefaultCellStyle.BackColor;
             dataGridView2.DefaultCellStyle.SelectionForeColor = dataGridView2.DefaultCellStyle.ForeColor;
+            dataGridView3.DefaultCellStyle.SelectionBackColor = dataGridView3.DefaultCellStyle.BackColor;
+            dataGridView3.DefaultCellStyle.SelectionForeColor = dataGridView3.DefaultCellStyle.ForeColor;
         }
 
         /// <summary>

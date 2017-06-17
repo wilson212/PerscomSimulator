@@ -238,6 +238,15 @@ namespace Perscom.Database
         public virtual IEnumerable<PastAssignment> PastAssignments { get; set; }
 
         /// <summary>
+        /// Gets a list of current <see cref="SpecialtyAssignment"/> entities that reference this 
+        /// <see cref="Soldier"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<SpecialtyAssignment> SpecialtyAssignments { get; set; }
+
+        /// <summary>
         /// Gets a list of <see cref="Promotion"/> entities that reference this 
         /// <see cref="Soldier"/>
         /// </summary>

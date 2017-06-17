@@ -41,6 +41,14 @@ namespace Perscom.Simulation
         /// </summary>
         public PositionWrapper Position { get; protected set; }
 
+        /// <summary>
+        /// Gets the soldiers current <see cref="Database.Specialty"/>
+        /// </summary>
+        public Specialty Specialty => Soldier.Specialty;
+
+        /// <summary>
+        /// Gets a list of billets this soldier has held
+        /// </summary>
         public Dictionary<int, BilletWrapper> BilletsHeld { get; set; } = new Dictionary<int, BilletWrapper>();
 
         public bool Disposed { get; private set; }
@@ -50,13 +58,35 @@ namespace Perscom.Simulation
         /// </summary>
         /// <param name="soldier"></param>
         /// <param name="rank"></param>
-        public SoldierWrapper(Soldier soldier, Rank rank, IterationDate date)
+        public SoldierWrapper(Soldier soldier, Rank rank, IterationDate date, SimDatabase db)
         {
             Soldier = soldier;
             soldier.Rank = rank;
             Rank = rank;
             EntryServiceDate = date;
             LastPromotionDate = date;
+
+            AssignSpecialty(soldier.SpecialtyId, date, db);
+        }
+
+        /// <summary>
+        /// Assigns the specified <see cref="Database.Specialty"/> to this soldier
+        /// </summary>
+        /// <param name="spec"></param>
+        /// <param name="currentDate"></param>
+        /// <param name="db"></param>
+        public void AssignSpecialty(int specId, IterationDate currentDate, SimDatabase db)
+        {
+            // Create promotion record
+            db.SpecialtyAssignments.Add(new SpecialtyAssignment()
+            {
+                AssignedIteration = currentDate.Id,
+                SoldierId = Soldier.Id,
+                SpecialtyId = specId
+            });
+
+            // Set spec
+            Soldier.SpecialtyId = specId;
         }
 
         /// <summary>
@@ -151,6 +181,13 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public bool IsPromotable(IterationDate currentDate, out PromotableStatus status)
         {
+            // Always approve a lateral promotion!
+            if ((Rank.Grade == Position.Billet.Rank.Grade) && (Rank.Id != Position.Billet.Rank.Id))
+            {
+                status = PromotableStatus.Lateral;
+                return true;
+            }
+
             // Check if soldier is promotable based on TIG
             int months = currentDate.Id - LastPromotionDate.Id;
             bool promotable = (months >= Rank.PromotableAt);
@@ -171,11 +208,6 @@ namespace Perscom.Simulation
                 else if (Rank.Grade < Position.Billet.Rank.Grade)
                 {
                     status = PromotableStatus.Position;
-                    return true;
-                }
-                else if ((Rank.Grade == Position.Billet.Rank.Grade) && (Rank.Id != Position.Billet.Rank.Id))
-                {
-                    status = PromotableStatus.Lateral;
                     return true;
                 }
                 else
@@ -214,8 +246,10 @@ namespace Perscom.Simulation
 
             // Specialty change required?
             var specialty = newPosition.Billet.Specialty;
-            if (specialty != null)
-                Soldier.Specialty = specialty;
+            if (specialty != null && specialty.Id != Soldier.SpecialtyId)
+            {
+                AssignSpecialty(specialty.Id, date, db);
+            }
 
             // Add billet to list
             if (!BilletsHeld.ContainsKey(newPosition.Billet.Id))

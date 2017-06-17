@@ -26,6 +26,8 @@ namespace Perscom
 
         protected SimDatabase Database { get; set; }
 
+        protected double TotalYearsRan { get; set; }
+
         /// <summary>
         /// Gets the current Simulation date
         /// </summary>
@@ -48,9 +50,9 @@ namespace Perscom
         }
 
         /// <summary>
-        /// UnitTemplateId => [RankType => [Rank.Grade => [SpecialtyId => SpecialtyGradeStatistics]]]
+        /// UnitTemplateId => [RankType => [SpecialtyId => [Rank.Grade => SpecialtyGradeStatistics]]]
         /// </summary>
-        public Dictionary<int, Dictionary<RankType, Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>>> SpecialtyStatistics
+        public Dictionary<int, Dictionary<RankType, Dictionary<int, Dictionary<int, RankGradeStatistics>>>> SpecialtyStatistics
         {
             get;
             protected set;
@@ -97,12 +99,19 @@ namespace Perscom
             // Load data from database
             Database = db;
             CurrentIterationDate = db.Query<IterationDate>("SELECT * FROM IterationDate ORDER BY Id DESC LIMIT 1").FirstOrDefault();
+            TotalYearsRan = Math.Round(db.IterationDates.Count / (double)12, 3);
+            labelYearsRan.Text = TotalYearsRan + " years";
 
             CreateDictionaries();
 
             // Load Unit Types
             foreach (var template in Database.UnitTemplates.OrderByDescending(x => x.Echelon.HierarchyLevel))
                 unitSelect.Items.Add(template);
+
+            // Load Specialties
+            specialtySelect.Items.Add("<< Not Specific >>");
+            foreach (var spec in Database.Specialties.OrderBy(x => x.Code))
+                specialtySelect.Items.Add(spec);
 
             // Fill in ranks
             //Ranks.Load();
@@ -117,6 +126,7 @@ namespace Perscom
             }
 
             // Set default indexies
+            specialtySelect.SelectedIndex = 0;
             rankTypeBox.SelectedIndex = 0;
             rankTypeBox1.SelectedIndex = 0;
             rankTypeBox2.SelectedIndex = 0;
@@ -129,7 +139,7 @@ namespace Perscom
         private void CreateDictionaries()
         {
             RankStatistics = new Dictionary<int, Dictionary<RankType, Dictionary<int, RankGradeStatistics>>>();
-            SpecialtyStatistics = new Dictionary<int, Dictionary<RankType, Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>>>();
+            SpecialtyStatistics = new Dictionary<int, Dictionary<RankType, Dictionary<int, Dictionary<int, RankGradeStatistics>>>>();
 
             foreach (var stat in Database.RankGradeStatistics)
             {
@@ -155,23 +165,23 @@ namespace Perscom
                 if (!SpecialtyStatistics.ContainsKey(stat.UnitTemplateId))
                     SpecialtyStatistics.Add(
                         stat.UnitTemplateId, 
-                        new Dictionary<RankType, Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>>()
+                        new Dictionary<RankType, Dictionary<int, Dictionary<int, RankGradeStatistics>>>()
                     );
 
                 // Ensure key exists
                 if (!SpecialtyStatistics[stat.UnitTemplateId].ContainsKey(stat.RankType))
-                    SpecialtyStatistics[stat.UnitTemplateId].Add(stat.RankType, new Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>());
+                    SpecialtyStatistics[stat.UnitTemplateId].Add(stat.RankType, new Dictionary<int, Dictionary<int, RankGradeStatistics>>());
 
                 // Ensure key exists
-                if (!SpecialtyStatistics[stat.UnitTemplateId][stat.RankType].ContainsKey(stat.RankGrade))
-                    SpecialtyStatistics[stat.UnitTemplateId][stat.RankType].Add(stat.RankGrade, new Dictionary<int, SpecialtyGradeStatistics>());
+                if (!SpecialtyStatistics[stat.UnitTemplateId][stat.RankType].ContainsKey(stat.SpecialtyId))
+                    SpecialtyStatistics[stat.UnitTemplateId][stat.RankType].Add(stat.SpecialtyId, new Dictionary<int, RankGradeStatistics>());
 
                 // Ensure key exists
-                if (!SpecialtyStatistics[stat.UnitTemplateId][stat.RankType][stat.RankGrade].ContainsKey(stat.SpecialtyId))
-                    SpecialtyStatistics[stat.UnitTemplateId][stat.RankType][stat.RankGrade].Add(stat.SpecialtyId, new SpecialtyGradeStatistics());
+                if (!SpecialtyStatistics[stat.UnitTemplateId][stat.RankType][stat.SpecialtyId].ContainsKey(stat.RankGrade))
+                    SpecialtyStatistics[stat.UnitTemplateId][stat.RankType][stat.SpecialtyId].Add(stat.RankGrade, new RankGradeStatistics());
 
                 // Add stat
-                SpecialtyStatistics[stat.UnitTemplateId][stat.RankType][stat.RankGrade][stat.SpecialtyId] = stat;
+                SpecialtyStatistics[stat.UnitTemplateId][stat.RankType][stat.SpecialtyId][stat.RankGrade] = stat;
             }
         }
 
@@ -242,151 +252,34 @@ namespace Perscom
             return 0;
         }
 
+        private void DrawTabPageReport(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    FillTab0Report();
+                    break;
+                case 1:
+                    FillTab1Report();
+                    break;
+                case 2:
+                    FillTab2Report();
+                    break;
+                case 3:
+                    FillTab3Report();
+                    break;
+                case 4:
+                    FillTab4Report();
+                    break;
+                case 5:
+                    FillTab5Report();
+                    break;
+            }
+        }
+
         #region Report Functions
 
-        /// <summary>
-        /// Time In Grade Report Tab
-        /// </summary>
-        private void FillTab1Report()
-        {
-            // === TAB 1 ====================================================
-            // Get the selected unit template
-            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
-            if (selected == null) return;
-
-            // Clear chart
-            chart1.Series[0].Points.Clear();
-            RankType type = (RankType)rankTypeBox1.SelectedItem;
-            var soldierData = RankStatistics[selected.Id][type];
-            var ranks = RankCache.GetRankListByType(type);
-
-            // Plot the average time in grade for each grade
-            foreach (var rank in soldierData.OrderBy(x => x.Key).Take(soldierData.Count - 1))
-            {
-                // Assign plot variables
-                string rankName = ranks[rank.Key].First().ToString();
-                double roundedVal = (double)rank.Value.PromotedAverageTimeInGrade;
-                int i = chart1.Series[0].Points.AddY(roundedVal);
-
-                // Create Plot
-                DataPoint point = chart1.Series[0].Points[i];
-                point.AxisLabel = rankName;
-                point.LegendText = rankName;
-                point.Label = roundedVal.ToString();
-                point.Color = (i % 2 == 1) ? MainForm.CHART_COLOR_DARK : MainForm.CHART_COLOR_LIGHT;
-            }
-        }
-
-        /// <summary>
-        /// Time In Service Tab
-        /// </summary>
-        private void FillTab2Report()
-        {
-            // === TAB 2 ====================================================
-            // Get the selected unit template
-            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
-            if (selected == null) return;
-
-            // Clear chart
-            chart2.Series[0].Points.Clear();
-            RankType type = (RankType)rankTypeBox2.SelectedItem;
-            var soldierData = RankStatistics[selected.Id][type];
-            var ranks = RankCache.GetRankListByType(type);
-
-            // Plot the average time in service (years) for each grade
-            foreach (var rank in soldierData.OrderBy(x => x.Key).Take(soldierData.Count - 1))
-            {
-                // Assign plot variables
-                string rankName = ranks[rank.Key].First().ToString();
-                double roundedVal = (double)rank.Value.PromotedAverageYearsInService;
-                int i = chart2.Series[0].Points.AddY(roundedVal);
-
-                // Create Plot
-                DataPoint point = chart2.Series[0].Points[i];
-                point.AxisLabel = rankName;
-                point.LegendText = rankName;
-                point.Label = roundedVal.ToString();
-                point.Color = (i % 2 == 1) ? MainForm.CHART_COLOR_DARK : MainForm.CHART_COLOR_LIGHT;
-            }
-        }
-
-        /// <summary>
-        /// Discharges Report
-        /// </summary>
-        private void FillTab3Report()
-        {
-            // === TAB 3 ====================================================
-            // Get the selected unit template
-            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
-            if (selected == null) return;
-
-            // Clear chart
-            chart3.Series[0].Points.Clear();
-            RankType type = (RankType)rankTypeBox3.SelectedItem;
-            var soldierData = RankStatistics[selected.Id][type];
-            var ranks = RankCache.GetRankListByType(type);
-
-            // Plot the tptal number of retirements by rank/grade
-            foreach (var stat in soldierData.OrderBy(x => x.Key))
-            {
-                Rank rank = ranks[stat.Key].First();
-                int i = chart3.Series[0].Points.AddY((double)stat.Value.TotalRetirements);
-                DataPoint point = chart3.Series[0].Points[i];
-                point.AxisLabel = rank.Name;
-                point.LegendText = rank.Name;
-                point.Label = stat.Value.TotalRetirements.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Selection Rates Chart
-        /// </summary>
-        private void FillTab4Report()
-        {
-            // === TAB 4 ====================================================
-            // Get the selected unit template
-            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
-            if (selected == null) return;
-
-            // Clear chart
-            chart4.Series[0].Points.Clear();
-            chart4.Series[1].Points.Clear();
-            RankType type = (RankType)rankTypeBox4.SelectedItem;
-            var soldierData = RankStatistics[selected.Id][type];
-            var ranks = RankCache.GetRankListByType(type);
-            int count = soldierData.Count;
-
-            // Take all but the last grade!
-            foreach (var rank in soldierData.OrderBy(x => x.Key).Take(count - 1))
-            {
-                int p = 0;
-                var stats = rank.Value;
-
-                // Total Personel that held this rank/grade (including non-promotables)
-                double rate = (double)stats.PromotionRate;
-                p = chart4.Series[1].Points.AddY(rate);
-                chart4.Series[1].Points[p].Label = $"{rate}%";
-
-                // Promotable soldiers whom did, or could have been promoted but retired too soon
-                rate = (double)stats.SelectionRate;
-                p = chart4.Series[0].Points.AddY(rate);
-                chart4.Series[0].Points[p].Label = $"{rate}%";
-
-                Rank fromRank = RankCache.GetRanksByGrade(type, rank.Key).First();
-                Rank toRank = RankCache.GetRanksByGrade(type, rank.Key + 1).First();
-
-                // Format labels
-                string text = String.Format("{0} -> {1}", fromRank.Abbreviation, toRank.Abbreviation);
-                chart4.Series[0].Points[p].AxisLabel = text;
-                chart4.Series[0].Points[p].LegendText = text;
-            }
-        }
-
-        #endregion Report Functions
-
-        #region Tab Controls Events
-
-        private void unitSelect_SelectedIndexChanged(object sender, EventArgs e)
+        private void FillTab0Report()
         {
             // Get the selected unit template
             UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
@@ -429,11 +322,267 @@ namespace Perscom
                 int i = series.Points.AddY(total);
                 series.Points[i].LegendText = Enum.GetName(typeof(RankType), rType) + ": " + total;
             }
+        }
 
-            FillTab1Report();
-            FillTab2Report();
-            FillTab3Report();
-            FillTab4Report();
+        /// <summary>
+        /// Time In Grade Report Tab
+        /// </summary>
+        private void FillTab1Report()
+        {
+            // === TAB 1 ====================================================
+            // Get the selected unit template
+            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
+            if (selected == null) return;
+
+            // Grab selected specialty filtering
+            Specialty specialty = specialtySelect.SelectedItem as Specialty;
+
+            // Clear chart
+            chart1.Series[0].Points.Clear();
+            RankType type = (RankType)rankTypeBox1.SelectedItem;
+            var ranks = RankCache.GetRankListByType(type);
+
+            // Grab filtered soldier list
+            var soldierData = (specialty == null) 
+                ? RankStatistics[selected.Id][type]
+                : SpecialtyStatistics[selected.Id][type][specialty.Id];
+
+            // Plot the average time in grade for each grade
+            foreach (var rank in soldierData.OrderBy(x => x.Key).Take(soldierData.Count - 1))
+            {
+                // Assign plot variables
+                string rankName = ranks[rank.Key].First().ToString();
+                double roundedVal = (double)rank.Value.PromotedAverageTimeInGrade;
+                int i = chart1.Series[0].Points.AddY(roundedVal);
+
+                // Create Plot
+                DataPoint point = chart1.Series[0].Points[i];
+                point.AxisLabel = rankName;
+                point.LegendText = rankName;
+                point.Label = roundedVal.ToString();
+                point.Color = (i % 2 == 1) ? MainForm.CHART_COLOR_DARK : MainForm.CHART_COLOR_LIGHT;
+            }
+        }
+
+        /// <summary>
+        /// Time In Service Tab
+        /// </summary>
+        private void FillTab2Report()
+        {
+            // === TAB 2 ====================================================
+            // Get the selected unit template
+            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
+            if (selected == null) return;
+
+            // Grab selected specialty filtering
+            Specialty specialty = specialtySelect.SelectedItem as Specialty;
+
+            // Clear chart
+            chart2.Series[0].Points.Clear();
+            RankType type = (RankType)rankTypeBox2.SelectedItem;
+            var ranks = RankCache.GetRankListByType(type);
+
+            // Grab filtered soldier list
+            var soldierData = (specialty == null)
+                ? RankStatistics[selected.Id][type]
+                : SpecialtyStatistics[selected.Id][type][specialty.Id];
+
+            // Plot the average time in service (years) for each grade
+            foreach (var rank in soldierData.OrderBy(x => x.Key).Take(soldierData.Count - 1))
+            {
+                // Assign plot variables
+                string rankName = ranks[rank.Key].First().ToString();
+                double roundedVal = (double)rank.Value.PromotedAverageYearsInService;
+                int i = chart2.Series[0].Points.AddY(roundedVal);
+
+                // Create Plot
+                DataPoint point = chart2.Series[0].Points[i];
+                point.AxisLabel = rankName;
+                point.LegendText = rankName;
+                point.Label = roundedVal.ToString();
+                point.Color = (i % 2 == 1) ? MainForm.CHART_COLOR_DARK : MainForm.CHART_COLOR_LIGHT;
+            }
+        }
+
+        /// <summary>
+        /// Discharges Report
+        /// </summary>
+        private void FillTab3Report()
+        {
+            // === TAB 3 ====================================================
+            // Get the selected unit template
+            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
+            if (selected == null) return;
+
+            // Grab selected specialty filtering
+            Specialty specialty = specialtySelect.SelectedItem as Specialty;
+
+            // Clear chart
+            chart3.Series[0].Points.Clear();
+            RankType type = (RankType)rankTypeBox3.SelectedItem;
+            var ranks = RankCache.GetRankListByType(type);
+
+            // Grab filtered soldier list
+            var soldierData = (specialty == null)
+                ? RankStatistics[selected.Id][type]
+                : SpecialtyStatistics[selected.Id][type][specialty.Id];
+
+            // Plot the tptal number of retirements by rank/grade
+            foreach (var stat in soldierData.OrderBy(x => x.Key))
+            {
+                Rank rank = ranks[stat.Key].First();
+                int i = chart3.Series[0].Points.AddY(stat.Value.TotalRetirements);
+                DataPoint point = chart3.Series[0].Points[i];
+                point.AxisLabel = rank.Name;
+                point.LegendText = rank.Name;
+                point.Label = stat.Value.TotalRetirements.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Selection Rates Chart
+        /// </summary>
+        private void FillTab4Report()
+        {
+            // === TAB 4 ====================================================
+            // Get the selected unit template
+            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
+            if (selected == null) return;
+
+            // Grab selected specialty filtering
+            Specialty specialty = specialtySelect.SelectedItem as Specialty;
+
+            // Clear chart
+            chart4.Series[0].Points.Clear();
+            chart4.Series[1].Points.Clear();
+            RankType type = (RankType)rankTypeBox4.SelectedItem;
+            var ranks = RankCache.GetRankListByType(type);
+
+            // Grab filtered soldier list
+            var soldierData = (specialty == null)
+                ? RankStatistics[selected.Id][type]
+                : SpecialtyStatistics[selected.Id][type][specialty.Id];
+            int count = soldierData.Count;
+
+            // Take all but the last grade!
+            foreach (var rank in soldierData.OrderBy(x => x.Key).Take(count - 1))
+            {
+                int p = 0;
+                var stats = rank.Value;
+
+                // Total Personel that held this rank/grade (including non-promotables)
+                double rate = (double)stats.PromotionRate;
+                p = chart4.Series[1].Points.AddY(rate);
+                chart4.Series[1].Points[p].Label = $"{rate}%";
+
+                // Promotable soldiers whom did, or could have been promoted but retired too soon
+                rate = (double)stats.SelectionRate;
+                p = chart4.Series[0].Points.AddY(rate);
+                chart4.Series[0].Points[p].Label = $"{rate}%";
+
+                Rank fromRank = RankCache.GetRanksByGrade(type, rank.Key).First();
+                Rank toRank = RankCache.GetRanksByGrade(type, rank.Key + 1).First();
+
+                // Format labels
+                string text = String.Format("{0} -> {1}", fromRank.Abbreviation, toRank.Abbreviation);
+                chart4.Series[0].Points[p].AxisLabel = text;
+                chart4.Series[0].Points[p].LegendText = text;
+            }
+        }
+
+        private void FillTab5Report()
+        {
+            // Get the selected unit template
+            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
+            if (selected == null) return;
+
+            // Grab selected rank
+            Rank rank = rankSelectionBox.SelectedItem as Rank;
+            if (rank == null) return;
+
+            // Grab selected specialty filtering
+            Specialty specialty = specialtySelect.SelectedItem as Specialty;
+
+            // Get selected item
+            Series series = promotionPieChart.Series[0];
+            RankType type = (RankType)rankTypeBox5.SelectedItem;
+            double totalYears = (int)TotalYearsRan;
+
+            // Grab filtered soldier list
+            var soldierData = (specialty == null)
+                ? RankStatistics[selected.Id][type]
+                : SpecialtyStatistics[selected.Id][type][specialty.Id];
+
+            // Clear Chart
+            series.Points.Clear();
+            promotionPieChart.Titles[1].Text = rank.Name;
+
+            // Make sure grade exists
+            if (soldierData.ContainsKey(rank.Grade))
+            {
+                // Grab stats
+                var stats = soldierData[rank.Grade];
+                if (stats.TotalSoldiers == 0)
+                {
+                    ResetTab5Labels();
+                    return;
+                }
+
+                // Get promotion rate and deficit
+                var rate = TotalPromotionRate(rank);
+                var deficit = GetAverageDeficitRate(rank);
+
+                int i = series.Points.AddY(stats.PromotionsToNextGrade / totalYears);
+                series.Points[i].LegendText = "Promoted";
+
+                i = series.Points.AddY(stats.TotalRetirements / totalYears);
+                series.Points[i].LegendText = "Retired";
+
+                // Set label texts for statistical data
+                labelTotalSelectRate.Text = String.Format("{0}%", rate);
+                labelAvgDeficitRate.Text = String.Format("{0}%", deficit);
+                labelRankTotalSelected.Text = String.Format("{0:N0}", stats.TotalSoldiers);
+                labelRankPromotions.Text = String.Format("{0:N0}", stats.PromotionsToNextGrade);
+                labelRankRetirements.Text = String.Format("{0:N0}", stats.TotalRetirements);
+                labelAvgTiS_Promoted.Text = String.Format("{0} years", Math.Round(stats.PromotedAverageTimeInService / 12, 1));
+                labelAvgTiS_Retirement.Text = String.Format("{0} years", Math.Round(stats.RetiredAverageTimeInService / 12, 1));
+                labelAvgTiG_Promotion.Text = String.Format("{0} months", Math.Round(stats.PromotedAverageTimeInGrade));
+                labelAvgTiG_Retirement.Text = String.Format("{0} months", Math.Round(stats.RetiredAverageTimeInGrade));
+            }
+            else
+            {
+                ResetTab5Labels();
+            }
+        }
+
+        private void ResetTab5Labels()
+        {
+            // ReSet label texts for statistical data
+            labelTotalSelectRate.Text = "0%";
+            labelAvgDeficitRate.Text = "0%";
+            labelRankTotalSelected.Text = "0";
+            labelRankPromotions.Text = "0";
+            labelRankRetirements.Text = "0";
+            labelAvgTiS_Promoted.Text = "0";
+            labelAvgTiS_Retirement.Text = "0";
+            labelAvgTiG_Promotion.Text = "0";
+            labelAvgTiG_Retirement.Text = "0";
+        }
+
+        #endregion Report Functions
+
+        #region Tab Controls Events
+
+        private void unitSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DrawTabPageReport(tabControl1.SelectedIndex);
+        }
+
+        private void specialtySelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedIndex == 0) return;
+
+            DrawTabPageReport(tabControl1.SelectedIndex);
         }
 
         private void rankTypeBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -488,17 +637,10 @@ namespace Perscom
             rankSelectionBox.Items.Clear();
             rankSelectionBox.SelectedItem = null;
 
-            // ReSet label texts for statistical data
-            labelTotalSelectRate.Text = "0%";
-            labelAvgDeficitRate.Text = "0%";
-            labelRankTotalSelected.Text = "0";
-            labelRankPromotions.Text = "0";
-            labelRankRetirements.Text = "0";
-            labelAvgTiS_Promoted.Text = "0";
-            labelAvgTiS_Retirement.Text = "0";
-            labelAvgTiG_Promotion.Text = "0";
-            labelAvgTiG_Retirement.Text = "0";
+            // Reset labels
+            ResetTab5Labels();
 
+            // Fill rank list
             RankType type = (RankType)rankTypeBox5.SelectedItem;
             foreach (var rank in RankCache.GetRankListByType(type))
             {
@@ -513,48 +655,7 @@ namespace Perscom
         /// <param name="e"></param>
         private void rankSelectionBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Get the selected unit template
-            UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
-            if (selected == null) return;
-
-            if (rankSelectionBox.SelectedItem == null)
-                return;
-
-            // Get selected item
-            Series series = promotionPieChart.Series[0];
-            Rank rank = (Rank)rankSelectionBox.SelectedItem;
-            RankType type = (RankType)rankTypeBox5.SelectedItem;
-            var rankData = RankStatistics[selected.Id][type];
-            int totalYears = (int)(yearsOfSimulate.Value - yearsToSkip.Value);
-
-            // Clear Chart
-            series.Points.Clear();
-            promotionPieChart.Titles[1].Text = rank.Name;
-
-            // Make sure grade exists
-            if (rankData.ContainsKey(rank.Grade))
-            {
-                var stats = rankData[rank.Grade];
-                var rate = TotalPromotionRate(rank);
-                var deficit = GetAverageDeficitRate(rank);
-
-                int i = series.Points.AddY(stats.PromotionsToNextGrade / totalYears);
-                series.Points[i].LegendText = "Promoted";
-
-                i = series.Points.AddY(stats.TotalRetirements / totalYears);
-                series.Points[i].LegendText = "Retired";
-
-                // Set label texts for statistical data
-                labelTotalSelectRate.Text = String.Format("{0}%", rate);
-                labelAvgDeficitRate.Text = String.Format("{0}%", deficit);
-                labelRankTotalSelected.Text = String.Format("{0:N0}", stats.TotalSoldiers);
-                labelRankPromotions.Text = String.Format("{0:N0}", stats.PromotionsToNextGrade);
-                labelRankRetirements.Text = String.Format("{0:N0}", stats.TotalRetirements);
-                labelAvgTiS_Promoted.Text = String.Format("{0} years", Math.Round(stats.PromotedAverageTimeInService / 12, 1));
-                labelAvgTiS_Retirement.Text = String.Format("{0} years", Math.Round(stats.RetiredAverageTimeInService / 12, 1));
-                labelAvgTiG_Promotion.Text = String.Format("{0} months", Math.Round(stats.PromotedAverageTimeInGrade));
-                labelAvgTiG_Retirement.Text = String.Format("{0} months", Math.Round(stats.RetiredAverageTimeInGrade));
-            }
+            FillTab5Report();
         }
 
         #endregion Tab Controls Events
@@ -712,6 +813,11 @@ namespace Perscom
             rankTypeBox.SelectedIndexChanged += rankTypeBox_SelectedIndexChanged;
         }
 
+        private void tabControl1_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            DrawTabPageReport(e.TabPageIndex);
+        }
+
         #endregion Form Events
 
         /// <summary>
@@ -732,7 +838,7 @@ namespace Perscom
             /// <param name="soldiers"></param>
             public PageOffsetList(SimDatabase db)
             {
-                TotalRecords = db.Soldiers.Count;
+                TotalRecords = db.ExecuteScalar<int>("SELECT COUNT(*) FROM Soldier WHERE Retired=0");
             }
 
             public IList GetList()

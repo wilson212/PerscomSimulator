@@ -69,6 +69,7 @@
     <Compile Include="Application\IntExtensions.cs" />
     <Compile Include="Database\BaseDatabase.cs" />
     <Compile Include="Application\DictionaryExtensions.cs" />
+    <Compile Include="Database\Entities\SpecialtyAssignment.cs" />
     <Compile Include="Simulation\SoldierWrapper2.cs" />
     <Compile Include="UI\SimResultViewForm.cs">
       <SubType>Form</SubType>
