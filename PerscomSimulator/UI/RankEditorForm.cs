@@ -256,7 +256,7 @@ namespace Perscom
             // Context menu
             // Get selected node and rank
             var selected = e.Node;
-            SelectedRank = (Database.Rank)selected.Tag;
+            SelectedRank = (Rank)selected.Tag;
 
             // Get image index
             var imageIndex = imageSelect.Items.IndexOf(SelectedRank.Image);
