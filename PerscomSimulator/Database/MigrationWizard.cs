@@ -51,7 +51,7 @@ namespace Perscom.Database
                             MigrateTo_1_2();
                             break;
                         default:
-                            throw new Exception($"Unexpected database version: {AppDatabase.DatabaseVersion}");
+                            throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
                     }
 
                     // Fetch version

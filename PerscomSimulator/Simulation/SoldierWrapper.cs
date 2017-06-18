@@ -34,7 +34,9 @@ namespace Perscom.Simulation
         /// <summary>
         /// 
         /// </summary>
-        public IterationDate LastPromotionDate { get; set; }
+        public IterationDate LastPromotionDate { get; protected set; }
+
+        public IterationDate LastGradeChangeDate { get; protected set; }
 
         /// <summary>
         /// Gets the soldiers current <see cref="Database.Position"/>, or null
@@ -65,6 +67,7 @@ namespace Perscom.Simulation
             Rank = rank;
             EntryServiceDate = date;
             LastPromotionDate = date;
+            LastGradeChangeDate = date;
 
             AssignSpecialty(soldier.SpecialtyId, date, db);
         }
@@ -119,22 +122,38 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public bool IsRetiring(IterationDate currentDate)
         {
+            // Forced by locked in billet?
+            if (Position.Billet.MaxTourLength > 0)
+            {
+                int timeLeft = Position.Billet.MaxTourLength - GetTimeInBillet(currentDate);
+                if (timeLeft <= 0)
+                    return true;
+            }
+
             // Check for max time in grade
-            bool rcp = false;
             if (Rank.MaxTimeInGrade > 0)
             {
-                int months = currentDate.Date.MonthDifference(LastPromotionDate.Date);
-                rcp = months >= Rank.MaxTimeInGrade;
+                int months = currentDate.Date.MonthDifference(LastGradeChangeDate.Date);
+                if (months >= Rank.MaxTimeInGrade)
+                    return true;
             }
 
-            // Check for locked in by billet
-            int difference = currentDate.Id - Assignment.AssignedIteration;
-            if (!Position.Billet.Billet.CanRetireEarly && Rank.MinTimeInGrade > difference)
+            // If we hit the end of our career...
+            if (currentDate.Id >= Soldier.ExitIterationId)
             {
-                return false;
+                // Check for locked in by billet (Time In Grade
+                if (!Position.Billet.Billet.CanRetireEarly)
+                {
+                    int difference = currentDate.Id - Assignment.AssignedIteration;
+                    if (Position.Billet.MinTourLength > difference)
+                        return false;
+                }
+
+                return true;
             }
 
-            return (currentDate.Id >= Soldier.ExitIterationId || rcp);
+            // Nope, we good
+            return false;
         }
 
         /// <summary>
@@ -160,6 +179,12 @@ namespace Perscom.Simulation
 
             // Remove soldier before promoting!
             RemoveSoldierRecursively(Position.ParentUnit);
+
+            // Log grade increase
+            if (newRank.Grade > Rank.Grade || newRank.Type != Rank.Type)
+            {
+                LastGradeChangeDate = date;
+            }
 
             // Set new rank
             Rank = newRank;
@@ -274,6 +299,50 @@ namespace Perscom.Simulation
         public int GetTimeInService(IterationDate currentDate)
         {
             return currentDate.Id - Soldier.EntryIterationId;
+        }
+
+        public int GetTimeInGrade(IterationDate currentIterationDate)
+        {
+            return currentIterationDate.Id - LastGradeChangeDate.Id;
+        }
+
+        public int GetTimeInBillet(IterationDate currentDate)
+        {
+            return currentDate.Id - Assignment.AssignedIteration;
+        }
+
+        public bool IsNearMaxTourLength(IterationDate currentDate)
+        {
+            if (Position == null) return true;
+
+            if (Position.Billet.MaxTourLength > 0)
+            {
+
+                int timeLeft = Position.Billet.MaxTourLength - GetTimeInBillet(currentDate);
+                int timeToRetire = Soldier.ExitIterationId - currentDate.Id;
+
+                // If we are going to retire before we hit max tour length, just return false
+                if (timeToRetire < timeLeft)
+                    return false;
+
+                return (timeLeft < 3);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Indicates whether this <see cref="Soldier"/> is currently locked in by
+        /// <see cref="Billet.MinTourLength"/>
+        /// </summary>
+        /// <param name="currentDate"></param>
+        /// <returns></returns>
+        public bool IsLockedInPosition(IterationDate currentDate)
+        {
+            if (Position == null) return false;
+
+            int timePassed = currentDate.Id - Assignment.AssignedIteration;
+            return Position.Billet.MinTourLength > timePassed;
         }
 
         protected void RemoveSoldierRecursively(UnitWrapper unit)

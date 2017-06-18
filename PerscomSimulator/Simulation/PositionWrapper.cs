@@ -49,8 +49,6 @@ namespace Perscom.Simulation
         /// </summary>
         public bool IsEmpty => Holder == null;
 
-        public int AssignedOn { get; protected set; }
-
         /// <summary>
         /// Creates a new instance of <see cref="PositionWrapper"/>
         /// </summary>
@@ -109,18 +107,6 @@ namespace Perscom.Simulation
             Holder = soldier;
 
             ParentUnit.AddSoldier(soldier);
-        }
-
-        /// <summary>
-        /// Indicates whether the <see cref="Soldier"/> in this position
-        /// is currently locked in by <see cref="Billet.MinTourLength"/>
-        /// </summary>
-        /// <param name="currentDate"></param>
-        /// <returns></returns>
-        public bool IsLockedIn(IterationDate currentDate)
-        {
-            int timePassed = currentDate.Id - AssignedOn;
-            return Billet.MinTourLength > timePassed;
         }
 
         public override string ToString()

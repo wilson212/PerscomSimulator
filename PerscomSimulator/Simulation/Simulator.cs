@@ -393,7 +393,7 @@ namespace Perscom
                 int grade = soldier.Rank.Grade;
                 int specId = soldier.Soldier.SpecialtyId;
 
-                // Check for retirement
+                // Check for retirement (forced by MaxTourLength, MaxTiG, or freewill)
                 if (soldier.IsRetiring(CurrentIterationDate))
                 {
                     // Log retirement data for current rank/grade
@@ -445,8 +445,6 @@ namespace Perscom
                         soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
                     }
                 }
-
-                // Check if soldier hit MaxTourLength
             }
         }
 
@@ -477,9 +475,22 @@ namespace Perscom
                 //
                 // TODO: Apply filters to force lateral promotions
                 //
-                var soldiers = topUnit.SoldiersByGrade[type][grade].Values
-                    .Where(x => IsCandidateFor(x, position))
-                    .OrderBy(x => x.LastPromotionDate.Id);
+                IOrderedEnumerable<SoldierWrapper> soldiers;
+                bool isLateral = grade == position.Billet.Rank.Grade;
+
+                // Lateral movement or promotion? The filtering is different!
+                if (isLateral)
+                {
+                    soldiers = topUnit.SoldiersByGrade[type][grade].Values
+                        .Where(x => IsCandidateForLateral(x, position))
+                        .OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                }
+                else
+                {
+                    soldiers = topUnit.SoldiersByGrade[type][grade].Values
+                        .Where(x => IsCanidateForPosition(x, position))
+                        .OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                }
 
                 // If we have no soldiers, downgrade
                 if (soldiers.FirstOrDefault() == null)
@@ -495,7 +506,7 @@ namespace Perscom
                 }
 
                 // Fetch soldier list without checking LockedIn
-                var primeSoldiers = soldiers.Where(x => !x.Position.IsLockedIn(CurrentIterationDate));
+                var primeSoldiers = (isLateral) ? soldiers : soldiers.Where(x => !x.IsLockedInPosition(CurrentIterationDate));
 
                 // Check for an un-restricted soldier first
                 var wrapper = primeSoldiers.FirstOrDefault();
@@ -504,13 +515,17 @@ namespace Perscom
                     return wrapper;
                 }
 
-                wrapper = soldiers.FirstOrDefault();
-                if (wrapper != null && grade < position.Billet.Rank.Grade)
+                // If this is a promotion?
+                if (grade < position.Billet.Rank.Grade)
                 {
-                    // Never laterally move a locked in soldier from the same 
-                    // Rank grade as the positon calls for, otherwise we could 
-                    // have a game of musical chairs happening EVERY month.
-                    return wrapper;
+                    wrapper = soldiers.FirstOrDefault();
+                    if (wrapper != null)
+                    {
+                        // Never laterally move a locked in soldier from the same 
+                        // Rank grade as the positon calls for, otherwise we could 
+                        // have a game of musical chairs happening EVERY month.
+                        return wrapper;
+                    }
                 }
 
                 // Lower grade, and try again
@@ -521,13 +536,37 @@ namespace Perscom
         }
 
         /// <summary>
-        /// This method determines if the specified soldier is a good candidate
-        /// for the specified position.
+        /// Determines whether the soldier is a candidate for a lateral promotion
         /// </summary>
         /// <param name="soldier"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        private bool IsCandidateFor(SoldierWrapper soldier, PositionWrapper position)
+        private bool IsCandidateForLateral(SoldierWrapper soldier, PositionWrapper position)
+        {
+            // Ensure we are even a canidate for the position to begin with!
+            if (!IsCanidateForPosition(soldier, position))
+                return false;
+
+            // If we are locked into our current position, than false!
+            if (soldier.IsLockedInPosition(CurrentIterationDate))
+                return false;
+
+            // If we are getting close to our maximum tour length, return true
+            if (soldier.IsNearMaxTourLength(CurrentIterationDate))
+                return true;
+
+            // Only accept it IF the stature is higher
+            return (soldier.Position.Billet.Stature < position.Billet.Stature);
+        }
+
+        /// <summary>
+        /// This method determines if the specified soldier meets the requirements
+        /// to accept the specified position
+        /// </summary>
+        /// <param name="soldier"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        protected bool IsCanidateForPosition(SoldierWrapper soldier, PositionWrapper position)
         {
             // A soldier can only can move once per iteration!
             // Positions are ordered at the start of the simulation by
@@ -553,25 +592,6 @@ namespace Perscom
                     return false;
             }
 
-            // If this is a lateral move, only select it IF the stature is higher
-            if (soldier.Position.Billet.Rank.Grade == position.Billet.Rank.Grade)
-            {
-                return (soldier.Position.Billet.Stature < position.Billet.Stature);
-            }
-
-            // If this is a promotion, then hell yes!
-            else if (position.Billet.Rank.Grade > soldier.Rank.Grade)
-            {
-                return true;
-            }
-
-            // Do not promote downwards on stature
-            else if (soldier.Position.Billet.Rank.Grade > position.Billet.Rank.Grade)
-            {
-                return false;
-            }
-
-            // if we are here, then fuck it, why not?
             return true;
         }
 
@@ -789,7 +809,7 @@ namespace Perscom
                 }
 
                 // Soldier locked into position?
-                if (soldier.Position != null && setting.NotLockedInBillet && soldier.Position.IsLockedIn(CurrentIterationDate))
+                if (soldier.Position != null && setting.NotLockedInBillet && soldier.IsLockedInPosition(CurrentIterationDate))
                 {
                     continue;
                 }

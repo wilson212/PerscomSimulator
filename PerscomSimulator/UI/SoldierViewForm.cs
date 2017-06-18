@@ -76,10 +76,10 @@ namespace Perscom
             row.CreateCells(dataGridView2);
             row.SetValues(new object[]
             {
-                    assignment.AssignedOn.Date.ToShortDateString(),
-                    position.Name,
-                    unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
-                    "--"
+                assignment.AssignedOn.Date.ToShortDateString(),
+                position.Name,
+                unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
+                "--"
             });
             dataGridView2.Rows.Add(row);
 
@@ -231,8 +231,7 @@ namespace Perscom
             shadow[0] = Color.FromArgb(255,181, 181, 181);
             shadow[1] = Color.FromArgb(155,195, 195, 195);
             shadow[2] = Color.FromArgb(55,211, 211, 211);
-            Pen pen = new Pen(shadow[0]);
-            using (pen)
+            using (Pen pen = new Pen(shadow[0]))
             {
                 foreach (CustomPanel p in panel.Controls.OfType<CustomPanel>())
                 {
