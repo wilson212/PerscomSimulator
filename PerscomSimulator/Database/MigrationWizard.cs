@@ -24,22 +24,31 @@ namespace Perscom.Database
         /// </summary>
         internal void MigrateTables()
         {
-            if (AppDatabase.CurrentVersion != AppDatabase.DatabaseVersion)
+            if (BaseDatabase.CurrentVersion != BaseDatabase.DatabaseVersion)
             {
+                // Ensure directory exists
+                var path = Path.Combine(Program.RootPath, "Data", "Backups");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
                 // Create backup
                 File.Copy(
                     Path.Combine(Program.RootPath, "data", "AppData.db"),
-                    Path.Combine(Program.RootPath, "data", "backups",
-                        $"AppData_v{AppDatabase.DatabaseVersion}_{Epoch.Now}.db"
-                    )
+                    Path.Combine(path, $"AppData_v{BaseDatabase.DatabaseVersion}_{Epoch.Now}.db")
                 );
 
                 // Perform updates until we are caught up!
-                while (AppDatabase.CurrentVersion != AppDatabase.DatabaseVersion)
+                while (BaseDatabase.CurrentVersion != BaseDatabase.DatabaseVersion)
                 {
-                    switch (AppDatabase.DatabaseVersion.ToString())
+                    switch (BaseDatabase.DatabaseVersion.ToString())
                     {
-                        case "":
+                        case "1.0":
+                            MigrateTo_1_1();
+                            break;
+                        case "1.1":
+                            MigrateTo_1_2();
                             break;
                         default:
                             throw new Exception($"Unexpected database version: {AppDatabase.DatabaseVersion}");
@@ -51,6 +60,51 @@ namespace Perscom.Database
 
                 // Always perform a vacuum to optimize the database
                 Database.Execute("VACUUM;");
+            }
+        }
+
+        private void MigrateTo_1_2()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                Database.Execute("ALTER TABLE `UnitTemplate` ADD COLUMN `UnitCodeFormat` TEXT NOT NULL DEFAULT '';");
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.2"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
+            }
+        }
+
+        private void MigrateTo_1_1()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                string[] queries = new[]
+                {
+                    "ALTER TABLE `SoldierGeneratorSetting` ADD COLUMN `MustBePromotable` INTEGER NOT NULL DEFAULT 0;",
+                    "ALTER TABLE `SoldierGeneratorSetting` ADD COLUMN `OrderedBySeniority` INTEGER NOT NULL DEFAULT 0;",
+                    "ALTER TABLE `SoldierGeneratorSetting` ADD COLUMN `NotLockedInBillet` INTEGER NOT NULL DEFAULT 0;",
+                };
+
+                // Run each query
+                foreach (string query in queries)
+                {
+                    Database.Execute(query);
+                }
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.1"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
             }
         }
 

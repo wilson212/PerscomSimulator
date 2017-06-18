@@ -4,7 +4,7 @@ using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
-    [Table(BuildInstanceRelationships = false)]
+    [Table]
     public class SpecialtyAssignment : IEquatable<SpecialtyAssignment>
     {
         #region Column Properties

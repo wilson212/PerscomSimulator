@@ -75,18 +75,12 @@ namespace Perscom
 
         private void FillListView()
         {
-            // Reset Settings List
-            Settings.Clear();
-
             // Reset listview
             listView1.Items.Clear();
 
             // Quit here if this is a new Generator
             if (Selected == null || Selected.Id == 0)
                 return;
-            
-            // Add generator settings
-            Settings.AddRange(Selected.SpawnSettings);
 
             // Prepare update
             listView1.BeginUpdate();
@@ -94,7 +88,12 @@ namespace Perscom
             // Create ListView items
             foreach (var setting in Settings)
             {
-                ListViewItem item = new ListViewItem(setting.Rank.Name);
+                Rank rank = RankCache.RanksById[setting.RankId];
+                ListViewItem item = new ListViewItem(rank.Name);
+                item.SubItems.Add(setting.NewCareerLength ? "1" : "0");
+                item.SubItems.Add(setting.MustBePromotable ? "1" : "0");
+                item.SubItems.Add(setting.OrderedBySeniority ? "1" : "0");
+                item.SubItems.Add(setting.NotLockedInBillet? "1" : "0");
                 item.SubItems.Add(setting.Probability.ToString());
                 item.Tag = setting;
                 listView1.Items.Add(item);
@@ -129,6 +128,10 @@ namespace Perscom
 
             existTrackBar.Enabled = enabled;
             lengthCheckBox.Enabled = enabled;
+            promotableCheckBox.Enabled = enabled;
+            orderedCheckBox.Enabled = enabled;
+            lockedCheckBox.Enabled = enabled;
+
             newCheckBox.Enabled = enabled;
             newTrackBar.Enabled = (enabled && newCheckBox.Checked) ? true : false;
         }
@@ -156,6 +159,10 @@ namespace Perscom
             nameBox.Text = Selected.Name;
             newCheckBox.Checked = Selected.CreatesNewSoldiers;
             newTrackBar.Value = Selected.NewSoldierProbability;
+
+            // Add generator settings
+            Settings.Clear();
+            Settings.AddRange(Selected.SpawnSettings);
 
             // Fill The ListView
             FillListView();
@@ -255,23 +262,29 @@ namespace Perscom
                     // Remove
                     foreach (var item in existing.Except(Settings))
                     {
+                        item.GeneratorId = Selected.Id;
                         db.SoldierGeneratorSettings.Remove(item);
                     }
 
                     // Add
                     foreach (var item in Settings.Except(existing))
                     {
+                        item.GeneratorId = Selected.Id;
                         db.SoldierGeneratorSettings.Add(item);
                     }
 
                     // Update
                     foreach (var item in Settings.Intersect(existing))
                     {
+                        item.GeneratorId = Selected.Id;
                         db.SoldierGeneratorSettings.Update(item);
                     }
 
                     // Commit
                     trans.Commit();
+
+                    // Refill Tree
+                    FillTree();
                 }
                 catch (Exception ex)
                 {
@@ -297,10 +310,13 @@ namespace Perscom
 
             // Add new Setting
             var setting = new SoldierGeneratorSetting();
-            setting.Generator = Selected;
-            setting.Rank = (Rank)rankSelect.SelectedItem;
+            setting.GeneratorId = Selected.Id;
+            setting.RankId = ((Rank)rankSelect.SelectedItem).Id;
             setting.Probability = existTrackBar.Value;
             setting.NewCareerLength = lengthCheckBox.Checked;
+            setting.MustBePromotable = promotableCheckBox.Checked;
+            setting.OrderedBySeniority = orderedCheckBox.Checked;
+            setting.NotLockedInBillet = lockedCheckBox.Checked;
 
             // Ensure this is not a duplicate setting
             int count = Settings.Where(x => x.RankId == setting.RankId).Count();
@@ -320,7 +336,12 @@ namespace Perscom
 
         private void newCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            newTrackBar.Enabled = newCheckBox.Enabled;
+            newTrackBar.Enabled = newCheckBox.Checked;
+            if (!newCheckBox.Checked && newTrackBar.Value > 0)
+            {
+                // Setting value will raise event to update probability
+                newTrackBar.Value = 0;
+            }
         }
 
         private void newTrackBar_ValueChanged(object sender, EventArgs e)
@@ -358,6 +379,9 @@ namespace Perscom
 
             // Now redraw the listView
             FillListView();
+
+            // Update probability label
+            UpdateProbabiltyLabel();
         }
 
         #region Panel Border Painting

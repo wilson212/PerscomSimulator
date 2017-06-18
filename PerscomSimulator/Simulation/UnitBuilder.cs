@@ -64,6 +64,7 @@ namespace Perscom
             // Convert this template to a Unit
             Unit unit = new Unit();
             unit.Name = unitName;
+            unit.UnitCode = FormatUnitName(template.Template.UnitCodeFormat, unitIndex);
             unit.UnitTemplateId = template.Template.Id;
             db.Units.Add(unit);
 
@@ -168,7 +169,10 @@ namespace Perscom
         {
             if (name.Contains('%'))
             {
-                return name.Replace("%n", unitNumber.ToTitleCase()).Replace("%c", unitNumber.ToCharString(true));
+                return name
+                    .Replace("%n", unitNumber.ToTitleCase())
+                    .Replace("%i", unitNumber.ToString())
+                    .Replace("%c", unitNumber.ToCharString(true));
             }
 
             return name;

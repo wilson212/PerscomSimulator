@@ -37,8 +37,19 @@ namespace Perscom.Database
         /// %n = The index number of this Unit Template of the same type (Ex: 1st, 2nd, 3rd)
         /// %c = The index Alpha code of this Unit Template of the same type (Ex: A, B, C)
         /// </remarks>
-        [Column, Required]
+        [Column, Required, Default("")]
         public string UnitNameFormat { get; set; }
+
+        /// <summary>
+        /// Gets or sets the short name format string for the instanced <see cref="Unit"/>
+        /// version of this <see cref="UnitTemplate"/>
+        /// </summary>
+        /// <remarks>
+        /// %n = The index number of this Unit Template of the same type (Ex: 1st, 2nd, 3rd)
+        /// %c = The index Alpha code of this Unit Template of the same type (Ex: A, B, C)
+        /// </remarks>
+        [Column, Required]
+        public string UnitCodeFormat { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Echelon"/> level in which we will find soldiers

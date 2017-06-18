@@ -9,7 +9,7 @@ namespace Perscom.Database
     /// <see cref="Database.Position"/>, where the <see cref="Database.Position"/> 
     /// was once held by the <see cref="Database.Soldier"/> during his career.
     /// </summary>
-    [Table(BuildInstanceRelationships = false)]
+    [Table]
     public class PastAssignment : IEquatable<PastAssignment>
     {
         #region Column Properties

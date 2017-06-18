@@ -32,6 +32,12 @@ namespace Perscom.Database
         [Column, Required]
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or Sets the string name of this Unit
+        /// </summary>
+        [Column, Required, Default("")]
+        public string UnitCode { get; set; }
+
         #endregion
 
         #region Foreign Keys

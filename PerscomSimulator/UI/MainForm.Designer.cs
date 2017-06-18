@@ -41,6 +41,8 @@
             this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.openRootMenuItem = new System.Windows.Forms.MenuItem();
+            this.openReportMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
@@ -76,8 +78,6 @@
             this.unitRankPieChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
-            this.menuItem5 = new System.Windows.Forms.MenuItem();
-            this.openReportMenuItem = new System.Windows.Forms.MenuItem();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).BeginInit();
@@ -112,6 +112,17 @@
             this.openRootMenuItem.Index = 0;
             this.openRootMenuItem.Text = "Open Program Folder";
             this.openRootMenuItem.Click += new System.EventHandler(this.openRootMenuItem_Click);
+            // 
+            // openReportMenuItem
+            // 
+            this.openReportMenuItem.Index = 1;
+            this.openReportMenuItem.Text = "Open Existing Report";
+            this.openReportMenuItem.Click += new System.EventHandler(this.openReportMenuItem_Click);
+            // 
+            // menuItem5
+            // 
+            this.menuItem5.Index = 2;
+            this.menuItem5.Text = "-";
             // 
             // closeMenuItem
             // 
@@ -412,6 +423,7 @@
             this.rankTypeBox.Name = "rankTypeBox";
             this.rankTypeBox.Size = new System.Drawing.Size(174, 21);
             this.rankTypeBox.TabIndex = 3;
+            this.rankTypeBox.SelectedIndexChanged += new System.EventHandler(this.rankTypeBox_SelectedIndexChanged);
             // 
             // labelTotalSoldiers
             // 
@@ -493,17 +505,6 @@
             this.nameLabel.Size = new System.Drawing.Size(335, 34);
             this.nameLabel.TabIndex = 1;
             this.nameLabel.Text = "Perscom Movement Simulator";
-            // 
-            // menuItem5
-            // 
-            this.menuItem5.Index = 2;
-            this.menuItem5.Text = "-";
-            // 
-            // openReportMenuItem
-            // 
-            this.openReportMenuItem.Index = 1;
-            this.openReportMenuItem.Text = "Open Existing Report";
-            this.openReportMenuItem.Click += new System.EventHandler(this.openReportMenuItem_Click);
             // 
             // MainForm
             // 

@@ -47,6 +47,27 @@ namespace Perscom.Database
         [Column, Required]
         public bool NewCareerLength { get; set; }
 
+        /// <summary>
+        /// Indicates whether the soldier being selected from an exisiting
+        /// pool must be promotable to be spawnable
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool MustBePromotable { get; set; }
+
+        /// <summary>
+        /// Indicates whether the soldiers being selected from an exisiting
+        /// pool are to be ordered by seniority before being selected.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool OrderedBySeniority { get; set; }
+
+        /// <summary>
+        /// Indicates whether the soldiers being selected from an exisiting
+        /// pool must not be locked into their current position
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool NotLockedInBillet { get; set; }
+
         #endregion
 
         #region Virtual Foreign Keys

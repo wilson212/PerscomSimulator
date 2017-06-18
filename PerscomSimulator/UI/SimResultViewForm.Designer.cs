@@ -70,6 +70,7 @@
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.specialtySelect = new System.Windows.Forms.ComboBox();
             this.labelYearsRan = new System.Windows.Forms.Label();
             this.unitSelect = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -142,7 +143,6 @@
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
-            this.specialtySelect = new System.Windows.Forms.ComboBox();
             this.panel3.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -219,6 +219,16 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(984, 40);
             this.panel3.TabIndex = 8;
+            // 
+            // specialtySelect
+            // 
+            this.specialtySelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.specialtySelect.FormattingEnabled = true;
+            this.specialtySelect.Location = new System.Drawing.Point(502, 10);
+            this.specialtySelect.Name = "specialtySelect";
+            this.specialtySelect.Size = new System.Drawing.Size(174, 21);
+            this.specialtySelect.TabIndex = 15;
+            this.specialtySelect.SelectedIndexChanged += new System.EventHandler(this.specialtySelect_SelectedIndexChanged);
             // 
             // labelYearsRan
             // 
@@ -340,6 +350,7 @@
             this.rankTypeBox.Name = "rankTypeBox";
             this.rankTypeBox.Size = new System.Drawing.Size(174, 21);
             this.rankTypeBox.TabIndex = 3;
+            this.rankTypeBox.SelectedIndexChanged += new System.EventHandler(this.rankTypeBox_SelectedIndexChanged);
             // 
             // labelTotalSoldiers
             // 
@@ -1122,16 +1133,6 @@
             this.nameLabel.Size = new System.Drawing.Size(204, 34);
             this.nameLabel.TabIndex = 1;
             this.nameLabel.Text = "Simulation Results";
-            // 
-            // specialtySelect
-            // 
-            this.specialtySelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.specialtySelect.FormattingEnabled = true;
-            this.specialtySelect.Location = new System.Drawing.Point(502, 10);
-            this.specialtySelect.Name = "specialtySelect";
-            this.specialtySelect.Size = new System.Drawing.Size(174, 21);
-            this.specialtySelect.TabIndex = 15;
-            this.specialtySelect.SelectedIndexChanged += new System.EventHandler(this.specialtySelect_SelectedIndexChanged);
             // 
             // SimResultViewForm
             // 

@@ -105,7 +105,7 @@ namespace Perscom
             RankType type = (rankTypeBox.SelectedIndex == -1) ? RankType.Enlisted : (RankType)rankTypeBox.SelectedItem;
 
             // Setup the enlisted pie chart
-            foreach (var item in stats.SoldierCountsByRank[type])
+            foreach (var item in stats.SoldierCountsByRank[type].OrderByDescending(x => RankCache.RanksById[x.Key].Grade))
             {
                 if (item.Value > 0)
                 {
@@ -148,7 +148,7 @@ namespace Perscom
             RankType type = (RankType)rankTypeBox.SelectedItem;
 
             // Setup the enlisted pie chart
-            foreach (var item in stats.SoldierCountsByGrade[type])
+            foreach (var item in stats.SoldierCountsByRank[type].OrderByDescending(x => RankCache.RanksById[x.Key].Grade))
             {
                 if (item.Value > 0)
                 {
@@ -361,7 +361,12 @@ namespace Perscom
         {
             using (UnitTypeManagerForm form = new UnitTypeManagerForm())
             {
-                form.ShowDialog();
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Update charts
+                    unitSelect_SelectedIndexChanged(sender, e);
+                }
             }
         }
 

@@ -293,10 +293,10 @@ namespace Perscom
             UnitStatistics stats = UnitBuilder.GetUnitStatistics(selected);
 
             labelTotalSoldiers.Text = "Total Unit Soldiers: " + stats.TotalSoldiers;
-            RankType type = (RankType)rankTypeBox.SelectedItem;
+            RankType type = (rankTypeBox.SelectedIndex == -1) ? RankType.Enlisted : (RankType)rankTypeBox.SelectedItem;
 
             // Setup the enlisted pie chart
-            foreach (var item in stats.SoldierCountsByRank[type])
+            foreach (var item in stats.SoldierCountsByRank[type].OrderByDescending(x => RankCache.RanksById[x.Key].Grade))
             {
                 if (item.Value > 0)
                 {
@@ -600,7 +600,7 @@ namespace Perscom
             RankType type = (RankType)rankTypeBox.SelectedItem;
 
             // Setup the enlisted pie chart
-            foreach (var item in stats.SoldierCountsByGrade[type])
+            foreach (var item in stats.SoldierCountsByRank[type].OrderByDescending(x => RankCache.RanksById[x.Key].Grade))
             {
                 if (item.Value > 0)
                 {

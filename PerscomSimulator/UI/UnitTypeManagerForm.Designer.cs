@@ -53,6 +53,10 @@
             this.billetsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.viewModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.largeIconsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -65,10 +69,8 @@
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.viewModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.largeIconsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.shortNameBox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -136,7 +138,7 @@
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(240, 75);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(824, 512);
+            this.mainPanel.Size = new System.Drawing.Size(844, 512);
             this.mainPanel.TabIndex = 9;
             // 
             // applyButton
@@ -151,6 +153,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.shortNameBox);
+            this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.label4);
             this.groupBox3.Controls.Add(this.promotionPoolSelect);
             this.groupBox3.Controls.Add(this.referencesLabel);
@@ -163,7 +167,7 @@
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Location = new System.Drawing.Point(16, 23);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(340, 222);
+            this.groupBox3.Size = new System.Drawing.Size(340, 259);
             this.groupBox3.TabIndex = 1;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Details";
@@ -171,7 +175,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(23, 176);
+            this.label4.Location = new System.Drawing.Point(23, 207);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(81, 13);
             this.label4.TabIndex = 34;
@@ -181,7 +185,7 @@
             // 
             this.promotionPoolSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.promotionPoolSelect.FormattingEnabled = true;
-            this.promotionPoolSelect.Location = new System.Drawing.Point(129, 173);
+            this.promotionPoolSelect.Location = new System.Drawing.Point(129, 204);
             this.promotionPoolSelect.Name = "promotionPoolSelect";
             this.promotionPoolSelect.Size = new System.Drawing.Size(189, 21);
             this.promotionPoolSelect.TabIndex = 33;
@@ -259,7 +263,7 @@
             this.groupBox2.Controls.Add(this.listView2);
             this.groupBox2.Location = new System.Drawing.Point(369, 23);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(443, 430);
+            this.groupBox2.Size = new System.Drawing.Size(463, 430);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Billets";
@@ -275,7 +279,7 @@
             this.listView2.Location = new System.Drawing.Point(3, 16);
             this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(437, 411);
+            this.listView2.Size = new System.Drawing.Size(457, 411);
             this.listView2.TabIndex = 1;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.DoubleClick += new System.EventHandler(this.listView2_DoubleClick);
@@ -298,29 +302,59 @@
             this.toolStripSeparator2,
             this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(153, 98);
+            this.billetsContextMenu.Size = new System.Drawing.Size(147, 76);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
             // 
             this.addBilletMenuItem.Name = "addBilletMenuItem";
-            this.addBilletMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addBilletMenuItem.Size = new System.Drawing.Size(146, 22);
             this.addBilletMenuItem.Text = "Add Billet";
             this.addBilletMenuItem.Click += new System.EventHandler(this.addBilletMenuItem_Click);
             // 
             // removeBilletMenuItem
             // 
             this.removeBilletMenuItem.Name = "removeBilletMenuItem";
-            this.removeBilletMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.removeBilletMenuItem.Size = new System.Drawing.Size(146, 22);
             this.removeBilletMenuItem.Text = "Remove Billet";
             this.removeBilletMenuItem.Click += new System.EventHandler(this.removeBilletMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(143, 6);
+            // 
+            // viewModeToolStripMenuItem
+            // 
+            this.viewModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.largeIconsToolStripMenuItem,
+            this.tilesToolStripMenuItem});
+            this.viewModeToolStripMenuItem.Name = "viewModeToolStripMenuItem";
+            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.viewModeToolStripMenuItem.Text = "View Mode";
+            // 
+            // largeIconsToolStripMenuItem
+            // 
+            this.largeIconsToolStripMenuItem.Checked = true;
+            this.largeIconsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.largeIconsToolStripMenuItem.Name = "largeIconsToolStripMenuItem";
+            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.largeIconsToolStripMenuItem.Text = "Large Icons";
+            this.largeIconsToolStripMenuItem.Click += new System.EventHandler(this.largeIconsToolStripMenuItem_Click);
+            // 
+            // tilesToolStripMenuItem
+            // 
+            this.tilesToolStripMenuItem.Name = "tilesToolStripMenuItem";
+            this.tilesToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.tilesToolStripMenuItem.Text = "Tiles";
+            this.tilesToolStripMenuItem.Click += new System.EventHandler(this.tilesToolStripMenuItem_Click);
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.listView1);
-            this.groupBox1.Location = new System.Drawing.Point(16, 251);
+            this.groupBox1.Location = new System.Drawing.Point(16, 288);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(340, 202);
+            this.groupBox1.Size = new System.Drawing.Size(340, 165);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Sub Units";
@@ -338,7 +372,7 @@
             this.listView1.Location = new System.Drawing.Point(3, 16);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(334, 183);
+            this.listView1.Size = new System.Drawing.Size(334, 146);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -390,7 +424,7 @@
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bottomPanel.Location = new System.Drawing.Point(0, 587);
             this.bottomPanel.Name = "bottomPanel";
-            this.bottomPanel.Size = new System.Drawing.Size(1064, 60);
+            this.bottomPanel.Size = new System.Drawing.Size(1084, 60);
             this.bottomPanel.TabIndex = 20;
             this.bottomPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.bottomPanel_Paint);
             // 
@@ -402,6 +436,7 @@
             this.finalizeButton.TabIndex = 13;
             this.finalizeButton.Text = "Finalize";
             this.finalizeButton.UseVisualStyleBackColor = true;
+            this.finalizeButton.Click += new System.EventHandler(this.finalizeButton_Click);
             // 
             // headerPanel
             // 
@@ -411,7 +446,7 @@
             this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.headerPanel.Location = new System.Drawing.Point(0, 0);
             this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(1064, 75);
+            this.headerPanel.Size = new System.Drawing.Size(1084, 75);
             this.headerPanel.TabIndex = 4;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
@@ -429,42 +464,28 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Unit Template Manager";
             // 
-            // toolStripSeparator2
+            // shortNameBox
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            this.shortNameBox.Location = new System.Drawing.Point(129, 170);
+            this.shortNameBox.Name = "shortNameBox";
+            this.shortNameBox.Size = new System.Drawing.Size(185, 20);
+            this.shortNameBox.TabIndex = 35;
             // 
-            // viewModeToolStripMenuItem
+            // label5
             // 
-            this.viewModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.largeIconsToolStripMenuItem,
-            this.tilesToolStripMenuItem});
-            this.viewModeToolStripMenuItem.Name = "viewModeToolStripMenuItem";
-            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.viewModeToolStripMenuItem.Text = "View Mode";
-            // 
-            // largeIconsToolStripMenuItem
-            // 
-            this.largeIconsToolStripMenuItem.Checked = true;
-            this.largeIconsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.largeIconsToolStripMenuItem.Name = "largeIconsToolStripMenuItem";
-            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.largeIconsToolStripMenuItem.Text = "Large Icons";
-            this.largeIconsToolStripMenuItem.Click += new System.EventHandler(this.largeIconsToolStripMenuItem_Click);
-            // 
-            // tilesToolStripMenuItem
-            // 
-            this.tilesToolStripMenuItem.Name = "tilesToolStripMenuItem";
-            this.tilesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.tilesToolStripMenuItem.Text = "Tiles";
-            this.tilesToolStripMenuItem.Click += new System.EventHandler(this.tilesToolStripMenuItem_Click);
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(23, 172);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(104, 13);
+            this.label5.TabIndex = 36;
+            this.label5.Text = "Short Name Format: ";
             // 
             // UnitTypeManagerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(1064, 647);
+            this.ClientSize = new System.Drawing.Size(1084, 647);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.sidePanel);
             this.Controls.Add(this.headerPanel);
@@ -528,5 +549,7 @@
         private System.Windows.Forms.ToolStripMenuItem viewModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem largeIconsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tilesToolStripMenuItem;
+        private System.Windows.Forms.TextBox shortNameBox;
+        private System.Windows.Forms.Label label5;
     }
 }

@@ -88,7 +88,7 @@ namespace Perscom
                     entryLevelCheckBox.Checked = true;
 
                     // Set index
-                    index = spawnGenSelect.Items.IndexOf(spawn);
+                    index = spawnGenSelect.Items.IndexOf(spawn.Generator);
                     if (index >= 0)
                     {
                         spawnGenSelect.SelectedIndex = index;
@@ -282,6 +282,11 @@ namespace Perscom
             else if (entryLevelCheckBox.Checked && spawnGenSelect.SelectedIndex < 0)
             {
                 ShowErrorMessage("No soldier spawn generator was selected!");
+                return;
+            }
+            else if (minTigBox.Value >= maxTigBox.Value)
+            {
+                ShowErrorMessage("Minimum tour length is greater or equal to the Maximum!");
                 return;
             }
             else if (String.IsNullOrWhiteSpace(billetNameBox.Text))

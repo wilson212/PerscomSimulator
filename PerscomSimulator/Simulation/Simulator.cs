@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using CrossLite;
 using Perscom.Database;
 using Perscom.Simulation;
 
@@ -166,116 +167,120 @@ namespace Perscom
             StartDate = EndDate.AddYears(-totalYears);
             CurrentDate = StartDate;
 
-            // Set Iteration ID if we are continuing from a previous sim
-            var date = Database.Query<IterationDate>("SELECT * FROM IterationDate ORDER BY Id DESC LIMIT 1").FirstOrDefault();
-            if (date != null)
-            {
-                StartDate = new DateTime(date.Date.Year, date.Date.Month, 1).AddMonths(1);
-                CurrentDate = StartDate;
-                EndDate = StartDate.AddYears(totalYears);
-                CurrentIterationDate = date;
-            }
-            else
-            {
-                // Create Iteration Date
-                CurrentIterationDate = new IterationDate() { Date = CurrentDate };
-                Database.IterationDates.Add(CurrentIterationDate);
-            }
-
-            // Update progress
-            token.ThrowIfCancellationRequested();
-            TaskProgressUpdate update = new TaskProgressUpdate();
-            update.MessageText = "Ordering soldier positions by grade and stature...";
-            progress.Report(update);
-
-            // Get all positions
-            Positions = ProcessingUnit.GetAllPositions()
-                .OrderBy(x => x.Billet.Rank.Grade)
-                .ThenByDescending(x => x.Billet.Stature)
-                .ToList();
-
-            token.ThrowIfCancellationRequested();
-            update = new TaskProgressUpdate();
-            update.MessageText = "Populating soldier seats...";
-            progress.Report(update);
-
-            // Populate soldiers if we need to
-            using (var trans = Database.BeginTransaction())
-            {
-                PopulateSoldiers();
-                trans.Commit();
-            }
-
-            // Update progress
-            token.ThrowIfCancellationRequested();
-            update = new TaskProgressUpdate();
-            update.HeaderText = "Running Simulation... Please Wait.";
-            update.MessageText = "";
-            progress.Report(update);
-
-            // Variable holder for the month name
-            string name = String.Empty;
-
-            // Main Loop
-            while (EndDate != CurrentDate)
-            {
-                // Quit if cancelled
-                token.ThrowIfCancellationRequested();
-
-                using (var trans = Database.BeginTransaction())
-                {
-                    // Update the date
-                    if (Iteration > 1)
-                    {
-                        CurrentDate = CurrentDate.AddMonths(1);
-
-                        // Create Iteration Date
-                        CurrentIterationDate = new IterationDate() { Date = CurrentDate };
-                        Database.IterationDates.Add(CurrentIterationDate);
-                    }
-
-                    // Ensure we are not screwed up here
-                    if (Iteration != CurrentIterationDate.Id)
-                    {
-                        throw new Exception("Date and Iteration dont match!");
-                    }
-
-                    // Update progress window
-                    name = CurrentDate.ToString("MMMM");
-                    update = new TaskProgressUpdate();
-                    update.MessageText = $"Processing {name} of year {TotalYearsRan + 1} of {totalYears}";
-                    progress.Report(update);
-
-                    // Now do promotions
-                    DoMontlyPositionChecks(token);
-
-                    // If an entire years has gone by, subtract a skip year
-                    // so we can begin logging again when the time comes.
-                    if (CurrentDate.Month == StartDate.Month && Iteration > 2)
-                    {
-                        TotalYearsRan = CurrentDate.Year - StartDate.Year;
-                        if (SkipYears > 0)
-                            SkipYears--;
-
-                        GC.Collect();
-                    }
-
-                    // Commit changes
-                    trans.Commit();
-
-                    // Increment our iteration Id
-                    Iteration++;
-                }
-            }
-
-            // Update progress
-            update = new TaskProgressUpdate();
-            update.HeaderText = "Saving Simulation Results... Please Wait.";
-            progress.Report(update);
-
-            // Save statistics
+            // Wrap in an exception block
             try
             {
+                // Set Iteration ID if we are continuing from a previous sim
+                var date = Database.Query<IterationDate>("SELECT * FROM IterationDate ORDER BY Id DESC LIMIT 1").FirstOrDefault();
+                if (date != null)
+                {
+                    StartDate = new DateTime(date.Date.Year, date.Date.Month, 1).AddMonths(1);
+                    CurrentDate = StartDate;
+                    EndDate = StartDate.AddYears(totalYears);
+                    CurrentIterationDate = date;
+                }
+                else
+                {
+                    // Create Iteration Date
+                    CurrentIterationDate = new IterationDate() { Date = CurrentDate };
+                    Database.IterationDates.Add(CurrentIterationDate);
+                }
+
+                // Disable foriegn key relationships in instances, to increase performance of the simulation
+                SetTableForeignKeyStatus(false);
+
+                // Update progress
+                token.ThrowIfCancellationRequested();
+                TaskProgressUpdate update = new TaskProgressUpdate();
+                update.MessageText = "Ordering soldier positions by grade and stature...";
+                progress.Report(update);
+
+                // Get all positions
+                Positions = ProcessingUnit.GetAllPositions()
+                    .OrderBy(x => x.Billet.Rank.Grade)
+                    .ThenByDescending(x => x.Billet.Stature)
+                    .ToList();
+
+                token.ThrowIfCancellationRequested();
+                update = new TaskProgressUpdate();
+                update.MessageText = "Populating soldier seats...";
+                progress.Report(update);
+
+                // Populate soldiers if we need to
+                using (var trans = Database.BeginTransaction())
+                {
+                    PopulateSoldiers();
+                    trans.Commit();
+                }
+
+                // Update progress
+                token.ThrowIfCancellationRequested();
+                update = new TaskProgressUpdate();
+                update.HeaderText = "Running Simulation... Please Wait.";
+                update.MessageText = "";
+                progress.Report(update);
+
+                // Variable holder for the month name
+                string name = String.Empty;
+
+                // Main Loop
+                while (EndDate != CurrentDate)
+                {
+                    // Quit if cancelled
+                    token.ThrowIfCancellationRequested();
+
+                    using (var trans = Database.BeginTransaction())
+                    {
+                        // Update the date
+                        if (Iteration > 1)
+                        {
+                            CurrentDate = CurrentDate.AddMonths(1);
+
+                            // Create Iteration Date
+                            CurrentIterationDate = new IterationDate() { Date = CurrentDate };
+                            Database.IterationDates.Add(CurrentIterationDate);
+                        }
+
+                        // Ensure we are not screwed up here
+                        if (Iteration != CurrentIterationDate.Id)
+                        {
+                            throw new Exception("Date and Iteration dont match!");
+                        }
+
+                        // Update progress window
+                        name = CurrentDate.ToString("MMMM");
+                        update = new TaskProgressUpdate();
+                        update.MessageText = $"Processing {name} of year {TotalYearsRan + 1} of {totalYears}";
+                        progress.Report(update);
+
+                        // Now do promotions
+                        DoMontlyPositionChecks(token);
+
+                        // If an entire years has gone by, subtract a skip year
+                        // so we can begin logging again when the time comes.
+                        if (CurrentDate.Month == StartDate.Month && Iteration > 2)
+                        {
+                            TotalYearsRan = CurrentDate.Year - StartDate.Year;
+                            if (SkipYears > 0)
+                                SkipYears--;
+
+                            GC.Collect();
+                        }
+
+                        // Commit changes
+                        trans.Commit();
+
+                        // Increment our iteration Id
+                        Iteration++;
+                    }
+                }
+
+                // Update progress
+                update = new TaskProgressUpdate();
+                update.HeaderText = "Saving Simulation Results... Please Wait.";
+                progress.Report(update);
+
+                // Save statistics
                 using (var trans = Database.BeginTransaction())
                 {
                     // Save soldiers and their relevant data
@@ -287,30 +292,54 @@ namespace Perscom
 
                     // Save rank stats data
                     foreach (var template in RankStatistics.Values)
-                    foreach (var grade in template.Values)
-                    foreach (var stat in grade.Values)
-                    {
-                        Database.RankGradeStatistics.Add(stat);
-                    }
+                        foreach (var grade in template.Values)
+                            foreach (var stat in grade.Values)
+                            {
+                                Database.RankGradeStatistics.Add(stat);
+                            }
 
                     // Save specialty data
                     foreach (var template in SpecialtyStatistics)
-                    foreach (var spec in template.Value.Values)
-                    foreach (var grade in spec.Values)
-                    foreach (var stat in grade.Values)
-                    {
-                        Database.SpecialtyGradeStatistics.Add(stat);
-                    }
+                        foreach (var spec in template.Value.Values)
+                            foreach (var grade in spec.Values)
+                                foreach (var stat in grade.Values)
+                                {
+                                    Database.SpecialtyGradeStatistics.Add(stat);
+                                }
 
                     // Save
                     trans.Commit();
                 }
             }
-            catch(Exception ex)
+            catch (OperationCanceledException ce)
+            {
+                throw;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.GenerateExceptionLog(ex);
                 throw;
             }
+            finally
+            {
+                // Re-enable foriegn key relationships in instances
+                SetTableForeignKeyStatus(true);
+            }
+        }
+
+        /// <summary>
+        /// Sets whether the new entries of certain tables in the database
+        /// get their <see cref="CrossLite.CodeFirst.ForeignKey{TEntity}"/>
+        /// properties created. When true, there is a massive performance hit
+        /// to the simulator, so we disable these when running.
+        /// </summary>
+        /// <param name="enabled"></param>
+        private void SetTableForeignKeyStatus(bool enabled)
+        {
+            EntityCache.GetTableMap(typeof(PastAssignment)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(SpecialtyAssignment)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(Soldier)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(Promotion)).BuildInstanceForeignKeys = enabled;
         }
 
         /// <summary>
@@ -341,7 +370,7 @@ namespace Perscom
                     if (position.Billet.IsEntryLevel)
                     {
                         soldier = CreateSoldier(SoldierGenerators[position.Billet.SpawnSetting.GeneratorId], position);
-                        soldier.AssignPosition(position, CurrentIterationDate, Database);
+                        soldier?.AssignPosition(position, CurrentIterationDate, Database);
                         continue;
                     }
                     else
@@ -708,30 +737,24 @@ namespace Perscom
             else
             {
                 // Fetch promotion pool
-                UnitWrapper topUnit = position.PromotionPoolUnit;
-                RankType type = setting.Rank?.Type ?? position.Billet.Rank.Type;
-                int grade = setting.Rank?.Grade ?? position.Billet.Rank.Grade;
+                UnitWrapper topUnit = position.PromotionPoolUnit; 
+                Rank settingRank = (setting.RankId > 0) ? RankCache.RanksById[setting.RankId] : null;
+                RankType type = settingRank?.Type ?? position.Billet.Rank.Type;
+                int grade = settingRank?.Grade ?? position.Billet.Rank.Grade;
 
+                // ---------------------------
+                // Apply Filters
+                // ---------------------------
                 var soldiers = topUnit.SoldiersByGrade[type][grade];
-                foreach (var s in soldiers)
-                {
-                    int id = s.Key;
-                    wrapper = s.Value;
+                wrapper = FindCrossPoolSoldier(soldiers, setting);
 
-                    // Only if the soldier has reached their tour requirements
-                    if (!wrapper.Position.IsLockedIn(CurrentIterationDate))
-                    {
-                        Soldier soldier = wrapper.Soldier;
-                        wrapper.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
-
-                        // Quit looping
-                        break;
-                    }
-                }
+                // Grab our top filtered soldier
+                if (wrapper != null)
+                    wrapper.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
             }
 
             // Does this soldier get assigned a new career?
-            if (newCareer)
+            if (newCareer && wrapper != null)
             {
                 Soldier soldier = wrapper.Soldier;
 
@@ -747,6 +770,35 @@ namespace Perscom
 
             // Send him to duty!
             return wrapper;
+        }
+
+        private SoldierWrapper FindCrossPoolSoldier(Dictionary<int, SoldierWrapper> soldiers, SoldierGeneratorSetting setting)
+        {
+            var list = new List<SoldierWrapper>(soldiers.Values);
+            if (setting.OrderedBySeniority)
+                list = list.OrderBy(x => x.LastPromotionDate.Id).ToList();
+
+            PromotableStatus status;
+            foreach (var soldier in list)
+            {
+                // Must be promotable?
+                if (setting.MustBePromotable)
+                {
+                    if (!soldier.IsPromotable(CurrentIterationDate, out status) || status == PromotableStatus.Lateral)
+                        continue;
+                }
+
+                // Soldier locked into position?
+                if (soldier.Position != null && setting.NotLockedInBillet && soldier.Position.IsLockedIn(CurrentIterationDate))
+                {
+                    continue;
+                }
+
+                // If we are here, list him
+                return soldier;
+            }
+
+            return null;
         }
     }
 }

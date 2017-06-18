@@ -188,6 +188,23 @@ namespace Perscom
             // Ignore
             if (SelectedRank == null) return;
 
+            // Perform validation!
+            if (minTigBox.Value >= maxTigBox.Value)
+            {
+                ShowErrorMessage("Minimum time in grade is greater or equal to the Maximum!");
+                return;
+            }
+            else if (promotableBox.Value >= maxTigBox.Value)
+            {
+                ShowErrorMessage("Promotable time in grade is greater or equal to the Maximum!");
+                return;
+            }
+            else if (String.IsNullOrWhiteSpace(rankNameBox.Text))
+            {
+                ShowErrorMessage("Invalid rank name entered!");
+                return;
+            }
+
             using (AppDatabase db = new AppDatabase())
             {
                 // Fill Rank Details
@@ -215,6 +232,11 @@ namespace Perscom
 
             // Refill tree
             FillTree();
+        }
+
+        private void ShowErrorMessage(string message)
+        {
+            MessageBox.Show(message, "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)

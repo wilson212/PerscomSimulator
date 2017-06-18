@@ -61,7 +61,7 @@ namespace Perscom.Simulation
         public SoldierWrapper(Soldier soldier, Rank rank, IterationDate date, SimDatabase db)
         {
             Soldier = soldier;
-            soldier.Rank = rank;
+            soldier.RankId = rank.Id;
             Rank = rank;
             EntryServiceDate = date;
             LastPromotionDate = date;
@@ -119,11 +119,19 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public bool IsRetiring(IterationDate currentDate)
         {
+            // Check for max time in grade
             bool rcp = false;
             if (Rank.MaxTimeInGrade > 0)
             {
                 int months = currentDate.Date.MonthDifference(LastPromotionDate.Date);
                 rcp = months >= Rank.MaxTimeInGrade;
+            }
+
+            // Check for locked in by billet
+            int difference = currentDate.Id - Assignment.AssignedIteration;
+            if (!Position.Billet.Billet.CanRetireEarly && Rank.MinTimeInGrade > difference)
+            {
+                return false;
             }
 
             return (currentDate.Id >= Soldier.ExitIterationId || rcp);

@@ -34,31 +34,31 @@ namespace Perscom
             panel4.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel4.Width, panel4.Height, 5, 5));
             panel5.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel5.Width, panel5.Height, 5, 5));
 
-            // Begin filling label text values
-            nameLabel.Text = soldier.Name;
-            rankLabel.Text = soldier.Soldier.Rank.Name;
-            pictureBox1.Image = soldier.RankImage;
-            entryLabel.Text = soldier.Soldier.EntryServiceDate.Date.ToShortDateString();
-
             // Extract data
             var position = soldier.Position;
             var unit = position.Unit;
             var assignment = soldier.Soldier.Assignments.First();
             var spec = soldier.Soldier.Specialty;
 
-            // Specialty
+            // Begin filling label text values
+            nameLabel.Text = soldier.Name;
+            rankLabel.Text = soldier.Soldier.Rank.Name;
+            pictureBox1.Image = soldier.RankImage;
+            entryLabel.Text = soldier.Soldier.EntryServiceDate.Date.ToShortDateString();
             specLabel.Text = $"{spec.Code} - {spec.Name}";
 
-            // Unit
-            var builder = new StringBuilder();
+            // Build current Unit name
+            var unitNameBuilder = new StringBuilder();
+            var unitCodeBuilder = new StringBuilder();
             while (unit != null)
             {
-                builder.Append(unit.Name);
+                unitNameBuilder.Append(unit.Name);
+                unitCodeBuilder.Append(unit.UnitCode);
                 unit = unit.Attachments.Where(x => x.ChildId == unit.Id).Select(x => x.ParentUnit).FirstOrDefault();
                 if (unit != null)
-                    builder.Append(", ");
+                    unitNameBuilder.Append(", ");
             }
-            unitLabel.Text = builder.ToString();
+            unitLabel.Text = unitNameBuilder.ToString();
 
             // Time in Service
             LocalDate startDate = new LocalDate(
@@ -78,7 +78,7 @@ namespace Perscom
             {
                     assignment.AssignedOn.Date.ToShortDateString(),
                     position.Name,
-                    builder.ToString(),
+                    unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
                     "--"
             });
             dataGridView2.Rows.Add(row);
@@ -105,10 +105,7 @@ namespace Perscom
             // Time in Grade
             DateTime lastPromo = soldier.EntryServiceDate;
 
-            // Fill Data grid with promotion data
-            var table = EntityCache.GetTableMap(typeof(Promotion));
-            table.BuildInstanceForeignKeys = true;
-
+            // Fill Past Assignments
             foreach (Promotion info in soldier.Soldier.Promotions.OrderByDescending(x => x.IterationId))
             {
                 Rank toRank = info.ToRank;
@@ -116,13 +113,13 @@ namespace Perscom
                 char code = char.ToUpper(RankCache.GetCodeByRankType(info.ToRank.Type));
                 string desc = String.Empty;
 
-                if (toRank.Grade == soldier.Rank.Grade)
+                if (toRank.Grade == soldier.Rank.Grade && toRank.Type == soldier.Rank.Type)
                 {
                     lastPromo = info.Date.Date;
                 }
 
                 // Get description of the move
-                if (toRank.Grade > fromRank.Grade)
+                if (toRank.Grade > fromRank.Grade || toRank.Type != fromRank.Type)
                 {
                     desc = $"Promoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
                 }
@@ -157,21 +154,17 @@ namespace Perscom
                 tigLabel.Text = $"{timeFrame.Months} month(s)";
 
             // Fill Past Assignments
-            table = EntityCache.GetTableMap(typeof(PastAssignment));
-            table.BuildInstanceForeignKeys = true;
             foreach (var pos in soldier.Soldier.PastAssignments.OrderByDescending(x => x.Id))
             {
                 int monthsHeld = pos.RemovedIteration - pos.StartIteration;
-                builder.Clear();
+                unitCodeBuilder.Clear();
 
                 // build unitname
                 unit = pos.Position.Unit;
                 while (unit != null)
                 {
-                    builder.Append(unit.Name);
+                    unitCodeBuilder.Append(unit.UnitCode);
                     unit = unit.Attachments.Where(x => x.ChildId == unit.Id).Select(x => x.ParentUnit).FirstOrDefault();
-                    if (unit != null)
-                        builder.Append(", ");
                 }
 
                 row = new DataGridViewRow();
@@ -180,15 +173,13 @@ namespace Perscom
                 {
                     pos.StartDate.Date.ToShortDateString(),
                     pos.Position.Name,
-                    builder.ToString(),
+                    unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
                     monthsHeld
                 });
                 dataGridView2.Rows.Add(row);
             }
 
             // Fill Past Assignments
-            table = EntityCache.GetTableMap(typeof(SpecialtyAssignment));
-            table.BuildInstanceForeignKeys = true;
             foreach (var pos in soldier.Soldier.SpecialtyAssignments.OrderByDescending(x => x.Id))
             {
                 spec = pos.Specialty;

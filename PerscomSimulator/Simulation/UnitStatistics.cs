@@ -11,8 +11,14 @@ namespace Perscom.Simulation
 
         public int TotalSoldiers { get; set; }
 
+        /// <summary>
+        /// Type => [Rank.Id => Count]
+        /// </summary>
         public Dictionary<RankType, Dictionary<int, int>> SoldierCountsByRank { get; set; }
 
+        /// <summary>
+        /// Type => [Rank.Grade => Count]
+        /// </summary>
         public Dictionary<RankType, Dictionary<int, int>> SoldierCountsByGrade { get; set; }
 
         public UnitStatistics()

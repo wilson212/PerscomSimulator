@@ -215,6 +215,7 @@ namespace Perscom
             echelonTypeSelect.Enabled = enabled;
             templateNameBox.Enabled = enabled;
             unitNameBox.Enabled = enabled;
+            shortNameBox.Enabled = enabled;
             promotionPoolSelect.Enabled = enabled;
             listView1.Enabled = enabled;
             listView2.Enabled = enabled;
@@ -391,6 +392,7 @@ namespace Perscom
             SelectedTemplate.Echelon = echelon;
             SelectedTemplate.Name = templateNameBox.Text;
             SelectedTemplate.UnitNameFormat = unitNameBox.Text;
+            SelectedTemplate.UnitCodeFormat = shortNameBox.Text;
             SelectedTemplate.PromotionPool = pool;
 
             // Ensure that no sub units are of higher echelon that our current unit,
@@ -639,6 +641,7 @@ namespace Perscom
             echelonTypeSelect.SelectedIndex = (index < 0) ? 0 : index; ;
             templateNameBox.Text = SelectedTemplate.Name;
             unitNameBox.Text = SelectedTemplate.UnitNameFormat;
+            shortNameBox.Text = SelectedTemplate.UnitCodeFormat;
             referencesLabel.Text = SelectedTemplate.UnitTemplateAttachments.Count().ToString();
 
             // Get promotion pool index
@@ -729,6 +732,12 @@ namespace Perscom
             tilesToolStripMenuItem.Checked = true;
             largeIconsToolStripMenuItem.Checked = false;
             listView2.View = View.Tile;
+        }
+
+        private void finalizeButton_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+            this.Close();
         }
     }
 }

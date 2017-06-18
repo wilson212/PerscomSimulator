@@ -7,7 +7,7 @@ namespace Perscom.Database
     /// <summary>
     /// Represents a relationship between a <see cref="Database.Soldier"/> and his past <see cref="Promotion"/>
     /// </summary>
-    [Table(BuildInstanceRelationships = false)]
+    [Table]
     public class Promotion : IEquatable<Promotion>
     {
         #region Columns

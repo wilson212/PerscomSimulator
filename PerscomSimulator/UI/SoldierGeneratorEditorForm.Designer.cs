@@ -43,6 +43,8 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.removeItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label8 = new System.Windows.Forms.Label();
             this.rankSelect = new System.Windows.Forms.ComboBox();
             this.existProbLabel = new System.Windows.Forms.Label();
@@ -61,19 +63,24 @@
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.removeItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.promotableCheckBox = new System.Windows.Forms.CheckBox();
+            this.orderedCheckBox = new System.Windows.Forms.CheckBox();
+            this.lockedCheckBox = new System.Windows.Forms.CheckBox();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mainPanel.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.existTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.newTrackBar)).BeginInit();
             this.sidePanel.SuspendLayout();
             this.headerPanel.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainPanel
@@ -148,6 +155,9 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.lockedCheckBox);
+            this.groupBox3.Controls.Add(this.orderedCheckBox);
+            this.groupBox3.Controls.Add(this.promotableCheckBox);
             this.groupBox3.Controls.Add(this.lengthCheckBox);
             this.groupBox3.Controls.Add(this.addButton);
             this.groupBox3.Controls.Add(this.groupBox5);
@@ -175,7 +185,7 @@
             // 
             // addButton
             // 
-            this.addButton.Location = new System.Drawing.Point(130, 222);
+            this.addButton.Location = new System.Drawing.Point(130, 259);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(150, 30);
             this.addButton.TabIndex = 38;
@@ -186,9 +196,9 @@
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.listView1);
-            this.groupBox5.Location = new System.Drawing.Point(8, 281);
+            this.groupBox5.Location = new System.Drawing.Point(8, 307);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(380, 165);
+            this.groupBox5.Size = new System.Drawing.Size(380, 140);
             this.groupBox5.TabIndex = 34;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Existing Pools";
@@ -199,14 +209,19 @@
             this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
+            this.columnHeader3,
+            this.columnHeader4,
+            this.columnHeader5,
+            this.columnHeader6,
             this.columnHeader2});
             this.listView1.ContextMenuStrip = this.contextMenuStrip1;
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.FullRowSelect = true;
             this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listView1.Location = new System.Drawing.Point(3, 16);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(374, 146);
+            this.listView1.Size = new System.Drawing.Size(374, 121);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -214,12 +229,27 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "Rank";
-            this.columnHeader1.Width = 250;
+            this.columnHeader1.Width = 200;
             // 
             // columnHeader2
             // 
-            this.columnHeader2.Text = "Probability";
-            this.columnHeader2.Width = 100;
+            this.columnHeader2.Text = "Prob.";
+            this.columnHeader2.Width = 40;
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.removeItemToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(145, 26);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // removeItemToolStripMenuItem
+            // 
+            this.removeItemToolStripMenuItem.Name = "removeItemToolStripMenuItem";
+            this.removeItemToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.removeItemToolStripMenuItem.Text = "Remove Item";
+            this.removeItemToolStripMenuItem.Click += new System.EventHandler(this.removeItemToolStripMenuItem_Click);
             // 
             // label8
             // 
@@ -242,7 +272,7 @@
             // existProbLabel
             // 
             this.existProbLabel.AutoSize = true;
-            this.existProbLabel.Location = new System.Drawing.Point(334, 147);
+            this.existProbLabel.Location = new System.Drawing.Point(334, 184);
             this.existProbLabel.Name = "existProbLabel";
             this.existProbLabel.Size = new System.Drawing.Size(33, 13);
             this.existProbLabel.TabIndex = 33;
@@ -251,7 +281,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(36, 147);
+            this.label5.Location = new System.Drawing.Point(36, 184);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(55, 13);
             this.label5.TabIndex = 32;
@@ -259,7 +289,7 @@
             // 
             // existTrackBar
             // 
-            this.existTrackBar.Location = new System.Drawing.Point(27, 166);
+            this.existTrackBar.Location = new System.Drawing.Point(27, 203);
             this.existTrackBar.Maximum = 100;
             this.existTrackBar.Minimum = 1;
             this.existTrackBar.Name = "existTrackBar";
@@ -323,7 +353,6 @@
             // 
             this.newTrackBar.Location = new System.Drawing.Point(27, 93);
             this.newTrackBar.Maximum = 100;
-            this.newTrackBar.Minimum = 1;
             this.newTrackBar.Name = "newTrackBar";
             this.newTrackBar.Size = new System.Drawing.Size(340, 45);
             this.newTrackBar.TabIndex = 31;
@@ -413,20 +442,55 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Soldier Spawn Generator Editor";
             // 
-            // contextMenuStrip1
+            // columnHeader3
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.removeItemToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 48);
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            this.columnHeader3.Text = "RC";
+            this.columnHeader3.Width = 27;
             // 
-            // removeItemToolStripMenuItem
+            // promotableCheckBox
             // 
-            this.removeItemToolStripMenuItem.Name = "removeItemToolStripMenuItem";
-            this.removeItemToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.removeItemToolStripMenuItem.Text = "Remove Item";
-            this.removeItemToolStripMenuItem.Click += new System.EventHandler(this.removeItemToolStripMenuItem_Click);
+            this.promotableCheckBox.AutoSize = true;
+            this.promotableCheckBox.Location = new System.Drawing.Point(145, 97);
+            this.promotableCheckBox.Name = "promotableCheckBox";
+            this.promotableCheckBox.Size = new System.Drawing.Size(121, 17);
+            this.promotableCheckBox.TabIndex = 40;
+            this.promotableCheckBox.Text = "Must Be Promotable";
+            this.promotableCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // orderedCheckBox
+            // 
+            this.orderedCheckBox.AutoSize = true;
+            this.orderedCheckBox.Location = new System.Drawing.Point(145, 120);
+            this.orderedCheckBox.Name = "orderedCheckBox";
+            this.orderedCheckBox.Size = new System.Drawing.Size(110, 17);
+            this.orderedCheckBox.TabIndex = 41;
+            this.orderedCheckBox.Text = "Order By Seniority";
+            this.orderedCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // lockedCheckBox
+            // 
+            this.lockedCheckBox.AutoSize = true;
+            this.lockedCheckBox.Location = new System.Drawing.Point(145, 143);
+            this.lockedCheckBox.Name = "lockedCheckBox";
+            this.lockedCheckBox.Size = new System.Drawing.Size(177, 17);
+            this.lockedCheckBox.TabIndex = 42;
+            this.lockedCheckBox.Text = "Must Not Be Locked In To Billet";
+            this.lockedCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "P";
+            this.columnHeader4.Width = 25;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "O";
+            this.columnHeader5.Width = 25;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "NL";
+            this.columnHeader6.Width = 27;
             // 
             // SoldierGeneratorEditorForm
             // 
@@ -446,6 +510,7 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox5.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.existTrackBar)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
@@ -453,7 +518,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.newTrackBar)).EndInit();
             this.sidePanel.ResumeLayout(false);
             this.headerPanel.ResumeLayout(false);
-            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -494,5 +558,12 @@
         private System.Windows.Forms.CheckBox lengthCheckBox;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem removeItemToolStripMenuItem;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.CheckBox promotableCheckBox;
+        private System.Windows.Forms.CheckBox orderedCheckBox;
+        private System.Windows.Forms.CheckBox lockedCheckBox;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
     }
 }
