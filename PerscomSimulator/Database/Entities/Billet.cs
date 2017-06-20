@@ -69,7 +69,7 @@ namespace Perscom.Database
         /// Entry level billits should be set to a value of zero, while positions that require
         /// seniority should have a higher value.
         /// </remarks>
-        [Column, Default(0)]
+        [Column, Required, Default(0)]
         public int Stature { get; set; } = 0;
 
         /// <summary>
@@ -77,42 +77,58 @@ namespace Perscom.Database
         /// before being allowed to leave. If the minimum amount is less than the remaining time 
         /// to live for the soldier, their retirement date will be adjusted accordingly.
         /// </summary>
-        [Column, Default(0)]
+        [Column, Required, Default(0)]
         public int MinTourLength { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the maximum time (months) a soldier can hold this <see cref="Billet"/>
         /// before being forcefully pushed out.
         /// </summary>
-        [Column, Default(0)]
+        [Column, Required, Default(0)]
         public int MaxTourLength { get; set; } = 0;
 
         /// <summary>
         /// Indicates whether the soldier holding this <see cref="Billet"/> can retire before
         /// meeting the <see cref="MinTourLength"/>.
         /// </summary>
-        [Column, Default(1)]
+        [Column, Required, Default(1)]
         public bool CanRetireEarly { get; set; } = true;
 
         /// <summary>
         /// Indicates whether the soldier holding this <see cref="Billet"/> is limited to
         /// just 1 tour, and 1 tour only
         /// </summary>
-        [Column, Default(1)]
+        [Column, Required, Default(1)]
         public bool Repeatable { get; set; } = true;
 
         /// <summary>
         /// Indicates whether <see cref="Soldier"/>s whom never held this <see cref="Billet"/> 
         /// before have priority over repeat <see cref="Soldier"/>s
         /// </summary>
-        [Column, Default(0)]
+        [Column, Required, Default(0)]
         public bool PreferNonRepeats { get; set; }
+
+        /// <summary>
+        /// Indicates whether this <see cref="Billet"/> allows freshly promoted
+        /// soldiers to fill the seat. If true, this <see cref="Billet"/> requires
+        /// an experienced soldier to fill it.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool LateralOnly { get; set; }
+
+        /// <summary>
+        /// Indicates whether the required <see cref="Specialty"/> are inversed, meaning
+        /// that the <see cref="Soldier"/> must NOT have the <see cref="Specialty"/> listed
+        /// to be considered for this billet
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool InverseRequirements { get; set; }
 
         /// <summary>
         /// Gets or sets the order in which this Billet will display in the Billet List View
         /// on the <see cref="UnitTypeManagerForm"/>, relative to the other billet ZIndexies.
         /// </summary>
-        [Column, Default(0)]
+        [Column, Required, Default(0)]
         public int ZIndex { get; set; } = 0;
 
         #endregion
@@ -273,8 +289,7 @@ namespace Perscom.Database
         /// <see cref="Billet"/>
         /// </summary>
         /// <remarks>
-        /// A lazy loaded enumeration that fetches all Torque Ratios
-        /// that are bound by the foreign key and this Engine.Id.
+        /// A lazy loaded enumeration
         /// </remarks>
         public virtual IEnumerable<BilletRequirement> Requirements { get; set; }
 

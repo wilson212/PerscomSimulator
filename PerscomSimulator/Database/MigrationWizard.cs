@@ -50,6 +50,9 @@ namespace Perscom.Database
                         case "1.1":
                             MigrateTo_1_2();
                             break;
+                        case "1.2":
+                            MigrateTo_1_3();
+                            break;
                         default:
                             throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
                     }
@@ -60,6 +63,24 @@ namespace Perscom.Database
 
                 // Always perform a vacuum to optimize the database
                 Database.Execute("VACUUM;");
+            }
+        }
+
+        private void MigrateTo_1_3()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                Database.Execute("ALTER TABLE `Billet` ADD COLUMN `InverseRequirements` INTEGER NOT NULL DEFAULT 0;");
+                Database.Execute("ALTER TABLE `Billet` ADD COLUMN `LateralOnly` INTEGER NOT NULL DEFAULT 0;");
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.3"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
             }
         }
 

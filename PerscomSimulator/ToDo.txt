@@ -1,5 +1,3 @@
 ﻿ - Custom LINQ expression selectors for Soldier Generators (selecting from existing pools)
- - Specialty requirements for billets: add a switch between IN and NOT IN
- - Add option for billet to be "Lateral only" (Not entry level)
  - Track specialty transitions for statistics
  - Add a "does not allow lateral grade promotion" to ranks (think Marine Corps 1stSgt and Msgt)

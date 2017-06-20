@@ -25,6 +25,7 @@ namespace Perscom
             InitializeComponent();
             headerPanel.BackColor = MainForm.THEME_COLOR_DARK;
             bottomPanel.BackColor = MainForm.THEME_COLOR_GRAY;
+            inverseCheckBox.BackColor = Color.Transparent;
 
             // Set internal properties
             Template = template;
@@ -41,6 +42,8 @@ namespace Perscom
                 maxTigBox.Value = billet.MaxTourLength;
                 minTigBox.Value = billet.MinTourLength;
                 earlyRetireCheckBox.Checked = billet.CanRetireEarly;
+                inverseCheckBox.Checked = billet.InverseRequirements;
+                lateralCheckBox.Checked = billet.LateralOnly;
                 repeatCheckBox.Checked = billet.Repeatable;
                 preferedCheckBox.Checked = billet.PreferNonRepeats;
                 zIndexBox.Value = billet.ZIndex;
@@ -308,6 +311,8 @@ namespace Perscom
             Billet.CanRetireEarly = earlyRetireCheckBox.Checked;
             Billet.Repeatable = repeatCheckBox.Checked;
             Billet.PreferNonRepeats = preferedCheckBox.Checked;
+            Billet.InverseRequirements = inverseCheckBox.Checked;
+            Billet.LateralOnly = lateralCheckBox.Checked;
             Billet.UnitTypeId = Template.Id;
             Billet.BilletCatagoryId = ((BilletCatagory)billetCatSelect.SelectedItem).Id;
             Billet.PromotionPoolId = ((Echelon)promotionPoolSelect.SelectedItem).Id;

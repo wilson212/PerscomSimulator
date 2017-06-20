@@ -70,6 +70,12 @@
     <Compile Include="Database\BaseDatabase.cs" />
     <Compile Include="Application\DictionaryExtensions.cs" />
     <Compile Include="Database\Entities\SpecialtyAssignment.cs" />
+    <Compile Include="Controls\MyCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MyCheckBox.Designer.cs">
+      <DependentUpon>MyCheckBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Simulation\SoldierWrapper2.cs" />
     <Compile Include="UI\SimResultViewForm.cs">
       <SubType>Form</SubType>

@@ -46,6 +46,8 @@
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.preferedCheckBox = new System.Windows.Forms.CheckBox();
+            this.repeatCheckBox = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
             this.promotionPoolSelect = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -68,9 +70,9 @@
             this.billetRankSelect = new System.Windows.Forms.ComboBox();
             this.rankPicture = new System.Windows.Forms.PictureBox();
             this.headerPanel = new System.Windows.Forms.Panel();
+            this.inverseCheckBox = new Perscom.MyCheckBox();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.repeatCheckBox = new System.Windows.Forms.CheckBox();
-            this.preferedCheckBox = new System.Windows.Forms.CheckBox();
+            this.lateralCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -103,6 +105,7 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.inverseCheckBox);
             this.groupBox5.Controls.Add(this.listView1);
             this.groupBox5.Location = new System.Drawing.Point(523, 248);
             this.groupBox5.Name = "groupBox5";
@@ -137,7 +140,7 @@
             // columnHeader4
             // 
             this.columnHeader4.Text = "Name";
-            this.columnHeader4.Width = 340;
+            this.columnHeader4.Width = 345;
             // 
             // contextMenuStrip1
             // 
@@ -250,6 +253,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.lateralCheckBox);
             this.groupBox2.Controls.Add(this.preferedCheckBox);
             this.groupBox2.Controls.Add(this.repeatCheckBox);
             this.groupBox2.Controls.Add(this.label11);
@@ -273,6 +277,29 @@
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Details";
+            // 
+            // preferedCheckBox
+            // 
+            this.preferedCheckBox.AutoSize = true;
+            this.preferedCheckBox.Location = new System.Drawing.Point(336, 255);
+            this.preferedCheckBox.Name = "preferedCheckBox";
+            this.preferedCheckBox.Size = new System.Drawing.Size(120, 17);
+            this.preferedCheckBox.TabIndex = 33;
+            this.preferedCheckBox.Text = "Prefer Non-Repeats";
+            this.preferedCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // repeatCheckBox
+            // 
+            this.repeatCheckBox.AutoSize = true;
+            this.repeatCheckBox.Checked = true;
+            this.repeatCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.repeatCheckBox.Location = new System.Drawing.Point(336, 218);
+            this.repeatCheckBox.Name = "repeatCheckBox";
+            this.repeatCheckBox.Size = new System.Drawing.Size(81, 17);
+            this.repeatCheckBox.TabIndex = 32;
+            this.repeatCheckBox.Text = "Repeatable";
+            this.repeatCheckBox.UseVisualStyleBackColor = true;
+            this.repeatCheckBox.CheckedChanged += new System.EventHandler(this.repeatCheckBox_CheckedChanged);
             // 
             // label11
             // 
@@ -491,6 +518,17 @@
             this.headerPanel.TabIndex = 3;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
+            // inverseCheckBox
+            // 
+            this.inverseCheckBox.AutoSize = true;
+            this.inverseCheckBox.BackColor = System.Drawing.Color.Transparent;
+            this.inverseCheckBox.Location = new System.Drawing.Point(289, 19);
+            this.inverseCheckBox.Name = "inverseCheckBox";
+            this.inverseCheckBox.Size = new System.Drawing.Size(129, 17);
+            this.inverseCheckBox.TabIndex = 4;
+            this.inverseCheckBox.Text = "Inverse Requirements";
+            this.inverseCheckBox.UseVisualStyleBackColor = true;
+            // 
             // label6
             // 
             this.label6.BackColor = System.Drawing.Color.Transparent;
@@ -505,28 +543,15 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Billet Manager";
             // 
-            // repeatCheckBox
+            // lateralCheckBox
             // 
-            this.repeatCheckBox.AutoSize = true;
-            this.repeatCheckBox.Checked = true;
-            this.repeatCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.repeatCheckBox.Location = new System.Drawing.Point(336, 218);
-            this.repeatCheckBox.Name = "repeatCheckBox";
-            this.repeatCheckBox.Size = new System.Drawing.Size(81, 17);
-            this.repeatCheckBox.TabIndex = 32;
-            this.repeatCheckBox.Text = "Repeatable";
-            this.repeatCheckBox.UseVisualStyleBackColor = true;
-            this.repeatCheckBox.CheckedChanged += new System.EventHandler(this.repeatCheckBox_CheckedChanged);
-            // 
-            // preferedCheckBox
-            // 
-            this.preferedCheckBox.AutoSize = true;
-            this.preferedCheckBox.Location = new System.Drawing.Point(336, 255);
-            this.preferedCheckBox.Name = "preferedCheckBox";
-            this.preferedCheckBox.Size = new System.Drawing.Size(120, 17);
-            this.preferedCheckBox.TabIndex = 33;
-            this.preferedCheckBox.Text = "Prefer Non-Repeats";
-            this.preferedCheckBox.UseVisualStyleBackColor = true;
+            this.lateralCheckBox.AutoSize = true;
+            this.lateralCheckBox.Location = new System.Drawing.Point(336, 144);
+            this.lateralCheckBox.Name = "lateralCheckBox";
+            this.lateralCheckBox.Size = new System.Drawing.Size(82, 17);
+            this.lateralCheckBox.TabIndex = 34;
+            this.lateralCheckBox.Text = "Lateral Only";
+            this.lateralCheckBox.UseVisualStyleBackColor = true;
             // 
             // BilletEditorForm
             // 
@@ -545,6 +570,7 @@
             this.Load += new System.EventHandler(this.BilletEditorForm_Load);
             this.mainPanel.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
@@ -609,5 +635,7 @@
         private System.Windows.Forms.ToolStripMenuItem editRequiredSpecialtiesToolStripMenuItem;
         private System.Windows.Forms.CheckBox preferedCheckBox;
         private System.Windows.Forms.CheckBox repeatCheckBox;
+        private MyCheckBox inverseCheckBox;
+        private System.Windows.Forms.CheckBox lateralCheckBox;
     }
 }

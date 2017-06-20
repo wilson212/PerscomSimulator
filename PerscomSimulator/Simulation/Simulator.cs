@@ -478,6 +478,10 @@ namespace Perscom
                 IOrderedEnumerable<SoldierWrapper> soldiers;
                 bool isLateral = grade == position.Billet.Rank.Grade;
 
+                // Quit if this is a lateral only position
+                if (!isLateral && position.Billet.Billet.LateralOnly)
+                    break;
+
                 // Lateral movement or promotion? The filtering is different!
                 if (isLateral)
                 {
@@ -581,8 +585,15 @@ namespace Perscom
             // Is there a MOS requirement?
             if (position.Billet.RequiredSpecialties.Length > 0)
             {
-                if (!position.Billet.RequiredSpecialties.Contains(soldier.Soldier.SpecialtyId))
-                    return false;
+                if (position.Billet.RequiredSpecialties.Contains(soldier.Soldier.SpecialtyId))
+                {
+                    // If requirements are inversed, that means the soldier 
+                    // MUST NOT have the required specialty to be a canidate!
+                    if (position.Billet.Billet.InverseRequirements)
+                    {
+                        return false;
+                    }
+                }
             }
 
             // Check for repeatable position
@@ -590,6 +601,12 @@ namespace Perscom
             {
                 if (soldier.BilletsHeld.ContainsKey(position.Billet.Id))
                     return false;
+            }
+
+            // Quit if this is a lateral only position
+            if (position.Billet.Billet.LateralOnly && (position.Billet.Rank.Grade != soldier.Rank.Grade))
+            {
+                return false;
             }
 
             return true;
