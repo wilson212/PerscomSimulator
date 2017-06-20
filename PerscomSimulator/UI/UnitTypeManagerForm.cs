@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CrossLite;
 using CrossLite.QueryBuilder;
 using Perscom.Database;
 
@@ -663,6 +664,7 @@ namespace Perscom
             // Fill List Views
             FillBilletsListView();
             FillUnitsListView();
+            RefreshBilletCopyMenuItems();
 
             // Enable fields
             ToggleFields(true);
@@ -738,6 +740,168 @@ namespace Perscom
         {
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void echelonTypeSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Refresh items
+            RefreshBilletCopyMenuItems();
+        }
+
+        private void RefreshBilletCopyMenuItems()
+        {
+            // Grab selected echelon
+            Echelon echelon = (Echelon)echelonTypeSelect.SelectedItem;
+            if (echelon == null) return;
+
+            // Clear old items
+            copyFromMenuItem.DropDownItems.Clear();
+            copyFromMenuItem.Enabled = false;
+
+            using (AppDatabase db = new AppDatabase())
+            {
+                // Fetch all Unit Templates from this echelon
+                var builder = new SelectQueryBuilder(db);
+                builder.From(nameof(UnitTemplate))
+                    .SelectAll()
+                    .Where(nameof(UnitTemplate.EchelonId), Comparison.Equals, echelon.Id);
+
+                // Add UnitTemplate as a menu item
+                foreach (var ec in builder.ExecuteQuery<UnitTemplate>())
+                {
+                    // Dont add ourselves!
+                    if (SelectedTemplate.Id == ec.Id)
+                        continue;
+
+                    // Add the template as an option
+                    ToolStripMenuItem item = new ToolStripMenuItem(ec.Name);
+                    item.Tag = ec;
+                    item.Click += Item_Click;
+                    copyFromMenuItem.DropDownItems.Add(item);
+                }
+            }
+
+            // Only enable if we have items
+            if (copyFromMenuItem.DropDownItems.Count > 0)
+                copyFromMenuItem.Enabled = true;
+        }
+
+        private void Item_Click(object sender, EventArgs e)
+        {
+            // Grab menu item
+            ToolStripItem menuItem = sender as ToolStripItem;
+            if (menuItem == null) return;
+
+            // Grab template
+            UnitTemplate template = menuItem.Tag as UnitTemplate;
+            if (template == null) return;
+
+            try
+            {
+                // Disable menu
+                billetsContextMenu.Enabled = false;
+
+                // Update table cache
+                EntityCache.GetTableMap(typeof(BilletRequirement)).BuildInstanceForeignKeys = false;
+                EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = false;
+                EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = false;
+
+                // Open database and begin transaction
+                using (AppDatabase db = new AppDatabase())
+                using (var trans = db.BeginTransaction())
+                {
+                    // Remove old billets
+                    foreach (var b in Billets)
+                    {
+                        db.Billets.Remove(b);
+                    }
+                    Billets.Clear();
+
+                    // Copy all billets
+                    foreach (var billet in template.Billets)
+                    {
+                        // Create new copy of billet
+                        Billet b = new Billet()
+                        {
+                            BilletCatagoryId = billet.BilletCatagoryId,
+                            CanRetireEarly = billet.CanRetireEarly,
+                            InverseRequirements = billet.InverseRequirements,
+                            LateralOnly = billet.LateralOnly,
+                            MaxRankId = billet.MaxRankId,
+                            MaxTourLength = billet.MaxTourLength,
+                            MinTourLength = billet.MinTourLength,
+                            Name = billet.Name,
+                            PreferNonRepeats = billet.PreferNonRepeats,
+                            PromotionPoolId = billet.PromotionPoolId,
+                            RankId = billet.RankId,
+                            Repeatable = billet.Repeatable,
+                            Stature = billet.Stature,
+                            UnitTypeId = billet.UnitTypeId,
+                            ZIndex = billet.ZIndex
+                        };
+
+                        // Add billet to database
+                        db.Billets.Add(b);
+
+                        // Add billet requirements
+                        foreach (var item in billet.Requirements)
+                        {
+                            var req = new BilletRequirement()
+                            {
+                                BilletId = b.Id,
+                                SpecialtyId = item.SpecialtyId
+                            };
+                            db.BilletRequirements.Add(item);
+                        }
+
+                        // Add billet spawn settings
+                        foreach (var item in billet.SpawnSettings)
+                        {
+                            var req = new BilletSpawnSetting()
+                            {
+                                Billet = b,
+                                GeneratorId = item.GeneratorId,
+                                SpecialtyId = item.SpecialtyId
+                            };
+                            db.BilletSpawnSettings.Add(item);
+                        }
+
+                        // Add billet specialties
+                        foreach (var item in billet.Specialties)
+                        {
+                            var spec = new BilletSpecialty()
+                            {
+                                Billet = b,
+                                SpecialtyId = item.SpecialtyId
+                            };
+                            db.BilletSpecialties.Add(spec);
+                        }
+
+                        // Add billet to internal list
+                        Billets.Add(b);
+                    }
+
+                    // Commit changes
+                    trans.Commit();
+
+                    // Update billet view
+                    FillBilletsListView();
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.ShowException(ex);
+            }
+            finally
+            {
+                // Enable menu
+                billetsContextMenu.Enabled = true;
+
+                // Update table cache
+                EntityCache.GetTableMap(typeof(BilletRequirement)).BuildInstanceForeignKeys = true;
+                EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = true;
+                EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = true;
+            }
         }
     }
 }

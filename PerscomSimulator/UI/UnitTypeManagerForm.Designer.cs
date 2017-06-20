@@ -36,6 +36,8 @@
             this.mainPanel = new System.Windows.Forms.Panel();
             this.applyButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.shortNameBox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.promotionPoolSelect = new System.Windows.Forms.ComboBox();
             this.referencesLabel = new System.Windows.Forms.Label();
@@ -69,8 +71,8 @@
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.shortNameBox = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.copyFromMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -172,6 +174,22 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Details";
             // 
+            // shortNameBox
+            // 
+            this.shortNameBox.Location = new System.Drawing.Point(129, 170);
+            this.shortNameBox.Name = "shortNameBox";
+            this.shortNameBox.Size = new System.Drawing.Size(185, 20);
+            this.shortNameBox.TabIndex = 35;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(23, 172);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(104, 13);
+            this.label5.TabIndex = 36;
+            this.label5.Text = "Short Name Format: ";
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -241,6 +259,7 @@
             this.echelonTypeSelect.Name = "echelonTypeSelect";
             this.echelonTypeSelect.Size = new System.Drawing.Size(189, 21);
             this.echelonTypeSelect.TabIndex = 1;
+            this.echelonTypeSelect.SelectedIndexChanged += new System.EventHandler(this.echelonTypeSelect_SelectedIndexChanged);
             // 
             // templateNameBox
             // 
@@ -299,30 +318,32 @@
             this.billetsContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addBilletMenuItem,
             this.removeBilletMenuItem,
+            this.toolStripSeparator3,
+            this.copyFromMenuItem,
             this.toolStripSeparator2,
             this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(147, 76);
+            this.billetsContextMenu.Size = new System.Drawing.Size(153, 126);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
             // 
             this.addBilletMenuItem.Name = "addBilletMenuItem";
-            this.addBilletMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.addBilletMenuItem.Size = new System.Drawing.Size(152, 22);
             this.addBilletMenuItem.Text = "Add Billet";
             this.addBilletMenuItem.Click += new System.EventHandler(this.addBilletMenuItem_Click);
             // 
             // removeBilletMenuItem
             // 
             this.removeBilletMenuItem.Name = "removeBilletMenuItem";
-            this.removeBilletMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.removeBilletMenuItem.Size = new System.Drawing.Size(152, 22);
             this.removeBilletMenuItem.Text = "Remove Billet";
             this.removeBilletMenuItem.Click += new System.EventHandler(this.removeBilletMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(143, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
             // 
             // viewModeToolStripMenuItem
             // 
@@ -330,7 +351,7 @@
             this.largeIconsToolStripMenuItem,
             this.tilesToolStripMenuItem});
             this.viewModeToolStripMenuItem.Name = "viewModeToolStripMenuItem";
-            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.viewModeToolStripMenuItem.Text = "View Mode";
             // 
             // largeIconsToolStripMenuItem
@@ -338,14 +359,14 @@
             this.largeIconsToolStripMenuItem.Checked = true;
             this.largeIconsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.largeIconsToolStripMenuItem.Name = "largeIconsToolStripMenuItem";
-            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.largeIconsToolStripMenuItem.Text = "Large Icons";
             this.largeIconsToolStripMenuItem.Click += new System.EventHandler(this.largeIconsToolStripMenuItem_Click);
             // 
             // tilesToolStripMenuItem
             // 
             this.tilesToolStripMenuItem.Name = "tilesToolStripMenuItem";
-            this.tilesToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.tilesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.tilesToolStripMenuItem.Text = "Tiles";
             this.tilesToolStripMenuItem.Click += new System.EventHandler(this.tilesToolStripMenuItem_Click);
             // 
@@ -464,21 +485,16 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Unit Template Manager";
             // 
-            // shortNameBox
+            // toolStripSeparator3
             // 
-            this.shortNameBox.Location = new System.Drawing.Point(129, 170);
-            this.shortNameBox.Name = "shortNameBox";
-            this.shortNameBox.Size = new System.Drawing.Size(185, 20);
-            this.shortNameBox.TabIndex = 35;
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
             // 
-            // label5
+            // copyFromMenuItem
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(23, 172);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(104, 13);
-            this.label5.TabIndex = 36;
-            this.label5.Text = "Short Name Format: ";
+            this.copyFromMenuItem.Name = "copyFromMenuItem";
+            this.copyFromMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyFromMenuItem.Text = "Copy From";
             // 
             // UnitTypeManagerForm
             // 
@@ -551,5 +567,7 @@
         private System.Windows.Forms.ToolStripMenuItem tilesToolStripMenuItem;
         private System.Windows.Forms.TextBox shortNameBox;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem copyFromMenuItem;
     }
 }
