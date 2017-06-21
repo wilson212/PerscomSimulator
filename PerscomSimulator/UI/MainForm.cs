@@ -86,20 +86,19 @@ namespace Perscom
             }
         }
 
-        #region Tab Controls Events
-
-        private void unitSelect_SelectedIndexChanged(object sender, EventArgs e)
+        private async void FillTab0Report()
         {
             // Get the selected unit template
             UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
             if (selected == null) return;
 
             // Reset pie chart always!
+            unitPersonelPieChart.Series[0].Points.Clear();
             Series series = unitRankPieChart.Series[0];
             series.Points.Clear();
 
             // Load the unit, so the soldier counts can be fetched
-            UnitStatistics stats = UnitBuilder.GetUnitStatistics(selected);
+            UnitStatistics stats = await Task.Run(() => UnitBuilder.GetUnitStatistics(selected));
 
             labelTotalSoldiers.Text = "Total Unit Soldiers: " + stats.TotalSoldiers;
             RankType type = (rankTypeBox.SelectedIndex == -1) ? RankType.Enlisted : (RankType)rankTypeBox.SelectedItem;
@@ -115,9 +114,8 @@ namespace Perscom
                 }
             }
 
-            // Reset pie chart always!
+            // Switch pie charts
             series = unitPersonelPieChart.Series[0];
-            series.Points.Clear();
 
             // Setup the different soldier type counts
             foreach (RankType rType in Enum.GetValues(typeof(RankType)))
@@ -133,7 +131,14 @@ namespace Perscom
             }
         }
 
-        private void rankTypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        #region Tab Controls Events
+
+        private void unitSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            FillTab0Report();
+        }
+
+        private async void rankTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Get the selected unit template
             UnitTemplate selected = unitSelect.SelectedItem as UnitTemplate;
@@ -144,7 +149,7 @@ namespace Perscom
             series.Points.Clear();
 
             // Load the unit, so the soldier counts can be fetched
-            UnitStatistics stats = UnitBuilder.GetUnitStatistics(selected);
+            UnitStatistics stats = await Task.Run(() => UnitBuilder.GetUnitStatistics(selected));
             RankType type = (RankType)rankTypeBox.SelectedItem;
 
             // Setup the enlisted pie chart
@@ -231,6 +236,7 @@ namespace Perscom
         private async void generateButton_Click(object sender, EventArgs e)
         {
             generateButton.Enabled = false;
+            UnitBuilder.ClearCache();
 
             try
             {
@@ -365,7 +371,8 @@ namespace Perscom
                 if (result == DialogResult.OK)
                 {
                     // Update charts
-                    unitSelect_SelectedIndexChanged(sender, e);
+                    UnitBuilder.ClearUnitStats();
+                    FillTab0Report();
                 }
             }
         }

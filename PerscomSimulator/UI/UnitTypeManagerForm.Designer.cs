@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             this.sidePanel = new System.Windows.Forms.Panel();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.deleteButton = new System.Windows.Forms.Button();
             this.newButton = new System.Windows.Forms.Button();
-            this.treeView1 = new System.Windows.Forms.TreeView();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.applyButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -55,6 +55,8 @@
             this.billetsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.copyFromMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.viewModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeIconsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,8 +73,7 @@
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.copyFromMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -95,6 +96,18 @@
             this.sidePanel.TabIndex = 8;
             this.sidePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.sidePanel_Paint);
             // 
+            // treeView1
+            // 
+            this.treeView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeView1.Location = new System.Drawing.Point(10, 7);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(214, 391);
+            this.treeView1.TabIndex = 0;
+            this.treeView1.TabStop = false;
+            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView1_ItemDrag);
+            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
+            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView1_DragEnter);
+            // 
             // deleteButton
             // 
             this.deleteButton.Location = new System.Drawing.Point(114, 22);
@@ -116,18 +129,6 @@
             this.newButton.Text = "New";
             this.newButton.UseVisualStyleBackColor = true;
             this.newButton.Click += new System.EventHandler(this.newButton_Click);
-            // 
-            // treeView1
-            // 
-            this.treeView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.treeView1.Location = new System.Drawing.Point(10, 7);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(214, 391);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.TabStop = false;
-            this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView1_ItemDrag);
-            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
-            this.treeView1.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView1_DragEnter);
             // 
             // mainPanel
             // 
@@ -316,32 +317,44 @@
             this.billetsContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addBilletMenuItem,
             this.removeBilletMenuItem,
+            this.duplicateBilletMenuItem,
             this.toolStripSeparator3,
             this.copyFromMenuItem,
             this.toolStripSeparator2,
             this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(147, 104);
+            this.billetsContextMenu.Size = new System.Drawing.Size(154, 148);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
             // 
             this.addBilletMenuItem.Name = "addBilletMenuItem";
-            this.addBilletMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addBilletMenuItem.Size = new System.Drawing.Size(153, 22);
             this.addBilletMenuItem.Text = "Add Billet";
             this.addBilletMenuItem.Click += new System.EventHandler(this.addBilletMenuItem_Click);
             // 
             // removeBilletMenuItem
             // 
             this.removeBilletMenuItem.Name = "removeBilletMenuItem";
-            this.removeBilletMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.removeBilletMenuItem.Size = new System.Drawing.Size(153, 22);
             this.removeBilletMenuItem.Text = "Remove Billet";
             this.removeBilletMenuItem.Click += new System.EventHandler(this.removeBilletMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(150, 6);
+            // 
+            // copyFromMenuItem
+            // 
+            this.copyFromMenuItem.Name = "copyFromMenuItem";
+            this.copyFromMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.copyFromMenuItem.Text = "Copy From";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(150, 6);
             // 
             // viewModeToolStripMenuItem
             // 
@@ -349,7 +362,7 @@
             this.largeIconsToolStripMenuItem,
             this.tilesToolStripMenuItem});
             this.viewModeToolStripMenuItem.Name = "viewModeToolStripMenuItem";
-            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.viewModeToolStripMenuItem.Text = "View Mode";
             // 
             // largeIconsToolStripMenuItem
@@ -357,14 +370,14 @@
             this.largeIconsToolStripMenuItem.Checked = true;
             this.largeIconsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.largeIconsToolStripMenuItem.Name = "largeIconsToolStripMenuItem";
-            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.largeIconsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.largeIconsToolStripMenuItem.Text = "Large Icons";
             this.largeIconsToolStripMenuItem.Click += new System.EventHandler(this.largeIconsToolStripMenuItem_Click);
             // 
             // tilesToolStripMenuItem
             // 
             this.tilesToolStripMenuItem.Name = "tilesToolStripMenuItem";
-            this.tilesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tilesToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.tilesToolStripMenuItem.Text = "Tiles";
             this.tilesToolStripMenuItem.Click += new System.EventHandler(this.tilesToolStripMenuItem_Click);
             // 
@@ -485,16 +498,12 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Unit Template Manager";
             // 
-            // toolStripSeparator3
+            // duplicateBilletMenuItem
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
-            // 
-            // copyFromMenuItem
-            // 
-            this.copyFromMenuItem.Name = "copyFromMenuItem";
-            this.copyFromMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.copyFromMenuItem.Text = "Copy From";
+            this.duplicateBilletMenuItem.Name = "duplicateBilletMenuItem";
+            this.duplicateBilletMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.duplicateBilletMenuItem.Text = "Duplicate Billet";
+            this.duplicateBilletMenuItem.Click += new System.EventHandler(this.duplicateBilletMenuItem_Click);
             // 
             // UnitTypeManagerForm
             // 
@@ -569,5 +578,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem copyFromMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem duplicateBilletMenuItem;
     }
 }

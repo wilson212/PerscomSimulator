@@ -423,7 +423,6 @@
             this.rankTypeBox.Name = "rankTypeBox";
             this.rankTypeBox.Size = new System.Drawing.Size(174, 21);
             this.rankTypeBox.TabIndex = 3;
-            this.rankTypeBox.SelectedIndexChanged += new System.EventHandler(this.rankTypeBox_SelectedIndexChanged);
             // 
             // labelTotalSoldiers
             // 

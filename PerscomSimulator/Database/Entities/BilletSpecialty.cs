@@ -88,6 +88,26 @@ namespace Perscom.Database
 
         #endregion
 
+        /// <summary>
+        /// Creates a new instance of <see cref="BilletSpecialty"/>
+        /// </summary>
+        public BilletSpecialty()
+        {
+
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="BilletSpecialty"/> using the specified
+        /// <see cref="Database.Billet"/> and <see cref="Database.Specialty"/>
+        /// </summary>
+        /// <param name="billet"></param>
+        /// <param name="spec"></param>
+        public BilletSpecialty(Billet billet, Specialty spec)
+        {
+            this.BilletId = billet.Id;
+            this.SpecialtyId = spec.Id;
+        }
+
         public bool Equals(BilletSpecialty other)
         {
             if (other == null) return false;

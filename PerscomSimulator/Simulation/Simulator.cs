@@ -476,7 +476,7 @@ namespace Perscom
                 // TODO: Apply filters to force lateral promotions
                 //
                 IOrderedEnumerable<SoldierWrapper> soldiers;
-                bool isLateral = grade == position.Billet.Rank.Grade;
+                bool isLateral = (grade == position.Billet.Rank.Grade);
 
                 // Quit if this is a lateral only position
                 if (!isLateral && position.Billet.Billet.LateralOnly)
@@ -613,6 +613,21 @@ namespace Perscom
             if (position.Billet.Billet.LateralOnly && (position.Billet.Rank.Grade != soldier.Rank.Grade))
             {
                 return false;
+            }
+
+            // Check if we are under ranked, and if so, check for position lock
+            if (soldier.IsStandIn())
+            {
+                // Is this position an even higher grade than what we have?
+                if (position.Billet.Rank.Grade > soldier.Position.Billet.Rank.Grade)
+                {
+                    return true;
+                }
+                else
+                {
+                    // Never laterally move, when locked into a position, if we are a stand in
+                    return (!soldier.IsLockedInPosition(CurrentIterationDate));
+                }
             }
 
             return true;

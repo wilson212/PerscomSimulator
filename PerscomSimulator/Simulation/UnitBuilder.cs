@@ -23,6 +23,17 @@ namespace Perscom
             UnitTemplates = new Dictionary<int, UnitTemplateWrapper>();
         }
 
+        public static void ClearUnitStats()
+        {
+            UnitStats.Clear();
+        }
+
+        public static void ClearCache()
+        {
+            UnitStats.Clear();
+            UnitTemplates.Clear();
+        }
+
         /// <summary>
         /// Converts a 2 dimensional <see cref="UnitTemplate"/> tree into a
         /// 3 dimensional tree of <see cref="Unit"/>s

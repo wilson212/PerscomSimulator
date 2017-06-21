@@ -535,6 +535,56 @@ namespace Perscom
             FillBilletsListView();
         }
 
+        private void duplicateBilletMenuItem_Click(object sender, EventArgs e)
+        {
+            // Ensure we have a selected item
+            if (listView2.SelectedItems.Count == 0)
+                return;
+
+            // Grab Billet from selected item tag
+            var billet = listView2.SelectedItems[0].Tag as Billet;
+            if (billet == null) return;
+
+            try
+            {
+                // Disable menu
+                billetsContextMenu.Enabled = false;
+
+                // Update table cache
+                EntityCache.GetTableMap(typeof(BilletRequirement)).BuildInstanceForeignKeys = false;
+                EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = false;
+                EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = false;
+
+                // Open database and begin transaction
+                using (AppDatabase db = new AppDatabase())
+                using (var trans = db.BeginTransaction())
+                {
+                    // Copy billet
+                    DuplicateBillet(db, billet);
+
+                    // Commit changes
+                    trans.Commit();
+
+                    // Update billet view
+                    FillBilletsListView();
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.ShowException(ex);
+            }
+            finally
+            {
+                // Enable menu
+                billetsContextMenu.Enabled = true;
+
+                // Update table cache
+                EntityCache.GetTableMap(typeof(BilletRequirement)).BuildInstanceForeignKeys = true;
+                EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = true;
+                EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = true;
+            }
+        }
+
         private void adjustUnitCountToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Ensure we have a selected item
@@ -705,6 +755,7 @@ namespace Perscom
         private void billetsContextMenu_Opening(object sender, CancelEventArgs e)
         {
             removeBilletMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
+            duplicateBilletMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
         }
 
         /// <summary>
@@ -794,6 +845,13 @@ namespace Perscom
             UnitTemplate template = menuItem.Tag as UnitTemplate;
             if (template == null) return;
 
+            // As user to verify
+            var res = MessageBox.Show(
+                $"Are you sure you want to copy all billets from {template.Name}? This will clear all current billets!",
+                "Verify", MessageBoxButtons.YesNo, MessageBoxIcon.Warning
+            );
+            if (res != DialogResult.Yes) return;
+
             try
             {
                 // Disable menu
@@ -818,65 +876,7 @@ namespace Perscom
                     // Copy all billets
                     foreach (var billet in template.Billets)
                     {
-                        // Create new copy of billet
-                        Billet b = new Billet()
-                        {
-                            BilletCatagoryId = billet.BilletCatagoryId,
-                            CanRetireEarly = billet.CanRetireEarly,
-                            InverseRequirements = billet.InverseRequirements,
-                            LateralOnly = billet.LateralOnly,
-                            MaxRankId = billet.MaxRankId,
-                            MaxTourLength = billet.MaxTourLength,
-                            MinTourLength = billet.MinTourLength,
-                            Name = billet.Name,
-                            PreferNonRepeats = billet.PreferNonRepeats,
-                            PromotionPoolId = billet.PromotionPoolId,
-                            RankId = billet.RankId,
-                            Repeatable = billet.Repeatable,
-                            Stature = billet.Stature,
-                            UnitTypeId = SelectedTemplate.Id,
-                            ZIndex = billet.ZIndex
-                        };
-
-                        // Add billet to database
-                        db.Billets.Add(b);
-
-                        // Add billet requirements
-                        foreach (var item in billet.Requirements)
-                        {
-                            var req = new BilletRequirement()
-                            {
-                                BilletId = b.Id,
-                                SpecialtyId = item.SpecialtyId
-                            };
-                            db.BilletRequirements.Add(req);
-                        }
-
-                        // Add billet spawn settings
-                        foreach (var item in billet.SpawnSettings)
-                        {
-                            var req = new BilletSpawnSetting()
-                            {
-                                Billet = b,
-                                GeneratorId = item.GeneratorId,
-                                SpecialtyId = item.SpecialtyId
-                            };
-                            db.BilletSpawnSettings.Add(req);
-                        }
-
-                        // Add billet specialties
-                        foreach (var item in billet.Specialties)
-                        {
-                            var spec = new BilletSpecialty()
-                            {
-                                Billet = b,
-                                SpecialtyId = item.SpecialtyId
-                            };
-                            db.BilletSpecialties.Add(spec);
-                        }
-
-                        // Add billet to internal list
-                        Billets.Add(b);
+                        DuplicateBillet(db, billet);
                     }
 
                     // Commit changes
@@ -900,6 +900,74 @@ namespace Perscom
                 EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = true;
                 EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = true;
             }
+        }
+
+        /// <summary>
+        /// Creates a duplicated of the specified billet, and adds it to the database
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="billet"></param>
+        private void DuplicateBillet(AppDatabase db, Billet billet)
+        {
+            // Create new copy of billet
+            Billet b = new Billet()
+            {
+                BilletCatagoryId = billet.BilletCatagoryId,
+                CanRetireEarly = billet.CanRetireEarly,
+                InverseRequirements = billet.InverseRequirements,
+                LateralOnly = billet.LateralOnly,
+                MaxRankId = billet.MaxRankId,
+                MaxTourLength = billet.MaxTourLength,
+                MinTourLength = billet.MinTourLength,
+                Name = billet.Name,
+                PreferNonRepeats = billet.PreferNonRepeats,
+                PromotionPoolId = billet.PromotionPoolId,
+                RankId = billet.RankId,
+                Repeatable = billet.Repeatable,
+                Stature = billet.Stature,
+                UnitTypeId = SelectedTemplate.Id,
+                ZIndex = billet.ZIndex
+            };
+
+            // Add billet to database
+            db.Billets.Add(b);
+
+            // Add billet requirements
+            foreach (var item in billet.Requirements)
+            {
+                var req = new BilletRequirement()
+                {
+                    BilletId = b.Id,
+                    SpecialtyId = item.SpecialtyId
+                };
+                db.BilletRequirements.Add(req);
+            }
+
+            // Add billet spawn settings
+            foreach (var item in billet.SpawnSettings)
+            {
+                var req = new BilletSpawnSetting()
+                {
+                    Billet = b,
+                    GeneratorId = item.GeneratorId,
+                    SpecialtyId = item.SpecialtyId
+                };
+                db.BilletSpawnSettings.Add(req);
+            }
+
+            // Add billet specialties
+            foreach (var item in billet.Specialties)
+            {
+                var spec = new BilletSpecialty()
+                {
+                    Billet = b,
+                    SpecialtyId = item.SpecialtyId
+                };
+                db.BilletSpecialties.Add(spec);
+            }
+
+            // Add billet to internal list
+            Billets.Add(b);
         }
     }
 }

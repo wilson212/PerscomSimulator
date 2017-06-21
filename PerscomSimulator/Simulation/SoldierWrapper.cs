@@ -296,21 +296,52 @@ namespace Perscom.Simulation
             Assignment.SoldierId = Soldier.Id;
         }
 
+        /// <summary>
+        /// Gets the current number of months this soldier has been alive
+        /// </summary>
+        /// <param name="currentDate">The current <see cref="IterationDate"/></param>
+        /// <returns></returns>
         public int GetTimeInService(IterationDate currentDate)
         {
             return currentDate.Id - Soldier.EntryIterationId;
         }
 
-        public int GetTimeInGrade(IterationDate currentIterationDate)
+        /// <summary>
+        /// Gets the current number of months this soldier has been in this <see cref="Rank.Grade"/>
+        /// </summary>
+        /// <param name="currentDate">The current <see cref="IterationDate"/></param>
+        /// <returns></returns>
+        public int GetTimeInGrade(IterationDate currentDate)
         {
-            return currentIterationDate.Id - LastGradeChangeDate.Id;
+            return currentDate.Id - LastGradeChangeDate.Id;
         }
 
+        /// <summary>
+        /// Gets the current number of months this soldier has been in this <see cref="Database.Position"/>
+        /// </summary>
+        /// <param name="currentDate">The current <see cref="IterationDate"/></param>
+        /// <returns></returns>
         public int GetTimeInBillet(IterationDate currentDate)
         {
             return currentDate.Id - Assignment.AssignedIteration;
         }
 
+        /// <summary>
+        /// Indicates whether this soldier is a stand in for their current <see cref="Database.Position"/>.
+        /// To be considered a stand in, the soldier must be a lower <see cref="Rank.Grade"/> than the
+        /// <see cref="Rank.Grade"/>
+        /// </summary>
+        /// <returns></returns>
+        public bool IsStandIn()
+        {
+            return (Rank.Grade < Position.Billet.Rank.Grade);
+        }
+
+        /// <summary>
+        /// Determines whether this soldier is nearing his <see cref="Billet.MaxTourLength"/>
+        /// </summary>
+        /// <param name="currentDate">The current <see cref="IterationDate"/></param>
+        /// <returns></returns>
         public bool IsNearMaxTourLength(IterationDate currentDate)
         {
             if (Position == null) return true;

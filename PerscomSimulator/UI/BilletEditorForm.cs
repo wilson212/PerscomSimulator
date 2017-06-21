@@ -333,25 +333,21 @@ namespace Perscom
                     if (specialtyCheckBox.Checked)
                     {
                         // Extract Specialty ID
-                        var specialtyId = ((Specialty)specialtySelect.SelectedItem).Id;
+                        var specialty = ((Specialty)specialtySelect.SelectedItem);
 
                         // Fill billet specialty values
                         var current = Billet.Specialties.FirstOrDefault();
                         if (current != null)
                         {
-                            if (current.SpecialtyId != specialtyId)
+                            if (current.SpecialtyId != specialty.Id)
                             {
-                                current.SpecialtyId = specialtyId;
+                                current.SpecialtyId = specialty.Id;
                                 db.BilletSpecialties.Update(current);
                             }
                         }
                         else
                         {
-                            db.BilletSpecialties.Add(new BilletSpecialty()
-                            {
-                                Billet = Billet,
-                                SpecialtyId = specialtyId
-                            });
+                            db.BilletSpecialties.Add(new BilletSpecialty(Billet, specialty));
                         }
                     }
                     else

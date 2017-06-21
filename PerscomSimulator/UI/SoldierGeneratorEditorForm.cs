@@ -78,10 +78,6 @@ namespace Perscom
             // Reset listview
             listView1.Items.Clear();
 
-            // Quit here if this is a new Generator
-            if (Selected == null || Selected.Id == 0)
-                return;
-
             // Prepare update
             listView1.BeginUpdate();
 
