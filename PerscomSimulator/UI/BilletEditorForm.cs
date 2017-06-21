@@ -105,7 +105,7 @@ namespace Perscom
                     specialtyCheckBox.Checked = true;
 
                     // Set index
-                    index = specialtySelect.Items.IndexOf(spec);
+                    index = specialtySelect.Items.IndexOf(spec.Specialty);
                     if (index >= 0)
                     {
                         specialtySelect.SelectedIndex = index;
@@ -332,13 +332,27 @@ namespace Perscom
                     // Apply specialty change
                     if (specialtyCheckBox.Checked)
                     {
-                        // Fill billet specialty values
-                        var current = Billet.Specialties.FirstOrDefault() ?? new BilletSpecialty();
-                        current.Billet = Billet;
-                        current.SpecialtyId = ((Specialty)specialtySelect.SelectedItem).Id;
+                        // Extract Specialty ID
+                        var specialtyId = ((Specialty)specialtySelect.SelectedItem).Id;
 
-                        // Add or Update record
-                        db.BilletSpecialties.AddOrUpdate(current);
+                        // Fill billet specialty values
+                        var current = Billet.Specialties.FirstOrDefault();
+                        if (current != null)
+                        {
+                            if (current.SpecialtyId != specialtyId)
+                            {
+                                current.SpecialtyId = specialtyId;
+                                db.BilletSpecialties.Update(current);
+                            }
+                        }
+                        else
+                        {
+                            db.BilletSpecialties.Add(new BilletSpecialty()
+                            {
+                                Billet = Billet,
+                                SpecialtyId = specialtyId
+                            });
+                        }
                     }
                     else
                     {

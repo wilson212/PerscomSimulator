@@ -86,6 +86,7 @@ namespace Perscom
 
             // Fill treeView
             FillTree();
+            treeView1.Scrollable = true;
         }
 
         /// <summary>
@@ -523,14 +524,11 @@ namespace Perscom
             var billet = listView2.SelectedItems[0].Tag as Billet;
             if (billet == null) return;
 
-            // Now we must remove the matching billets...
-            // Billet.Equals will not work in this case, since we overriden
-            // the Equals method for comparing database Row ID's
-            for (int i = Billets.Count - 1; i >= 0; i--)
+            // Remove billet from both list, and database!
+            using (AppDatabase db = new AppDatabase())
             {
-                Billet current = Billets[i];
-                if (current.IsDuplicateOf(billet))
-                    Billets.RemoveAt(i);
+                Billets.Remove(billet);
+                db.Billets.Remove(billet);
             }
 
             // Now redraw the billets listView
@@ -836,7 +834,7 @@ namespace Perscom
                             RankId = billet.RankId,
                             Repeatable = billet.Repeatable,
                             Stature = billet.Stature,
-                            UnitTypeId = billet.UnitTypeId,
+                            UnitTypeId = SelectedTemplate.Id,
                             ZIndex = billet.ZIndex
                         };
 
@@ -851,7 +849,7 @@ namespace Perscom
                                 BilletId = b.Id,
                                 SpecialtyId = item.SpecialtyId
                             };
-                            db.BilletRequirements.Add(item);
+                            db.BilletRequirements.Add(req);
                         }
 
                         // Add billet spawn settings
@@ -863,7 +861,7 @@ namespace Perscom
                                 GeneratorId = item.GeneratorId,
                                 SpecialtyId = item.SpecialtyId
                             };
-                            db.BilletSpawnSettings.Add(item);
+                            db.BilletSpawnSettings.Add(req);
                         }
 
                         // Add billet specialties

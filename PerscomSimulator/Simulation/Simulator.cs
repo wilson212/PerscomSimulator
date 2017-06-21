@@ -594,6 +594,12 @@ namespace Perscom
                         return false;
                     }
                 }
+                else if (!position.Billet.Billet.InverseRequirements)
+                {
+                    // Position required the specialty, but this soldier
+                    // does not have it!
+                    return false;
+                }
             }
 
             // Check for repeatable position

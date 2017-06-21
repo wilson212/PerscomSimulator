@@ -24,7 +24,7 @@ namespace Perscom.Database
         /// <summary>
         /// The Unique Specialty ID
         /// </summary>
-        [Column]
+        [Column, Required]
         public int SpecialtyId { get; set; }
 
         #region Virtual Foreign Keys

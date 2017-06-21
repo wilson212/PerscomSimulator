@@ -86,8 +86,6 @@
             // 
             // sidePanel
             // 
-            this.sidePanel.Controls.Add(this.deleteButton);
-            this.sidePanel.Controls.Add(this.newButton);
             this.sidePanel.Controls.Add(this.treeView1);
             this.sidePanel.Dock = System.Windows.Forms.DockStyle.Left;
             this.sidePanel.Location = new System.Drawing.Point(0, 75);
@@ -99,7 +97,7 @@
             // 
             // deleteButton
             // 
-            this.deleteButton.Location = new System.Drawing.Point(132, 468);
+            this.deleteButton.Location = new System.Drawing.Point(114, 22);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(75, 23);
             this.deleteButton.TabIndex = 12;
@@ -110,7 +108,7 @@
             // 
             // newButton
             // 
-            this.newButton.Location = new System.Drawing.Point(34, 468);
+            this.newButton.Location = new System.Drawing.Point(31, 22);
             this.newButton.Name = "newButton";
             this.newButton.Size = new System.Drawing.Size(75, 23);
             this.newButton.TabIndex = 11;
@@ -124,7 +122,7 @@
             this.treeView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.treeView1.Location = new System.Drawing.Point(10, 7);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(214, 446);
+            this.treeView1.Size = new System.Drawing.Size(214, 391);
             this.treeView1.TabIndex = 0;
             this.treeView1.TabStop = false;
             this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView1_ItemDrag);
@@ -323,7 +321,7 @@
             this.toolStripSeparator2,
             this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(153, 126);
+            this.billetsContextMenu.Size = new System.Drawing.Size(147, 104);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
@@ -441,6 +439,8 @@
             // bottomPanel
             // 
             this.bottomPanel.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.bottomPanel.Controls.Add(this.newButton);
+            this.bottomPanel.Controls.Add(this.deleteButton);
             this.bottomPanel.Controls.Add(this.finalizeButton);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bottomPanel.Location = new System.Drawing.Point(0, 587);
