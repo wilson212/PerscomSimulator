@@ -62,11 +62,6 @@ namespace Perscom.Simulation
             Billet = BilletWrapper.FetchCache(billet);
             ParentUnit = parent;
 
-            if (parent.Echelon.Id == 3 )
-            {
-
-            }
-
             // Get our soldier promotion pool
             Echelon promotionP = Billet.PromotionPool;
             if (parent.Parent == null || promotionP.HierarchyLevel == 99)
@@ -102,11 +97,12 @@ namespace Perscom.Simulation
         /// <param name="soldier"></param>
         public void AssignSoldier(SoldierWrapper soldier)
         {
+            // Remove old soldier from the position
             ParentUnit.RemoveSoldier(Holder);
 
-            Holder = soldier;
-
+            // Set new position holder
             ParentUnit.AddSoldier(soldier);
+            Holder = soldier;
         }
 
         public override string ToString()

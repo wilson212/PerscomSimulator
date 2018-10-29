@@ -17,19 +17,14 @@ namespace Perscom
 {
     public partial class MainForm : Form
     {
-        #region Color Scheme
-
-        public static readonly Color THEME_COLOR_DARK = Color.FromArgb(51, 53, 53);
-        public static readonly Color THEME_COLOR_GRAY = Color.FromArgb(225, 225, 225);
-        public static readonly Color CHART_COLOR_DARK = Color.FromArgb(34, 52, 72);
-        public static readonly Color CHART_COLOR_LIGHT = Color.FromArgb(50, 82, 118);
-        public static readonly Color LINE_COLOR_DARK = Color.FromArgb(39, 64, 92);
-        public static readonly Color LINE_COLOR_LIGHT = Color.FromArgb(100, 50, 82, 118);
-
-        #endregion
-
+        /// <summary>
+        /// The current running Simulation
+        /// </summary>
         public Simulator Simulation { get; protected set; }
 
+        /// <summary>
+        /// The cancellation token for the simulator
+        /// </summary>
         protected CancellationTokenSource CancelToken { get; set; }
 
         /// <summary>
@@ -54,7 +49,7 @@ namespace Perscom
             this.Height = 750;
 
             // Header background color
-            headerPanel.BackColor = THEME_COLOR_DARK;
+            headerPanel.BackColor = FormStyling.THEME_COLOR_DARK;
             panel3.BackColor = Color.FromArgb(40, 40, 40);
             panel4.BackColor = Color.FromArgb(40, 40, 40);
 
@@ -333,7 +328,7 @@ namespace Perscom
 
         private void soldierConfigMenuItem_Click(object sender, EventArgs e)
         {
-            using (CareerLengthEditorForm form = new CareerLengthEditorForm())
+            using (var form = new CareerGeneratorEditorForm())
             {
                 form.ShowDialog();
             }

@@ -27,11 +27,19 @@ namespace Perscom
             Maximum = max;
         }
 
-        /// <summary>Presents the Range in readable format.</summary>
-        /// <returns>String representation of the Range</returns>
-        public override string ToString()
+        /// <summary>
+        /// Compares the range of <typeparamref name="T"/> with a value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>
+        /// Returns 0 if the value is within this range.
+        /// Returns -1 if the value is greater than this range.
+        /// Returns 1 if the value is less than this range.
+        /// </returns>
+        public int CompareTo(T value)
         {
-            return string.Format("[{0} - {1}]", this.Minimum, this.Maximum);
+            if (ContainsValue(value)) return 0;
+            else return (this.Maximum.CompareTo(value) > 0) ? 1 : -1;
         }
 
         /// <summary>Determines if the range is valid.</summary>
@@ -65,14 +73,22 @@ namespace Perscom
             return this.IsValid() && range.IsValid() && this.ContainsValue(range.Minimum) && this.ContainsValue(range.Maximum);
         }
 
+        /// <summary>Presents the Range in readable format.</summary>
+        /// <returns>String representation of the Range</returns>
+        public override string ToString()
+        {
+            return string.Format("[{0} - {1}]", this.Minimum, this.Maximum);
+        }
+
+        public bool Equals(Range<T> other)
+        {
+            if (other == null) return false;
+            return (other.Minimum.Equals(Minimum) && other.Maximum.Equals(Maximum));
+        }
+
         public override bool Equals(object obj)
         {
-            if (obj is Range<T>)
-            {
-                var range = (Range<T>)obj;
-                return range.Maximum.Equals(this.Maximum) && range.Minimum.Equals(this.Minimum);
-            }
-            return false;
+            return Equals(obj as Range<T>);
         }
 
         public override int GetHashCode()

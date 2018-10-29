@@ -53,6 +53,15 @@ namespace Perscom.Database
                         case "1.2":
                             MigrateTo_1_3();
                             break;
+                        case "1.3":
+                            MigrateTo_1_4();
+                            break;
+                        case "1.4":
+                            MigrateTo_1_5();
+                            break;
+                        case "1.5":
+                            MigrateTo_1_6();
+                            break;
                         default:
                             throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
                     }
@@ -63,6 +72,68 @@ namespace Perscom.Database
 
                 // Always perform a vacuum to optimize the database
                 Database.Execute("VACUUM;");
+            }
+        }
+
+        private void MigrateTo_1_6()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `FirstOrderedBy` INTEGER NOT NULL DEFAULT 0;");
+                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `FirstOrder` INTEGER NOT NULL DEFAULT 0;");
+                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `ThenOrderedBy` INTEGER NOT NULL DEFAULT 0;");
+                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `ThenOrder` INTEGER NOT NULL DEFAULT 0;");
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.6"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
+            }
+        }
+
+        private void MigrateTo_1_5()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                Database.Execute("ALTER TABLE `CareerSpawnRate` RENAME TO `CareerLengthRange`;");
+
+                // Create new tables
+                CodeFirstSQLite.CreateTable<SoldierCareerAdjustment>(Database, TableCreationOptions.IfNotExists);
+                CodeFirstSQLite.CreateTable<SoldierGeneratorCareer>(Database, TableCreationOptions.IfNotExists);
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.5"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
+            }
+        }
+
+        private void MigrateTo_1_4()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                Database.Execute("ALTER TABLE `SoldierGeneratorSetting` RENAME TO `SoldierGeneratorPool`;");
+                Database.Execute("ALTER TABLE `CareerSpawnRate` ADD COLUMN `GeneratorId` INTEGER NOT NULL DEFAULT 0;");
+
+                // Create new tables
+                CodeFirstSQLite.CreateTable<CareerGenerator>(Database, TableCreationOptions.IfNotExists);
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.4"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
             }
         }
 

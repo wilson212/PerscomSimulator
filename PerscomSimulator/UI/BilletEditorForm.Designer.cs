@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.inverseCheckBox = new Perscom.MyCheckBox();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -46,6 +47,7 @@
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lateralCheckBox = new System.Windows.Forms.CheckBox();
             this.preferedCheckBox = new System.Windows.Forms.CheckBox();
             this.repeatCheckBox = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -70,9 +72,7 @@
             this.billetRankSelect = new System.Windows.Forms.ComboBox();
             this.rankPicture = new System.Windows.Forms.PictureBox();
             this.headerPanel = new System.Windows.Forms.Panel();
-            this.inverseCheckBox = new Perscom.MyCheckBox();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.lateralCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -113,6 +113,17 @@
             this.groupBox5.TabIndex = 33;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Required Specialties";
+            // 
+            // inverseCheckBox
+            // 
+            this.inverseCheckBox.AutoSize = true;
+            this.inverseCheckBox.BackColor = System.Drawing.Color.Transparent;
+            this.inverseCheckBox.Location = new System.Drawing.Point(289, 19);
+            this.inverseCheckBox.Name = "inverseCheckBox";
+            this.inverseCheckBox.Size = new System.Drawing.Size(129, 17);
+            this.inverseCheckBox.TabIndex = 4;
+            this.inverseCheckBox.Text = "Inverse Requirements";
+            this.inverseCheckBox.UseVisualStyleBackColor = true;
             // 
             // listView1
             // 
@@ -205,9 +216,9 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(32, 76);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(93, 13);
+            this.label9.Size = new System.Drawing.Size(128, 13);
             this.label9.TabIndex = 32;
-            this.label9.Text = "Spawn Generator:";
+            this.label9.Text = "Soldier Spawn Generator:";
             // 
             // spawnGenSelect
             // 
@@ -224,9 +235,9 @@
             this.entryLevelCheckBox.AutoSize = true;
             this.entryLevelCheckBox.Location = new System.Drawing.Point(35, 36);
             this.entryLevelCheckBox.Name = "entryLevelCheckBox";
-            this.entryLevelCheckBox.Size = new System.Drawing.Size(90, 17);
+            this.entryLevelCheckBox.Size = new System.Drawing.Size(165, 17);
             this.entryLevelCheckBox.TabIndex = 12;
-            this.entryLevelCheckBox.Text = "Is Entry Level";
+            this.entryLevelCheckBox.Text = "Use Custom Soldier Selection";
             this.entryLevelCheckBox.UseVisualStyleBackColor = true;
             this.entryLevelCheckBox.CheckedChanged += new System.EventHandler(this.entryLevelCheckBox_CheckedChanged);
             // 
@@ -277,6 +288,16 @@
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Details";
+            // 
+            // lateralCheckBox
+            // 
+            this.lateralCheckBox.AutoSize = true;
+            this.lateralCheckBox.Location = new System.Drawing.Point(336, 144);
+            this.lateralCheckBox.Name = "lateralCheckBox";
+            this.lateralCheckBox.Size = new System.Drawing.Size(82, 17);
+            this.lateralCheckBox.TabIndex = 34;
+            this.lateralCheckBox.Text = "Lateral Only";
+            this.lateralCheckBox.UseVisualStyleBackColor = true;
             // 
             // preferedCheckBox
             // 
@@ -375,9 +396,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(27, 144);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 13);
+            this.label4.Size = new System.Drawing.Size(103, 13);
             this.label4.TabIndex = 25;
-            this.label4.Text = "Stature:";
+            this.label4.Text = "Stature (Desirability):";
             // 
             // earlyRetireCheckBox
             // 
@@ -518,17 +539,6 @@
             this.headerPanel.TabIndex = 3;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
-            // inverseCheckBox
-            // 
-            this.inverseCheckBox.AutoSize = true;
-            this.inverseCheckBox.BackColor = System.Drawing.Color.Transparent;
-            this.inverseCheckBox.Location = new System.Drawing.Point(289, 19);
-            this.inverseCheckBox.Name = "inverseCheckBox";
-            this.inverseCheckBox.Size = new System.Drawing.Size(129, 17);
-            this.inverseCheckBox.TabIndex = 4;
-            this.inverseCheckBox.Text = "Inverse Requirements";
-            this.inverseCheckBox.UseVisualStyleBackColor = true;
-            // 
             // label6
             // 
             this.label6.BackColor = System.Drawing.Color.Transparent;
@@ -542,16 +552,6 @@
             this.label6.Size = new System.Drawing.Size(242, 37);
             this.label6.TabIndex = 0;
             this.label6.Text = "Billet Manager";
-            // 
-            // lateralCheckBox
-            // 
-            this.lateralCheckBox.AutoSize = true;
-            this.lateralCheckBox.Location = new System.Drawing.Point(336, 144);
-            this.lateralCheckBox.Name = "lateralCheckBox";
-            this.lateralCheckBox.Size = new System.Drawing.Size(82, 17);
-            this.lateralCheckBox.TabIndex = 34;
-            this.lateralCheckBox.Text = "Lateral Only";
-            this.lateralCheckBox.UseVisualStyleBackColor = true;
             // 
             // BilletEditorForm
             // 

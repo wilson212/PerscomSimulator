@@ -126,7 +126,7 @@ namespace Perscom.Simulation
             if (Position.Billet.MaxTourLength > 0)
             {
                 int timeLeft = Position.Billet.MaxTourLength - GetTimeInBillet(currentDate);
-                if (timeLeft <= 0)
+                if (timeLeft <= 0 && !Position.Billet.Billet.Repeatable)
                     return true;
             }
 
@@ -256,6 +256,20 @@ namespace Perscom.Simulation
             }
         }
 
+        public void RemoveFromPosition(IterationDate date, SimDatabase db)
+        {
+            // Remove soldier from old unit, and place in new
+            if (Position != null)
+            {
+                // Store past assignment
+                LogAssignment(date, db);
+
+                // Clear
+                Position.AssignSoldier(null);
+                Position = null;
+            }
+        }
+
         /// <summary>
         /// Assigns this <see cref="Soldier"/> to the specified <see cref="Position"/>
         /// </summary>
@@ -265,17 +279,11 @@ namespace Perscom.Simulation
         public void AssignPosition(PositionWrapper newPosition, IterationDate date, SimDatabase db)
         {
             // Remove soldier from old unit, and place in new
-            if (Position != null)
-            {
-                Position.AssignSoldier(null);
-
-                // Store past assignment
-                LogAssignment(date, db);
-            }
+            RemoveFromPosition(date, db);
 
             // Assign the soldier to the new unit, and position
-            newPosition.AssignSoldier(this);
             Position = newPosition;
+            newPosition.AssignSoldier(this);
 
             // Specialty change required?
             var specialty = newPosition.Billet.Specialty;
@@ -356,7 +364,24 @@ namespace Perscom.Simulation
                 if (timeToRetire < timeLeft)
                     return false;
 
-                return (timeLeft < 3);
+                // Get the median difference between max and min tour lengths
+                double len = Position.Billet.MaxTourLength - Position.Billet.MinTourLength;
+                int medium = (int)Math.Ceiling(len / 2);
+                return (timeLeft <= medium);
+            }
+
+            return false;
+        }
+
+        public bool IsPastMaxTourLength(IterationDate currentDate)
+        {
+            if (Position == null) return true;
+
+            if (Position.Billet.MaxTourLength > 0)
+            {
+
+                int timeLeft = Position.Billet.MaxTourLength - GetTimeInBillet(currentDate);
+                return (timeLeft < 1);
             }
 
             return false;

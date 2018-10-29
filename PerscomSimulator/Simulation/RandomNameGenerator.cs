@@ -9,14 +9,23 @@ using System.Xml;
 namespace Perscom.Simulation
 {
     /// <summary>
-    /// This class 
+    /// This class is used to generate random first and last names 
     /// </summary>
     public class RandomNameGenerator
     {
+        /// <summary>
+        /// A list of first names
+        /// </summary>
         protected List<string> FirstNames { get; set; }
 
+        /// <summary>
+        /// A list of last names
+        /// </summary>
         protected List<string> LastNames { get; set; }
 
+        /// <summary>
+        /// The RNG class
+        /// </summary>
         protected CryptoRandom Rng { get; set; }
 
         public RandomNameGenerator()
@@ -28,23 +37,39 @@ namespace Perscom.Simulation
             LoadNames();
         }
 
+        /// <summary>
+        /// Generates a random first and last name, and returns
+        /// them as a string
+        /// </summary>
+        /// <returns></returns>
         public string GenerateRandomFirstAndLastName()
         {
             return $"{GenerateRandomFirstName()} {GenerateRandomLastName()}";
         }
 
+        /// <summary>
+        /// Generates and returns a random first name
+        /// </summary>
+        /// <returns></returns>
         public string GenerateRandomFirstName()
         {
             int index = Rng.Next(0, FirstNames.Count - 1);
             return FirstNames[index];
         }
 
+        /// <summary>
+        /// Generates and returns a random last name
+        /// </summary>
+        /// <returns></returns>
         public string GenerateRandomLastName()
         {
             int index = Rng.Next(0, LastNames.Count - 1);
             return LastNames[index];
         }
 
+        /// <summary>
+        /// Loads the first and last names into memory from the Config/Names.xml
+        /// </summary>
         private void LoadNames()
         {
             // Ensure the file exists

@@ -55,6 +55,7 @@
             this.billetsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.copyFromMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -73,7 +74,6 @@
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.duplicateBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -323,7 +323,7 @@
             this.toolStripSeparator2,
             this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(154, 148);
+            this.billetsContextMenu.Size = new System.Drawing.Size(154, 126);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
@@ -339,6 +339,13 @@
             this.removeBilletMenuItem.Size = new System.Drawing.Size(153, 22);
             this.removeBilletMenuItem.Text = "Remove Billet";
             this.removeBilletMenuItem.Click += new System.EventHandler(this.removeBilletMenuItem_Click);
+            // 
+            // duplicateBilletMenuItem
+            // 
+            this.duplicateBilletMenuItem.Name = "duplicateBilletMenuItem";
+            this.duplicateBilletMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.duplicateBilletMenuItem.Text = "Duplicate Billet";
+            this.duplicateBilletMenuItem.Click += new System.EventHandler(this.duplicateBilletMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -497,13 +504,6 @@
             this.label6.Size = new System.Drawing.Size(242, 37);
             this.label6.TabIndex = 0;
             this.label6.Text = "Unit Template Manager";
-            // 
-            // duplicateBilletMenuItem
-            // 
-            this.duplicateBilletMenuItem.Name = "duplicateBilletMenuItem";
-            this.duplicateBilletMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.duplicateBilletMenuItem.Text = "Duplicate Billet";
-            this.duplicateBilletMenuItem.Click += new System.EventHandler(this.duplicateBilletMenuItem_Click);
             // 
             // UnitTypeManagerForm
             // 

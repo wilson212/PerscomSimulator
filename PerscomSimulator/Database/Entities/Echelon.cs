@@ -5,6 +5,9 @@ using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
+    /// <summary>
+    /// This entity represents an organizational level of <see cref="Soldier"/>s
+    /// </summary>
     [Table]
     public class Echelon : IEquatable<Echelon>
     {

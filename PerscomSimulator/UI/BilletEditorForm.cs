@@ -23,8 +23,8 @@ namespace Perscom
         {
             // Setup form controls
             InitializeComponent();
-            headerPanel.BackColor = MainForm.THEME_COLOR_DARK;
-            bottomPanel.BackColor = MainForm.THEME_COLOR_GRAY;
+            headerPanel.BackColor = FormStyling.THEME_COLOR_DARK;
+            bottomPanel.BackColor = FormStyling.THEME_COLOR_GRAY;
             inverseCheckBox.BackColor = Color.Transparent;
 
             // Set internal properties
@@ -373,29 +373,26 @@ namespace Perscom
                     }
 
                     // Apply required specialties
-                    if (listView1.Items.Count > 0)
+                    var currentReqs = Billet.Requirements.Select(x => x.SpecialtyId);
+                    var newReqs = Requirements.Select(x => x.Id).ToList();
+
+                    // Remove
+                    foreach (int id in currentReqs.Except(newReqs))
                     {
-                        var current = Billet.Requirements.Select(x => x.SpecialtyId);
-                        var formVals = Requirements.Select(x => x.Id).ToList();
+                        DeleteQueryBuilder query = new DeleteQueryBuilder(db);
+                        query.From(nameof(BilletRequirement))
+                            .Where("BilletId", Comparison.Equals, Billet.Id)
+                            .And("SpecialtyId", Comparison.Equals, id);
+                        query.Execute();
+                    }
 
-                        // Add
-                        foreach (int id in formVals.Except(current))
-                        {
-                            var spec = new BilletRequirement();
-                            spec.BilletId = Billet.Id;
-                            spec.SpecialtyId = id;
-                            db.BilletRequirements.Add(spec);
-                        }
-
-                        // Remove
-                        foreach (int id in current.Except(formVals))
-                        {
-                            DeleteQueryBuilder query = new DeleteQueryBuilder(db);
-                            query.From(nameof(BilletRequirement))
-                                .Where("BilletId", Comparison.Equals, Billet.Id)
-                                .And("SpecialtyId", Comparison.Equals, id);
-                            query.Execute();
-                        }
+                    // Add
+                    foreach (int id in newReqs.Except(currentReqs))
+                    {
+                        var spec = new BilletRequirement();
+                        spec.BilletId = Billet.Id;
+                        spec.SpecialtyId = id;
+                        db.BilletRequirements.Add(spec);
                     }
 
                     trans.Commit();

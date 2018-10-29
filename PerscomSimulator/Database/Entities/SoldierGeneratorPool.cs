@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CrossLite;
 using CrossLite.CodeFirst;
+using CrossLite.QueryBuilder;
 using Perscom.Simulation;
 
 namespace Perscom.Database
 {
     [Table]
     [CompositeUnique(nameof(GeneratorId), nameof(RankId))]
-    public class SoldierGeneratorSetting : ISpawnable, IEquatable<SoldierGeneratorSetting>
+    public class SoldierGeneratorPool : ISpawnable, IEquatable<SoldierGeneratorPool>
     {
         #region Columns
 
@@ -35,14 +34,15 @@ namespace Perscom.Database
         public int RankId { get; set; }
 
         /// <summary>
-        /// 
+        /// The chances of this object spawning relative to the maximum Probability
+        /// of the <see cref="SpawnGenerator{T}"/>
         /// </summary>
         [Column, Required]
         public int Probability { get; set; }
 
         /// <summary>
         /// Indicates whether the soldier being selected is to recieve
-        /// a <see cref="CareerSpawnRate"/> for their new <see cref="Database.Rank"/>
+        /// a <see cref="SoldierCareerAdjustment"/> for their new <see cref="Database.Rank"/>
         /// </summary>
         [Column, Required]
         public bool NewCareerLength { get; set; }
@@ -55,8 +55,7 @@ namespace Perscom.Database
         public bool MustBePromotable { get; set; }
 
         /// <summary>
-        /// Indicates whether the soldiers being selected from an exisiting
-        /// pool are to be ordered by seniority before being selected.
+        /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
         public bool OrderedBySeniority { get; set; }
@@ -67,6 +66,34 @@ namespace Perscom.Database
         /// </summary>
         [Column, Required, Default(0)]
         public bool NotLockedInBillet { get; set; }
+
+        /// <summary>
+        /// Indicates whether the soldiers being selected from an exisiting
+        /// pool are to be ordered by seniority before being selected.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public SoldierSorting FirstOrderedBy { get; set; } = SoldierSorting.None;
+
+        /// <summary>
+        /// Indicates whether the soldiers being selected from an exisiting
+        /// pool are to be ordered by seniority before being selected.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public Sorting FirstOrder { get; set; } = Sorting.Ascending;
+
+        /// <summary>
+        /// Indicates whether the soldiers being selected from an exisiting
+        /// pool are to be ordered by seniority before being selected.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public SoldierSorting ThenOrderedBy { get; set; } = SoldierSorting.None;
+
+        /// <summary>
+        /// Indicates whether the soldiers being selected from an exisiting
+        /// pool are to be ordered by seniority before being selected.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public Sorting ThenOrder { get; set; } = Sorting.Ascending;
 
         #endregion
 
@@ -132,19 +159,50 @@ namespace Perscom.Database
 
         #endregion
 
+        #region Child Database Sets
+
         /// <summary>
-        /// Compares a <see cref="SoldierGeneratorSetting"/> with this one, and returns whether
+        /// Gets a list of <see cref="SoldierCareerAdjustment"/> entities that reference this 
+        /// <see cref="SoldierGeneratorPool"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<SoldierCareerAdjustment> CareerSettings { get; set; }
+
+        /// <summary>
+        /// Returns the <see cref="Database.CareerGenerator"/> linked to this 
+        /// <see cref="SoldierGeneratorPool"/> if any.
+        /// </summary>
+        public CareerGenerator CareerGenerator
+        {
+            get
+            {
+                var item = CareerSettings?.FirstOrDefault();
+                if (item == null || item == default(SoldierCareerAdjustment))
+                    return null;
+
+                return item.CareerGenerator;
+            }
+        }
+
+        #endregion
+
+        public CareerGenerator TemporaryCareer { get; set; }
+
+        /// <summary>
+        /// Compares a <see cref="SoldierGeneratorPool"/> with this one, and returns whether
         /// or not the RankId and GeneratorId's match
         /// </summary>
         /// <remarks>Used in the <see cref="SoldierGeneratorEditorForm"/></remarks>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool IsDuplicateOf(SoldierGeneratorSetting other)
+        public bool IsDuplicateOf(SoldierGeneratorPool other)
         {
             return (RankId == other.RankId && GeneratorId == other.GeneratorId);
         }
 
-        public bool Equals(SoldierGeneratorSetting other)
+        public bool Equals(SoldierGeneratorPool other)
         {
             if (other == null) return false;
             return (Id == other.Id);
@@ -152,7 +210,7 @@ namespace Perscom.Database
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as SoldierGeneratorSetting);
+            return this.Equals(obj as SoldierGeneratorPool);
         }
 
         public override int GetHashCode() => Id;

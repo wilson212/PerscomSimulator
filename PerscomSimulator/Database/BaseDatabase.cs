@@ -14,7 +14,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(1, 3);
+        public static Version CurrentVersion { get; protected set; } = new Version(1, 6);
 
         /// <summary>
         /// Gets the current database tables version
@@ -51,9 +51,14 @@ namespace Perscom.Database
         public DbSet<BilletSpecialty> BilletSpecialties { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="CareerSpawnRate"/> entites stored in the database
+        /// Gets a set of <see cref="CareerGenerator"/> entites stored in the database
         /// </summary>
-        public DbSet<CareerSpawnRate> CareerSpawnRates { get; set; }
+        public DbSet<CareerGenerator> CareerGenerators { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="CareerLengthRange"/> entites stored in the database
+        /// </summary>
+        public DbSet<CareerLengthRange> CareerLengthRange { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Echelon"/> entites stored in the database
@@ -66,14 +71,24 @@ namespace Perscom.Database
         public DbSet<Rank> Ranks { get; set; }
 
         /// <summary>
+        /// Gets a set of <see cref="SoldierCareerAdjustment"/> entites stored in the database
+        /// </summary>
+        public DbSet<SoldierCareerAdjustment> SoldierCareerAdjustments { get; set; }
+
+        /// <summary>
         /// Gets a set of <see cref="SoldierGenerator"/> entites stored in the database
         /// </summary>
         public DbSet<SoldierGenerator> SoldierGenerators { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="SoldierGeneratorSetting"/> entites stored in the database
+        /// Gets a set of <see cref="SoldierGeneratorCareer"/> entites stored in the database
         /// </summary>
-        public DbSet<SoldierGeneratorSetting> SoldierGeneratorSettings { get; set; }
+        public DbSet<SoldierGeneratorCareer> SoldierGeneratorCareers { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="SoldierGeneratorPool"/> entites stored in the database
+        /// </summary>
+        public DbSet<SoldierGeneratorPool> SoldierGeneratorPools { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Specialty"/> entites stored in the database
@@ -125,11 +140,14 @@ namespace Perscom.Database
             BilletRequirements = new DbSet<BilletRequirement>(this);
             BilletSpawnSettings = new DbSet<BilletSpawnSetting>(this);
             BilletSpecialties = new DbSet<BilletSpecialty>(this);
-            CareerSpawnRates = new DbSet<CareerSpawnRate>(this);
+            CareerGenerators = new DbSet<CareerGenerator>(this);
+            CareerLengthRange = new DbSet<CareerLengthRange>(this);
             Echelons = new DbSet<Echelon>(this);
             Ranks = new DbSet<Rank>(this);
             SoldierGenerators = new DbSet<SoldierGenerator>(this);
-            SoldierGeneratorSettings = new DbSet<SoldierGeneratorSetting>(this);
+            SoldierGeneratorPools = new DbSet<SoldierGeneratorPool>(this);
+            SoldierCareerAdjustments = new DbSet<SoldierCareerAdjustment>(this);
+            SoldierGeneratorCareers = new DbSet<SoldierGeneratorCareer>(this);
             Specialties = new DbSet<Specialty>(this);
             UnitTemplates = new DbSet<UnitTemplate>(this);
             UnitTypeAttachments = new DbSet<UnitTemplateAttachment>(this);
@@ -166,14 +184,17 @@ namespace Perscom.Database
             using (SQLiteTransaction tr = base.BeginTransaction())
             {
                 // Delete old table rementants
-                CodeFirstSQLite.DropTable<CareerSpawnRate>(this);
+                CodeFirstSQLite.DropTable<CareerLengthRange>(this);
+                CodeFirstSQLite.DropTable<CareerGenerator>(this);
                 CodeFirstSQLite.DropTable<BilletRequirement>(this);
                 CodeFirstSQLite.DropTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.DropTable<BilletSpecialty>(this);
                 CodeFirstSQLite.DropTable<Billet>(this);
                 CodeFirstSQLite.DropTable<BilletCatagory>(this);
                 CodeFirstSQLite.DropTable<Specialty>(this);
-                CodeFirstSQLite.DropTable<SoldierGeneratorSetting>(this);
+                CodeFirstSQLite.DropTable<SoldierCareerAdjustment>(this);
+                CodeFirstSQLite.DropTable<SoldierGeneratorCareer>(this);
+                CodeFirstSQLite.DropTable<SoldierGeneratorPool>(this);
                 CodeFirstSQLite.DropTable<SoldierGenerator>(this);
                 CodeFirstSQLite.DropTable<UnitTemplateAttachment>(this);
                 CodeFirstSQLite.DropTable<UnitTemplate>(this);
@@ -188,14 +209,17 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<UnitTemplate>(this);
                 CodeFirstSQLite.CreateTable<UnitTemplateAttachment>(this);
                 CodeFirstSQLite.CreateTable<SoldierGenerator>(this);
-                CodeFirstSQLite.CreateTable<SoldierGeneratorSetting>(this);
+                CodeFirstSQLite.CreateTable<SoldierGeneratorPool>(this);
+                CodeFirstSQLite.CreateTable<SoldierGeneratorCareer>(this);
+                CodeFirstSQLite.CreateTable<SoldierCareerAdjustment>(this);
                 CodeFirstSQLite.CreateTable<Specialty>(this);
                 CodeFirstSQLite.CreateTable<BilletCatagory>(this);
                 CodeFirstSQLite.CreateTable<Billet>(this);
                 CodeFirstSQLite.CreateTable<BilletSpecialty>(this);
                 CodeFirstSQLite.CreateTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.CreateTable<BilletRequirement>(this);
-                CodeFirstSQLite.CreateTable<CareerSpawnRate>(this);
+                CodeFirstSQLite.CreateTable<CareerGenerator>(this);
+                CodeFirstSQLite.CreateTable<CareerLengthRange>(this);
 
                 // Add Echelons
                 Echelons = new DbSet<Echelon>(this);

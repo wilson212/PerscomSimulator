@@ -27,51 +27,112 @@ namespace Perscom.Database
         /// <summary>
         /// 
         /// </summary>
-        [Column, Required, Default(1)]
-        public bool CreatesNewSoldiers { get; set; } = true;
+        [Column, Required, Default(0)]
+        public bool CreatesNewSoldiers { get; set; } = false;
 
         /// <summary>
         /// 
         /// </summary>
-        [Column, Default(100)]
-        public int NewSoldierProbability { get; set; } = 100;
+        [Column, Default(0)]
+        public int NewSoldierProbability { get; set; } = 0;
 
         #endregion
 
         #region Child Database Sets
 
         /// <summary>
-        /// Gets a list of <see cref="SoldierGeneratorSetting"/> entities that reference this 
+        /// Gets a list of <see cref="SoldierGeneratorPool"/> entities that reference this 
         /// <see cref="SoldierGenerator"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<SoldierGeneratorSetting> SpawnSettings { get; set; }
+        public virtual IEnumerable<SoldierGeneratorPool> SpawnPools { get; set; }
+
+        // <summary>
+        /// Gets a list of <see cref="SoldierGeneratorCareer"/> entities that reference this 
+        /// <see cref="SoldierGenerator"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<SoldierGeneratorCareer> NewSoldierCareer { get; set; }
+
+        /// <summary>
+        /// Gets a list of <see cref="BilletSpawnSetting"/> entities that reference this 
+        /// <see cref="SoldierGenerator"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<BilletSpawnSetting> BilletSpawns { get; set; }
 
         #endregion
 
-        protected SpawnGenerator<SoldierGeneratorSetting> Generator { get; set; }
+        /// <summary>
+        /// Gets or sets the <see cref="SpawnedSoldier"/> <see cref="SpawnGenerator{T}"/>
+        /// </summary>
+        protected SpawnGenerator<SpawnedSoldier> Generator { get; set; }
 
+        /// <summary>
+        /// Indicates whether this generator has been initialized
+        /// </summary>
+        public bool IsInitialized => (Generator != null);
+
+        /// <summary>
+        /// Initializes this <see cref="SoldierGenerator"/>. This method must be called
+        /// before an <see cref="SpawnedSoldier"/>'s can be spawned
+        /// </summary>
         public void Initialize()
         {
             // Create generator instance
-            Generator = new SpawnGenerator<SoldierGeneratorSetting>();
+            Generator = new SpawnGenerator<SpawnedSoldier>();
 
             // Add the new soldier spawnable entity
             if (CreatesNewSoldiers)
             {
-                Generator.Add(new SoldierGeneratorSetting() { Probability = NewSoldierProbability });
+                // Grab generator
+                var item = NewSoldierCareer.FirstOrDefault();
+                if (item != null && item != default(SoldierGeneratorCareer))
+                {
+                    // Add spawn setting to list!
+                    Generator.Add(new SpawnedSoldier()
+                    {
+                        Type = SpawnSoldierType.CreateNew,
+                        Probability = NewSoldierProbability,
+                        Career = item.CareerGenerator
+                    });
+                }
             }
 
             // Add the rest, if any, spawnable settings
-            if (SpawnSettings != null)
-                Generator.AddRange(SpawnSettings.ToList());
+            if (SpawnPools != null)
+            {
+                foreach (var item in SpawnPools)
+                {
+                    // Add spawn setting to list!
+                    Generator.Add(new SpawnedSoldier()
+                    {
+                        Type = SpawnSoldierType.TakeFromExistingPool,
+                        Probability = item.Probability,
+                        Rank = item.Rank,
+                        Career = item.CareerGenerator,
+                        Pool = item
+                    });
+                }
+            }
         }
 
-        public SoldierGeneratorSetting Spawn()
+        /// <summary>
+        /// Spawns a random <see cref="SpawnedSoldier"/> based
+        /// on the set probability
+        /// </summary>
+        public SpawnedSoldier Spawn()
         {
-            return Generator?.Spawn();
+            if (Generator == null)
+                Initialize();
+
+            return Generator.Spawn();
         }
 
         public bool Equals(SoldierGenerator other)

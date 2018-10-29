@@ -5,6 +5,9 @@ using Perscom.Simulation;
 
 namespace Perscom.Database
 {
+    /// <summary>
+    /// Contains a list of 
+    /// </summary>
     [Table]
     public class RankGradeStatistics
     {

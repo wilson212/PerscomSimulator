@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CrossLite;
+using CrossLite.QueryBuilder;
 using Perscom.Database;
 using Perscom.Simulation;
 
@@ -46,11 +47,6 @@ namespace Perscom
         /// Grade => Soldier Array
         /// </summary>
         public List<PositionWrapper> Positions { get; protected set; }
-
-        /// <summary>
-        /// Soldier Generator
-        /// </summary>
-        protected Dictionary<RankType, SpawnGenerator<CareerSpawnRate>> CareerGenerators { get; set; }
 
         /// <summary>
         /// Soldier Generator
@@ -128,19 +124,6 @@ namespace Perscom
             {
                 generator.Initialize();
                 SoldierGenerators.Add(generator.Id, generator);
-            }
-
-            // Load soldier career probabilities
-            var list = db.CareerSpawnRates.ToArray();
-            CareerGenerators = new Dictionary<RankType, SpawnGenerator<CareerSpawnRate>>();
-            foreach (RankType type in RankTypes)
-            {
-                // Create Spawn Generator
-                var generator = new SpawnGenerator<CareerSpawnRate>();
-                generator.AddRange(list.Where(x => x.Type == type));
-
-                // Create dictionary record
-                CareerGenerators.Add(type, generator);
             }
         }
 
@@ -311,7 +294,7 @@ namespace Perscom
                     trans.Commit();
                 }
             }
-            catch (OperationCanceledException ce)
+            catch (OperationCanceledException)
             {
                 throw;
             }
@@ -383,6 +366,17 @@ namespace Perscom
                         }
                     }
                 }
+                // Process Lateral Movement
+                else if (position.Billet.MaxTourLength > 0)
+                {
+                    // If we are at max tour length, or past it,
+                    // we are a prime candidate for moving!
+                    if (position.Holder.IsPastMaxTourLength(CurrentIterationDate))
+                    {
+                        if (TryPerformLateralMovement(soldier, position))
+                            continue;
+                    }
+                }
 
                 // If we could not find someone to fill the position
                 if (soldier == null)
@@ -448,6 +442,50 @@ namespace Perscom
             }
         }
 
+        private bool TryPerformLateralMovement(SoldierWrapper soldier, PositionWrapper position)
+        {
+            // Define position specific vars
+            UnitWrapper topUnit = position.PromotionPoolUnit;
+            RankType type = position.Billet.Rank.Type;
+            int grade = position.Billet.Rank.Grade;
+
+            // Get a list of soldiers that CAN do a lateral movement,
+            // Order by Desirability and Time in Billet
+            var soldiers = topUnit.SoldiersByGrade[type][grade].Values
+                .Where(x => IsCanidateForPosition(x, position) && !x.IsLockedInPosition(CurrentIterationDate))
+                .OrderByDescending(x => GetLateralPromotionDesire(x, position))
+                .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+
+            // Is this position NOT repeatable?
+            if (position.Billet.Billet.PreferNonRepeats)
+                soldiers = soldiers.ThenBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0);
+
+            // Any canidates?
+            if (soldiers.Count() == 0)
+                return false;
+
+            // Now find someone we can switch with!
+            foreach (var otherSoldier in soldiers)
+            {
+                // get soldier position
+                var pos = otherSoldier.Position;
+                if (IsCanidateForPosition(soldier, pos))
+                {
+                    // Remove positions first!
+                    otherSoldier.RemoveFromPosition(CurrentIterationDate, Database);
+                    soldier.RemoveFromPosition(CurrentIterationDate, Database);
+
+                    // Assign new positions
+                    soldier.AssignPosition(pos, CurrentIterationDate, Database);
+                    otherSoldier.AssignPosition(position, CurrentIterationDate, Database);
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// This method is used to iterate through all of the soldiers in a promotion pool,
         /// and returns the most qualified soldier for the specified <see cref="PositionWrapper"/>.
@@ -476,6 +514,7 @@ namespace Perscom
                 // TODO: Apply filters to force lateral promotions
                 //
                 IOrderedEnumerable<SoldierWrapper> soldiers;
+                IEnumerable<SoldierWrapper> primeSoldiers = new List<SoldierWrapper>();
                 bool isLateral = (grade == position.Billet.Rank.Grade);
 
                 // Quit if this is a lateral only position
@@ -486,8 +525,9 @@ namespace Perscom
                 if (isLateral)
                 {
                     soldiers = topUnit.SoldiersByGrade[type][grade].Values
-                        .Where(x => IsCandidateForLateral(x, position))
-                        .OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                        .Where(x => IsCanidateForPosition(x, position) && !x.IsLockedInPosition(CurrentIterationDate))
+                        .OrderByDescending(x => GetLateralPromotionDesire(x, position))
+                        .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
                 }
                 else
                 {
@@ -503,14 +543,20 @@ namespace Perscom
                     continue;
                 }
 
-                // Check for repeatable preference
-                if (position.Billet.Billet.PreferNonRepeats)
+                // Is this position NOT repeatable?
+                if (!position.Billet.Billet.Repeatable)
                 {
-                    soldiers = soldiers.ThenBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0);
+                    primeSoldiers = soldiers.Where(x => !x.BilletsHeld.ContainsKey(position.Billet.Billet.Id));
+                }
+                else if (position.Billet.Billet.PreferNonRepeats)
+                {
+                    // Check for repeatable preference
+                    primeSoldiers = soldiers.ThenBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0);
                 }
 
                 // Fetch soldier list without checking LockedIn
-                var primeSoldiers = (isLateral) ? soldiers : soldiers.Where(x => !x.IsLockedInPosition(CurrentIterationDate));
+                if (!isLateral)
+                    primeSoldiers = primeSoldiers.Where(x => !x.IsLockedInPosition(CurrentIterationDate));
 
                 // Check for an un-restricted soldier first
                 var wrapper = primeSoldiers.FirstOrDefault();
@@ -540,27 +586,66 @@ namespace Perscom
         }
 
         /// <summary>
-        /// Determines whether the soldier is a candidate for a lateral promotion
+        /// Returns a desire rating for a soldier that is a candidate for a lateral promotion.
+        /// A higher returned number indicates a greater need or desire for a later promotion.
         /// </summary>
         /// <param name="soldier"></param>
-        /// <param name="position"></param>
+        /// <param name="position">The position we are potentially moving into</param>
         /// <returns></returns>
-        private bool IsCandidateForLateral(SoldierWrapper soldier, PositionWrapper position)
+        private int GetLateralPromotionDesire(SoldierWrapper soldier, PositionWrapper position)
         {
-            // Ensure we are even a canidate for the position to begin with!
-            if (!IsCanidateForPosition(soldier, position))
-                return false;
-
-            // If we are locked into our current position, than false!
+            //
+            // CAN WE EVEN?
+            //
             if (soldier.IsLockedInPosition(CurrentIterationDate))
-                return false;
+            {
+                return 0;
+            }
 
-            // If we are getting close to our maximum tour length, return true
+            //
+            // DO WE NEED TO?
+            //
+
+            // If we are getting close to our maximum tour length,
+            // or we have surpassed our max tour length, return true
             if (soldier.IsNearMaxTourLength(CurrentIterationDate))
-                return true;
+            {
+                if (soldier.Position.Billet.Billet.Repeatable)
+                {
+                    // If the spot prefers none repeats, then we must
+                    // return mid-level desire and Respect that!
+                    if (soldier.Position.Billet.Billet.PreferNonRepeats)
+                    {
+                        return 5;
+                    }
 
-            // Only accept it IF the stature is higher
-            return (soldier.Position.Billet.Stature < position.Billet.Stature);
+                    // The position is repeatable, and does not mind
+                    // Repeat soldiers taking the spot...
+                    // Is this position more desirable at least?
+                    else if (soldier.Position.Billet.Stature < position.Billet.Stature)
+                    {
+                        return 4;
+                    }
+                    else
+                    {
+                        // We'll take it just for a change of scenery
+                        return 3;
+                    }
+                }
+                else
+                {
+                    // We are nearing max tour length, and the position
+                    // is NOT repeatable... shit! This is high candidacy
+                    return (soldier.IsPastMaxTourLength(CurrentIterationDate)) ? 7 : 6;
+                }
+            }
+
+            //
+            // Do We WANT to?
+            //
+
+            // If the stature is higher, OF COURSE we want it!
+            return (soldier.Position.Billet.Stature < position.Billet.Stature) ? 2 : 1;
         }
 
         /// <summary>
@@ -733,13 +818,18 @@ namespace Perscom
                 }
             }
 
+            // Grab the most generic entry level generator!
+            var s = SoldierGenerators.Values.Where(x => x.CreatesNewSoldiers && x.NewSoldierProbability == 100).FirstOrDefault();
+            if (s == null || s == default(SoldierGenerator))
+                throw new Exception("No SoldierGenerator created that has a 100% NEW soldier spawn probabilty");
+
             // Build initial roster
             foreach (var pos in Positions)
             {
                 // Only fill entry positions!
                 if (pos.Billet.IsEntryLevel && Settings.ProcessRankType(pos.Billet.Rank.Type))
                 {
-                    var soldier = CreateSoldier(SoldierGenerators.Values.First(), pos);
+                    var soldier = CreateSoldier(s, pos);
                     soldier.AssignPosition(pos, CurrentIterationDate, Database);
                 }
             }
@@ -759,29 +849,31 @@ namespace Perscom
                 throw new ArgumentException("Position holder must be null before creating a new soldier!", "position");
 
             // Spawn a soldier generator setting
-            SoldierGeneratorSetting setting = generator.Spawn();
-            bool newCareer = setting.NewCareerLength;
+            SpawnedSoldier setting = generator.Spawn();
             SoldierWrapper wrapper = null;
 
             // If rankId is 0, then we create new
-            if (setting.RankId == 0)
+            if (setting.Type == SpawnSoldierType.CreateNew)
             {
-                Soldier soldier = new Soldier();
-                soldier.FirstName = NameGenerator.GenerateRandomFirstName();
-                soldier.LastName = NameGenerator.GenerateRandomLastName();
-                soldier.EntryIterationId = CurrentIterationDate.Id;
-                soldier.LastPromotionIterationId = CurrentIterationDate.Id;
-                soldier.RankId = position.Billet.Rank.Id;
-                soldier.SpecialtyId = position.Billet.Specialty.Id;
+                // Create a new soldier object
+                Soldier soldier = new Soldier
+                {
+                    FirstName = NameGenerator.GenerateRandomFirstName(),
+                    LastName = NameGenerator.GenerateRandomLastName(),
+                    EntryIterationId = CurrentIterationDate.Id,
+                    LastPromotionIterationId = CurrentIterationDate.Id,
+                    RankId = position.Billet.Rank.Id,
+                    SpecialtyId = position.Billet.Specialty.Id
+                };
 
-                // Assign the soldiers new career length
-                var career = CareerGenerators[position.Billet.Rank.Type].Spawn();
+                // Ensure we initialized
+                if (!setting.Career.IsInitialized)
+                    setting.Career.Initialize();
+
+                // Assign the soldiers new career length based on Rank Type
+                CareerLengthRange career = setting.Career.Spawn();
                 soldier.SpawnRateId = career.Id;
-
-                // Here we figure out just how many months the soldier will stay in service.
-                CryptoRandom r = new CryptoRandom();
-                int toAdd = r.Next(career.MinCareerLength, career.MaxCareerLength);
-                soldier.ExitIterationId = CurrentIterationDate.Id + toAdd;
+                soldier.ExitIterationId = CurrentIterationDate.Id + career.GenerateLength();
 
                 // Add soldier to database
                 Database.Soldiers.Add(soldier);
@@ -789,74 +881,143 @@ namespace Perscom
                 // Create soldier wrapper
                 wrapper = new SoldierWrapper(soldier, position.Billet.Rank, CurrentIterationDate, Database);
                 ActiveDutySoldiers.Add(soldier.Id, wrapper);
-
-                newCareer = false;
             }
             else
             {
                 // Fetch promotion pool
-                UnitWrapper topUnit = position.PromotionPoolUnit; 
-                Rank settingRank = (setting.RankId > 0) ? RankCache.RanksById[setting.RankId] : null;
-                RankType type = settingRank?.Type ?? position.Billet.Rank.Type;
-                int grade = settingRank?.Grade ?? position.Billet.Rank.Grade;
+                UnitWrapper topUnit = position.PromotionPoolUnit;
 
                 // ---------------------------
                 // Apply Filters
                 // ---------------------------
-                var soldiers = topUnit.SoldiersByGrade[type][grade];
-                wrapper = FindCrossPoolSoldier(soldiers, setting);
+                var soldiers = topUnit.SoldiersByGrade[setting.Rank.Type][setting.Rank.Grade];
+                wrapper = FindCrossPoolSoldier(soldiers, setting, position);
 
                 // Grab our top filtered soldier
                 if (wrapper != null)
+                {
+                    // Promote soldier
                     wrapper.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
-            }
 
-            // Does this soldier get assigned a new career?
-            if (newCareer && wrapper != null)
-            {
-                Soldier soldier = wrapper.Soldier;
-
-                // Assign the soldiers new career length
-                var career = CareerGenerators[wrapper.Rank.Type].Spawn();
-                soldier.SpawnRateId = career.Id;
-
-                // Here we figure out just how many months the soldier will stay in service.
-                CryptoRandom r = new CryptoRandom();
-                int toAdd = r.Next(career.MinCareerLength, career.MaxCareerLength);
-                soldier.ExitIterationId = CurrentIterationDate.Id + toAdd;
+                    // Change career length?
+                    if (setting.Career != null)
+                    {
+                        // Assign the soldiers new career length based on Rank Type
+                        CareerLengthRange career = setting.Career.Spawn();
+                        wrapper.Soldier.SpawnRateId = career.Id;
+                        wrapper.Soldier.ExitIterationId = CurrentIterationDate.Id + career.GenerateLength();
+                    }
+                }
             }
 
             // Send him to duty!
             return wrapper;
         }
 
-        private SoldierWrapper FindCrossPoolSoldier(Dictionary<int, SoldierWrapper> soldiers, SoldierGeneratorSetting setting)
+        /// <summary>
+        /// This method is used to pull a soldier from within a unit somewhere, and return
+        /// the best soldier for the position
+        /// </summary>
+        /// <param name="soldiers"></param>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        private SoldierWrapper FindCrossPoolSoldier(
+            Dictionary<int, SoldierWrapper> soldiers, 
+            SpawnedSoldier setting, 
+            PositionWrapper position)
         {
+            // Apply soldier ordering
             var list = new List<SoldierWrapper>(soldiers.Values);
-            if (setting.OrderedBySeniority)
-                list = list.OrderBy(x => x.LastPromotionDate.Id).ToList();
+            if (setting.Pool.FirstOrderedBy != SoldierSorting.None)
+            {
+                var oList = OrderSoldierList(list, setting.Pool.FirstOrderedBy, setting.Pool.FirstOrder);
+                if (setting.Pool.ThenOrderedBy != SoldierSorting.None)
+                {
+                    oList = OrderSoldierList(oList, setting.Pool.ThenOrderedBy, setting.Pool.ThenOrder);
+                }
+
+                list = oList.ToList();
+            }
 
             PromotableStatus status;
             foreach (var soldier in list)
             {
                 // Must be promotable?
-                if (setting.MustBePromotable)
+                if (setting.Pool.MustBePromotable)
                 {
                     if (!soldier.IsPromotable(CurrentIterationDate, out status) || status == PromotableStatus.Lateral)
                         continue;
                 }
 
                 // Soldier locked into position?
-                if (soldier.Position != null && setting.NotLockedInBillet && soldier.IsLockedInPosition(CurrentIterationDate))
+                if (soldier.Position != null && setting.Pool.NotLockedInBillet && soldier.IsLockedInPosition(CurrentIterationDate))
                 {
                     continue;
                 }
 
-                // If we are here, list him
-                return soldier;
+                // Make sure the soldier can even sit in this position!
+                if (IsCanidateForPosition(soldier, position))
+                    return soldier;
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Applies order of soldiers
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        private IOrderedEnumerable<SoldierWrapper> OrderSoldierList(
+            List<SoldierWrapper> list, 
+            SoldierSorting sortBy, 
+            Sorting direction)
+        {
+            switch (sortBy)
+            {
+                default:
+                case SoldierSorting.None:
+                    return list.OrderBy(x => 1);
+                case SoldierSorting.TimeInGrade:
+                    return (direction == Sorting.Ascending)
+                        ? list.OrderBy(x => x.GetTimeInGrade(CurrentIterationDate))
+                        : list.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                case SoldierSorting.TimeInService:
+                    return (direction == Sorting.Ascending)
+                        ? list.OrderBy(x => x.GetTimeInService(CurrentIterationDate))
+                        : list.OrderByDescending(x => x.GetTimeInService(CurrentIterationDate));
+                case SoldierSorting.TimeInBillet:
+                    return (direction == Sorting.Ascending)
+                        ? list.OrderBy(x => x.GetTimeInBillet(CurrentIterationDate))
+                        : list.OrderByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+            }
+        }
+
+        private IOrderedEnumerable<SoldierWrapper> OrderSoldierList(
+            IOrderedEnumerable<SoldierWrapper> list,
+            SoldierSorting sortBy,
+            Sorting direction)
+        {
+            switch (sortBy)
+            {
+                default:
+                case SoldierSorting.None:
+                    return list;
+                case SoldierSorting.TimeInGrade:
+                    return (direction == Sorting.Ascending)
+                        ? list.ThenBy(x => x.GetTimeInGrade(CurrentIterationDate))
+                        : list.ThenByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                case SoldierSorting.TimeInService:
+                    return (direction == Sorting.Ascending)
+                        ? list.ThenBy(x => x.GetTimeInService(CurrentIterationDate))
+                        : list.ThenByDescending(x => x.GetTimeInService(CurrentIterationDate));
+                case SoldierSorting.TimeInBillet:
+                    return (direction == Sorting.Ascending)
+                        ? list.ThenBy(x => x.GetTimeInBillet(CurrentIterationDate))
+                        : list.ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+            }
         }
     }
 }

@@ -65,10 +65,31 @@
   <ItemGroup>
     <Compile Include="Application\Epoch.cs" />
     <Compile Include="Application\ExceptionHandler.cs" />
-    <Compile Include="Application\ListExtensions.cs" />
-    <Compile Include="Application\IntExtensions.cs" />
+    <Compile Include="Simulation\SpawnedSoldier.cs" />
+    <Compile Include="Database\Entities\SoldierGeneratorCareer.cs" />
+    <Compile Include="Controls\ListViewWithReordering.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Simulation\SoldierSorting.cs" />
+    <Compile Include="UI\CareerSpawnTemplateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\CareerSpawnTemplateForm.Designer.cs">
+      <DependentUpon>CareerSpawnTemplateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Extensions\IntExtensions.cs" />
+    <Compile Include="Extensions\NumericUpDownExtensions.cs" />
+    <Compile Include="Application\FormStyling.cs" />
+    <Compile Include="UI\CareerGeneratorEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\CareerGeneratorEditorForm.Designer.cs">
+      <DependentUpon>CareerGeneratorEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Database\BaseDatabase.cs" />
-    <Compile Include="Application\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Database\Entities\CareerGenerator.cs" />
     <Compile Include="Database\Entities\SpecialtyAssignment.cs" />
     <Compile Include="Controls\MyCheckBox.cs">
       <SubType>Component</SubType>
@@ -76,7 +97,14 @@
     <Compile Include="Controls\MyCheckBox.Designer.cs">
       <DependentUpon>MyCheckBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Database\Entities\SoldierCareerAdjustment.cs" />
     <Compile Include="Simulation\SoldierWrapper2.cs" />
+    <Compile Include="UI\SoldierGeneratorPoolForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SoldierGeneratorPoolForm.Designer.cs">
+      <DependentUpon>SoldierGeneratorPoolForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\SimResultViewForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,10 +129,10 @@
     <Compile Include="Database\Entities\BilletSpecialty.cs" />
     <Compile Include="Database\Entities\BilletRequirement.cs" />
     <Compile Include="Database\Entities\BilletCatagory.cs" />
-    <Compile Include="Database\Entities\CareerSpawnRate.cs" />
+    <Compile Include="Database\Entities\CareerLengthRange.cs" />
     <Compile Include="Database\Entities\Specialty.cs" />
     <Compile Include="Database\Entities\SoldierGenerator.cs" />
-    <Compile Include="Database\Entities\SoldierGeneratorSetting.cs" />
+    <Compile Include="Database\Entities\SoldierGeneratorPool.cs" />
     <Compile Include="UI\SoldierGeneratorEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,7 +161,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Application\ImageAccessor.cs" />
-    <Compile Include="Application\ProgressBarExtensions.cs" />
+    <Compile Include="Extensions\ProgressBarExtensions.cs" />
     <Compile Include="Controls\GradientPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -143,7 +171,7 @@
     <Compile Include="Simulation\SoldierWrapper.cs" />
     <Compile Include="Application\SyncProgress.cs" />
     <Compile Include="Application\TaskProgressUpdate.cs" />
-    <Compile Include="Application\DateTimeExt.cs" />
+    <Compile Include="Extensions\DateTimeExt.cs" />
     <Compile Include="Database\AppDatabase.cs" />
     <Compile Include="Database\Entities\Assignment.cs" />
     <Compile Include="Database\Entities\Billet.cs" />
@@ -216,6 +244,15 @@
     <Compile Include="UI\UnitTypeManagerForm.Designer.cs">
       <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UI\CareerGeneratorEditorForm.resx">
+      <DependentUpon>CareerGeneratorEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\CareerSpawnTemplateForm.resx">
+      <DependentUpon>CareerSpawnTemplateForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SoldierGeneratorPoolForm.resx">
+      <DependentUpon>SoldierGeneratorPoolForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\SimResultViewForm.resx">
       <DependentUpon>SimResultViewForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -4,6 +4,14 @@ using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
+    /// <summary>
+    /// This Entity represents a (1:1 or 1:0) relationship between a 
+    /// <see cref="Perscom.Database.Soldier"/> and his current Assignment
+    /// </summary>
+    /// <remarks>
+    /// Soldiers that are considered Retired will not have an Assignment,
+    /// hence being a 1:1 or 1:0 relationship!
+    /// </remarks>
     [Table]
     public class Assignment : IEquatable<Assignment>
     {
@@ -16,9 +24,10 @@ namespace Perscom.Database
         public int SoldierId { get; set; }
 
         /// <summary>
-        /// Gets or sets the parent <see cref="Position.Id"/>
+        /// Gets or sets the <see cref="Position.Id"/> this
+        /// entity holds
         /// </summary>
-        [Column, PrimaryKey, Unique]
+        [Column, Unique]
         public int PositionId { get; set; }
 
         /// <summary>

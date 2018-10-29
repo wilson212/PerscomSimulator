@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Perscom.Database;
 using Perscom.Simulation;
@@ -180,10 +181,16 @@ namespace Perscom
         {
             if (name.Contains('%'))
             {
-                return name
-                    .Replace("%n", unitNumber.ToTitleCase())
-                    .Replace("%i", unitNumber.ToString())
-                    .Replace("%c", unitNumber.ToCharString(true));
+                return Regex.Replace(name, "%(?<Code>[nic])", match =>
+                {
+                    switch (match.Groups["Code"].Value)
+                    {
+                        default:
+                        case "n": return unitNumber.ToTitleCase();
+                        case "i": return unitNumber.ToString();
+                        case "c": return unitNumber.ToCharString(true);
+                    }
+                });
             }
 
             return name;

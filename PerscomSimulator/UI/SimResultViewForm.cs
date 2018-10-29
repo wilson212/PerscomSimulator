@@ -65,17 +65,16 @@ namespace Perscom
             this.Height = 750;
 
             // Header background color
-            headerPanel.BackColor = MainForm.THEME_COLOR_DARK;
             panel3.BackColor = Color.FromArgb(40, 40, 40);
             panel4.BackColor = Color.FromArgb(40, 40, 40);
 
             // Set chart colors
-            chart3.Series[0].BorderColor = MainForm.LINE_COLOR_DARK;
-            chart3.Series[0].Color = MainForm.LINE_COLOR_LIGHT;
-            chart4.Series[0].BorderColor = MainForm.LINE_COLOR_DARK;
-            chart4.Series[0].Color = MainForm.LINE_COLOR_LIGHT;
+            chart3.Series[0].BorderColor = FormStyling.LINE_COLOR_DARK;
+            chart3.Series[0].Color = FormStyling.LINE_COLOR_LIGHT;
+            chart4.Series[0].BorderColor = FormStyling.LINE_COLOR_DARK;
+            chart4.Series[0].Color = FormStyling.LINE_COLOR_LIGHT;
             chart4.Series[1].BorderColor = Color.DarkRed;
-            chart4.Series[1].Color = MainForm.LINE_COLOR_LIGHT;
+            chart4.Series[1].Color = FormStyling.LINE_COLOR_LIGHT;
 
             // Pie charts
             unitRankPieChart.Series[0].Label = "#PERCENT{P0}";
@@ -360,7 +359,7 @@ namespace Perscom
                 point.AxisLabel = rankName;
                 point.LegendText = rankName;
                 point.Label = roundedVal.ToString();
-                point.Color = (i % 2 == 1) ? MainForm.CHART_COLOR_DARK : MainForm.CHART_COLOR_LIGHT;
+                point.Color = (i % 2 == 1) ? FormStyling.CHART_COLOR_DARK : FormStyling.CHART_COLOR_LIGHT;
             }
         }
 
@@ -400,7 +399,7 @@ namespace Perscom
                 point.AxisLabel = rankName;
                 point.LegendText = rankName;
                 point.Label = roundedVal.ToString();
-                point.Color = (i % 2 == 1) ? MainForm.CHART_COLOR_DARK : MainForm.CHART_COLOR_LIGHT;
+                point.Color = (i % 2 == 1) ? FormStyling.CHART_COLOR_DARK : FormStyling.CHART_COLOR_LIGHT;
             }
         }
 
@@ -760,24 +759,8 @@ namespace Perscom
         /// </summary>
         private void headerPanel_Paint(object sender, PaintEventArgs e)
         {
-            // Create pen.
-            Pen blackPen = new Pen(Color.FromArgb(36, 36, 36), 1);
-            Pen greyPen = new Pen(Color.FromArgb(62, 62, 62), 1);
-
-            // Create points that define line.
-            Point point1 = new Point(0, headerPanel.Height - 3);
-            Point point2 = new Point(headerPanel.Width, headerPanel.Height - 3);
-            e.Graphics.DrawLine(greyPen, point1, point2);
-
-            // Create points that define line.
-            point1 = new Point(0, headerPanel.Height - 2);
-            point2 = new Point(headerPanel.Width, headerPanel.Height - 2);
-            e.Graphics.DrawLine(blackPen, point1, point2);
-
-            // Create points that define line.
-            point1 = new Point(0, headerPanel.Height - 1);
-            point2 = new Point(headerPanel.Width, headerPanel.Height - 1);
-            e.Graphics.DrawLine(greyPen, point1, point2);
+            FormStyling.StyleFormHeader(headerPanel, e);
+            //base.OnPaint(e);
         }
 
         /// <summary>

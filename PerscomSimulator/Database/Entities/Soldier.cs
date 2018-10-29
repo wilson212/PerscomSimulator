@@ -4,6 +4,9 @@ using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
+    /// <summary>
+    /// This entity represents a spawned soldier
+    /// </summary>
     [Table]
     public class Soldier
     {
@@ -66,7 +69,7 @@ namespace Perscom.Database
         public bool Retired { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="CareerSpawnRate.Id"/>
+        /// Gets or sets the <see cref="CareerGenerator.Id"/>
         /// </summary>
         [Column, Required]
         public int SpawnRateId { get; set; }
@@ -124,7 +127,7 @@ namespace Perscom.Database
             OnDelete = ReferentialIntegrity.Restrict,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        protected virtual ForeignKey<CareerSpawnRate> FK_SpawnRate { get; set; }
+        protected virtual ForeignKey<CareerLengthRange> FK_SpawnRate { get; set; }
 
         #endregion
 
@@ -202,7 +205,7 @@ namespace Perscom.Database
         /// Gets or sets the <see cref="CareerSpawnRate"/> that 
         /// this soldier is created with
         /// </summary>
-        public CareerSpawnRate SpawnRate
+        public CareerLengthRange SpawnRate
         {
             get
             {

@@ -1,5 +1,9 @@
 ﻿namespace Perscom.Simulation
 {
+    /// <summary>
+    /// This object represents a list of settings that will be applied
+    /// during the initial setup of a simulation
+    /// </summary>
     public class SimulatorSettings
     {
         public static SimulatorSettings Default

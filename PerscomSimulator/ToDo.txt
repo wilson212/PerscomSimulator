@@ -1,3 +1,2 @@
-﻿ - Custom LINQ expression selectors for Soldier Generators (selecting from existing pools)
- - Track specialty transitions for statistics
+﻿ - Track specialty transitions for statistics
  - Add a "does not allow lateral grade promotion" to ranks (think Marine Corps 1stSgt and Msgt)

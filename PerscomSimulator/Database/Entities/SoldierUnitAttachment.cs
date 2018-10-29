@@ -3,6 +3,14 @@ using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
+    /// <summary>
+    /// This entity representsa (1:1 or 1:0) relationship between a 
+    /// <see cref="Perscom.Database.Soldier"/> and a <see cref="Unit"/>
+    /// </summary>
+    /// <remarks>
+    /// Soldiers that are considered Retired will not be attached to a Unit,
+    /// hence being a 1:1 or 1:0 relationship!
+    /// </remarks>
     [Table]
     [CompositeUnique(nameof(SoldierId), nameof(UnitId))]
     public class SoldierUnitAttachment
