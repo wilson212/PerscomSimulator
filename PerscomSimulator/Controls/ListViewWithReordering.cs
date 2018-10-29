@@ -34,12 +34,13 @@ namespace System.Windows.Forms // May need to set to something else
 
         protected override void OnDragDrop(DragEventArgs drgevent)
         {
-            base.OnDragDrop(drgevent);
             //Return if the items are not selected in the ListView control.
             if (this.SelectedItems.Count == 0)
             {
+                base.OnDragDrop(drgevent);
                 return;
             }
+
             //Returns the location of the mouse pointer in the ListView control.
             Drawing.Point cp = this.PointToClient(new Drawing.Point(drgevent.X, drgevent.Y));
             //Obtain the item that is located at the specified location of the mouse pointer.
@@ -75,6 +76,8 @@ namespace System.Windows.Forms // May need to set to something else
                 //the item is moved to the new location.
                 this.Items.Remove(dragItem);
             }
+
+            base.OnDragDrop(drgevent);
         }
     }
 }

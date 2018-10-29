@@ -335,6 +335,16 @@ namespace Perscom.Simulation
         }
 
         /// <summary>
+        /// Gets the current number of months this soldier has before he will retire naturally
+        /// </summary>
+        /// <param name="currentDate">The current <see cref="IterationDate"/></param>
+        /// <returns></returns>
+        public int GetTimeUntilRetirement(IterationDate currentDate)
+        {
+            return currentDate.Id - Soldier.ExitIterationId;
+        }
+
+        /// <summary>
         /// Indicates whether this soldier is a stand in for their current <see cref="Database.Position"/>.
         /// To be considered a stand in, the soldier must be a lower <see cref="Rank.Grade"/> than the
         /// <see cref="Rank.Grade"/>

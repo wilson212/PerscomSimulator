@@ -1,2 +1,6 @@
 ﻿ - Track specialty transitions for statistics
+ - Add an option to Bar a soldier for promotion while locked into a billet
+ --> As of right now, promotion takes precedence over minimum time (locked in billet):
+ -----> Have a lock in billet, which prevents lateral movement only
+ -----> Have a lock in billet, which prevents promotions
  - Add a "does not allow lateral grade promotion" to ranks (think Marine Corps 1stSgt and Msgt)

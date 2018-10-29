@@ -149,7 +149,13 @@ namespace Perscom
                 }
 
                 // Add orderby clause
-                if (setting.FirstOrderedBy != SoldierSorting.None)
+                if (setting.SoldierSorting != null && setting.SoldierSorting.Count() > 0)
+                {
+                    if (builder.Length > 0)
+                        builder.Append(", ");
+                    builder.Append("Sorted");
+                }
+                else if (setting.TemporarySoldierSorting != null && setting.TemporarySoldierSorting.Count > 0)
                 {
                     if (builder.Length > 0)
                         builder.Append(", ");
@@ -386,6 +392,16 @@ namespace Perscom
                             };
                             db.SoldierCareerAdjustments.Add(temp);
                         }
+
+                        // Do we need to add sorting?
+                        if (item.TemporarySoldierSorting != null)
+                        {
+                            foreach (var sort in item.TemporarySoldierSorting)
+                            {
+                                sort.SoldierPool = item;
+                                db.SoldierPoolSorting.Add(sort);
+                            }
+                        }
                     }
 
                     // Update spawn pools
@@ -408,6 +424,20 @@ namespace Perscom
                         {
                             // Delete just to be safe
                             db.Execute($"DELETE FROM `SoldierCareerAdjustment` WHERE `SoldierGeneratorPoolId`={item.Id}");
+                        }
+
+                        // Do we need to add sorting?
+                        if (item.TemporarySoldierSorting != null)
+                        {
+                            // Remove all old ones!
+                            db.Execute($"DELETE FROM `SoldierPoolSorting` WHERE `SoldierGeneratorPoolId`={item.Id}");
+
+                            // Add new
+                            foreach (var sort in item.TemporarySoldierSorting)
+                            {
+                                sort.SoldierPool = item;
+                                db.SoldierPoolSorting.Add(sort);
+                            }
                         }
                     }
 

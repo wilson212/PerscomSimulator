@@ -73,6 +73,27 @@ namespace Perscom.Simulation
             TimeInService = (soldier.Retired) 
                 ? EntryServiceDate.MonthDifference(ExitServiceDate) 
                 : EntryServiceDate.MonthDifference(currentDate);
+
+            // Figure Time in Grade
+            /* Time in Grade
+            var lastPromo = soldier.EntryServiceDate;
+
+            // Fill Past Assignments
+            foreach (Promotion info in soldier.Promotions.OrderByDescending(x => x.IterationId))
+            {
+                Rank toRank = info.ToRank;
+                Rank fromRank = info.FromRank;
+                char code = char.ToUpper(RankCache.GetCodeByRankType(info.ToRank.Type));
+                string desc = String.Empty;
+
+                if (toRank.Grade == soldier.Rank.Grade && toRank.Type == soldier.Rank.Type)
+                {
+                    lastPromo = info.Date;
+                }
+            }
+
+            TimeInGrade = LastPromotionDate.MonthDifference(lastPromo.Date);
+            */
         }
 
         public int GetTimeInService(IterationDate currentDate)

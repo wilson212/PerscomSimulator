@@ -103,6 +103,12 @@ namespace Perscom
         /// </summary>
         protected static RankType[] RankTypes { get; set; } = Enum.GetValues(typeof(RankType)).Cast<RankType>().ToArray();
 
+        protected Dictionary<int, IOrderedEnumerable<SoldierPoolSorting>> SoldierPoolSorting
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Creates a new Simulator instance
         /// </summary>
@@ -124,6 +130,17 @@ namespace Perscom
             {
                 generator.Initialize();
                 SoldierGenerators.Add(generator.Id, generator);
+            }
+
+            // Load and Cache Soldier Pool Sortings!
+            SoldierPoolSorting = new Dictionary<int, IOrderedEnumerable<SoldierPoolSorting>>();
+            foreach (var item in db.SoldierGeneratorPools)
+            {
+                var sorts = item.SoldierSorting;
+                if (sorts != null && sorts.Count() > 0)
+                {
+                    SoldierPoolSorting.Add(item.Id, sorts.OrderBy(x => x.Precedence));
+                }
             }
         }
 
@@ -928,12 +945,13 @@ namespace Perscom
         {
             // Apply soldier ordering
             var list = new List<SoldierWrapper>(soldiers.Values);
-            if (setting.Pool.FirstOrderedBy != SoldierSorting.None)
+            if (SoldierPoolSorting.ContainsKey(setting.Pool.Id))
             {
-                var oList = OrderSoldierList(list, setting.Pool.FirstOrderedBy, setting.Pool.FirstOrder);
-                if (setting.Pool.ThenOrderedBy != SoldierSorting.None)
+                var oList = list.OrderBy(x => 1);
+                var items = SoldierPoolSorting[setting.Pool.Id];
+                foreach (var sort in items)
                 {
-                    oList = OrderSoldierList(oList, setting.Pool.ThenOrderedBy, setting.Pool.ThenOrder);
+                    oList = OrderSoldierList(oList, sort.SortBy, sort.Direction);
                 }
 
                 list = oList.ToList();
@@ -963,38 +981,6 @@ namespace Perscom
             return null;
         }
 
-        /// <summary>
-        /// Applies order of soldiers
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="sortBy"></param>
-        /// <param name="direction"></param>
-        /// <returns></returns>
-        private IOrderedEnumerable<SoldierWrapper> OrderSoldierList(
-            List<SoldierWrapper> list, 
-            SoldierSorting sortBy, 
-            Sorting direction)
-        {
-            switch (sortBy)
-            {
-                default:
-                case SoldierSorting.None:
-                    return list.OrderBy(x => 1);
-                case SoldierSorting.TimeInGrade:
-                    return (direction == Sorting.Ascending)
-                        ? list.OrderBy(x => x.GetTimeInGrade(CurrentIterationDate))
-                        : list.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
-                case SoldierSorting.TimeInService:
-                    return (direction == Sorting.Ascending)
-                        ? list.OrderBy(x => x.GetTimeInService(CurrentIterationDate))
-                        : list.OrderByDescending(x => x.GetTimeInService(CurrentIterationDate));
-                case SoldierSorting.TimeInBillet:
-                    return (direction == Sorting.Ascending)
-                        ? list.OrderBy(x => x.GetTimeInBillet(CurrentIterationDate))
-                        : list.OrderByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
-            }
-        }
-
         private IOrderedEnumerable<SoldierWrapper> OrderSoldierList(
             IOrderedEnumerable<SoldierWrapper> list,
             SoldierSorting sortBy,
@@ -1003,7 +989,6 @@ namespace Perscom
             switch (sortBy)
             {
                 default:
-                case SoldierSorting.None:
                     return list;
                 case SoldierSorting.TimeInGrade:
                     return (direction == Sorting.Ascending)
@@ -1017,6 +1002,10 @@ namespace Perscom
                     return (direction == Sorting.Ascending)
                         ? list.ThenBy(x => x.GetTimeInBillet(CurrentIterationDate))
                         : list.ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+                case SoldierSorting.TimeToRetirement:
+                    return (direction == Sorting.Ascending)
+                        ? list.ThenBy(x => x.GetTimeUntilRetirement(CurrentIterationDate))
+                        : list.ThenByDescending(x => x.GetTimeUntilRetirement(CurrentIterationDate));
             }
         }
     }

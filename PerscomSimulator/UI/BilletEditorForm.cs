@@ -485,10 +485,5 @@ namespace Perscom
         }
 
         #endregion
-
-        private void BilletEditorForm_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }

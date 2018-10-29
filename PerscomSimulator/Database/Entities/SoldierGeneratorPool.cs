@@ -55,42 +55,39 @@ namespace Perscom.Database
         public bool MustBePromotable { get; set; }
 
         /// <summary>
+        /// Indicates whether the soldiers being selected from an exisiting
+        /// pool must not be locked into their current position by Minimum
+        /// time in billet
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool NotLockedInBillet { get; set; }
+
+        /// <summary>
         /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
         public bool OrderedBySeniority { get; set; }
 
         /// <summary>
-        /// Indicates whether the soldiers being selected from an exisiting
-        /// pool must not be locked into their current position
+        /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
-        public bool NotLockedInBillet { get; set; }
+        public SoldierSorting FirstOrderedBy { get; set; }
 
         /// <summary>
-        /// Indicates whether the soldiers being selected from an exisiting
-        /// pool are to be ordered by seniority before being selected.
-        /// </summary>
-        [Column, Required, Default(0)]
-        public SoldierSorting FirstOrderedBy { get; set; } = SoldierSorting.None;
-
-        /// <summary>
-        /// Indicates whether the soldiers being selected from an exisiting
-        /// pool are to be ordered by seniority before being selected.
+        /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
         public Sorting FirstOrder { get; set; } = Sorting.Ascending;
 
         /// <summary>
-        /// Indicates whether the soldiers being selected from an exisiting
-        /// pool are to be ordered by seniority before being selected.
+        /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
-        public SoldierSorting ThenOrderedBy { get; set; } = SoldierSorting.None;
+        public SoldierSorting ThenOrderedBy { get; set; }
 
         /// <summary>
-        /// Indicates whether the soldiers being selected from an exisiting
-        /// pool are to be ordered by seniority before being selected.
+        /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
         public Sorting ThenOrder { get; set; } = Sorting.Ascending;
@@ -186,9 +183,20 @@ namespace Perscom.Database
             }
         }
 
+        /// <summary>
+        /// Gets a list of <see cref="SoldierPoolSorting"/> entities that reference this 
+        /// <see cref="SoldierGeneratorPool"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<SoldierPoolSorting> SoldierSorting { get; set; }
+
         #endregion
 
         public CareerGenerator TemporaryCareer { get; set; }
+
+        public List<SoldierPoolSorting> TemporarySoldierSorting { get; set; }
 
         /// <summary>
         /// Compares a <see cref="SoldierGeneratorPool"/> with this one, and returns whether

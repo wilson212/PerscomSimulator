@@ -14,7 +14,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(1, 6);
+        public static Version CurrentVersion { get; protected set; } = new Version(1, 7);
 
         /// <summary>
         /// Gets the current database tables version
@@ -91,6 +91,11 @@ namespace Perscom.Database
         public DbSet<SoldierGeneratorPool> SoldierGeneratorPools { get; set; }
 
         /// <summary>
+        /// Gets a set of <see cref="SoldierGeneratorPool"/> entites stored in the database
+        /// </summary>
+        public DbSet<SoldierPoolSorting> SoldierPoolSorting { get; set; }
+
+        /// <summary>
         /// Gets a set of <see cref="Specialty"/> entites stored in the database
         /// </summary>
         public DbSet<Specialty> Specialties { get; set; }
@@ -146,6 +151,7 @@ namespace Perscom.Database
             Ranks = new DbSet<Rank>(this);
             SoldierGenerators = new DbSet<SoldierGenerator>(this);
             SoldierGeneratorPools = new DbSet<SoldierGeneratorPool>(this);
+            SoldierPoolSorting = new DbSet<SoldierPoolSorting>(this);
             SoldierCareerAdjustments = new DbSet<SoldierCareerAdjustment>(this);
             SoldierGeneratorCareers = new DbSet<SoldierGeneratorCareer>(this);
             Specialties = new DbSet<Specialty>(this);
@@ -184,8 +190,6 @@ namespace Perscom.Database
             using (SQLiteTransaction tr = base.BeginTransaction())
             {
                 // Delete old table rementants
-                CodeFirstSQLite.DropTable<CareerLengthRange>(this);
-                CodeFirstSQLite.DropTable<CareerGenerator>(this);
                 CodeFirstSQLite.DropTable<BilletRequirement>(this);
                 CodeFirstSQLite.DropTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.DropTable<BilletSpecialty>(this);
@@ -194,8 +198,11 @@ namespace Perscom.Database
                 CodeFirstSQLite.DropTable<Specialty>(this);
                 CodeFirstSQLite.DropTable<SoldierCareerAdjustment>(this);
                 CodeFirstSQLite.DropTable<SoldierGeneratorCareer>(this);
+                CodeFirstSQLite.DropTable<SoldierPoolSorting>(this);
                 CodeFirstSQLite.DropTable<SoldierGeneratorPool>(this);
                 CodeFirstSQLite.DropTable<SoldierGenerator>(this);
+                CodeFirstSQLite.DropTable<CareerLengthRange>(this);
+                CodeFirstSQLite.DropTable<CareerGenerator>(this);
                 CodeFirstSQLite.DropTable<UnitTemplateAttachment>(this);
                 CodeFirstSQLite.DropTable<UnitTemplate>(this);
                 CodeFirstSQLite.DropTable<Echelon>(this);
@@ -208,8 +215,11 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<Echelon>(this);
                 CodeFirstSQLite.CreateTable<UnitTemplate>(this);
                 CodeFirstSQLite.CreateTable<UnitTemplateAttachment>(this);
+                CodeFirstSQLite.CreateTable<CareerGenerator>(this);
+                CodeFirstSQLite.CreateTable<CareerLengthRange>(this);
                 CodeFirstSQLite.CreateTable<SoldierGenerator>(this);
                 CodeFirstSQLite.CreateTable<SoldierGeneratorPool>(this);
+                CodeFirstSQLite.CreateTable<SoldierPoolSorting>(this);
                 CodeFirstSQLite.CreateTable<SoldierGeneratorCareer>(this);
                 CodeFirstSQLite.CreateTable<SoldierCareerAdjustment>(this);
                 CodeFirstSQLite.CreateTable<Specialty>(this);
@@ -218,8 +228,6 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<BilletSpecialty>(this);
                 CodeFirstSQLite.CreateTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.CreateTable<BilletRequirement>(this);
-                CodeFirstSQLite.CreateTable<CareerGenerator>(this);
-                CodeFirstSQLite.CreateTable<CareerLengthRange>(this);
 
                 // Add Echelons
                 Echelons = new DbSet<Echelon>(this);

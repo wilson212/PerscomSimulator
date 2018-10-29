@@ -1041,7 +1041,7 @@
             // 
             this.toolStripLabel1.Margin = new System.Windows.Forms.Padding(360, 1, 0, 2);
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(65, 22);
+            this.toolStripLabel1.Size = new System.Drawing.Size(64, 22);
             this.toolStripLabel1.Text = "Rank Type:";
             // 
             // toolStripComboBox1
@@ -1101,7 +1101,7 @@
             // 
             // Column4
             // 
-            this.Column4.HeaderText = "Months Time in Grade";
+            this.Column4.HeaderText = "Months Since Promo";
             this.Column4.Name = "Column4";
             this.Column4.ReadOnly = true;
             this.Column4.Resizable = System.Windows.Forms.DataGridViewTriState.True;

@@ -62,6 +62,9 @@ namespace Perscom.Database
                         case "1.5":
                             MigrateTo_1_6();
                             break;
+                        case "1.6":
+                            MigrateTo_1_7();
+                            break;
                         default:
                             throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
                     }
@@ -72,6 +75,23 @@ namespace Perscom.Database
 
                 // Always perform a vacuum to optimize the database
                 Database.Execute("VACUUM;");
+            }
+        }
+
+        private void MigrateTo_1_7()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create new tables
+                CodeFirstSQLite.CreateTable<SoldierPoolSorting>(Database, TableCreationOptions.IfNotExists);
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.7"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
             }
         }
 

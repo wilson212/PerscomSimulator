@@ -28,93 +28,70 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.firstOrderDirection = new System.Windows.Forms.ComboBox();
-            this.firstOrderBox = new System.Windows.Forms.ComboBox();
             this.existProbLabel = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.existTrackBar = new System.Windows.Forms.TrackBar();
             this.careerGeneratorBox = new System.Windows.Forms.ComboBox();
             this.lockedCheckBox = new System.Windows.Forms.CheckBox();
-            this.firstOrderCheckBox = new System.Windows.Forms.CheckBox();
             this.promotableCheckBox = new System.Windows.Forms.CheckBox();
             this.newCareerCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rankPicture = new System.Windows.Forms.PictureBox();
             this.rankSelect = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addNewSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.removeItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rankPicture = new System.Windows.Forms.PictureBox();
             this.headerPanel = new System.Windows.Forms.Panel();
+            this.listView1 = new System.Windows.Forms.ListViewWithReordering();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.thenOrderDirection = new System.Windows.Forms.ComboBox();
-            this.thenOrderBox = new System.Windows.Forms.ComboBox();
-            this.thenOrderCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.existTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).BeginInit();
             this.bottomPanel.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).BeginInit();
             this.headerPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainPanel
             // 
+            this.mainPanel.Controls.Add(this.groupBox2);
             this.mainPanel.Controls.Add(this.groupBox3);
             this.mainPanel.Controls.Add(this.groupBox1);
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 75);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(512, 467);
+            this.mainPanel.Size = new System.Drawing.Size(944, 386);
             this.mainPanel.TabIndex = 11;
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.thenOrderDirection);
-            this.groupBox3.Controls.Add(this.thenOrderBox);
-            this.groupBox3.Controls.Add(this.thenOrderCheckBox);
-            this.groupBox3.Controls.Add(this.firstOrderDirection);
-            this.groupBox3.Controls.Add(this.firstOrderBox);
             this.groupBox3.Controls.Add(this.existProbLabel);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.existTrackBar);
             this.groupBox3.Controls.Add(this.careerGeneratorBox);
             this.groupBox3.Controls.Add(this.lockedCheckBox);
-            this.groupBox3.Controls.Add(this.firstOrderCheckBox);
             this.groupBox3.Controls.Add(this.promotableCheckBox);
             this.groupBox3.Controls.Add(this.newCareerCheckBox);
             this.groupBox3.Location = new System.Drawing.Point(17, 141);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(475, 320);
+            this.groupBox3.Size = new System.Drawing.Size(475, 231);
             this.groupBox3.TabIndex = 20;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Settings";
-            // 
-            // firstOrderDirection
-            // 
-            this.firstOrderDirection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.firstOrderDirection.Enabled = false;
-            this.firstOrderDirection.FormattingEnabled = true;
-            this.firstOrderDirection.Items.AddRange(new object[] {
-            "Ascending",
-            "Descending"});
-            this.firstOrderDirection.Location = new System.Drawing.Point(349, 169);
-            this.firstOrderDirection.Name = "firstOrderDirection";
-            this.firstOrderDirection.Size = new System.Drawing.Size(90, 21);
-            this.firstOrderDirection.TabIndex = 48;
-            // 
-            // firstOrderBox
-            // 
-            this.firstOrderBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.firstOrderBox.Enabled = false;
-            this.firstOrderBox.FormattingEnabled = true;
-            this.firstOrderBox.Location = new System.Drawing.Point(172, 169);
-            this.firstOrderBox.Name = "firstOrderBox";
-            this.firstOrderBox.Size = new System.Drawing.Size(160, 21);
-            this.firstOrderBox.TabIndex = 47;
-            this.firstOrderBox.SelectedIndexChanged += new System.EventHandler(this.firstOrderBox_SelectedIndexChanged);
             // 
             // existProbLabel
             // 
@@ -159,32 +136,21 @@
             // lockedCheckBox
             // 
             this.lockedCheckBox.AutoSize = true;
-            this.lockedCheckBox.Location = new System.Drawing.Point(35, 276);
+            this.lockedCheckBox.Location = new System.Drawing.Point(35, 196);
             this.lockedCheckBox.Name = "lockedCheckBox";
-            this.lockedCheckBox.Size = new System.Drawing.Size(177, 17);
+            this.lockedCheckBox.Size = new System.Drawing.Size(212, 17);
             this.lockedCheckBox.TabIndex = 42;
-            this.lockedCheckBox.Text = "Must Not Be Locked In To Billet";
+            this.lockedCheckBox.Text = "Soldier Must Not Be Locked In To Billet";
             this.lockedCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // firstOrderCheckBox
-            // 
-            this.firstOrderCheckBox.AutoSize = true;
-            this.firstOrderCheckBox.Location = new System.Drawing.Point(35, 169);
-            this.firstOrderCheckBox.Name = "firstOrderCheckBox";
-            this.firstOrderCheckBox.Size = new System.Drawing.Size(92, 17);
-            this.firstOrderCheckBox.TabIndex = 41;
-            this.firstOrderCheckBox.Text = "First Order By:";
-            this.firstOrderCheckBox.UseVisualStyleBackColor = true;
-            this.firstOrderCheckBox.CheckedChanged += new System.EventHandler(this.firstOrderCheckBox_CheckedChanged);
             // 
             // promotableCheckBox
             // 
             this.promotableCheckBox.AutoSize = true;
-            this.promotableCheckBox.Location = new System.Drawing.Point(35, 253);
+            this.promotableCheckBox.Location = new System.Drawing.Point(35, 173);
             this.promotableCheckBox.Name = "promotableCheckBox";
-            this.promotableCheckBox.Size = new System.Drawing.Size(121, 17);
+            this.promotableCheckBox.Size = new System.Drawing.Size(156, 17);
             this.promotableCheckBox.TabIndex = 40;
-            this.promotableCheckBox.Text = "Must Be Promotable";
+            this.promotableCheckBox.Text = "Soldier Must Be Promotable";
             this.promotableCheckBox.UseVisualStyleBackColor = true;
             // 
             // newCareerCheckBox
@@ -210,14 +176,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Rank Pool";
             // 
-            // rankPicture
-            // 
-            this.rankPicture.Location = new System.Drawing.Point(20, 27);
-            this.rankPicture.Name = "rankPicture";
-            this.rankPicture.Size = new System.Drawing.Size(64, 64);
-            this.rankPicture.TabIndex = 14;
-            this.rankPicture.TabStop = false;
-            // 
             // rankSelect
             // 
             this.rankSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -242,21 +200,68 @@
             this.bottomPanel.BackColor = System.Drawing.SystemColors.ControlLight;
             this.bottomPanel.Controls.Add(this.saveButton);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Location = new System.Drawing.Point(0, 542);
+            this.bottomPanel.Location = new System.Drawing.Point(0, 461);
             this.bottomPanel.Name = "bottomPanel";
-            this.bottomPanel.Size = new System.Drawing.Size(512, 60);
+            this.bottomPanel.Size = new System.Drawing.Size(944, 60);
             this.bottomPanel.TabIndex = 10;
             this.bottomPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.bottomPanel_Paint);
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(179, 18);
+            this.saveButton.Location = new System.Drawing.Point(409, 18);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(150, 30);
             this.saveButton.TabIndex = 0;
             this.saveButton.Text = "Save Changes";
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.listView1);
+            this.groupBox2.Location = new System.Drawing.Point(510, 20);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(417, 352);
+            this.groupBox2.TabIndex = 21;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Selection Sorting";
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addNewSortingToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.removeItemToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 54);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // addNewSortingToolStripMenuItem
+            // 
+            this.addNewSortingToolStripMenuItem.Name = "addNewSortingToolStripMenuItem";
+            this.addNewSortingToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.addNewSortingToolStripMenuItem.Text = "Add New Sorting";
+            this.addNewSortingToolStripMenuItem.Click += new System.EventHandler(this.addNewSortingToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(161, 6);
+            // 
+            // removeItemToolStripMenuItem
+            // 
+            this.removeItemToolStripMenuItem.Name = "removeItemToolStripMenuItem";
+            this.removeItemToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.removeItemToolStripMenuItem.Text = "Remove Item";
+            this.removeItemToolStripMenuItem.Click += new System.EventHandler(this.removeItemToolStripMenuItem_Click);
+            // 
+            // rankPicture
+            // 
+            this.rankPicture.Location = new System.Drawing.Point(20, 27);
+            this.rankPicture.Name = "rankPicture";
+            this.rankPicture.Size = new System.Drawing.Size(64, 64);
+            this.rankPicture.TabIndex = 14;
+            this.rankPicture.TabStop = false;
             // 
             // headerPanel
             // 
@@ -266,9 +271,47 @@
             this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.headerPanel.Location = new System.Drawing.Point(0, 0);
             this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(512, 75);
+            this.headerPanel.Size = new System.Drawing.Size(944, 75);
             this.headerPanel.TabIndex = 9;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
+            // 
+            // listView1
+            // 
+            this.listView1.AllowDrop = true;
+            this.listView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listView1.ContextMenuStrip = this.contextMenuStrip1;
+            this.listView1.FullRowSelect = true;
+            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listView1.Location = new System.Drawing.Point(9, 18);
+            this.listView1.MultiSelect = false;
+            this.listView1.Name = "listView1";
+            this.listView1.Scrollable = false;
+            this.listView1.Size = new System.Drawing.Size(402, 328);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listView1_ColumnWidthChanging);
+            this.listView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView1_DragDrop);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "";
+            this.columnHeader1.Width = 65;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "";
+            this.columnHeader2.Width = 220;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "";
+            this.columnHeader3.Width = 120;
             // 
             // label6
             // 
@@ -282,48 +325,14 @@
             this.label6.ShadowSoftness = 3F;
             this.label6.Size = new System.Drawing.Size(466, 37);
             this.label6.TabIndex = 0;
-            this.label6.Text = "From Existing Soldier Pool";
-            // 
-            // thenOrderDirection
-            // 
-            this.thenOrderDirection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.thenOrderDirection.Enabled = false;
-            this.thenOrderDirection.FormattingEnabled = true;
-            this.thenOrderDirection.Items.AddRange(new object[] {
-            "Ascending",
-            "Descending"});
-            this.thenOrderDirection.Location = new System.Drawing.Point(349, 209);
-            this.thenOrderDirection.Name = "thenOrderDirection";
-            this.thenOrderDirection.Size = new System.Drawing.Size(90, 21);
-            this.thenOrderDirection.TabIndex = 51;
-            // 
-            // thenOrderBox
-            // 
-            this.thenOrderBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.thenOrderBox.Enabled = false;
-            this.thenOrderBox.FormattingEnabled = true;
-            this.thenOrderBox.Location = new System.Drawing.Point(172, 209);
-            this.thenOrderBox.Name = "thenOrderBox";
-            this.thenOrderBox.Size = new System.Drawing.Size(160, 21);
-            this.thenOrderBox.TabIndex = 50;
-            // 
-            // thenOrderCheckBox
-            // 
-            this.thenOrderCheckBox.AutoSize = true;
-            this.thenOrderCheckBox.Location = new System.Drawing.Point(35, 209);
-            this.thenOrderCheckBox.Name = "thenOrderCheckBox";
-            this.thenOrderCheckBox.Size = new System.Drawing.Size(98, 17);
-            this.thenOrderCheckBox.TabIndex = 49;
-            this.thenOrderCheckBox.Text = "Then Order By:";
-            this.thenOrderCheckBox.UseVisualStyleBackColor = true;
-            this.thenOrderCheckBox.CheckedChanged += new System.EventHandler(this.thenOrderCheckBox_CheckedChanged);
+            this.label6.Text = "Generate Soldier From Existing Soldier Pool";
             // 
             // SoldierGeneratorPoolForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(512, 602);
+            this.ClientSize = new System.Drawing.Size(944, 521);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.bottomPanel);
             this.Controls.Add(this.headerPanel);
@@ -339,8 +348,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.existTrackBar)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).EndInit();
             this.bottomPanel.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).EndInit();
             this.headerPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -358,7 +369,6 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ComboBox careerGeneratorBox;
         private System.Windows.Forms.CheckBox lockedCheckBox;
-        private System.Windows.Forms.CheckBox firstOrderCheckBox;
         private System.Windows.Forms.CheckBox promotableCheckBox;
         private System.Windows.Forms.CheckBox newCareerCheckBox;
         private System.Windows.Forms.ComboBox rankSelect;
@@ -366,10 +376,14 @@
         private System.Windows.Forms.Label existProbLabel;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TrackBar existTrackBar;
-        private System.Windows.Forms.ComboBox firstOrderDirection;
-        private System.Windows.Forms.ComboBox firstOrderBox;
-        private System.Windows.Forms.ComboBox thenOrderDirection;
-        private System.Windows.Forms.ComboBox thenOrderBox;
-        private System.Windows.Forms.CheckBox thenOrderCheckBox;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ListViewWithReordering listView1;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem addNewSortingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem removeItemToolStripMenuItem;
     }
 }

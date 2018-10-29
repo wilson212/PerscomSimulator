@@ -65,12 +65,19 @@
   <ItemGroup>
     <Compile Include="Application\Epoch.cs" />
     <Compile Include="Application\ExceptionHandler.cs" />
+    <Compile Include="Database\Entities\SoldierPoolSorting.cs" />
     <Compile Include="Simulation\SpawnedSoldier.cs" />
     <Compile Include="Database\Entities\SoldierGeneratorCareer.cs" />
     <Compile Include="Controls\ListViewWithReordering.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Simulation\SoldierSorting.cs" />
+    <Compile Include="UI\SoldierSortingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SoldierSortingForm.Designer.cs">
+      <DependentUpon>SoldierSortingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\CareerSpawnTemplateForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -261,6 +268,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SoldierGeneratorEditorForm.resx">
       <DependentUpon>SoldierGeneratorEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\SoldierSortingForm.resx">
+      <DependentUpon>SoldierSortingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SpecialtyEditorForm.resx">
       <DependentUpon>SpecialtyEditorForm.cs</DependentUpon>

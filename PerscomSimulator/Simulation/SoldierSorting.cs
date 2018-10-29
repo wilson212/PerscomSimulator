@@ -2,9 +2,9 @@
 {
     public enum SoldierSorting
     {
-        None,
         TimeInService,
         TimeInGrade,
-        TimeInBillet
+        TimeInBillet,
+        TimeToRetirement
     }
 }

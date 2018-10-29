@@ -567,7 +567,6 @@
             this.Name = "BilletEditorForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Billet Editor Form";
-            this.Load += new System.EventHandler(this.BilletEditorForm_Load);
             this.mainPanel.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
