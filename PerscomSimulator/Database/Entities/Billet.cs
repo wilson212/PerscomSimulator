@@ -95,6 +95,20 @@ namespace Perscom.Database
         public bool CanRetireEarly { get; set; } = true;
 
         /// <summary>
+        /// Indicates whether the soldier holding this <see cref="Billet"/> can be selected
+        /// for promotion before meeting the <see cref="MinTourLength"/>.
+        /// </summary>
+        [Column, Required, Default(1)]
+        public bool CanBePromotedEarly { get; set; } = true;
+
+        /// <summary>
+        /// Indicates whether the soldier holding this <see cref="Billet"/> can be selected
+        /// for a lateral promotion before meeting the <see cref="MinTourLength"/>.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool CanLateralEarly { get; set; } = false;
+
+        /// <summary>
         /// Indicates whether the soldier holding this <see cref="Billet"/> is limited to
         /// just 1 tour, and 1 tour only
         /// </summary>

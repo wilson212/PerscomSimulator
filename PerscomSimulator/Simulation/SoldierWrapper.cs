@@ -99,13 +99,10 @@ namespace Perscom.Simulation
         {
             if (Position != null)
             {
-                // Move current Assingment to Past
-                LogAssignment(currentDate, db);
+                // Remove ourselves from the position
+                RemoveFromPosition(currentDate, db);
 
-                // Remove soldier from old unit, and place in new
-                Position.AssignSoldier(null);
-                Position = null;
-
+                // Set database flags
                 Soldier.Retired = true;
                 Soldier.ExitIterationId = currentDate.Id;
                 
@@ -122,7 +119,16 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public bool IsRetiring(IterationDate currentDate)
         {
-            // Forced by locked in billet?
+            /* Forced out by billet? 
+             * 
+             * The simlator will always try to perform Lateral promotions for a position
+             * before checking this method. If we are at or past our max tour length,
+             * than there really is NO options for this soldier, so we must retire!
+             * 
+             * The lateral priority of this soldier has been rising over time in the
+             * "TryPerformLateralMovement" method, and either positions just have
+             * not been opening up, or other soldiers have had higher priority
+             */
             if (Position.Billet.MaxTourLength > 0)
             {
                 int timeLeft = Position.Billet.MaxTourLength - GetTimeInBillet(currentDate);
@@ -256,6 +262,12 @@ namespace Perscom.Simulation
             }
         }
 
+        /// <summary>
+        /// Logs the current assignment in the database as a Past Assignment
+        /// and completely removes this soldier from the unit roster.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="db"></param>
         public void RemoveFromPosition(IterationDate date, SimDatabase db)
         {
             // Remove soldier from old unit, and place in new

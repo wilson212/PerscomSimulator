@@ -73,6 +73,9 @@
             this.rankPicture = new System.Windows.Forms.PictureBox();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
+            this.earlyPromotionCheckBox = new System.Windows.Forms.CheckBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.earlyLatteralCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -100,7 +103,7 @@
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 75);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(1014, 537);
+            this.mainPanel.Size = new System.Drawing.Size(1014, 561);
             this.mainPanel.TabIndex = 8;
             // 
             // groupBox5
@@ -109,7 +112,7 @@
             this.groupBox5.Controls.Add(this.listView1);
             this.groupBox5.Location = new System.Drawing.Point(523, 248);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(465, 194);
+            this.groupBox5.Size = new System.Drawing.Size(465, 226);
             this.groupBox5.TabIndex = 33;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Required Specialties";
@@ -138,7 +141,7 @@
             this.listView1.Location = new System.Drawing.Point(3, 16);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(459, 175);
+            this.listView1.Size = new System.Drawing.Size(459, 207);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -246,7 +249,7 @@
             this.bottomPanel.BackColor = System.Drawing.SystemColors.ControlLight;
             this.bottomPanel.Controls.Add(this.saveButton);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Location = new System.Drawing.Point(0, 477);
+            this.bottomPanel.Location = new System.Drawing.Point(0, 501);
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(1014, 60);
             this.bottomPanel.TabIndex = 18;
@@ -264,6 +267,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.earlyLatteralCheckBox);
+            this.groupBox2.Controls.Add(this.earlyPromotionCheckBox);
             this.groupBox2.Controls.Add(this.lateralCheckBox);
             this.groupBox2.Controls.Add(this.preferedCheckBox);
             this.groupBox2.Controls.Add(this.repeatCheckBox);
@@ -284,7 +289,7 @@
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(25, 139);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(475, 303);
+            this.groupBox2.Size = new System.Drawing.Size(475, 335);
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Details";
@@ -294,9 +299,10 @@
             this.lateralCheckBox.AutoSize = true;
             this.lateralCheckBox.Location = new System.Drawing.Point(336, 144);
             this.lateralCheckBox.Name = "lateralCheckBox";
-            this.lateralCheckBox.Size = new System.Drawing.Size(82, 17);
+            this.lateralCheckBox.Size = new System.Drawing.Size(109, 17);
             this.lateralCheckBox.TabIndex = 34;
-            this.lateralCheckBox.Text = "Lateral Only";
+            this.lateralCheckBox.Text = "Lateral Entry Only";
+            this.toolTip1.SetToolTip(this.lateralCheckBox, "Indicates that this position is to be filled by non-entry level soldiers");
             this.lateralCheckBox.UseVisualStyleBackColor = true;
             // 
             // preferedCheckBox
@@ -307,6 +313,8 @@
             this.preferedCheckBox.Size = new System.Drawing.Size(120, 17);
             this.preferedCheckBox.TabIndex = 33;
             this.preferedCheckBox.Text = "Prefer Non-Repeats";
+            this.toolTip1.SetToolTip(this.preferedCheckBox, "Indicates that a soldier can Re-Enter this billet, but the simulator is to priori" +
+        "tize soldiers whom have not been in this position before.");
             this.preferedCheckBox.UseVisualStyleBackColor = true;
             // 
             // repeatCheckBox
@@ -319,6 +327,8 @@
             this.repeatCheckBox.Size = new System.Drawing.Size(81, 17);
             this.repeatCheckBox.TabIndex = 32;
             this.repeatCheckBox.Text = "Repeatable";
+            this.toolTip1.SetToolTip(this.repeatCheckBox, "Idicates whether the soldier able to stay in this position after hitting Max Tour" +
+        " Length, Or re-enter this Billet if they have before.");
             this.repeatCheckBox.UseVisualStyleBackColor = true;
             this.repeatCheckBox.CheckedChanged += new System.EventHandler(this.repeatCheckBox_CheckedChanged);
             // 
@@ -410,6 +420,8 @@
             this.earlyRetireCheckBox.Size = new System.Drawing.Size(102, 17);
             this.earlyRetireCheckBox.TabIndex = 9;
             this.earlyRetireCheckBox.Text = "Can Retire Early";
+            this.toolTip1.SetToolTip(this.earlyRetireCheckBox, "Indicates whether the soldier must stay in this position for the Minimum Tour Len" +
+        "gth before being allowed to retire");
             this.earlyRetireCheckBox.UseVisualStyleBackColor = true;
             // 
             // billetNameBox
@@ -553,12 +565,38 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Billet Manager";
             // 
+            // earlyPromotionCheckBox
+            // 
+            this.earlyPromotionCheckBox.AutoSize = true;
+            this.earlyPromotionCheckBox.Checked = true;
+            this.earlyPromotionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.earlyPromotionCheckBox.Location = new System.Drawing.Point(50, 297);
+            this.earlyPromotionCheckBox.Name = "earlyPromotionCheckBox";
+            this.earlyPromotionCheckBox.Size = new System.Drawing.Size(176, 17);
+            this.earlyPromotionCheckBox.TabIndex = 35;
+            this.earlyPromotionCheckBox.Text = "Can Be Promoted Forward Early";
+            this.toolTip1.SetToolTip(this.earlyPromotionCheckBox, "Indicates whether the soldier in this Billet must perform this duty for the Minim" +
+        "um Tour Length before being selected for promotion.");
+            this.earlyPromotionCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // earlyLatteralCheckBox
+            // 
+            this.earlyLatteralCheckBox.AutoSize = true;
+            this.earlyLatteralCheckBox.Location = new System.Drawing.Point(247, 297);
+            this.earlyLatteralCheckBox.Name = "earlyLatteralCheckBox";
+            this.earlyLatteralCheckBox.Size = new System.Drawing.Size(177, 17);
+            this.earlyLatteralCheckBox.TabIndex = 36;
+            this.earlyLatteralCheckBox.Text = "Can Be Promoted Laterally Early";
+            this.toolTip1.SetToolTip(this.earlyLatteralCheckBox, "Indicates whether the soldier in this Billet must perform this duty for the Minim" +
+        "um Tour Length before being selected for a latteral promotion.");
+            this.earlyLatteralCheckBox.UseVisualStyleBackColor = true;
+            // 
             // BilletEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(1014, 612);
+            this.ClientSize = new System.Drawing.Size(1014, 636);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.headerPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -636,5 +674,8 @@
         private System.Windows.Forms.CheckBox repeatCheckBox;
         private MyCheckBox inverseCheckBox;
         private System.Windows.Forms.CheckBox lateralCheckBox;
+        private System.Windows.Forms.CheckBox earlyPromotionCheckBox;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.CheckBox earlyLatteralCheckBox;
     }
 }

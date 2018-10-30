@@ -42,6 +42,8 @@ namespace Perscom
                 maxTigBox.Value = billet.MaxTourLength;
                 minTigBox.Value = billet.MinTourLength;
                 earlyRetireCheckBox.Checked = billet.CanRetireEarly;
+                earlyPromotionCheckBox.Checked = billet.CanBePromotedEarly;
+                earlyLatteralCheckBox.Checked = billet.CanLateralEarly;
                 inverseCheckBox.Checked = billet.InverseRequirements;
                 lateralCheckBox.Checked = billet.LateralOnly;
                 repeatCheckBox.Checked = billet.Repeatable;
@@ -309,6 +311,8 @@ namespace Perscom
             Billet.MinTourLength = (int)minTigBox.Value;
             Billet.Stature = (int)statureBox.Value;
             Billet.CanRetireEarly = earlyRetireCheckBox.Checked;
+            Billet.CanBePromotedEarly = earlyPromotionCheckBox.Checked;
+            Billet.CanLateralEarly = earlyLatteralCheckBox.Checked;
             Billet.Repeatable = repeatCheckBox.Checked;
             Billet.PreferNonRepeats = preferedCheckBox.Checked;
             Billet.InverseRequirements = inverseCheckBox.Checked;

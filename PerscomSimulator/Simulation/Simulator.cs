@@ -469,7 +469,7 @@ namespace Perscom
             // Get a list of soldiers that CAN do a lateral movement,
             // Order by Desirability and Time in Billet
             var soldiers = topUnit.SoldiersByGrade[type][grade].Values
-                .Where(x => IsCanidateForPosition(x, position) && !x.IsLockedInPosition(CurrentIterationDate))
+                .Where(x => IsCanidateForPosition(x, position))
                 .OrderByDescending(x => GetLateralPromotionDesire(x, position))
                 .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
 
@@ -542,7 +542,7 @@ namespace Perscom
                 if (isLateral)
                 {
                     soldiers = topUnit.SoldiersByGrade[type][grade].Values
-                        .Where(x => IsCanidateForPosition(x, position) && !x.IsLockedInPosition(CurrentIterationDate))
+                        .Where(x => IsCanidateForPosition(x, position))
                         .OrderByDescending(x => GetLateralPromotionDesire(x, position))
                         .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
                 }
@@ -732,6 +732,21 @@ namespace Perscom
                 }
             }
 
+            // Are we locked into our current billet?
+            if (soldier.IsLockedInPosition(CurrentIterationDate))
+            {
+                // is this a promotion?
+                bool isPromotion = (soldier.Rank.Grade < position.Billet.Rank.Grade);
+                bool isLateral = (soldier.Rank.Grade == position.Billet.Rank.Grade);
+                if (isPromotion && soldier.Position.Billet.Billet.CanBePromotedEarly)
+                    return true;
+                else if (isLateral && soldier.Position.Billet.Billet.CanLateralEarly)
+                    return true;
+                else
+                    return false;
+            }
+
+            // if we are here, we meet all requirements!
             return true;
         }
 
@@ -981,6 +996,13 @@ namespace Perscom
             return null;
         }
 
+        /// <summary>
+        /// This method is used to sort soldiers using the given SoldierSorting and direction
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
         private IOrderedEnumerable<SoldierWrapper> OrderSoldierList(
             IOrderedEnumerable<SoldierWrapper> list,
             SoldierSorting sortBy,
