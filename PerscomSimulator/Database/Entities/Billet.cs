@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CrossLite;
 using CrossLite.CodeFirst;
+using Perscom.Simulation;
 
 namespace Perscom.Database
 {
@@ -123,9 +124,14 @@ namespace Perscom.Database
         public bool PreferNonRepeats { get; set; }
 
         /// <summary>
-        /// Indicates whether this <see cref="Billet"/> allows freshly promoted
-        /// soldiers to fill the seat. If true, this <see cref="Billet"/> requires
-        /// an experienced soldier to fill it.
+        /// Gets or sets the selection process the <see cref="Simulator"/>
+        /// will use to fill this position when it is empty
+        /// </summary>
+        [Column, Required, Default(0)]
+        public BilletSelection Selection { get; set; } = BilletSelection.PromotionOrLateral;
+
+        /// <summary>
+        /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
         public bool LateralOnly { get; set; }

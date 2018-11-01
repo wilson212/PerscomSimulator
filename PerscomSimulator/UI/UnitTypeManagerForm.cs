@@ -880,7 +880,6 @@ namespace Perscom
                 BilletCatagoryId = billet.BilletCatagoryId,
                 CanRetireEarly = billet.CanRetireEarly,
                 InverseRequirements = billet.InverseRequirements,
-                LateralOnly = billet.LateralOnly,
                 MaxRankId = billet.MaxRankId,
                 MaxTourLength = billet.MaxTourLength,
                 MinTourLength = billet.MinTourLength,
@@ -891,7 +890,10 @@ namespace Perscom
                 Repeatable = billet.Repeatable,
                 Stature = billet.Stature,
                 UnitTypeId = SelectedTemplate.Id,
-                ZIndex = billet.ZIndex
+                ZIndex = billet.ZIndex,
+                Selection = billet.Selection,
+                CanBePromotedEarly = billet.CanBePromotedEarly,
+                CanLateralEarly = billet.CanLateralEarly,
             };
 
             // Add billet to database

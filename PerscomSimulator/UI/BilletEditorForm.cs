@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Forms;
 using CrossLite.QueryBuilder;
 using Perscom.Database;
+using Perscom.Simulation;
 
 namespace Perscom
 {
@@ -45,10 +46,11 @@ namespace Perscom
                 earlyPromotionCheckBox.Checked = billet.CanBePromotedEarly;
                 earlyLatteralCheckBox.Checked = billet.CanLateralEarly;
                 inverseCheckBox.Checked = billet.InverseRequirements;
-                lateralCheckBox.Checked = billet.LateralOnly;
+                //lateralCheckBox.Checked = billet.LateralOnly;
                 repeatCheckBox.Checked = billet.Repeatable;
                 preferedCheckBox.Checked = billet.PreferNonRepeats;
                 zIndexBox.Value = billet.ZIndex;
+                soldierSpawnSelect.SelectedIndex = (int)billet.Selection;
 
                 // Get rank index
                 var index = billetRankSelect.Items.IndexOf(billet.Rank);
@@ -90,8 +92,6 @@ namespace Perscom
                 var spawn = billet.SpawnSettings.FirstOrDefault();
                 if (spawn != null)
                 {
-                    entryLevelCheckBox.Checked = true;
-
                     // Set index
                     index = spawnGenSelect.Items.IndexOf(spawn.Generator);
                     if (index >= 0)
@@ -146,6 +146,16 @@ namespace Perscom
                 promotionPoolSelect.Items.AddRange(list);
                 promotionPoolSelect.SelectedIndex = 0;
 
+                // Next, get spawn instruction
+                // Finally, Get soldier generators
+                foreach (BilletSelection gen in Enum.GetValues(typeof(BilletSelection)))
+                {
+                    soldierSpawnSelect.Items.Add(gen);
+                }
+
+                // Set default index
+                soldierSpawnSelect.SelectedIndex = 0;
+
                 // Finally, Get soldier generators
                 foreach (var gen in db.SoldierGenerators)
                 {
@@ -176,6 +186,12 @@ namespace Perscom
 
             // End update
             listView1.EndUpdate();
+        }
+
+        private bool CreatesNewSoldiers()
+        {
+            var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
+            return (selected == BilletSelection.CustomGenerator);
         }
 
         private void billetRankSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -258,21 +274,31 @@ namespace Perscom
             specialtySelect.Enabled = specialtyCheckBox.Checked;
 
             // Billet must change MOS if its an entry level billet
-            if (!specialtyCheckBox.Checked && entryLevelCheckBox.Checked)
-                entryLevelCheckBox.Checked = false;
+            if (!specialtyCheckBox.Checked && !CreatesNewSoldiers())
+                specialtyCheckBox.Checked = true;
         }
 
-        private void entryLevelCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void soldierSpawnSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            spawnGenSelect.Enabled = entryLevelCheckBox.Enabled;
+            var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
+            if (CreatesNewSoldiers())
+            {
+                // Billet must change MOS if its an entry level billet
+                if (!specialtyCheckBox.Checked)
+                    specialtyCheckBox.Checked = true;
 
-            // Billet must change MOS if its an entry level billet
-            if (entryLevelCheckBox.Checked && !specialtyCheckBox.Checked)
-                specialtyCheckBox.Checked = true;
+                spawnGenSelect.Enabled = true;
+            }
+            else
+            {
+                spawnGenSelect.Enabled = false;
+            }
         }
 
         private void saveButton_Click(object sender, EventArgs e)
         {
+            bool createsNewSoldiers = CreatesNewSoldiers();
+
             // Check for validation errors
             if (billetRankSelect.SelectedIndex < 0)
             {
@@ -284,7 +310,7 @@ namespace Perscom
                 ShowErrorMessage("No billet catagory was selected!");
                 return;
             }
-            else if (entryLevelCheckBox.Checked && spawnGenSelect.SelectedIndex < 0)
+            else if (createsNewSoldiers && spawnGenSelect.SelectedIndex < 0)
             {
                 ShowErrorMessage("No soldier spawn generator was selected!");
                 return;
@@ -316,11 +342,11 @@ namespace Perscom
             Billet.Repeatable = repeatCheckBox.Checked;
             Billet.PreferNonRepeats = preferedCheckBox.Checked;
             Billet.InverseRequirements = inverseCheckBox.Checked;
-            Billet.LateralOnly = lateralCheckBox.Checked;
             Billet.UnitTypeId = Template.Id;
             Billet.BilletCatagoryId = ((BilletCatagory)billetCatSelect.SelectedItem).Id;
             Billet.PromotionPoolId = ((Echelon)promotionPoolSelect.SelectedItem).Id;
             Billet.ZIndex = (int)zIndexBox.Value;
+            Billet.Selection = (BilletSelection)soldierSpawnSelect.SelectedIndex;
 
             using (AppDatabase db = new AppDatabase())
             using (SQLiteTransaction trans = db.BeginTransaction())
@@ -360,7 +386,7 @@ namespace Perscom
                     }
 
                     // Apply Spawn Settings
-                    if (entryLevelCheckBox.Checked)
+                    if (createsNewSoldiers)
                     {
                         // Fill spawn settings values
                         var current = Billet.SpawnSettings.FirstOrDefault() ?? new BilletSpawnSetting();

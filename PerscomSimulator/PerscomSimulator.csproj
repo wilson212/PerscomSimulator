@@ -66,6 +66,8 @@
     <Compile Include="Application\Epoch.cs" />
     <Compile Include="Application\ExceptionHandler.cs" />
     <Compile Include="Database\Entities\SoldierPoolSorting.cs" />
+    <Compile Include="Simulation\BilletSelection.cs" />
+    <Compile Include="Simulation\SoldierSelector.cs" />
     <Compile Include="Simulation\SpawnedSoldier.cs" />
     <Compile Include="Database\Entities\SoldierGeneratorCareer.cs" />
     <Compile Include="Controls\ListViewWithReordering.cs">

@@ -367,7 +367,7 @@ namespace Perscom
                 if (position.IsEmpty)
                 {
                     // Is this an entry level position?
-                    if (position.Billet.IsEntryLevel)
+                    if (position.Billet.UsesCustomGenerator)
                     {
                         soldier = CreateSoldier(SoldierGenerators[position.Billet.SpawnSetting.GeneratorId], position);
                         soldier?.AssignPosition(position, CurrentIterationDate, Database);
@@ -390,8 +390,7 @@ namespace Perscom
                     // we are a prime candidate for moving!
                     if (position.Holder.IsPastMaxTourLength(CurrentIterationDate))
                     {
-                        if (TryPerformLateralMovement(soldier, position))
-                            continue;
+                        TryPerformLateralMovement(soldier, position);
                     }
                 }
 
@@ -459,23 +458,44 @@ namespace Perscom
             }
         }
 
+        /// <summary>
+        /// This method will attempt to find another Soldier
+        /// to fill the supplied position, and force the soldiers
+        /// to swap positions with each other.
+        /// </summary>
+        /// <remarks>
+        /// Similar to FindBestSoldierFor, except we ONLY try to swap with a soldier
+        /// of the same grade!
+        /// </remarks>
+        /// <param name="soldier"></param>
+        /// <param name="position"></param>
+        /// <returns>
+        /// true if a soldier swaped positions, false otherwise
+        /// </returns>
         private bool TryPerformLateralMovement(SoldierWrapper soldier, PositionWrapper position)
         {
             // Define position specific vars
             UnitWrapper topUnit = position.PromotionPoolUnit;
             RankType type = position.Billet.Rank.Type;
             int grade = position.Billet.Rank.Grade;
+            BilletSelection[] illegalSelections = { BilletSelection.CustomGenerator, BilletSelection.PromotionOnly };
+
+            // Can't lateral into this position if it uses a custom
+            // selection generator or is PromotionOnly!
+            if (illegalSelections.Contains(position.Billet.Selection))
+                return false;
+
+            // If this is lateral ONLY position, than we MUST force
+            // people to move from higher stature units, otherwise the position
+            // could be empty forver!
+            int val = (position.Billet.Selection == BilletSelection.LateralOnly) ? 0 : 1;
 
             // Get a list of soldiers that CAN do a lateral movement,
             // Order by Desirability and Time in Billet
             var soldiers = topUnit.SoldiersByGrade[type][grade].Values
-                .Where(x => IsCanidateForPosition(x, position))
+                .Where(x => IsCanidateForPosition(x, position) && GetLateralPromotionDesire(x, position) > val)
                 .OrderByDescending(x => GetLateralPromotionDesire(x, position))
                 .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
-
-            // Is this position NOT repeatable?
-            if (position.Billet.Billet.PreferNonRepeats)
-                soldiers = soldiers.ThenBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0);
 
             // Any canidates?
             if (soldiers.Count() == 0)
@@ -486,6 +506,22 @@ namespace Perscom
             {
                 // get soldier position
                 var pos = otherSoldier.Position;
+
+                // We cannot lateral INTO a position that uses a SoldierGenerator
+                // or is PromotionOnly entry
+                if (illegalSelections.Contains(pos.Billet.Billet.Selection))
+                {
+                    continue;
+                }
+                else if (pos.Billet.Billet.Selection == BilletSelection.LateralOnly)
+                {
+                    // We cannot lateral into a position if the soldier
+                    // position does not match
+                    if (position.Billet.Rank.Grade != pos.Billet.Rank.Grade)
+                        continue;
+                }
+
+                // Make sure we are a canidate!
                 if (IsCanidateForPosition(soldier, pos))
                 {
                     // Remove positions first!
@@ -519,7 +555,12 @@ namespace Perscom
             // Define position specific vars
             UnitWrapper topUnit = position.PromotionPoolUnit;
             RankType type = position.Billet.Rank.Type;
-            int grade = position.Billet.Rank.Grade;
+
+            // If promotion only, reduce the Grade level down one
+            // to prevent any lateral movement
+            int grade = (position.Billet.Selection == BilletSelection.PromotionOnly)
+                ? position.Billet.Rank.Grade - 1
+                : position.Billet.Rank.Grade;
 
             // Keep searching until we either find a soldier to
             // fill the slot, or run out of rank/grades to pull from.
@@ -535,68 +576,83 @@ namespace Perscom
                 bool isLateral = (grade == position.Billet.Rank.Grade);
 
                 // Quit if this is a lateral only position
-                if (!isLateral && position.Billet.Billet.LateralOnly)
+                if (!isLateral && position.Billet.Selection == BilletSelection.LateralOnly)
                     break;
 
                 // Lateral movement or promotion? The filtering is different!
                 if (isLateral)
                 {
-                    soldiers = topUnit.SoldiersByGrade[type][grade].Values
-                        .Where(x => IsCanidateForPosition(x, position))
-                        .OrderByDescending(x => GetLateralPromotionDesire(x, position))
-                        .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+                    // If this is lateral ONLY position, than we MUST force
+                    // people to move from higher stature units, otherwise the position
+                    // could be empty forver!
+                    int val = (position.Billet.Selection == BilletSelection.LateralOnly) ? 0 : 1;
+
+                    // Apply initial filter
+                    primeSoldiers = topUnit.SoldiersByGrade[type][grade].Values
+                        .Where(x => IsCanidateForPosition(x, position) && GetLateralPromotionDesire(x, position) > val);
+
+                    // Is this position NOT repeatable?
+                    if (!position.Billet.Billet.Repeatable)
+                    {
+                        soldiers = primeSoldiers
+                            .Where(x => !x.BilletsHeld.ContainsKey(position.Billet.Billet.Id))
+                            .OrderByDescending(x => GetLateralPromotionDesire(x, position))
+                            .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+                    }
+                    else if (position.Billet.Billet.PreferNonRepeats)
+                    {
+                        // Check for repeatable preference
+                        soldiers = primeSoldiers
+                            .OrderBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0)
+                            .ThenByDescending(x => GetLateralPromotionDesire(x, position))
+                            .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+                    }
+                    else
+                    {
+                        // Final filtering
+                        soldiers = primeSoldiers
+                            .OrderByDescending(x => GetLateralPromotionDesire(x, position))
+                            .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+                    }
                 }
                 else
                 {
-                    soldiers = topUnit.SoldiersByGrade[type][grade].Values
-                        .Where(x => IsCanidateForPosition(x, position))
-                        .OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
-                }
+                    // Apply initial filter
+                    primeSoldiers = topUnit.SoldiersByGrade[type][grade].Values
+                        .Where(x => IsCanidateForPosition(x, position));
 
-                // If we have no soldiers, downgrade
-                if (soldiers.FirstOrDefault() == null)
-                {
-                    --grade;
-                    continue;
+                    // Is this position NOT repeatable?
+                    if (!position.Billet.Billet.Repeatable)
+                    {
+                        soldiers = primeSoldiers
+                            .Where(x => !x.BilletsHeld.ContainsKey(position.Billet.Billet.Id))
+                            .OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                    }
+                    else if (position.Billet.Billet.PreferNonRepeats)
+                    {
+                        // Check for repeatable preference
+                        soldiers = primeSoldiers
+                            .OrderBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0)
+                            .ThenByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                    }
+                    else
+                    {
+                        // Final filtering
+                        soldiers = primeSoldiers
+                            .OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                    }
                 }
-
-                // Is this position NOT repeatable?
-                if (!position.Billet.Billet.Repeatable)
-                {
-                    primeSoldiers = soldiers.Where(x => !x.BilletsHeld.ContainsKey(position.Billet.Billet.Id));
-                }
-                else if (position.Billet.Billet.PreferNonRepeats)
-                {
-                    // Check for repeatable preference
-                    primeSoldiers = soldiers.ThenBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0);
-                }
-
-                // Fetch soldier list without checking LockedIn
-                if (!isLateral)
-                    primeSoldiers = primeSoldiers.Where(x => !x.IsLockedInPosition(CurrentIterationDate));
 
                 // Check for an un-restricted soldier first
-                var wrapper = primeSoldiers.FirstOrDefault();
+                var wrapper = soldiers.FirstOrDefault();
                 if (wrapper != null)
                 {
                     return wrapper;
                 }
-
-                // If this is a promotion?
-                if (grade < position.Billet.Rank.Grade)
+                else
                 {
-                    wrapper = soldiers.FirstOrDefault();
-                    if (wrapper != null)
-                    {
-                        // Never laterally move a locked in soldier from the same 
-                        // Rank grade as the positon calls for, otherwise we could 
-                        // have a game of musical chairs happening EVERY month.
-                        return wrapper;
-                    }
+                    --grade;
                 }
-
-                // Lower grade, and try again
-                --grade;
             }
 
             return null;
@@ -616,7 +672,8 @@ namespace Perscom
             //
             if (soldier.IsLockedInPosition(CurrentIterationDate))
             {
-                return 0;
+                if (!soldier.Position.Billet.Billet.CanLateralEarly)
+                    return 0;
             }
 
             //
@@ -859,7 +916,7 @@ namespace Perscom
             foreach (var pos in Positions)
             {
                 // Only fill entry positions!
-                if (pos.Billet.IsEntryLevel && Settings.ProcessRankType(pos.Billet.Rank.Type))
+                if (pos.Billet.UsesCustomGenerator && Settings.ProcessRankType(pos.Billet.Rank.Type))
                 {
                     var soldier = CreateSoldier(s, pos);
                     soldier.AssignPosition(pos, CurrentIterationDate, Database);

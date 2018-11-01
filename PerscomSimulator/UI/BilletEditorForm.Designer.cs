@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.inverseCheckBox = new Perscom.MyCheckBox();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -41,13 +40,15 @@
             this.specialtySelect = new System.Windows.Forms.ComboBox();
             this.specialtyCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.soldierSpawnSelect = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.spawnGenSelect = new System.Windows.Forms.ComboBox();
-            this.entryLevelCheckBox = new System.Windows.Forms.CheckBox();
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.lateralCheckBox = new System.Windows.Forms.CheckBox();
+            this.earlyLatteralCheckBox = new System.Windows.Forms.CheckBox();
+            this.earlyPromotionCheckBox = new System.Windows.Forms.CheckBox();
             this.preferedCheckBox = new System.Windows.Forms.CheckBox();
             this.repeatCheckBox = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -72,10 +73,9 @@
             this.billetRankSelect = new System.Windows.Forms.ComboBox();
             this.rankPicture = new System.Windows.Forms.PictureBox();
             this.headerPanel = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.earlyPromotionCheckBox = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.earlyLatteralCheckBox = new System.Windows.Forms.CheckBox();
+            this.inverseCheckBox = new Perscom.MyCheckBox();
+            this.label6 = new System.Windows.Forms.ShadowLabel();
             this.mainPanel.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -110,23 +110,12 @@
             // 
             this.groupBox5.Controls.Add(this.inverseCheckBox);
             this.groupBox5.Controls.Add(this.listView1);
-            this.groupBox5.Location = new System.Drawing.Point(523, 248);
+            this.groupBox5.Location = new System.Drawing.Point(523, 232);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(465, 226);
+            this.groupBox5.Size = new System.Drawing.Size(465, 242);
             this.groupBox5.TabIndex = 33;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Required Specialties";
-            // 
-            // inverseCheckBox
-            // 
-            this.inverseCheckBox.AutoSize = true;
-            this.inverseCheckBox.BackColor = System.Drawing.Color.Transparent;
-            this.inverseCheckBox.Location = new System.Drawing.Point(289, 19);
-            this.inverseCheckBox.Name = "inverseCheckBox";
-            this.inverseCheckBox.Size = new System.Drawing.Size(129, 17);
-            this.inverseCheckBox.TabIndex = 4;
-            this.inverseCheckBox.Text = "Inverse Requirements";
-            this.inverseCheckBox.UseVisualStyleBackColor = true;
+            this.groupBox5.Text = "Required Specialties For Soldier Consideration";
             // 
             // listView1
             // 
@@ -141,7 +130,7 @@
             this.listView1.Location = new System.Drawing.Point(3, 16);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(459, 207);
+            this.listView1.Size = new System.Drawing.Size(459, 223);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -174,7 +163,7 @@
             // 
             this.groupBox4.Controls.Add(this.specialtySelect);
             this.groupBox4.Controls.Add(this.specialtyCheckBox);
-            this.groupBox4.Location = new System.Drawing.Point(523, 155);
+            this.groupBox4.Location = new System.Drawing.Point(523, 139);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(466, 87);
             this.groupBox4.TabIndex = 32;
@@ -204,45 +193,54 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.label10);
+            this.groupBox3.Controls.Add(this.soldierSpawnSelect);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.spawnGenSelect);
-            this.groupBox3.Controls.Add(this.entryLevelCheckBox);
             this.groupBox3.Location = new System.Drawing.Point(523, 24);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(466, 125);
+            this.groupBox3.Size = new System.Drawing.Size(466, 109);
             this.groupBox3.TabIndex = 31;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Soldier Spawn Settings";
+            this.groupBox3.Text = "Soldier Selection Settings";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(32, 34);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(125, 13);
+            this.label10.TabIndex = 34;
+            this.label10.Text = "Soldier Selection Setting:";
+            // 
+            // soldierSpawnSelect
+            // 
+            this.soldierSpawnSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.soldierSpawnSelect.FormattingEnabled = true;
+            this.soldierSpawnSelect.Location = new System.Drawing.Point(216, 31);
+            this.soldierSpawnSelect.Name = "soldierSpawnSelect";
+            this.soldierSpawnSelect.Size = new System.Drawing.Size(202, 21);
+            this.soldierSpawnSelect.TabIndex = 33;
+            this.soldierSpawnSelect.SelectedIndexChanged += new System.EventHandler(this.soldierSpawnSelect_SelectedIndexChanged);
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(32, 76);
+            this.label9.Location = new System.Drawing.Point(32, 70);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(128, 13);
+            this.label9.Size = new System.Drawing.Size(131, 13);
             this.label9.TabIndex = 32;
-            this.label9.Text = "Soldier Spawn Generator:";
+            this.label9.Text = "Custom Spawn Generator:";
             // 
             // spawnGenSelect
             // 
             this.spawnGenSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.spawnGenSelect.Enabled = false;
             this.spawnGenSelect.FormattingEnabled = true;
-            this.spawnGenSelect.Location = new System.Drawing.Point(216, 73);
+            this.spawnGenSelect.Location = new System.Drawing.Point(216, 67);
             this.spawnGenSelect.Name = "spawnGenSelect";
             this.spawnGenSelect.Size = new System.Drawing.Size(202, 21);
             this.spawnGenSelect.TabIndex = 13;
-            // 
-            // entryLevelCheckBox
-            // 
-            this.entryLevelCheckBox.AutoSize = true;
-            this.entryLevelCheckBox.Location = new System.Drawing.Point(35, 36);
-            this.entryLevelCheckBox.Name = "entryLevelCheckBox";
-            this.entryLevelCheckBox.Size = new System.Drawing.Size(165, 17);
-            this.entryLevelCheckBox.TabIndex = 12;
-            this.entryLevelCheckBox.Text = "Use Custom Soldier Selection";
-            this.entryLevelCheckBox.UseVisualStyleBackColor = true;
-            this.entryLevelCheckBox.CheckedChanged += new System.EventHandler(this.entryLevelCheckBox_CheckedChanged);
             // 
             // bottomPanel
             // 
@@ -269,7 +267,6 @@
             // 
             this.groupBox2.Controls.Add(this.earlyLatteralCheckBox);
             this.groupBox2.Controls.Add(this.earlyPromotionCheckBox);
-            this.groupBox2.Controls.Add(this.lateralCheckBox);
             this.groupBox2.Controls.Add(this.preferedCheckBox);
             this.groupBox2.Controls.Add(this.repeatCheckBox);
             this.groupBox2.Controls.Add(this.label11);
@@ -294,16 +291,31 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Details";
             // 
-            // lateralCheckBox
+            // earlyLatteralCheckBox
             // 
-            this.lateralCheckBox.AutoSize = true;
-            this.lateralCheckBox.Location = new System.Drawing.Point(336, 144);
-            this.lateralCheckBox.Name = "lateralCheckBox";
-            this.lateralCheckBox.Size = new System.Drawing.Size(109, 17);
-            this.lateralCheckBox.TabIndex = 34;
-            this.lateralCheckBox.Text = "Lateral Entry Only";
-            this.toolTip1.SetToolTip(this.lateralCheckBox, "Indicates that this position is to be filled by non-entry level soldiers");
-            this.lateralCheckBox.UseVisualStyleBackColor = true;
+            this.earlyLatteralCheckBox.AutoSize = true;
+            this.earlyLatteralCheckBox.Location = new System.Drawing.Point(247, 297);
+            this.earlyLatteralCheckBox.Name = "earlyLatteralCheckBox";
+            this.earlyLatteralCheckBox.Size = new System.Drawing.Size(177, 17);
+            this.earlyLatteralCheckBox.TabIndex = 36;
+            this.earlyLatteralCheckBox.Text = "Can Be Promoted Laterally Early";
+            this.toolTip1.SetToolTip(this.earlyLatteralCheckBox, "Indicates whether the soldier in this Billet must perform this duty for the Minim" +
+        "um Tour Length before being selected for a latteral promotion.");
+            this.earlyLatteralCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // earlyPromotionCheckBox
+            // 
+            this.earlyPromotionCheckBox.AutoSize = true;
+            this.earlyPromotionCheckBox.Checked = true;
+            this.earlyPromotionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.earlyPromotionCheckBox.Location = new System.Drawing.Point(50, 297);
+            this.earlyPromotionCheckBox.Name = "earlyPromotionCheckBox";
+            this.earlyPromotionCheckBox.Size = new System.Drawing.Size(176, 17);
+            this.earlyPromotionCheckBox.TabIndex = 35;
+            this.earlyPromotionCheckBox.Text = "Can Be Promoted Forward Early";
+            this.toolTip1.SetToolTip(this.earlyPromotionCheckBox, "Indicates whether the soldier in this Billet must perform this duty for the Minim" +
+        "um Tour Length before being selected for promotion.");
+            this.earlyPromotionCheckBox.UseVisualStyleBackColor = true;
             // 
             // preferedCheckBox
             // 
@@ -374,6 +386,8 @@
             this.zIndexBox.Name = "zIndexBox";
             this.zIndexBox.Size = new System.Drawing.Size(95, 20);
             this.zIndexBox.TabIndex = 11;
+            this.toolTip1.SetToolTip(this.zIndexBox, "Indicates the order of priority when displaying this Billet in the Unit Template " +
+        "screen");
             // 
             // label5
             // 
@@ -383,6 +397,8 @@
             this.label5.Size = new System.Drawing.Size(46, 13);
             this.label5.TabIndex = 27;
             this.label5.Text = "Z-Index:";
+            this.toolTip1.SetToolTip(this.label5, "Indicates the order of priority when displaying this Billet in the Unit Template " +
+        "screen");
             // 
             // statureBox
             // 
@@ -551,6 +567,17 @@
             this.headerPanel.TabIndex = 3;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
+            // inverseCheckBox
+            // 
+            this.inverseCheckBox.AutoSize = true;
+            this.inverseCheckBox.BackColor = System.Drawing.Color.Transparent;
+            this.inverseCheckBox.Location = new System.Drawing.Point(289, 19);
+            this.inverseCheckBox.Name = "inverseCheckBox";
+            this.inverseCheckBox.Size = new System.Drawing.Size(129, 17);
+            this.inverseCheckBox.TabIndex = 4;
+            this.inverseCheckBox.Text = "Inverse Requirements";
+            this.inverseCheckBox.UseVisualStyleBackColor = true;
+            // 
             // label6
             // 
             this.label6.BackColor = System.Drawing.Color.Transparent;
@@ -564,32 +591,6 @@
             this.label6.Size = new System.Drawing.Size(242, 37);
             this.label6.TabIndex = 0;
             this.label6.Text = "Billet Manager";
-            // 
-            // earlyPromotionCheckBox
-            // 
-            this.earlyPromotionCheckBox.AutoSize = true;
-            this.earlyPromotionCheckBox.Checked = true;
-            this.earlyPromotionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.earlyPromotionCheckBox.Location = new System.Drawing.Point(50, 297);
-            this.earlyPromotionCheckBox.Name = "earlyPromotionCheckBox";
-            this.earlyPromotionCheckBox.Size = new System.Drawing.Size(176, 17);
-            this.earlyPromotionCheckBox.TabIndex = 35;
-            this.earlyPromotionCheckBox.Text = "Can Be Promoted Forward Early";
-            this.toolTip1.SetToolTip(this.earlyPromotionCheckBox, "Indicates whether the soldier in this Billet must perform this duty for the Minim" +
-        "um Tour Length before being selected for promotion.");
-            this.earlyPromotionCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // earlyLatteralCheckBox
-            // 
-            this.earlyLatteralCheckBox.AutoSize = true;
-            this.earlyLatteralCheckBox.Location = new System.Drawing.Point(247, 297);
-            this.earlyLatteralCheckBox.Name = "earlyLatteralCheckBox";
-            this.earlyLatteralCheckBox.Size = new System.Drawing.Size(177, 17);
-            this.earlyLatteralCheckBox.TabIndex = 36;
-            this.earlyLatteralCheckBox.Text = "Can Be Promoted Laterally Early";
-            this.toolTip1.SetToolTip(this.earlyLatteralCheckBox, "Indicates whether the soldier in this Billet must perform this duty for the Minim" +
-        "um Tour Length before being selected for a latteral promotion.");
-            this.earlyLatteralCheckBox.UseVisualStyleBackColor = true;
             // 
             // BilletEditorForm
             // 
@@ -658,7 +659,6 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox spawnGenSelect;
-        private System.Windows.Forms.CheckBox entryLevelCheckBox;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.ComboBox specialtySelect;
         private System.Windows.Forms.CheckBox specialtyCheckBox;
@@ -673,9 +673,10 @@
         private System.Windows.Forms.CheckBox preferedCheckBox;
         private System.Windows.Forms.CheckBox repeatCheckBox;
         private MyCheckBox inverseCheckBox;
-        private System.Windows.Forms.CheckBox lateralCheckBox;
         private System.Windows.Forms.CheckBox earlyPromotionCheckBox;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.CheckBox earlyLatteralCheckBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox soldierSpawnSelect;
     }
 }

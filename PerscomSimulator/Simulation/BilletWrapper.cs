@@ -45,7 +45,9 @@ namespace Perscom.Simulation
 
         public int[] RequiredSpecialties { get; set; }
 
-        public bool IsEntryLevel => SpawnSetting != null;
+        public bool UsesCustomGenerator => (Billet.Selection == BilletSelection.CustomGenerator);
+
+        public BilletSelection Selection => Billet.Selection;
 
         protected static Dictionary<int, BilletWrapper> Cache { get; set; }
 
