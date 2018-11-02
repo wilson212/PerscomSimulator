@@ -40,6 +40,10 @@ namespace Perscom
         /// </summary>
         protected static RankType[] RankTypes { get; set; } = Enum.GetValues(typeof(RankType)).Cast<RankType>().ToArray();
 
+        private Dictionary<int, Rank> Ranks { get; set; }
+
+        private Dictionary<int, ListViewGroup> Groups = new Dictionary<int, ListViewGroup>();
+
         /// <summary>
         /// UnitTemplateId => [RankType => [Rank.Grade => RankGradeStatistics]]
         /// </summary>
@@ -133,6 +137,89 @@ namespace Perscom
             rankTypeBox4.SelectedIndex = 0;
             rankTypeBox5.SelectedIndex = 0;
             toolStripComboBox1.SelectedIndex = 0;
+
+            TreeNode root = new TreeNode();
+            root.Text = "Loading... Please Wait";
+            treeView1.Nodes.Add(root);
+
+            Ranks = Database.Ranks.ToDictionary(x => x.Id, x => x);
+
+            // Add billit catagories
+            foreach (var cat in Database.BilletCatagories.OrderByDescending(x => x.ZIndex))
+            {
+                var group = new ListViewGroup(cat.Name);
+                group.Tag = cat;
+                listView2.Groups.Add(group);
+                Groups.Add(cat.Id, group);
+            }
+
+            // Fill image list for Spawn Settings
+            ImageList myImageList1 = new ImageList();
+            myImageList1.ImageSize = new Size(64, 64);
+            myImageList1.ColorDepth = ColorDepth.Depth32Bit;
+
+            // Fill images
+            foreach (var rank in Ranks)
+            {
+                Bitmap picture = ImageAccessor.GetImage(Path.Combine("Large", rank.Value.Image)) ?? new Bitmap(64, 64);
+                myImageList1.Images.Add(rank.Value.Image, picture);
+            }
+            listView2.LargeImageList = myImageList1;
+        }
+
+        private void BuildUnitTree(Unit unit)
+        {
+            TreeNode root = new TreeNode();
+            root.Text = unit.Name;
+            root.Tag = unit;
+
+            string query = "SELECT * FROM `UnitAttachment` WHERE `ParentId`=" + unit.Id;
+            var attachments = Database.Query<UnitAttachment>(query);
+            PopulateTree(ref root, unit.Attachments);
+
+            // An exception is thrown here if we close the Window too quickly
+            try
+            {
+                // Since we are cross-threaded, invoke changes
+                treeView1.Invoke((MethodInvoker)delegate
+                {
+                    treeView1.Nodes.Clear();
+                    treeView1.Nodes.Add(root);
+
+                    foreach (TreeNode tn in treeView1.Nodes)
+                    {
+                        tn.Expand();
+                    }
+                });
+            }
+            catch (InvalidOperationException) { }
+        }
+
+        public void PopulateTree(ref TreeNode root, IEnumerable<UnitAttachment> attachments)
+        {
+            // An exception is thrown here if we clost the Window too quickly
+            try
+            {
+                foreach (var att in attachments)
+                {
+                    string query = "SELECT * FROM `Unit` WHERE `Id`=" + att.ChildId;
+                    Unit unit = Database.Query<Unit>(query).First();
+                    var child = new TreeNode()
+                    {
+                        Text = unit.Name,
+                        Tag = unit
+                    };
+
+                    query = "SELECT * FROM `UnitAttachment` WHERE `ParentId`=" + unit.Id;
+                    var children = Database.Query<UnitAttachment>(query);
+                    PopulateTree(ref child, children);
+                    root.Nodes.Add(child);
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
         }
 
         private void CreateDictionaries()
@@ -664,29 +751,42 @@ namespace Perscom
         /// <summary>
         /// Event triggered when a soldier view row is clicked
         /// </summary>
-        private void dataGridView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        private async void dataGridView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (dataGridView1.SelectedRows.Count == 0) return;
 
             var row = dataGridView1.SelectedRows[0];
             var soldier = (SoldierWrapper2)row.Tag;
-            using (SoldierViewForm form = new SoldierViewForm(soldier, CurrentDate))
-            {
-                // Show soldier dialog
-                form.ShowDialog();
 
-                // Invalidate the row, so that if the name changed, we can update it with
-                // the new name!
-                int index = dataGridView1.SelectedRows[0].Index;
-                row.SetValues(new object[]
+            // Show Task Form!
+            TaskForm.Show(this, "Loading", "Loading soldier statistics... Please Wait", false);
+
+            // New thread
+            await Task.Run(() =>
+            {
+                using (SoldierViewForm form = new SoldierViewForm(soldier, CurrentDate))
                 {
-                    soldier.RankIcon,
-                    soldier.Name,
-                    Math.Round((double)soldier.TimeInService / 12, 2).ToString(),
-                    soldier.TimeInGrade
-                });
-                dataGridView1.InvalidateRow(index);
-            }
+                    TaskForm.CloseForm();
+
+                    // Show soldier dialog
+                    form.ShowDialog();
+
+                    // Invalidate the row, so that if the name changed, we can update it with
+                    // the new name!
+                    dataGridView1.Invoke((MethodInvoker)delegate
+                    {
+                        int index = dataGridView1.SelectedRows[0].Index;
+                        row.SetValues(new object[]
+                        {
+                            soldier.RankIcon,
+                            soldier.Name,
+                            Math.Round((double)soldier.TimeInService / 12, 2).ToString(),
+                            soldier.TimeInGrade
+                        });
+                        dataGridView1.InvalidateRow(index);
+                    });
+                }
+            });
         }
 
         /// <summary>
@@ -833,6 +933,116 @@ namespace Perscom
 
                 return pageOffsets;
             }
+        }
+
+        private async void SimResultViewForm_Shown(object sender, EventArgs e)
+        {
+            // Run the simulation
+            await Task.Run(() =>
+            {
+                // Fill units
+                Unit unit = Database.Query<Unit>("SELECT * FROM `Unit` ORDER BY `Id` LIMIT 1").FirstOrDefault();
+                BuildUnitTree(unit);
+            });
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            // Invoke as we might be in a new thread
+            // (Happens after a soldier is viewied ;))
+            treeView1.Invoke((MethodInvoker)delegate
+            {
+                // Get selected Node
+                TreeNode node = treeView1.SelectedNode;
+                Unit unit = node.Tag as Unit;
+
+                if (unit == null) return;
+
+                // Prepare update
+                listView2.BeginUpdate();
+
+                // Clear list view items
+                listView2.Items.Clear();
+
+                // Clear billits from groups
+                foreach (var item in Groups)
+                {
+                    item.Value.Items.Clear();
+                }
+
+                // Grab a list of soldiers and positions
+                var q = new SelectQueryBuilder(Database);
+                var positions = q.From(nameof(Position))
+                    .Where("t1.UnitId", Comparison.Equals, unit.Id)
+                    .SelectAll()
+                    .InnerJoin(nameof(Billet)).On("Id").Equals(nameof(Position), "BilletId")
+                    .Select("ZIndex", "BilletCatagoryId")
+                    .InnerJoin(nameof(Assignment)).On("PositionId").Equals(nameof(Position), "Id")
+                    .Select("SoldierId")
+                    .InnerJoin(nameof(Soldier)).On("Id").Equals(nameof(Assignment), "SoldierId")
+                    .Select("FirstName", "LastName", "RankId")
+                    .OrderBy("BilletCatagoryId", Sorting.Descending)
+                    .OrderBy("ZIndex", Sorting.Descending)
+                    .ExecuteQuery();
+
+                // Add each positon to the list
+                foreach (var pos in positions)
+                {
+                    int rankId = int.Parse(pos["RankId"].ToString());
+                    Rank rank = RankCache.RanksById[rankId];
+                    string name = String.Concat(pos["FirstName"], " ", pos["LastName"]);
+                    int gId = int.Parse(pos["BilletCatagoryId"].ToString());
+
+                    // Add billit to listViewGroup
+                    ListViewItem item = new ListViewItem(name);
+                    item.SubItems.Add(rank.Name);
+                    item.SubItems.Add(pos["Name"].ToString());
+                    item.ImageKey = Ranks[rank.Id].Image;
+                    item.Tag = int.Parse(pos["SoldierId"].ToString());
+
+                    // Add to list next
+                    Groups[gId].Items.Add(item);
+                    listView2.Items.Add(item);
+                }
+
+                // End update
+                listView2.EndUpdate();
+            });
+        }
+
+        private async void listView2_DoubleClick(object sender, EventArgs e)
+        {
+            // Ensure we have a selected item
+            if (listView2.SelectedItems.Count == 0)
+                return;
+
+            // Grab Billet from selected item tag
+            if (listView2.SelectedItems[0].Tag == null) return;
+            var soldierId = (int)listView2.SelectedItems[0].Tag;
+
+            // Show Task Form!
+            TaskForm.Show(this, "Loading", "Loading soldier statistics... Please Wait", false);
+
+            await Task.Run(() =>
+            {
+                // Fetch Soldier
+                var query = "SELECT * FROM `Soldier` WHERE `Id`=" + soldierId;
+                var s = Database.Query<Soldier>(query).FirstOrDefault();
+                if (s == null) return;
+
+                // Create Wrapper
+                SoldierWrapper2 soldier = new SoldierWrapper2(s, CurrentDate);
+                using (SoldierViewForm form = new SoldierViewForm(soldier, CurrentDate))
+                {
+                    TaskForm.CloseForm();
+
+                    // Show soldier dialog
+                    form.ShowDialog();
+
+                    // Redraw!
+                    treeView1_AfterSelect(sender, default(TreeViewEventArgs));
+                }
+            });
         }
     }
 }

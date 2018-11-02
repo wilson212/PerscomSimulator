@@ -1,5 +1,4 @@
 ﻿ - Track specialty transitions for statistics
- - Add a "does not allow lateral grade promotion" to ranks (think Marine Corps 1stSgt and Msgt)
  - Add the deficit rating for ranks AND positions
  - Add a Unit view, much like the soldier viewer
  - Add UnitTemplate statistics

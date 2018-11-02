@@ -314,6 +314,7 @@ namespace Perscom
             {
                 using (SimResultViewForm form = new SimResultViewForm(simDb))
                 {
+                    TaskForm.CloseForm();
                     form.ShowDialog();
                 }
             }
