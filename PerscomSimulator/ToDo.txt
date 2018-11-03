@@ -1,4 +1,4 @@
 ﻿ - Track specialty transitions for statistics
  - Add the deficit rating for ranks AND positions
- - Add a Unit view, much like the soldier viewer
  - Add UnitTemplate statistics
+ - Add WHERE options to the SoldierGenerator when selecting from a pool

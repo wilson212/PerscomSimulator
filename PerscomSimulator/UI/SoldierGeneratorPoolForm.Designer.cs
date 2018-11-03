@@ -30,6 +30,15 @@
         {
             this.components = new System.ComponentModel.Container();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.listView1 = new System.Windows.Forms.ListViewWithReordering();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addNewSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.removeItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.existProbLabel = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -39,30 +48,22 @@
             this.promotableCheckBox = new System.Windows.Forms.CheckBox();
             this.newCareerCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rankPicture = new System.Windows.Forms.PictureBox();
             this.rankSelect = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addNewSortingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.removeItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rankPicture = new System.Windows.Forms.PictureBox();
             this.headerPanel = new System.Windows.Forms.Panel();
-            this.listView1 = new System.Windows.Forms.ListViewWithReordering();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label6 = new System.Windows.Forms.ShadowLabel();
+            this.useRankGradeCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.existTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
-            this.bottomPanel.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).BeginInit();
+            this.bottomPanel.SuspendLayout();
             this.headerPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,6 +77,84 @@
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(944, 386);
             this.mainPanel.TabIndex = 11;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.listView1);
+            this.groupBox2.Location = new System.Drawing.Point(510, 20);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(417, 352);
+            this.groupBox2.TabIndex = 21;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Selection Sorting";
+            // 
+            // listView1
+            // 
+            this.listView1.AllowDrop = true;
+            this.listView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listView1.ContextMenuStrip = this.contextMenuStrip1;
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.FullRowSelect = true;
+            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listView1.Location = new System.Drawing.Point(3, 16);
+            this.listView1.MultiSelect = false;
+            this.listView1.Name = "listView1";
+            this.listView1.Scrollable = false;
+            this.listView1.Size = new System.Drawing.Size(411, 333);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listView1_ColumnWidthChanging);
+            this.listView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView1_DragDrop);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "";
+            this.columnHeader1.Width = 65;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "";
+            this.columnHeader2.Width = 220;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "";
+            this.columnHeader3.Width = 120;
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addNewSortingToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.removeItemToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 54);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // addNewSortingToolStripMenuItem
+            // 
+            this.addNewSortingToolStripMenuItem.Name = "addNewSortingToolStripMenuItem";
+            this.addNewSortingToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.addNewSortingToolStripMenuItem.Text = "Add New Sorting";
+            this.addNewSortingToolStripMenuItem.Click += new System.EventHandler(this.addNewSortingToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(161, 6);
+            // 
+            // removeItemToolStripMenuItem
+            // 
+            this.removeItemToolStripMenuItem.Name = "removeItemToolStripMenuItem";
+            this.removeItemToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.removeItemToolStripMenuItem.Text = "Remove Item";
+            this.removeItemToolStripMenuItem.Click += new System.EventHandler(this.removeItemToolStripMenuItem_Click);
             // 
             // groupBox3
             // 
@@ -166,6 +245,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.useRankGradeCheckBox);
             this.groupBox1.Controls.Add(this.rankPicture);
             this.groupBox1.Controls.Add(this.rankSelect);
             this.groupBox1.Controls.Add(this.label8);
@@ -176,11 +256,19 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Rank Pool";
             // 
+            // rankPicture
+            // 
+            this.rankPicture.Location = new System.Drawing.Point(20, 27);
+            this.rankPicture.Name = "rankPicture";
+            this.rankPicture.Size = new System.Drawing.Size(64, 64);
+            this.rankPicture.TabIndex = 14;
+            this.rankPicture.TabStop = false;
+            // 
             // rankSelect
             // 
             this.rankSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.rankSelect.FormattingEnabled = true;
-            this.rankSelect.Location = new System.Drawing.Point(174, 47);
+            this.rankSelect.Location = new System.Drawing.Point(174, 32);
             this.rankSelect.Name = "rankSelect";
             this.rankSelect.Size = new System.Drawing.Size(265, 21);
             this.rankSelect.TabIndex = 34;
@@ -189,7 +277,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(108, 50);
+            this.label8.Location = new System.Drawing.Point(108, 35);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(36, 13);
             this.label8.TabIndex = 37;
@@ -216,53 +304,6 @@
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.listView1);
-            this.groupBox2.Location = new System.Drawing.Point(510, 20);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(417, 352);
-            this.groupBox2.TabIndex = 21;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Selection Sorting";
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addNewSortingToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.removeItemToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(165, 54);
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
-            // 
-            // addNewSortingToolStripMenuItem
-            // 
-            this.addNewSortingToolStripMenuItem.Name = "addNewSortingToolStripMenuItem";
-            this.addNewSortingToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.addNewSortingToolStripMenuItem.Text = "Add New Sorting";
-            this.addNewSortingToolStripMenuItem.Click += new System.EventHandler(this.addNewSortingToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(161, 6);
-            // 
-            // removeItemToolStripMenuItem
-            // 
-            this.removeItemToolStripMenuItem.Name = "removeItemToolStripMenuItem";
-            this.removeItemToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.removeItemToolStripMenuItem.Text = "Remove Item";
-            this.removeItemToolStripMenuItem.Click += new System.EventHandler(this.removeItemToolStripMenuItem_Click);
-            // 
-            // rankPicture
-            // 
-            this.rankPicture.Location = new System.Drawing.Point(20, 27);
-            this.rankPicture.Name = "rankPicture";
-            this.rankPicture.Size = new System.Drawing.Size(64, 64);
-            this.rankPicture.TabIndex = 14;
-            this.rankPicture.TabStop = false;
-            // 
             // headerPanel
             // 
             this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
@@ -274,45 +315,6 @@
             this.headerPanel.Size = new System.Drawing.Size(944, 75);
             this.headerPanel.TabIndex = 9;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
-            // 
-            // listView1
-            // 
-            this.listView1.AllowDrop = true;
-            this.listView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listView1.ContextMenuStrip = this.contextMenuStrip1;
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.FullRowSelect = true;
-            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listView1.Location = new System.Drawing.Point(3, 16);
-            this.listView1.MultiSelect = false;
-            this.listView1.Name = "listView1";
-            this.listView1.Scrollable = false;
-            this.listView1.Size = new System.Drawing.Size(411, 333);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listView1_ColumnWidthChanging);
-            this.listView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView1_DragDrop);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "";
-            this.columnHeader1.Width = 65;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "";
-            this.columnHeader2.Width = 220;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "";
-            this.columnHeader3.Width = 120;
             // 
             // label6
             // 
@@ -327,6 +329,16 @@
             this.label6.Size = new System.Drawing.Size(466, 37);
             this.label6.TabIndex = 0;
             this.label6.Text = "Generate Soldier From Existing Soldier Pool";
+            // 
+            // useRankGradeCheckBox
+            // 
+            this.useRankGradeCheckBox.AutoSize = true;
+            this.useRankGradeCheckBox.Location = new System.Drawing.Point(174, 74);
+            this.useRankGradeCheckBox.Name = "useRankGradeCheckBox";
+            this.useRankGradeCheckBox.Size = new System.Drawing.Size(203, 17);
+            this.useRankGradeCheckBox.TabIndex = 40;
+            this.useRankGradeCheckBox.Text = "Includes all Ranks of the same Grade";
+            this.useRankGradeCheckBox.UseVisualStyleBackColor = true;
             // 
             // SoldierGeneratorPoolForm
             // 
@@ -344,15 +356,15 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Soldier Generator Pool";
             this.mainPanel.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.existTrackBar)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.bottomPanel.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).EndInit();
+            this.bottomPanel.ResumeLayout(false);
             this.headerPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -386,5 +398,6 @@
         private System.Windows.Forms.ToolStripMenuItem addNewSortingToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem removeItemToolStripMenuItem;
+        private System.Windows.Forms.CheckBox useRankGradeCheckBox;
     }
 }

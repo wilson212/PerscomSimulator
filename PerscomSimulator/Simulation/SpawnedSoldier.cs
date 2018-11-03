@@ -38,6 +38,11 @@ namespace Perscom.Simulation
         public int Probability { get; set; }
 
         /// <summary>
+        /// Indicates whether we use Rank.Id or Rank.Grade
+        /// </summary>
+        public bool UseRankGrade { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public SoldierGeneratorPool Pool { get; set; }

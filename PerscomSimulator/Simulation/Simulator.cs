@@ -979,7 +979,11 @@ namespace Perscom
                 // ---------------------------
                 // Apply Filters
                 // ---------------------------
-                var soldiers = topUnit.SoldiersByGrade[setting.Rank.Type][setting.Rank.Grade];
+                IEnumerable<SoldierWrapper> soldiers = topUnit.SoldiersByGrade[setting.Rank.Type][setting.Rank.Grade].Values.ToList();
+                if (!setting.UseRankGrade)
+                    soldiers = soldiers.Where(x => x.Rank.Id == setting.Rank.Id);
+
+                // Find best soldier for lateral movement
                 wrapper = FindCrossPoolSoldier(soldiers, setting, position);
 
                 // Grab our top filtered soldier
@@ -1011,12 +1015,12 @@ namespace Perscom
         /// <param name="setting"></param>
         /// <returns></returns>
         private SoldierWrapper FindCrossPoolSoldier(
-            Dictionary<int, SoldierWrapper> soldiers, 
+            IEnumerable<SoldierWrapper> soldiers, 
             SpawnedSoldier setting, 
             PositionWrapper position)
         {
             // Apply soldier ordering
-            var list = new List<SoldierWrapper>(soldiers.Values);
+            var list = new List<SoldierWrapper>(soldiers);
             if (SoldierPoolSorting.ContainsKey(setting.Pool.Id))
             {
                 var oList = list.OrderBy(x => 1);

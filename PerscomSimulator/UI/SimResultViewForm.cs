@@ -161,8 +161,12 @@ namespace Perscom
             // Fill images
             foreach (var rank in Ranks)
             {
-                Bitmap picture = ImageAccessor.GetImage(Path.Combine("Large", rank.Value.Image)) ?? new Bitmap(64, 64);
+                Image picture = ImageAccessor.GetImage(Path.Combine("Large", rank.Value.Image)) ?? new Bitmap(64, 64);
                 myImageList1.Images.Add(rank.Value.Image, picture);
+
+                // Add Greyscale image
+                picture = ToolStripRenderer.CreateDisabledImage(picture);
+                myImageList1.Images.Add(String.Concat(rank.Value.Image, "_empty"), picture);
             }
             listView2.LargeImageList = myImageList1;
         }
@@ -801,7 +805,7 @@ namespace Perscom
             var query = new SelectQueryBuilder(Database);
             query.Limit = DATA_GRID_PAGE_SIZE;
             query.Offset = (int)bindingSource1.Current;
-            var soldiers = query.From("Soldier")
+            var soldiers = query.From(nameof(Soldier))
                 .Where("Retired").NotEqualTo(1)
                 .SelectAll()
                 .ExecuteQuery<Soldier>();
@@ -903,38 +907,6 @@ namespace Perscom
 
         #endregion Form Events
 
-        /// <summary>
-        /// A class used to specify the total records in a <see cref="BindingNavigator"/>
-        /// </summary>
-        protected class PageOffsetList : IListSource
-        {
-            public bool ContainsListCollection { get; protected set; }
-
-            /// <summary>
-            /// Gets the total number of records
-            /// </summary>
-            public int TotalRecords { get; set; }
-
-            /// <summary>
-            /// Creates a new instance of PageOffsetList
-            /// </summary>
-            /// <param name="soldiers"></param>
-            public PageOffsetList(SimDatabase db)
-            {
-                TotalRecords = db.ExecuteScalar<int>("SELECT COUNT(*) FROM Soldier WHERE Retired=0");
-            }
-
-            public IList GetList()
-            {
-                // Return a list of page offsets based on "totalRecords" and "pageSize"
-                var pageOffsets = new List<int>();
-                for (int offset = 0; offset < TotalRecords; offset += DATA_GRID_PAGE_SIZE)
-                    pageOffsets.Add(offset);
-
-                return pageOffsets;
-            }
-        }
-
         private async void SimResultViewForm_Shown(object sender, EventArgs e)
         {
             // Run the simulation
@@ -976,11 +948,7 @@ namespace Perscom
                     .Where("t1.UnitId", Comparison.Equals, unit.Id)
                     .SelectAll()
                     .InnerJoin(nameof(Billet)).On("Id").Equals(nameof(Position), "BilletId")
-                    .Select("ZIndex", "BilletCatagoryId")
-                    .InnerJoin(nameof(Assignment)).On("PositionId").Equals(nameof(Position), "Id")
-                    .Select("SoldierId")
-                    .InnerJoin(nameof(Soldier)).On("Id").Equals(nameof(Assignment), "SoldierId")
-                    .Select("FirstName", "LastName", "RankId")
+                    .Select("RankId", "ZIndex", "BilletCatagoryId")
                     .OrderBy("BilletCatagoryId", Sorting.Descending)
                     .OrderBy("ZIndex", Sorting.Descending)
                     .ExecuteQuery();
@@ -988,21 +956,51 @@ namespace Perscom
                 // Add each positon to the list
                 foreach (var pos in positions)
                 {
+                    // Define and parse variables
+                    int posId = int.Parse(pos["Id"].ToString());
                     int rankId = int.Parse(pos["RankId"].ToString());
                     Rank rank = RankCache.RanksById[rankId];
-                    string name = String.Concat(pos["FirstName"], " ", pos["LastName"]);
                     int gId = int.Parse(pos["BilletCatagoryId"].ToString());
 
-                    // Add billit to listViewGroup
-                    ListViewItem item = new ListViewItem(name);
-                    item.SubItems.Add(rank.Name);
-                    item.SubItems.Add(pos["Name"].ToString());
-                    item.ImageKey = Ranks[rank.Id].Image;
-                    item.Tag = int.Parse(pos["SoldierId"].ToString());
+                    // Query two, pull the soldier if the position has one
+                    var query2 = new SelectQueryBuilder(Database);
+                    var s = query2.From(nameof(Assignment))
+                        .Where("PositionId", Comparison.Equals, posId)
+                        .Select("SoldierId")
+                        .InnerJoin(nameof(Soldier)).On("Id").Equals(nameof(Assignment), "SoldierId")
+                        .Select("FirstName", "LastName")
+                        .ExecuteQuery();
 
-                    // Add to list next
-                    Groups[gId].Items.Add(item);
-                    listView2.Items.Add(item);
+                    // Position is empty
+                    var row = s.FirstOrDefault();
+                    if (row == default(Dictionary<string, object>))
+                    {
+                        // Add billit to listViewGroup
+                        ListViewItem item = new ListViewItem("Position is Empty");
+                        item.SubItems.Add(rank.Name);
+                        item.SubItems.Add(pos["Name"].ToString());
+                        item.ImageKey = String.Concat(Ranks[rank.Id].Image, "_empty");
+                        item.Tag = 0;
+
+                        // Add to list next
+                        Groups[gId].Items.Add(item);
+                        listView2.Items.Add(item);
+                    }
+                    else
+                    {
+                        string name = String.Concat(row["FirstName"], " ", row["LastName"]);
+
+                        // Add billit to listViewGroup
+                        ListViewItem item = new ListViewItem(name);
+                        item.SubItems.Add(rank.Name);
+                        item.SubItems.Add(pos["Name"].ToString());
+                        item.ImageKey = Ranks[rank.Id].Image;
+                        item.Tag = int.Parse(row["SoldierId"].ToString());
+
+                        // Add to list next
+                        Groups[gId].Items.Add(item);
+                        listView2.Items.Add(item);
+                    }
                 }
 
                 // End update
@@ -1019,6 +1017,7 @@ namespace Perscom
             // Grab Billet from selected item tag
             if (listView2.SelectedItems[0].Tag == null) return;
             var soldierId = (int)listView2.SelectedItems[0].Tag;
+            if (soldierId == 0) return;
 
             // Show Task Form!
             TaskForm.Show(this, "Loading", "Loading soldier statistics... Please Wait", false);
@@ -1028,7 +1027,11 @@ namespace Perscom
                 // Fetch Soldier
                 var query = "SELECT * FROM `Soldier` WHERE `Id`=" + soldierId;
                 var s = Database.Query<Soldier>(query).FirstOrDefault();
-                if (s == null) return;
+                if (s == null)
+                {
+                    TaskForm.CloseForm();
+                    return;
+                }
 
                 // Create Wrapper
                 SoldierWrapper2 soldier = new SoldierWrapper2(s, CurrentDate);
@@ -1043,6 +1046,38 @@ namespace Perscom
                     treeView1_AfterSelect(sender, default(TreeViewEventArgs));
                 }
             });
+        }
+
+        /// <summary>
+        /// A class used to specify the total records in a <see cref="BindingNavigator"/>
+        /// </summary>
+        protected class PageOffsetList : IListSource
+        {
+            public bool ContainsListCollection { get; protected set; }
+
+            /// <summary>
+            /// Gets the total number of records
+            /// </summary>
+            public int TotalRecords { get; set; }
+
+            /// <summary>
+            /// Creates a new instance of PageOffsetList
+            /// </summary>
+            /// <param name="soldiers"></param>
+            public PageOffsetList(SimDatabase db)
+            {
+                TotalRecords = db.ExecuteScalar<int>("SELECT COUNT(*) FROM Soldier WHERE Retired=0");
+            }
+
+            public IList GetList()
+            {
+                // Return a list of page offsets based on "totalRecords" and "pageSize"
+                var pageOffsets = new List<int>();
+                for (int offset = 0; offset < TotalRecords; offset += DATA_GRID_PAGE_SIZE)
+                    pageOffsets.Add(offset);
+
+                return pageOffsets;
+            }
         }
     }
 }

@@ -41,10 +41,17 @@ namespace Perscom.Database
         public int Probability { get; set; }
 
         /// <summary>
+        /// Gets or sets the whether we select by <see cref="Rank.Id"/>
+        /// or by <see cref="Rank.Grade"/>.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool UseRankGrade { get; set; }
+
+        /// <summary>
         /// Indicates whether the soldier being selected is to recieve
         /// a <see cref="SoldierCareerAdjustment"/> for their new <see cref="Database.Rank"/>
         /// </summary>
-        [Column, Required]
+        [Column, Required, Default(0)]
         public bool NewCareerLength { get; set; }
 
         /// <summary>

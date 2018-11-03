@@ -71,6 +71,9 @@ namespace Perscom.Database
                         case "1.8":
                             MigrateTo_1_9();
                             break;
+                        case "1.9":
+                            MigrateTo_1_10();
+                            break;
                         default:
                             throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
                     }
@@ -81,6 +84,23 @@ namespace Perscom.Database
 
                 // Always perform a vacuum to optimize the database
                 Database.Execute("VACUUM;");
+            }
+        }
+
+        private void MigrateTo_1_10()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `UseRankGrade` INTEGER NOT NULL DEFAULT 0;");
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES(\"{0}\", {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.10"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
             }
         }
 

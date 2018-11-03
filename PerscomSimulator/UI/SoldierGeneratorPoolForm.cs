@@ -114,6 +114,7 @@ namespace Perscom
                 existTrackBar.Value = setting.Probability;
 
                 // Misc Settings
+                useRankGradeCheckBox.Checked = setting.UseRankGrade;
                 promotableCheckBox.Checked = setting.MustBePromotable;
                 lockedCheckBox.Checked = setting.NotLockedInBillet;
             }
@@ -150,6 +151,7 @@ namespace Perscom
             // Add new Setting
             Selected.RankId = ((Rank)rankSelect.SelectedItem).Id;
             Selected.Probability = existTrackBar.Value;
+            Selected.UseRankGrade = useRankGradeCheckBox.Checked;
             Selected.NewCareerLength = newCareerCheckBox.Checked;
             Selected.MustBePromotable = promotableCheckBox.Checked;
             Selected.NotLockedInBillet = lockedCheckBox.Checked;
