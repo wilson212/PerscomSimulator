@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CrossLite;
+using CrossLite.CodeFirst;
+using System;
 using System.Data.SQLite;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CrossLite;
-using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
@@ -14,7 +11,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(1, 10);
+        public static Version CurrentVersion { get; protected set; } = new Version(1, 12);
 
         /// <summary>
         /// Gets the current database tables version
@@ -93,6 +90,11 @@ namespace Perscom.Database
         /// <summary>
         /// Gets a set of <see cref="SoldierGeneratorPool"/> entites stored in the database
         /// </summary>
+        public DbSet<SoldierPoolFilter> SoldierPoolFiltering { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="SoldierGeneratorPool"/> entites stored in the database
+        /// </summary>
         public DbSet<SoldierPoolSorting> SoldierPoolSorting { get; set; }
 
         /// <summary>
@@ -151,6 +153,7 @@ namespace Perscom.Database
             Ranks = new DbSet<Rank>(this);
             SoldierGenerators = new DbSet<SoldierGenerator>(this);
             SoldierGeneratorPools = new DbSet<SoldierGeneratorPool>(this);
+            SoldierPoolFiltering = new DbSet<SoldierPoolFilter>(this);
             SoldierPoolSorting = new DbSet<SoldierPoolSorting>(this);
             SoldierCareerAdjustments = new DbSet<SoldierCareerAdjustment>(this);
             SoldierGeneratorCareers = new DbSet<SoldierGeneratorCareer>(this);
@@ -198,6 +201,7 @@ namespace Perscom.Database
                 CodeFirstSQLite.DropTable<Specialty>(this);
                 CodeFirstSQLite.DropTable<SoldierCareerAdjustment>(this);
                 CodeFirstSQLite.DropTable<SoldierGeneratorCareer>(this);
+                CodeFirstSQLite.DropTable<SoldierPoolFilter>(this);
                 CodeFirstSQLite.DropTable<SoldierPoolSorting>(this);
                 CodeFirstSQLite.DropTable<SoldierGeneratorPool>(this);
                 CodeFirstSQLite.DropTable<SoldierGenerator>(this);
@@ -219,6 +223,7 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<CareerLengthRange>(this);
                 CodeFirstSQLite.CreateTable<SoldierGenerator>(this);
                 CodeFirstSQLite.CreateTable<SoldierGeneratorPool>(this);
+                CodeFirstSQLite.CreateTable<SoldierPoolFilter>(this);
                 CodeFirstSQLite.CreateTable<SoldierPoolSorting>(this);
                 CodeFirstSQLite.CreateTable<SoldierGeneratorCareer>(this);
                 CodeFirstSQLite.CreateTable<SoldierCareerAdjustment>(this);

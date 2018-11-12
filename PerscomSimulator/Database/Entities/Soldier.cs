@@ -63,6 +63,12 @@ namespace Perscom.Database
         public int LastPromotionIterationId { get; set; }
 
         /// <summary>
+        /// Gets or sets the last Rank Gade change date for this soldier
+        /// </summary>
+        [Column, Required, Default(0)]
+        public int LastGradeChangeIterationId { get; set; }
+
+        /// <summary>
         /// Gets or sets whether this soldier is retired
         /// </summary>
         [Column, Default(false)]
@@ -117,6 +123,16 @@ namespace Perscom.Database
             OnUpdate = ReferentialIntegrity.Cascade
         )]
         protected virtual ForeignKey<IterationDate> FK_Promotion { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref=IterationDate"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("LastGradeChangeIterationId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<IterationDate> FK_Grade { get; set; }
 
 
         /// <summary>
@@ -198,6 +214,23 @@ namespace Perscom.Database
             {
                 LastPromotionIterationId = value.Id;
                 FK_Promotion?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IterationDate"/> that this <see cref="Soldier"/> 
+        /// earned his last <see cref="Promotion"/> that was a Grade change
+        /// </summary>
+        public IterationDate LastGradeChangeDate
+        {
+            get
+            {
+                return FK_Grade?.Fetch();
+            }
+            set
+            {
+                LastGradeChangeIterationId = value.Id;
+                FK_Grade?.Refresh();
             }
         }
 

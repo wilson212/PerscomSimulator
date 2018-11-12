@@ -236,7 +236,7 @@ namespace Perscom
             try
             {
                 using (AppDatabase db = new AppDatabase())
-                using (SimDatabase simDb = SimDatabase.CreateNew(db, "test.db"))
+                using (SimDatabase simDb = SimDatabase.CreateNew(db, "SimulationResult.db"))
                 {
                     // Show the TaskForm
                     TaskForm.Show(this, "Running Simulation", "Building Units...", true);
@@ -289,7 +289,7 @@ namespace Perscom
             finally
             {
                 // Enable Button
-                //generateButton.Enabled = true;
+                generateButton.Enabled = true;
             }
         }
 
@@ -307,17 +307,24 @@ namespace Perscom
 
         #region Menu Items
 
-        private void openReportMenuItem_Click(object sender, EventArgs e)
+        private async void openReportMenuItem_Click(object sender, EventArgs e)
         {
-            using (AppDatabase db = new AppDatabase())
-            using (SimDatabase simDb = SimDatabase.Open("test.db"))
-            {
-                using (SimResultViewForm form = new SimResultViewForm(simDb))
+            // Show Task Form!
+            TaskForm.Show(this, "Loading", "Opening existing simulation report... Please Wait", false);
+
+            // Open in a new thread
+            await Task.Run(() => 
+            { 
+                using (AppDatabase db = new AppDatabase())
+                using (SimDatabase simDb = SimDatabase.Open("SimulationResult.db"))
                 {
-                    TaskForm.CloseForm();
-                    form.ShowDialog();
+                    using (SimResultViewForm form = new SimResultViewForm(simDb))
+                    {
+                        TaskForm.CloseForm();
+                        form.ShowDialog();
+                    }
                 }
-            }
+            });
         }
 
         /// <summary>

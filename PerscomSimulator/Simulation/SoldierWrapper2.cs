@@ -42,7 +42,9 @@ namespace Perscom.Simulation
         /// <summary>
         /// 
         /// </summary>
-        public DateTime LastPromotionDate { get; set; }
+        //public DateTime LastPromotionDate { get; set; }
+
+        public DateTime LastGradeChangeDate { get; set; }
 
         public int TimeInService { get; set; }
 
@@ -67,33 +69,13 @@ namespace Perscom.Simulation
             var difference = soldier.ExitIterationId - soldier.EntryIterationId;
             EntryServiceDate = soldier.EntryServiceDate.Date;
             ExitServiceDate = EntryServiceDate.AddMonths(difference);
-            LastPromotionDate = soldier.LastPromotionDate.Date;
+            //LastPromotionDate = soldier.LastPromotionDate.Date;
+            LastGradeChangeDate = soldier.LastGradeChangeDate.Date;
 
-            TimeInGrade = LastPromotionDate.MonthDifference(currentDate);
+            TimeInGrade = LastGradeChangeDate.MonthDifference(currentDate);
             TimeInService = (soldier.Retired) 
                 ? EntryServiceDate.MonthDifference(ExitServiceDate) 
                 : EntryServiceDate.MonthDifference(currentDate);
-
-            // Figure Time in Grade
-            /* Time in Grade
-            var lastPromo = soldier.EntryServiceDate;
-
-            // Fill Past Assignments
-            foreach (Promotion info in soldier.Promotions.OrderByDescending(x => x.IterationId))
-            {
-                Rank toRank = info.ToRank;
-                Rank fromRank = info.FromRank;
-                char code = char.ToUpper(RankCache.GetCodeByRankType(info.ToRank.Type));
-                string desc = String.Empty;
-
-                if (toRank.Grade == soldier.Rank.Grade && toRank.Type == soldier.Rank.Type)
-                {
-                    lastPromo = info.Date;
-                }
-            }
-
-            TimeInGrade = LastPromotionDate.MonthDifference(lastPromo.Date);
-            */
         }
 
         public int GetTimeInService(IterationDate currentDate)

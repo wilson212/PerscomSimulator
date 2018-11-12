@@ -191,8 +191,7 @@ namespace Perscom.Database
         }
 
         /// <summary>
-        /// The total number of open positions (per month) that cannot be filled due to lack
-        /// of lower grade soldiers being promotable.
+        /// The total number of months that a position was filled by a stand in soldier or empty.
         /// </summary>
         [Column, Required]
         public int Deficit { get; set; }

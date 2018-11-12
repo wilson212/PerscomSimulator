@@ -1,39 +1,43 @@
 ﻿using CrossLite;
 using CrossLite.CodeFirst;
-using CrossLite.QueryBuilder;
 using System;
 
 namespace Perscom.Database
 {
     [Table]
-    [CompositeUnique(nameof(SoldierGeneratorPoolId), nameof(Precedence))]
-    public class SoldierPoolSorting : IEquatable<SoldierPoolSorting>
+    public class SoldierPoolFilter : IEquatable<SoldierPoolFilter>
     {
         #region Columns
 
         /// <summary>
-        /// The Unique SoldierGeneratorSetting ID (Row ID)
+        /// Gets or Sets the <see cref="SoldierGeneratorPool.Id"/> that this entity references
         /// </summary>
         [Column, PrimaryKey]
         public int SoldierGeneratorPoolId { get; protected set; }
 
         /// <summary>
-        /// Gets or Sets the <see cref="SoldierGenerator.Id"/> that this entity references
+        /// Indicates the order or priority this condition is applied
         /// </summary>
         [Column, PrimaryKey]
-        public SoldierSorting SortBy { get; set; }
-
-        /// <summary>
-        /// Indicates the order or priority this sorting is applied
-        /// </summary>
-        [Column, Required]
         public int Precedence { get; set; }
 
         /// <summary>
-        /// The sorting direction
+        /// 
         /// </summary>
         [Column, Required]
-        public Sorting Direction { get; set; }
+        public SoldierFilter FilterBy { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Column, Required]
+        public ConditionOperator Operator { get; set; }
+
+        /// <summary>
+        /// The condition value
+        /// </summary>
+        [Column, Required]
+        public int Value { get; set; }
 
         #endregion
 
@@ -78,12 +82,17 @@ namespace Perscom.Database
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool IsDuplicateOf(SoldierPoolSorting other)
+        public bool IsDuplicateOf(SoldierPoolFilter other)
         {
-            return (SoldierGeneratorPoolId == other.SoldierGeneratorPoolId && SortBy == other.SortBy);
+            return (
+                SoldierGeneratorPoolId == other.SoldierGeneratorPoolId
+                && Operator == other.Operator
+                && FilterBy == other.FilterBy
+                && Value == other.Value
+            );
         }
 
-        public bool Equals(SoldierPoolSorting other)
+        public bool Equals(SoldierPoolFilter other)
         {
             if (other == null) return false;
             return (this.IsDuplicateOf(other));

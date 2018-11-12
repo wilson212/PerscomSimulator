@@ -327,19 +327,21 @@ namespace Perscom
         /// <returns></returns>
         public double GetAverageDeficitRate(Rank rank)
         {
-            /*
-                UnitTemplate_OLD template = UnitTemplate_OLD.Load(ProcessingUnit.TemplateName);
-                int positions = template.SoldierCounts[type][grade];
-                int cumulative = positions * (TotalYearsRan * 12);
+            // Get the selected unit template
+            UnitTemplate template = unitSelect.SelectedItem as UnitTemplate;
+            if (template == null) return 0;
 
-                // Total number of soldiers who DID make this rank/grade
-                int totalDeficit = RankStatistics[type][grade].Deficit;
+            // Load the unit, so the soldier counts can be fetched
+            UnitStatistics stats = UnitBuilder.GetUnitStatistics(template);
+            int positions = stats.SoldierCountsByGrade[rank.Type][rank.Grade];
+            double cumulative = positions * (TotalYearsRan * 12);
 
-                if (cumulative == 0 || totalDeficit == 0) return 0;
+            // Total number of soldiers who DID make this rank/grade
+            int totalDeficit = RankStatistics[template.Id][rank.Type][rank.Grade].Deficit;
 
-                return Math.Round(((double)totalDeficit / cumulative) * 100, 2);
-            */
-            return 0;
+            return (cumulative == 0 || totalDeficit == 0)
+                ? 0
+                : Math.Round((totalDeficit / cumulative) * 100, 2);
         }
 
         private void DrawTabPageReport(int index)
@@ -520,7 +522,10 @@ namespace Perscom
             // Plot the tptal number of retirements by rank/grade
             foreach (var stat in soldierData.OrderBy(x => x.Key))
             {
-                Rank rank = ranks[stat.Key].First();
+                Rank rank = ranks[stat.Key].FirstOrDefault();
+                if (rank == null)
+                    continue;
+
                 int i = chart3.Series[0].Points.AddY(stat.Value.TotalRetirements);
                 DataPoint point = chart3.Series[0].Points[i];
                 point.AxisLabel = rank.Name;
@@ -968,7 +973,7 @@ namespace Perscom
                         .Where("PositionId", Comparison.Equals, posId)
                         .Select("SoldierId")
                         .InnerJoin(nameof(Soldier)).On("Id").Equals(nameof(Assignment), "SoldierId")
-                        .Select("FirstName", "LastName")
+                        .Select("FirstName", "LastName", "RankId")
                         .ExecuteQuery();
 
                     // Position is empty
@@ -988,7 +993,10 @@ namespace Perscom
                     }
                     else
                     {
+                        // Show soldier rank and name!
                         string name = String.Concat(row["FirstName"], " ", row["LastName"]);
+                        rankId = int.Parse(row["RankId"].ToString());
+                        rank = RankCache.RanksById[rankId];
 
                         // Add billit to listViewGroup
                         ListViewItem item = new ListViewItem(name);

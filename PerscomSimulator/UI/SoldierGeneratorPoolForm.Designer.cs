@@ -30,8 +30,21 @@
         {
             this.components = new System.ComponentModel.Container();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.orRadioButton = new System.Windows.Forms.RadioButton();
+            this.andRadioButton = new System.Windows.Forms.RadioButton();
+            this.filterListView = new System.Windows.Forms.ListViewWithReordering();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addNewFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.removeFilterItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.listView1 = new System.Windows.Forms.ListViewWithReordering();
+            this.sortingListView = new System.Windows.Forms.ListViewWithReordering();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -48,6 +61,7 @@
             this.promotableCheckBox = new System.Windows.Forms.CheckBox();
             this.newCareerCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.useRankGradeCheckBox = new System.Windows.Forms.CheckBox();
             this.rankPicture = new System.Windows.Forms.PictureBox();
             this.rankSelect = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -55,8 +69,9 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.useRankGradeCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -69,6 +84,7 @@
             // 
             // mainPanel
             // 
+            this.mainPanel.Controls.Add(this.groupBox4);
             this.mainPanel.Controls.Add(this.groupBox2);
             this.mainPanel.Controls.Add(this.groupBox3);
             this.mainPanel.Controls.Add(this.groupBox1);
@@ -78,39 +94,157 @@
             this.mainPanel.Size = new System.Drawing.Size(944, 386);
             this.mainPanel.TabIndex = 11;
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label1);
+            this.groupBox4.Controls.Add(this.orRadioButton);
+            this.groupBox4.Controls.Add(this.andRadioButton);
+            this.groupBox4.Controls.Add(this.filterListView);
+            this.groupBox4.Location = new System.Drawing.Point(513, 20);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(417, 173);
+            this.groupBox4.TabIndex = 22;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Filtering";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(71, 21);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(52, 13);
+            this.label1.TabIndex = 47;
+            this.label1.Text = "Requires:";
+            // 
+            // orRadioButton
+            // 
+            this.orRadioButton.AutoSize = true;
+            this.orRadioButton.Location = new System.Drawing.Point(180, 19);
+            this.orRadioButton.Name = "orRadioButton";
+            this.orRadioButton.Size = new System.Drawing.Size(43, 17);
+            this.orRadioButton.TabIndex = 48;
+            this.orRadioButton.Text = "Any";
+            this.orRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // andRadioButton
+            // 
+            this.andRadioButton.AutoSize = true;
+            this.andRadioButton.Checked = true;
+            this.andRadioButton.Location = new System.Drawing.Point(134, 19);
+            this.andRadioButton.Name = "andRadioButton";
+            this.andRadioButton.Size = new System.Drawing.Size(36, 17);
+            this.andRadioButton.TabIndex = 47;
+            this.andRadioButton.TabStop = true;
+            this.andRadioButton.Text = "All";
+            this.andRadioButton.UseVisualStyleBackColor = true;
+            this.andRadioButton.CheckedChanged += new System.EventHandler(this.andRadioButton_CheckedChanged);
+            // 
+            // filterListView
+            // 
+            this.filterListView.AllowDrop = true;
+            this.filterListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.filterListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.filterListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader4,
+            this.columnHeader5,
+            this.columnHeader6,
+            this.columnHeader7});
+            this.filterListView.ContextMenuStrip = this.contextMenuStrip2;
+            this.filterListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.filterListView.FullRowSelect = true;
+            this.filterListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.filterListView.Location = new System.Drawing.Point(3, 16);
+            this.filterListView.MultiSelect = false;
+            this.filterListView.Name = "filterListView";
+            this.filterListView.Scrollable = false;
+            this.filterListView.Size = new System.Drawing.Size(411, 154);
+            this.filterListView.TabIndex = 0;
+            this.filterListView.UseCompatibleStateImageBehavior = false;
+            this.filterListView.View = System.Windows.Forms.View.Details;
+            this.filterListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.filterListView_ColumnWidthChanging);
+            this.filterListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView2_DragDrop);
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "";
+            this.columnHeader4.Width = 55;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "";
+            this.columnHeader5.Width = 175;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "";
+            this.columnHeader6.Width = 125;
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "";
+            this.columnHeader7.Width = 40;
+            // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addNewFilterToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.removeFilterItemToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(174, 54);
+            // 
+            // addNewFilterToolStripMenuItem
+            // 
+            this.addNewFilterToolStripMenuItem.Name = "addNewFilterToolStripMenuItem";
+            this.addNewFilterToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.addNewFilterToolStripMenuItem.Text = "Add New Filter";
+            this.addNewFilterToolStripMenuItem.Click += new System.EventHandler(this.addNewFilterToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(170, 6);
+            // 
+            // removeFilterItemToolStripMenuItem
+            // 
+            this.removeFilterItemToolStripMenuItem.Name = "removeFilterItemToolStripMenuItem";
+            this.removeFilterItemToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.removeFilterItemToolStripMenuItem.Text = "Remove Filter Item";
+            this.removeFilterItemToolStripMenuItem.Click += new System.EventHandler(this.removeFilterItemToolStripMenuItem_Click);
+            // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.listView1);
-            this.groupBox2.Location = new System.Drawing.Point(510, 20);
+            this.groupBox2.Controls.Add(this.sortingListView);
+            this.groupBox2.Location = new System.Drawing.Point(510, 199);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(417, 352);
+            this.groupBox2.Size = new System.Drawing.Size(417, 173);
             this.groupBox2.TabIndex = 21;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Selection Sorting";
+            this.groupBox2.Text = "Sorting";
             // 
-            // listView1
+            // sortingListView
             // 
-            this.listView1.AllowDrop = true;
-            this.listView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.sortingListView.AllowDrop = true;
+            this.sortingListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.sortingListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.sortingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
-            this.listView1.ContextMenuStrip = this.contextMenuStrip1;
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.FullRowSelect = true;
-            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listView1.Location = new System.Drawing.Point(3, 16);
-            this.listView1.MultiSelect = false;
-            this.listView1.Name = "listView1";
-            this.listView1.Scrollable = false;
-            this.listView1.Size = new System.Drawing.Size(411, 333);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listView1_ColumnWidthChanging);
-            this.listView1.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView1_DragDrop);
+            this.sortingListView.ContextMenuStrip = this.contextMenuStrip1;
+            this.sortingListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sortingListView.FullRowSelect = true;
+            this.sortingListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.sortingListView.Location = new System.Drawing.Point(3, 16);
+            this.sortingListView.MultiSelect = false;
+            this.sortingListView.Name = "sortingListView";
+            this.sortingListView.Scrollable = false;
+            this.sortingListView.Size = new System.Drawing.Size(411, 154);
+            this.sortingListView.TabIndex = 0;
+            this.sortingListView.UseCompatibleStateImageBehavior = false;
+            this.sortingListView.View = System.Windows.Forms.View.Details;
+            this.sortingListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listView1_ColumnWidthChanging);
+            this.sortingListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.listView1_DragDrop);
             // 
             // columnHeader1
             // 
@@ -256,6 +390,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Rank Pool";
             // 
+            // useRankGradeCheckBox
+            // 
+            this.useRankGradeCheckBox.AutoSize = true;
+            this.useRankGradeCheckBox.Location = new System.Drawing.Point(174, 74);
+            this.useRankGradeCheckBox.Name = "useRankGradeCheckBox";
+            this.useRankGradeCheckBox.Size = new System.Drawing.Size(203, 17);
+            this.useRankGradeCheckBox.TabIndex = 40;
+            this.useRankGradeCheckBox.Text = "Includes all Ranks of the same Grade";
+            this.useRankGradeCheckBox.UseVisualStyleBackColor = true;
+            // 
             // rankPicture
             // 
             this.rankPicture.Location = new System.Drawing.Point(20, 27);
@@ -330,16 +474,6 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Generate Soldier From Existing Soldier Pool";
             // 
-            // useRankGradeCheckBox
-            // 
-            this.useRankGradeCheckBox.AutoSize = true;
-            this.useRankGradeCheckBox.Location = new System.Drawing.Point(174, 74);
-            this.useRankGradeCheckBox.Name = "useRankGradeCheckBox";
-            this.useRankGradeCheckBox.Size = new System.Drawing.Size(203, 17);
-            this.useRankGradeCheckBox.TabIndex = 40;
-            this.useRankGradeCheckBox.Text = "Includes all Ranks of the same Grade";
-            this.useRankGradeCheckBox.UseVisualStyleBackColor = true;
-            // 
             // SoldierGeneratorPoolForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -356,6 +490,9 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Soldier Generator Pool";
             this.mainPanel.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.contextMenuStrip2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -390,7 +527,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TrackBar existTrackBar;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ListViewWithReordering listView1;
+        private System.Windows.Forms.ListViewWithReordering sortingListView;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
@@ -399,5 +536,18 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem removeItemToolStripMenuItem;
         private System.Windows.Forms.CheckBox useRankGradeCheckBox;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.ListViewWithReordering filterListView;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.RadioButton orRadioButton;
+        private System.Windows.Forms.RadioButton andRadioButton;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem addNewFilterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem removeFilterItemToolStripMenuItem;
     }
 }

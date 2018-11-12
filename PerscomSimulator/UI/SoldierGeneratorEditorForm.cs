@@ -148,6 +148,20 @@ namespace Perscom
                     builder.Append("Not Locked In Billet");
                 }
 
+                // Add filter clause
+                if (setting.SoldierFiltering != null && setting.SoldierFiltering.Count() > 0)
+                {
+                    if (builder.Length > 0)
+                        builder.Append(", ");
+                    builder.Append("Filtered");
+                }
+                else if (setting.TemporarySoldierFiltering != null && setting.TemporarySoldierFiltering.Count > 0)
+                {
+                    if (builder.Length > 0)
+                        builder.Append(", ");
+                    builder.Append("Filtered");
+                }
+
                 // Add orderby clause
                 if (setting.SoldierSorting != null && setting.SoldierSorting.Count() > 0)
                 {
@@ -402,6 +416,16 @@ namespace Perscom
                                 db.SoldierPoolSorting.Add(sort);
                             }
                         }
+
+                        // Do we need to add filtering?
+                        if (item.TemporarySoldierFiltering != null)
+                        {
+                            foreach (var filter in item.TemporarySoldierFiltering)
+                            {
+                                filter.SoldierPool = item;
+                                db.SoldierPoolFiltering.Add(filter);
+                            }
+                        }
                     }
 
                     // Update spawn pools
@@ -437,6 +461,20 @@ namespace Perscom
                             {
                                 sort.SoldierPool = item;
                                 db.SoldierPoolSorting.Add(sort);
+                            }
+                        }
+
+                        // Do we need to add filtering?
+                        if (item.TemporarySoldierFiltering != null)
+                        {
+                            // Remove all old ones!
+                            db.Execute($"DELETE FROM `SoldierPoolFilter` WHERE `SoldierGeneratorPoolId`={item.Id}");
+
+                            // Add new
+                            foreach (var filter in item.TemporarySoldierFiltering)
+                            {
+                                filter.SoldierPool = item;
+                                db.SoldierPoolFiltering.Add(filter);
                             }
                         }
                     }

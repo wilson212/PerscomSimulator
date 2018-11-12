@@ -70,6 +70,12 @@ namespace Perscom.Database
         public bool NotLockedInBillet { get; set; }
 
         /// <summary>
+        /// Gets or sets the logic operator when using filtering
+        /// </summary>
+        [Column, Required, Default(0)]
+        public LogicOperator FilterLogic { get; set; }
+
+        /// <summary>
         /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
@@ -191,6 +197,15 @@ namespace Perscom.Database
         }
 
         /// <summary>
+        /// Gets a list of <see cref="SoldierPoolFilter"/> entities that reference this 
+        /// <see cref="SoldierGeneratorPool"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<SoldierPoolFilter> SoldierFiltering { get; set; }
+
+        /// <summary>
         /// Gets a list of <see cref="SoldierPoolSorting"/> entities that reference this 
         /// <see cref="SoldierGeneratorPool"/>
         /// </summary>
@@ -204,6 +219,8 @@ namespace Perscom.Database
         public CareerGenerator TemporaryCareer { get; set; }
 
         public List<SoldierPoolSorting> TemporarySoldierSorting { get; set; }
+
+        public List<SoldierPoolFilter> TemporarySoldierFiltering { get; set; }
 
         /// <summary>
         /// Compares a <see cref="SoldierGeneratorPool"/> with this one, and returns whether

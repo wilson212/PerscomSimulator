@@ -12,7 +12,7 @@ namespace Perscom.Simulation
         public string Name => $"{Soldier.FirstName} {Soldier.LastName}";
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="Database.Soldier"/> object
         /// </summary>
         public Soldier Soldier { get; protected set; }
 
@@ -22,20 +22,25 @@ namespace Perscom.Simulation
         public Rank Rank { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets the current soldier Assignment, if any
         /// </summary>
         public Assignment Assignment { get; protected set; } = new Assignment();
 
         /// <summary>
-        /// 
+        /// Gets the entry Iteration Date this soldier was created in
         /// </summary>
         public IterationDate EntryServiceDate { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="IterationDate"/> from when this soldier's last 
+        /// <see cref="Database.Rank"/> change occured
         /// </summary>
         public IterationDate LastPromotionDate { get; protected set; }
 
+        /// <summary>
+        /// Gets the <see cref="IterationDate"/> of when this soldier had their 
+        /// <see cref="Rank.Grade"/> changed.
+        /// </summary>
         public IterationDate LastGradeChangeDate { get; protected set; }
 
         /// <summary>
@@ -51,8 +56,14 @@ namespace Perscom.Simulation
         /// <summary>
         /// Gets a list of billets this soldier has held
         /// </summary>
+        /// <remarks>
+        /// [Billet.Id => BilletWrapper]
+        /// </remarks>
         public Dictionary<int, BilletWrapper> BilletsHeld { get; set; } = new Dictionary<int, BilletWrapper>();
 
+        /// <summary>
+        /// Used for the Garbage Collector
+        /// </summary>
         public bool Disposed { get; private set; }
 
         /// <summary>
@@ -190,6 +201,7 @@ namespace Perscom.Simulation
             if (newRank.Grade > Rank.Grade || newRank.Type != Rank.Type)
             {
                 LastGradeChangeDate = date;
+                Soldier.LastGradeChangeDate = date;
             }
 
             // Set new rank
@@ -353,7 +365,7 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public int GetTimeUntilRetirement(IterationDate currentDate)
         {
-            return currentDate.Id - Soldier.ExitIterationId;
+            return Soldier.ExitIterationId - currentDate.Id;
         }
 
         /// <summary>
@@ -395,6 +407,11 @@ namespace Perscom.Simulation
             return false;
         }
 
+        /// <summary>
+        /// Indicates whether this soldier is at or past thier Max Tour Length
+        /// </summary>
+        /// <param name="currentDate"></param>
+        /// <returns></returns>
         public bool IsPastMaxTourLength(IterationDate currentDate)
         {
             if (Position == null) return true;
@@ -423,12 +440,22 @@ namespace Perscom.Simulation
             return Position.Billet.MinTourLength > timePassed;
         }
 
+        /// <summary>
+        /// Removes this soldier recursivly from the specified unit
+        /// and all of it's parent units
+        /// </summary>
+        /// <param name="unit"></param>
         protected void RemoveSoldierRecursively(UnitWrapper unit)
         {
             // Remove soldier from old unit
             unit.RemoveSoldier(this);
         }
 
+        /// <summary>
+        /// Adds this soldier recursivly from the specified unit
+        /// and all of it's parent units
+        /// </summary>
+        /// <param name="unit"></param>
         protected void AddSoldierRecursively(UnitWrapper unit)
         {
             unit.AddSoldier(this);

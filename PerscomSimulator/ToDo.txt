@@ -1,4 +1,5 @@
 ﻿ - Track specialty transitions for statistics
- - Add the deficit rating for ranks AND positions
+ - Add the deficit rating for billets and positions
  - Add UnitTemplate statistics
- - Add WHERE options to the SoldierGenerator when selecting from a pool
+ - Introduce a sort of Promotion Points system, where billets can accumulate
+	promotion points for soldiers who sit in those billets

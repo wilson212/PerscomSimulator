@@ -17,6 +17,8 @@ namespace Perscom
 
         protected List<SoldierPoolSorting> SortingOptions { get; set; } = new List<SoldierPoolSorting>();
 
+        protected List<SoldierPoolFilter> FilterOptions { get; set; } = new List<SoldierPoolFilter>();
+
         private CareerGenerator SelectedNewCareer { get; set; }
 
         private List<CareerGenerator> CareerGens { get; set; }
@@ -47,8 +49,21 @@ namespace Perscom
                 foreach (var length in CareerGens)
                     careerGeneratorBox.Items.Add(length);
 
+                // Select Career Generator Default
                 if (CareerGens.Count > 0)
                     careerGeneratorBox.SelectedIndex = 0;
+
+                // Set filter logic
+                if (setting.FilterLogic == LogicOperator.And)
+                {
+                    //orRadioButton.Checked = false;
+                    andRadioButton.Checked = true;
+                }
+                else
+                {
+                    //andRadioButton.Checked = false;
+                    orRadioButton.Checked = true;
+                }
 
                 // Get selected career adjustment
                 if (setting.NewCareerLength || setting.TemporaryCareer != null)
@@ -69,22 +84,22 @@ namespace Perscom
                 }
 
                 // Add sorting options
-                IEnumerable<SoldierPoolSorting> items = null;
+                IEnumerable<SoldierPoolSorting> sorting = null;
                 if (setting.TemporarySoldierSorting != null && setting.TemporarySoldierSorting.Count > 0)
                 {
-                    items = setting.TemporarySoldierSorting;
+                    sorting = setting.TemporarySoldierSorting;
                 }
                 else if (setting.SoldierSorting != null)
                 {
-                    items = setting.SoldierSorting;
+                    sorting = setting.SoldierSorting;
                 }
 
                 // Add items if we have them
-                if (items != null && items.Count() > 0)
+                if (sorting != null && sorting.Count() > 0)
                 {
                     // Order them
                     int i = 0;
-                    var ordered = items.OrderBy(x => x.Precedence);
+                    var ordered = sorting.OrderBy(x => x.Precedence);
                     foreach (var thing in ordered)
                     {
                         SortingOptions.Add(thing);
@@ -94,7 +109,40 @@ namespace Perscom
                         item.SubItems.Add(thing.SortBy.ToString());
                         item.SubItems.Add(thing.Direction.ToString());
                         item.Tag = thing;
-                        listView1.Items.Add(item);
+                        sortingListView.Items.Add(item);
+                        i++;
+                    }
+                }
+
+                // Add filtering options
+                IEnumerable<SoldierPoolFilter> filtering = null;
+                if (setting.TemporarySoldierFiltering != null && setting.TemporarySoldierFiltering.Count > 0)
+                {
+                    filtering = setting.TemporarySoldierFiltering;
+                }
+                else if (setting.SoldierFiltering != null)
+                {
+                    filtering = setting.SoldierFiltering;
+                }
+
+                // Add items if we have them
+                if (filtering != null && filtering.Count() > 0)
+                {
+                    // Order them
+                    int i = 0;
+                    var ordered = filtering.OrderBy(x => x.Precedence);
+                    foreach (var thing in ordered)
+                    {
+                        FilterOptions.Add(thing);
+
+                        var req = (andRadioButton.Checked) ? "And: " : "Or: ";
+                        var text = (i > 0) ? req : "Where:";
+                        var item = new ListViewItem(text);
+                        item.SubItems.Add(thing.FilterBy.ToString());
+                        item.SubItems.Add(thing.Operator.ToString());
+                        item.SubItems.Add(thing.Value.ToString());
+                        item.Tag = thing;
+                        filterListView.Items.Add(item);
                         i++;
                     }
                 }
@@ -155,6 +203,7 @@ namespace Perscom
             Selected.NewCareerLength = newCareerCheckBox.Checked;
             Selected.MustBePromotable = promotableCheckBox.Checked;
             Selected.NotLockedInBillet = lockedCheckBox.Checked;
+            Selected.FilterLogic = (andRadioButton.Checked) ? LogicOperator.And : LogicOperator.Or;
 
             if (newCareerCheckBox.Checked)
             {
@@ -167,12 +216,12 @@ namespace Perscom
             }
 
             // Re-apply sorting
-            if (listView1.Items.Count > 0)
+            if (sortingListView.Items.Count > 0)
             {
                 SortingOptions = new List<SoldierPoolSorting>();
 
                 int i = 1;
-                foreach (ListViewItem item in listView1.Items)
+                foreach (ListViewItem item in sortingListView.Items)
                 {
                     var newItem = (SoldierPoolSorting)item.Tag;
                     newItem.Precedence = i++;
@@ -180,6 +229,22 @@ namespace Perscom
                 }
 
                 Selected.TemporarySoldierSorting = SortingOptions;
+            }
+
+            // Re-apply filtering
+            if (filterListView.Items.Count > 0)
+            {
+                FilterOptions = new List<SoldierPoolFilter>();
+
+                int i = 1;
+                foreach (ListViewItem item in filterListView.Items)
+                {
+                    var newItem = (SoldierPoolFilter)item.Tag;
+                    newItem.Precedence = i++;
+                    FilterOptions.Add(newItem);
+                }
+
+                Selected.TemporarySoldierFiltering = FilterOptions;
             }
 
             this.DialogResult = DialogResult.OK;
@@ -253,12 +318,12 @@ namespace Perscom
                     SortingOptions.Add(sort);
 
                     // Add item
-                    var text = (listView1.Items.Count > 0) ? "Then By:" : "Order By:";
+                    var text = (sortingListView.Items.Count > 0) ? "Then By:" : "Order By:";
                     var item = new ListViewItem(text);
                     item.SubItems.Add(form.SortBy.ToString());
                     item.SubItems.Add(form.Direction.ToString());
                     item.Tag = sort;
-                    listView1.Items.Add(item);
+                    sortingListView.Items.Add(item);
                 }
             }
         }
@@ -266,7 +331,7 @@ namespace Perscom
         private void removeItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Get selected item
-            ListViewItem item = listView1.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
+            ListViewItem item = sortingListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
             if (item == null) return;
 
             // Get item index
@@ -276,11 +341,11 @@ namespace Perscom
 
             // Remove item from list
             SortingOptions.RemoveAt(index);
-            listView1.Items.Remove(item);
+            sortingListView.Items.Remove(item);
 
             // Re-apply text
             int i = 0;
-            foreach (ListViewItem item2 in listView1.Items)
+            foreach (ListViewItem item2 in sortingListView.Items)
             {
                 item2.Text = (i > 0) ? "Then By:" : "Order By:";
                 i++;
@@ -290,7 +355,7 @@ namespace Perscom
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
             // Get selected item
-            ListViewItem item = listView1.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
+            ListViewItem item = sortingListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
             removeItemToolStripMenuItem.Enabled = (item != null);
         }
 
@@ -298,7 +363,7 @@ namespace Perscom
         {
             // Re-apply text
             int i = 0;
-            foreach (ListViewItem item in listView1.Items)
+            foreach (ListViewItem item in sortingListView.Items)
             {
                 item.Text = (i > 0) ? "Then By:" : "Order By:";
                 i++;
@@ -308,7 +373,106 @@ namespace Perscom
         private void listView1_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
         {
             e.Cancel = true;
-            e.NewWidth = listView1.Columns[e.ColumnIndex].Width;
+            e.NewWidth = sortingListView.Columns[e.ColumnIndex].Width;
+        }
+
+        private void filterListView_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = filterListView.Columns[e.ColumnIndex].Width;
+        }
+
+        private void addNewFilterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var form = new SoldierConditionForm(SoldierFilter.TimeInService, ConditionOperator.Equals, 0))
+            {
+                var result = form.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    // Ensure we aren't a duplicate!
+                    var filter = new SoldierPoolFilter
+                    {
+                        SoldierPool = Selected,
+                        FilterBy = form.Filter,
+                        Operator = form.Operator,
+                        Value = form.Value
+                    };
+
+                    if (FilterOptions.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
+                    {
+                        ShowErrorMessage("No duplicates allowed. Filter option already exists!");
+                        return;
+                    }
+
+                    FilterOptions.Add(filter);
+
+                    // Add item
+                    var op = (andRadioButton.Checked) ? "And: " : "Or: ";
+                    var text = (filterListView.Items.Count > 0) ? op : "Where:";
+                    var item = new ListViewItem(text);
+                    item.SubItems.Add(form.Filter.ToString());
+                    item.SubItems.Add(form.Operator.ToString());
+                    item.SubItems.Add(form.Value.ToString());
+                    item.Tag = filter;
+                    filterListView.Items.Add(item);
+                }
+            }
+        }
+
+        private void removeFilterItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Get selected item
+            ListViewItem item = filterListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
+            if (item == null) return;
+
+            // Get item index
+            var option = (SoldierPoolFilter)item.Tag;
+            int index = FilterOptions.FindIndex(x => x.IsDuplicateOf(option));
+            if (index < 0) return;
+
+            // Remove item from list
+            FilterOptions.RemoveAt(index);
+            filterListView.Items.Remove(item);
+
+            // Re-apply text
+            int i = 0;
+            var op = (andRadioButton.Checked) ? "And: " : "Or: ";
+            foreach (ListViewItem item2 in filterListView.Items)
+            {
+                item2.Text = (i > 0) ? op : "Where:"; ;
+                i++;
+            }
+        }
+
+        private void contextMenuStrip2_Opening(object sender, CancelEventArgs e)
+        {
+            // Get selected item
+            ListViewItem item = filterListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
+            removeFilterItemToolStripMenuItem.Enabled = (item != null);
+        }
+
+        private void listView2_DragDrop(object sender, DragEventArgs e)
+        {
+            // Re-apply text
+            int i = 0;
+            var op = (andRadioButton.Checked) ? "And: " : "Or: ";
+            foreach (ListViewItem item in filterListView.Items)
+            {
+                item.Text = (i > 0) ? op : "Where:"; ;
+                i++;
+            }
+        }
+
+        private void andRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            // Re-apply text
+            int i = 0;
+            var op = (andRadioButton.Checked) ? "And: " : "Or: ";
+            foreach (ListViewItem item in filterListView.Items)
+            {
+                item.Text = (i > 0) ? op : "Where:"; ;
+                i++;
+            }
         }
     }
 }

@@ -103,11 +103,9 @@ namespace Perscom
         /// </summary>
         protected static RankType[] RankTypes { get; set; } = Enum.GetValues(typeof(RankType)).Cast<RankType>().ToArray();
 
-        protected Dictionary<int, IOrderedEnumerable<SoldierPoolSorting>> SoldierPoolSorting
-        {
-            get;
-            set;
-        }
+        protected Dictionary<int, IOrderedEnumerable<SoldierPoolSorting>> SoldierPoolSorting { get; set; }
+
+        protected Dictionary<int, IOrderedEnumerable<SoldierPoolFilter>> SoldierPoolFiltering { get; set; }
 
         /// <summary>
         /// Creates a new Simulator instance
@@ -132,14 +130,22 @@ namespace Perscom
                 SoldierGenerators.Add(generator.Id, generator);
             }
 
-            // Load and Cache Soldier Pool Sortings!
+            // Load and Cache Soldier Pool Sortings and Filterings!
+            SoldierPoolFiltering = new Dictionary<int, IOrderedEnumerable<SoldierPoolFilter>>();
             SoldierPoolSorting = new Dictionary<int, IOrderedEnumerable<SoldierPoolSorting>>();
             foreach (var item in db.SoldierGeneratorPools)
             {
-                var sorts = item.SoldierSorting;
-                if (sorts != null && sorts.Count() > 0)
+                var sorts = item.SoldierSorting?.ToArray();
+                var filters = item.SoldierFiltering?.ToArray();
+
+                if (sorts != null && sorts.Length > 0)
                 {
                     SoldierPoolSorting.Add(item.Id, sorts.OrderBy(x => x.Precedence));
+                }
+
+                if (filters != null && filters.Length > 0)
+                {
+                    SoldierPoolFiltering.Add(item.Id, filters.OrderBy(x => x.Precedence));
                 }
             }
         }
@@ -396,7 +402,12 @@ namespace Perscom
 
                 // If we could not find someone to fill the position
                 if (soldier == null)
+                {
+                    if (position.IsEmpty)
+                        LogDeficit(position);
+
                     continue;
+                }
 
                 // Define soldier vars
                 PromotableStatus status;
@@ -454,6 +465,10 @@ namespace Perscom
                         // Do not log promotion since this is lateral
                         soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
                     }
+                }
+                else if (soldier.IsStandIn())
+                {
+                    LogDeficit(position);
                 }
             }
         }
@@ -851,6 +866,30 @@ namespace Perscom
             }
         }
 
+        private void LogDeficit(PositionWrapper position)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                int grade = position.Billet.Rank.Grade;
+                var type = position.Billet.Rank.Type;
+                int specId = position.Billet.Specialty?.Id ?? -1;
+                UnitWrapper parentUnit = position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+                    RankStatistics[templateId][type][grade].Deficit += 1;
+
+                    if (specId >= 0)
+                        SpecialtyStatistics[templateId][type][grade][specId].Deficit += 1;
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
+            }
+        }
+
         /// <summary>
         /// Initially populates the soldiers at the start of a simulation
         /// </summary>
@@ -951,6 +990,7 @@ namespace Perscom
                     LastName = NameGenerator.GenerateRandomLastName(),
                     EntryIterationId = CurrentIterationDate.Id,
                     LastPromotionIterationId = CurrentIterationDate.Id,
+                    LastGradeChangeIterationId = CurrentIterationDate.Id,
                     RankId = position.Billet.Rank.Id,
                     SpecialtyId = position.Billet.Specialty.Id
                 };
@@ -984,7 +1024,7 @@ namespace Perscom
                     soldiers = soldiers.Where(x => x.Rank.Id == setting.Rank.Id);
 
                 // Find best soldier for lateral movement
-                wrapper = FindCrossPoolSoldier(soldiers, setting, position);
+                wrapper = FindCrossPoolSoldier(soldiers.ToList(), setting, position);
 
                 // Grab our top filtered soldier
                 if (wrapper != null)
@@ -1014,27 +1054,57 @@ namespace Perscom
         /// <param name="soldiers"></param>
         /// <param name="setting"></param>
         /// <returns></returns>
-        private SoldierWrapper FindCrossPoolSoldier(
-            IEnumerable<SoldierWrapper> soldiers, 
-            SpawnedSoldier setting, 
-            PositionWrapper position)
+        private SoldierWrapper FindCrossPoolSoldier(List<SoldierWrapper> soldiers, SpawnedSoldier setting, PositionWrapper position)
         {
-            // Apply soldier ordering
-            var list = new List<SoldierWrapper>(soldiers);
+            // Quit if we have no soldiers!
+            if (soldiers.Count == 0)
+                return null;
+
+            //
+            // 1. Apply filtering
+            //
+            if (SoldierPoolFiltering.ContainsKey(setting.Pool.Id))
+            {
+                var items = SoldierPoolFiltering[setting.Pool.Id];
+                if (setting.Pool.FilterLogic == LogicOperator.And)
+                {
+                    foreach (var filter in items)
+                    {
+                        soldiers = FilterSoldierList(soldiers, filter.FilterBy, filter.Operator, filter.Value).ToList();
+                    }
+                }
+                else
+                {
+                    HashSet<SoldierWrapper> people = new HashSet<SoldierWrapper>();
+                    foreach (var filter in items)
+                    {
+                        people.UnionWith(FilterSoldierList(soldiers, filter.FilterBy, filter.Operator, filter.Value));
+                    }
+
+                    soldiers = people.ToList();
+                }
+            }
+
+            //
+            // 2. Apply soldier ordering
+            //
             if (SoldierPoolSorting.ContainsKey(setting.Pool.Id))
             {
-                var oList = list.OrderBy(x => 1);
+                var oList = soldiers.OrderBy(x => 1);
                 var items = SoldierPoolSorting[setting.Pool.Id];
                 foreach (var sort in items)
                 {
                     oList = OrderSoldierList(oList, sort.SortBy, sort.Direction);
                 }
 
-                list = oList.ToList();
+                soldiers = oList.ToList();
             }
 
+            //
+            // 3. Select the first elegible solder
+            //
             PromotableStatus status;
-            foreach (var soldier in list)
+            foreach (var soldier in soldiers)
             {
                 // Must be promotable?
                 if (setting.Pool.MustBePromotable)
@@ -1055,6 +1125,54 @@ namespace Perscom
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// This method is used to filter soldiers using the given SoldierPoolFilter, operator and value
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="filterBy"></param>
+        /// <param name="operator"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private IEnumerable<SoldierWrapper> FilterSoldierList(
+            IEnumerable<SoldierWrapper> list, 
+            SoldierFilter filterBy, 
+            ConditionOperator @operator, 
+            int value)
+        {
+            switch (filterBy)
+            {
+                default:
+                case SoldierFilter.TimeInBillet:
+                    return list.Where(x => EvaluateExpression(x.GetTimeInBillet(CurrentIterationDate), @operator, value));
+                case SoldierFilter.TimeInGrade:
+                    return list.Where(x => EvaluateExpression(x.GetTimeInGrade(CurrentIterationDate), @operator, value));
+                case SoldierFilter.TimeInService:
+                    return list.Where(x => EvaluateExpression(x.GetTimeInService(CurrentIterationDate), @operator, value));
+                case SoldierFilter.TimeToRetirement:
+                    return list.Where(x => EvaluateExpression(x.GetTimeUntilRetirement(CurrentIterationDate), @operator, value));
+            }
+        }
+
+        private bool EvaluateExpression(int value1, ConditionOperator @operator, int value2)
+        {
+            switch (@operator)
+            {
+                default:
+                case ConditionOperator.Equals:
+                    return (value1 == value2);
+                case ConditionOperator.GreaterThan:
+                    return (value1 > value2);
+                case ConditionOperator.GreaterThanOrEqualTo:
+                    return (value1 >= value2);
+                case ConditionOperator.LessThan:
+                    return (value1 < value2);
+                case ConditionOperator.LessThanOrEqualTo:
+                    return (value1 <= value2);
+                case ConditionOperator.NotEqualTo:
+                    return (value1 != value2);
+            }
         }
 
         /// <summary>
