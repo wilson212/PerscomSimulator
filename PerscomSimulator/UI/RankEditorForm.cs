@@ -169,7 +169,7 @@ namespace Perscom
                 ShowErrorMessage("Minimum time in grade is greater than the Maximum!");
                 return;
             }
-            else if (promotableBox.Value >= maxTigBox.Value)
+            else if (maxTigBox.Value > 0 && promotableBox.Value >= maxTigBox.Value)
             {
                 ShowErrorMessage("Promotable time in grade is greater or equal to the Maximum!");
                 return;

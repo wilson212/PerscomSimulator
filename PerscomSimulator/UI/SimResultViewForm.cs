@@ -628,17 +628,17 @@ namespace Perscom
                 var deficit = GetAverageDeficitRate(rank);
 
                 // Plot soldiers promoted
-                double ratio = Math.Round(stats.PromotionsToNextGrade / totalYears, 2);
+                double ratio = Math.Round(stats.PromotionsToNextGrade / totalYears, 0);
                 int i = series.Points.AddY(ratio);
                 series.Points[i].LegendText = "Promoted";
 
                 // Plot soldiers retired
-                ratio = Math.Round(stats.TotalRetirements / totalYears, 2);
+                ratio = Math.Round(stats.TotalRetirements / totalYears, 0);
                 i = series.Points.AddY(ratio);
                 series.Points[i].LegendText = "Retired";
 
                 // Plos transfered soldiers
-                ratio = Math.Round(stats.TransfersFrom / totalYears, 2);
+                ratio = Math.Round(stats.TransfersFrom / totalYears, 0);
                 i = series.Points.AddY(ratio);
                 series.Points[i].LegendText = "Transfered Branches";
 
@@ -678,6 +678,13 @@ namespace Perscom
             labelAvgTiS_Retirement.Text = "0";
             labelAvgTiG_Promotion.Text = "0";
             labelAvgTiG_Retirement.Text = "0";
+
+            labelTransfersInto.Text = "0";
+            labelTransferIntoRate.Text = "0%";
+
+            labelTransfersOut.Text = "0";
+            labelAvgTiS_Transfered.Text = "0";
+            labelAvgTiG_Transfered.Text = "0";
         }
 
         #endregion Report Functions

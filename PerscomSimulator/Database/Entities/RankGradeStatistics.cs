@@ -273,8 +273,7 @@ namespace Perscom.Database
                 if (TransfersFrom == 0) return 0;
 
                 // Get the count of promotable only.
-                double totalSoldiers = TransfersFrom + TotalSoldiersOutgoing;
-                return Math.Round(TransfersFrom / (decimal)totalSoldiers, 2) * 100;
+                return Math.Round(TransfersFrom / (decimal)TotalSoldiersOutgoing, 2) * 100;
             }
         }
 

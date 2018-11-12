@@ -36,6 +36,8 @@
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.precedenceBox = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
             this.rankAbbrBox = new System.Windows.Forms.TextBox();
             this.promotableBox = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
@@ -55,19 +57,17 @@
             this.rankTypeSelect = new System.Windows.Forms.ComboBox();
             this.imageSelect = new System.Windows.Forms.ComboBox();
             this.rankPicture = new System.Windows.Forms.PictureBox();
-            this.precedenceBox = new System.Windows.Forms.NumericUpDown();
-            this.label9 = new System.Windows.Forms.Label();
             this.headerPanel.SuspendLayout();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.precedenceBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.promotableBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rankGradeBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxTigBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minTigBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precedenceBox)).BeginInit();
             this.SuspendLayout();
             // 
             // headerPanel
@@ -175,6 +175,27 @@
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Details";
+            // 
+            // precedenceBox
+            // 
+            this.precedenceBox.Location = new System.Drawing.Point(211, 96);
+            this.precedenceBox.Name = "precedenceBox";
+            this.precedenceBox.Size = new System.Drawing.Size(95, 20);
+            this.precedenceBox.TabIndex = 28;
+            this.precedenceBox.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(27, 98);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(97, 13);
+            this.label9.TabIndex = 29;
+            this.label9.Text = "Rank Precedence:";
             // 
             // rankAbbrBox
             // 
@@ -368,32 +389,6 @@
             this.rankPicture.TabIndex = 14;
             this.rankPicture.TabStop = false;
             // 
-            // precedenceBox
-            // 
-            this.precedenceBox.Location = new System.Drawing.Point(211, 96);
-            this.precedenceBox.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.precedenceBox.Name = "precedenceBox";
-            this.precedenceBox.Size = new System.Drawing.Size(95, 20);
-            this.precedenceBox.TabIndex = 28;
-            this.precedenceBox.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(27, 98);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(97, 13);
-            this.label9.TabIndex = 29;
-            this.label9.Text = "Rank Precedence:";
-            // 
             // RankEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -414,6 +409,7 @@
             this.mainPanel.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.precedenceBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.promotableBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rankGradeBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxTigBox)).EndInit();
@@ -421,7 +417,6 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precedenceBox)).EndInit();
             this.ResumeLayout(false);
 
         }
