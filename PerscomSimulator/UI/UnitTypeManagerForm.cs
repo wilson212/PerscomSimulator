@@ -516,7 +516,7 @@ namespace Perscom
                 billetsContextMenu.Enabled = false;
 
                 // Update table cache
-                EntityCache.GetTableMap(typeof(BilletRequirement)).BuildInstanceForeignKeys = false;
+                EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = false;
                 EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = false;
                 EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = false;
 
@@ -544,7 +544,7 @@ namespace Perscom
                 billetsContextMenu.Enabled = true;
 
                 // Update table cache
-                EntityCache.GetTableMap(typeof(BilletRequirement)).BuildInstanceForeignKeys = true;
+                EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = true;
                 EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = true;
                 EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = true;
             }
@@ -823,7 +823,7 @@ namespace Perscom
                 billetsContextMenu.Enabled = false;
 
                 // Update table cache
-                EntityCache.GetTableMap(typeof(BilletRequirement)).BuildInstanceForeignKeys = false;
+                EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = false;
                 EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = false;
                 EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = false;
 
@@ -861,7 +861,7 @@ namespace Perscom
                 billetsContextMenu.Enabled = true;
 
                 // Update table cache
-                EntityCache.GetTableMap(typeof(BilletRequirement)).BuildInstanceForeignKeys = true;
+                EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = true;
                 EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = true;
                 EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = true;
             }
@@ -902,12 +902,12 @@ namespace Perscom
             // Add billet requirements
             foreach (var item in billet.Requirements)
             {
-                var req = new BilletRequirement()
+                var req = new BilletSpecialtyRequirement()
                 {
                     BilletId = b.Id,
                     SpecialtyId = item.SpecialtyId
                 };
-                db.BilletRequirements.Add(req);
+                db.BilletSpecialtyRequirements.Add(req);
             }
 
             // Add billet spawn settings

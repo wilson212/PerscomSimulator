@@ -45,6 +45,19 @@ namespace Perscom.Database
         public int Grade { get; set; }
 
         /// <summary>
+        /// Indicates the order of priority of this Rank. Special Ranks
+        /// should have a higher Precendence over entry Ranks of the same grade
+        /// to achieve expected results
+        /// </summary>
+        /// <example>
+        /// - Sergeant Major (entry level E-9) would be 1
+        /// - Command Sergeant Major (Special Billet based assignment) would be 2
+        /// - Command Sergeant Major of the Army (Special billet based assignment) would be 3
+        /// </example>
+        [Column, Required, Default(0)]
+        public int Precedence { get; set; }
+
+        /// <summary>
         /// Gets or sets the minimum time (months) a soldier must hold this grade before 
         /// retiring. If the minimum amount is less than the remaining time to live for
         /// the soldier, their retirement date will be adjusted accordingly.

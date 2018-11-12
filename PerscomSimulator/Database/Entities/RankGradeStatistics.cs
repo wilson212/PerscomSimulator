@@ -32,40 +32,52 @@ namespace Perscom.Database
         #region Total Statistics 
 
         /// <summary>
-        /// Gets or Sets the total number of soldiers who held this grade, and were
-        /// either promoted or retired out.
+        /// Gets or Sets the total number of soldiers were promnoted into this grade
         /// </summary>
         [Column, Required]
-        public int TotalSoldiers { get; set; } = 0;
+        public int TotalSoldiersIncoming { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or Sets the total number of soldiers who held this grade, and were
+        /// either promoted or retired out, or were transfered OUT of this Rank into 
+        /// a different <see cref="Simulation.RankType"/>
+        /// </summary>
+        /// <remarks>
+        /// This value will always be the sum of Promotions, Retirements, and TransfersFrom
+        /// </remarks>
+        [Column, Required]
+        public int TotalSoldiersOutgoing { get; set; } = 0;
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in grade for all
-        /// soldiers who held this grade and were either promoted or retired out.
+        /// soldiers who held this grade and were either promoted or retired out,
+        /// or were transfered OUT of this Rank into a different <see cref="Simulation.RankType"/>
         /// </summary>
         [Column, Required]
         public int TotalMonthsInGrade { get; set; } = 0;
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in service for all
-        /// soldiers who held this grade this grade and were either promoted or retired out.
+        /// soldiers who held this grade this grade and were either promoted or retired out,
+        /// or were transfered OUT of this Rank into a different <see cref="Simulation.RankType"/>
         /// </summary>
         [Column, Required]
         public int TotalMonthsInService { get; set; } = 0;
 
         /// <summary>
-        /// Gets the average time in grade (months) for this grade
+        /// Gets the average time in grade (months) for this grade.
         /// </summary>
-        public decimal AverageTimeInGrade => (TotalSoldiers == 0) ? 0 : Math.Round(TotalMonthsInGrade / (decimal)TotalSoldiers, 2);
+        public decimal AverageTimeInGrade => (TotalSoldiersOutgoing == 0) ? 0 : Math.Round(TotalMonthsInGrade / (decimal)TotalSoldiersOutgoing, 2);
 
         /// <summary>
-        /// Gets the average time in service (months) for this grade
+        /// Gets the average time in service (months) for this grade.
         /// </summary>
-        public decimal AverageTimeInService => (TotalSoldiers == 0) ? 0 : Math.Round(TotalMonthsInService / (decimal)TotalSoldiers, 2);
+        public decimal AverageTimeInService => (TotalSoldiersOutgoing == 0) ? 0 : Math.Round(TotalMonthsInService / (decimal)TotalSoldiersOutgoing, 2);
 
         /// <summary>
-        /// Gets the average time in grade (years) for this grade
+        /// Gets the average time in grade (years) for this grade.
         /// </summary>
-        public decimal AverageYearsInService => (TotalSoldiers == 0) ? 0 : Math.Round((TotalMonthsInService / 12) / (decimal)TotalSoldiers, 2);
+        public decimal AverageYearsInService => (TotalSoldiersOutgoing == 0) ? 0 : Math.Round((TotalMonthsInService / 12) / (decimal)TotalSoldiersOutgoing, 2);
 
         #endregion Total Statistics
 
@@ -167,15 +179,74 @@ namespace Perscom.Database
 
         #endregion Retired Statistics
 
+        #region Transfer From Statistics
+
+        /// <summary>
+        /// Gets or Sets the total number of soldiers who held this grade, and were
+        /// then promoted to a different Rank Type.
+        /// </summary>
+        [Column, Required]
+        public int TransfersFrom { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the total accumulative months time in grade for all
+        /// soldiers who held this grade, just before being promoted
+        /// </summary>
+        [Column, Required]
+        public int TransfersFromTotalMonthsInGrade { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the total accumulative months time in service for all
+        /// soldiers who held this grade, just before being promoted
+        /// </summary>
+        [Column, Required]
+        public int TransfersFromTotalMonthsInService { get; set; }
+
+        /// <summary>
+        /// Gets the average time in grade (months) for all soldiers 
+        /// who held this grade, just before being promoted
+        /// </summary>
+        public decimal TransfersFromAverageTimeInGrade
+            => (TransfersFrom == 0) ? 0 : Math.Round(TransfersFromTotalMonthsInGrade / (decimal)TransfersFrom, 2);
+
+        /// <summary>
+        /// Gets the average time in service (months) for all soldiers 
+        /// who held this grade, just before being promoted
+        /// </summary>
+        public decimal TransfersFromAverageTimeInService
+            => (TransfersFrom == 0) ? 0 : Math.Round(TransfersFromTotalMonthsInService / (decimal)TransfersFrom, 2);
+
+        /// <summary>
+        /// Gets the average time in grade (years) for all soldiers 
+        /// who held this grade, just before being promoted
+        /// </summary>
+        public decimal TransfersFromAverageYearsInService
+            => (TransfersFrom == 0) ? 0 : Math.Round((TransfersFromTotalMonthsInService / 12) / (decimal)TransfersFrom, 2);
+
+        #endregion Transfer From Statistics
+
+        #region Transfer Into Statistics
+
+        /// <summary>
+        /// Gets or sets the total number of soldiers who were promoted into this 
+        /// rank from a different Rank Type.
+        /// </summary>
+        [Column, Required]
+        public int TransfersInto { get; set; }
+
+        #endregion Transfer Into Statistics
+
         /// <summary>
         /// Gets the precentage of soldiers who advanced to the next grade total, including
         /// those who were never promotable.
         /// </summary>
         public decimal PromotionRate 
-            => (PromotionsToNextGrade == 0) ? 0 : Math.Round(PromotionsToNextGrade / (decimal)TotalSoldiers, 2) * 100;
+            => (PromotionsToNextGrade == 0) ? 0 : Math.Round(PromotionsToNextGrade / (decimal)TotalSoldiersOutgoing, 2) * 100;
 
         /// <summary>
         /// Gets the advancement rate of soldiers who were promotable only.
+        /// This value DOES NOT count soldiers who were transfered OUT of this Rank 
+        /// into a different <see cref="Simulation.RankType"/>
         /// </summary>
         public decimal SelectionRate
         {
@@ -187,6 +258,39 @@ namespace Perscom.Database
                 // Get the count of promotable only.
                 int totalPromotable = PromotionsToNextGrade + TotalPromotableRetirees;
                 return Math.Round(PromotionsToNextGrade / (decimal)totalPromotable, 2) * 100;
+            }
+        }
+
+        /// <summary>
+        /// Gets a percentage rate of soldiers who transfered from this Rank to
+        /// a different <see cref="Simulation.RankType"/>
+        /// </summary>
+        public decimal TransferFromRate
+        {
+            get
+            {
+                // If no-one got transfered, then the rate is 0 obviously
+                if (TransfersFrom == 0) return 0;
+
+                // Get the count of promotable only.
+                double totalSoldiers = TransfersFrom + TotalSoldiersOutgoing;
+                return Math.Round(TransfersFrom / (decimal)totalSoldiers, 2) * 100;
+            }
+        }
+
+        /// <summary>
+        /// Gets a percentage rate of soldiers who transfered into this Rank to
+        /// a different <see cref="Simulation.RankType"/>
+        /// </summary>
+        public decimal TransferIntoRate
+        {
+            get
+            {
+                // If no-one got transfered, then the rate is 0 obviously
+                if (TransfersInto == 0) return 0;
+
+                // Get the count of promotable only.
+                return Math.Round(TransfersInto / (decimal)TotalSoldiersIncoming, 2) * 100;
             }
         }
 
@@ -205,10 +309,10 @@ namespace Perscom.Database
         {
             // Get time in service and grade in months
             int tis = soldier.EntryServiceDate.Date.MonthDifference(currentDate.Date);
-            int tig = soldier.LastPromotionDate.Date.MonthDifference(currentDate.Date);
+            int tig = soldier.LastGradeChangeDate.Date.MonthDifference(currentDate.Date);
 
             // Increment total values
-            TotalSoldiers += 1;
+            TotalSoldiersOutgoing += 1;
             TotalMonthsInGrade += tig;
             TotalMonthsInService += tis;
 
@@ -232,10 +336,10 @@ namespace Perscom.Database
         {
             // Get time in service and grade in months
             int tis = soldier.EntryServiceDate.Date.MonthDifference(currentDate);
-            int tig = soldier.LastPromotionDate.Date.MonthDifference(currentDate);
+            int tig = soldier.LastGradeChangeDate.Date.MonthDifference(currentDate);
 
             // Increment total values
-            TotalSoldiers += 1;
+            TotalSoldiersOutgoing += 1;
             TotalMonthsInGrade += tig;
             TotalMonthsInService += tis;
 
@@ -243,6 +347,34 @@ namespace Perscom.Database
             PromotionsToNextGrade += 1;
             PromotedTotalMonthsInGrade += tig;
             PromotedTotalMonthsInService += tis;
+        }
+
+        public void TrackRankTransferFrom(SoldierWrapper soldier, IterationDate currentDate)
+        {
+            // Get time in service and grade in months
+            int tis = soldier.EntryServiceDate.Date.MonthDifference(currentDate.Date);
+            int tig = soldier.LastGradeChangeDate.Date.MonthDifference(currentDate.Date);
+
+            // Increment total values
+            TotalSoldiersOutgoing += 1;
+            TotalMonthsInGrade += tig;
+            TotalMonthsInService += tis;
+
+            TransfersFrom += 1;
+            TransfersFromTotalMonthsInGrade += tig;
+            TransfersFromTotalMonthsInService += tis;
+        }
+
+        public void TrackRankTransferInto(SoldierWrapper soldier)
+        {
+            // DO NOT ADD TO SOLDIER COUNTS! This will be done when promoted or retired!
+            TransfersInto += 1;
+            TotalSoldiersIncoming += 1;
+        }
+
+        public void TrackPromotionIntoGrade(SoldierWrapper soldier)
+        {
+            TotalSoldiersIncoming += 1;
         }
     }
 }

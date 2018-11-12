@@ -444,7 +444,7 @@ namespace Perscom
                             };
                             db.SoldierCareerAdjustments.AddOrUpdate(temp);
                         }
-                        else if (item.TemporaryCareer == null)
+                        else if (item.TemporaryCareer == null && item.EditedInEditorForm)
                         {
                             // Delete just to be safe
                             db.Execute($"DELETE FROM `SoldierCareerAdjustment` WHERE `SoldierGeneratorPoolId`={item.Id}");
@@ -610,6 +610,10 @@ namespace Perscom
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)
                 {
+                    // Item was edited!
+                    int index = SpawnPools.FindIndex(x => x.IsDuplicateOf(setting));
+                    SpawnPools[index].EditedInEditorForm = true;
+
                     // Now redraw the listView
                     FillListView();
 

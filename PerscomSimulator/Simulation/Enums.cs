@@ -25,4 +25,10 @@
         LessThan,
         LessThanOrEqualTo
     }
+
+    public enum SortMode
+    {
+        HasValue,
+        ByValue
+    }
 }

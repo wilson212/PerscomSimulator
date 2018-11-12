@@ -216,10 +216,29 @@ namespace Perscom.Database
 
         #endregion
 
+        /// <summary>
+        /// Indicates  whether this <see cref="SoldierGeneratorPool"/> was modified 
+        /// in the <see cref="SoldierGeneratorPoolForm"/> since it was last loaded
+        /// from the database
+        /// </summary>
+        public bool EditedInEditorForm { get; set; } = false;
+
+        /// <summary>
+        /// Indicates a <see cref="Database.CareerGenerator"/> selection change from the
+        /// selected <see cref="Database.CareerGenerator"/> in the database
+        /// </summary>
         public CareerGenerator TemporaryCareer { get; set; }
 
+        /// <summary>
+        /// Indicates a modified set of <see cref="SoldierPoolSorting"/> selections
+        /// from the database version of this instance
+        /// </summary>
         public List<SoldierPoolSorting> TemporarySoldierSorting { get; set; }
 
+        /// <summary>
+        /// Indicates a modified set of <see cref="SoldierPoolFilter"/> selections
+        /// from the database version of this instance
+        /// </summary>
         public List<SoldierPoolFilter> TemporarySoldierFiltering { get; set; }
 
         /// <summary>

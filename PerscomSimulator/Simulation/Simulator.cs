@@ -203,10 +203,12 @@ namespace Perscom
 
                 // Get all positions
                 Positions = ProcessingUnit.GetAllPositions()
-                    .OrderBy(x => x.Billet.Rank.Grade)
+                    .OrderByDescending(x => x.Billet.Rank.Type)
+                    .ThenByDescending(x => x.Billet.Rank.Grade)
                     .ThenByDescending(x => x.Billet.Stature)
                     .ToList();
 
+                // Update progress
                 token.ThrowIfCancellationRequested();
                 update = new TaskProgressUpdate();
                 update.MessageText = "Populating soldier seats...";
@@ -368,6 +370,7 @@ namespace Perscom
                 // Grab current holder
                 SoldierWrapper soldier = position.Holder;
                 RankType type = position.Billet.Rank.Type;
+                PromotableStatus status;
 
                 // Check if position is empty
                 if (position.IsEmpty)
@@ -375,18 +378,25 @@ namespace Perscom
                     // Is this an entry level position?
                     if (position.Billet.UsesCustomGenerator)
                     {
-                        soldier = CreateSoldier(SoldierGenerators[position.Billet.SpawnSetting.GeneratorId], position);
-                        soldier?.AssignPosition(position, CurrentIterationDate, Database);
-                        continue;
+                        var generator = SoldierGenerators[position.Billet.SpawnSetting.GeneratorId];
+                        soldier = CreateSoldier(generator, position, out SpawnedSoldier setting);
+
+                        // Did we spawn a soldier?
+                        if (soldier != null)
+                        {
+                            // Assign position
+                            soldier.AssignPosition(position, CurrentIterationDate, Database);
+
+                            // Create entry into statistics
+                            if (setting.Type == SpawnSoldierType.CreateNew)
+                                LogSoldierEntry(soldier);
+                        }
                     }
                     else
                     {
                         // Grab soldier pool
                         soldier = FindBestSoldierFor(position);
-                        if (soldier != null)
-                        {
-                            soldier.AssignPosition(position, CurrentIterationDate, Database);
-                        }
+                        soldier?.AssignPosition(position, CurrentIterationDate, Database);
                     }
                 }
                 // Process Lateral Movement
@@ -394,7 +404,7 @@ namespace Perscom
                 {
                     // If we are at max tour length, or past it,
                     // we are a prime candidate for moving!
-                    if (position.Holder.IsPastMaxTourLength(CurrentIterationDate))
+                    if (soldier.IsPastMaxTourLength(CurrentIterationDate))
                     {
                         TryPerformLateralMovement(soldier, position);
                     }
@@ -410,7 +420,6 @@ namespace Perscom
                 }
 
                 // Define soldier vars
-                PromotableStatus status;
                 int grade = soldier.Rank.Grade;
                 int specId = soldier.Soldier.SpecialtyId;
 
@@ -438,26 +447,42 @@ namespace Perscom
                 {
                     if (status == PromotableStatus.Automatic || status == PromotableStatus.Position)
                     {
-                        // Log promotion data for current rank/grade
-                        LogPromotion(soldier);
-
-                        // Get the expected soldier rank/grade to promote from
-                        var expectedGrade = position.Billet.Rank.Grade - 1;
-
-                        // Promote soldier. Do not skip rank grades!
-                        if (soldier.Rank.Grade == expectedGrade)
+                        // Dont log promotion data if switching rank types!
+                        if (soldier.Rank.Type != position.Billet.Rank.Type)
                         {
-                            // Billet grade is 1 level higher
+                            // Log transfer data for current rank/grade
+                            LogRankTypeChange(soldier, position);
+
+                            // Promote Soldier
                             soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
                         }
                         else
                         {
-                            // Billet grade is multiple levels higher
-                            Rank toRank = RankCache.GetNextGradeRanks(soldier.Rank).FirstOrDefault();
-                            if (toRank != null)
-                                soldier.PromoteTo(CurrentIterationDate, toRank, Database);
+                            // Get the expected soldier rank/grade to promote from
+                            var expectedGrade = position.Billet.Rank.Grade - 1;
+
+                            // Promote soldier. Do not skip rank grades!
+                            if (soldier.Rank.Grade == expectedGrade)
+                            {
+                                // Log promotion data for current rank/grade
+                                LogPromotion(soldier);
+
+                                // Billet grade is 1 level higher or of a different Type!
+                                soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
+                            }
                             else
-                                throw new Exception("Ran out of ranks? wtf");
+                            {
+                                // Log promotion data for current rank/grade
+                                LogPromotion(soldier);
+
+                                // Billet grade is multiple levels higher, SO we must promote one grade at
+                                // a time!
+                                Rank toRank = RankCache.GetNextGradeRanks(soldier.Rank).FirstOrDefault();
+                                if (toRank != null)
+                                    soldier.PromoteTo(CurrentIterationDate, toRank, Database);
+                                else
+                                    throw new Exception("Ran out of ranks? wtf");
+                            }
                         }
                     }
                     else if (status == PromotableStatus.Lateral)
@@ -482,8 +507,8 @@ namespace Perscom
         /// Similar to FindBestSoldierFor, except we ONLY try to swap with a soldier
         /// of the same grade!
         /// </remarks>
-        /// <param name="soldier"></param>
-        /// <param name="position"></param>
+        /// <param name="soldier">The position holder</param>
+        /// <param name="position">Position the soldier is laterally moving OUT of</param>
         /// <returns>
         /// true if a soldier swaped positions, false otherwise
         /// </returns>
@@ -822,6 +847,37 @@ namespace Perscom
             return true;
         }
 
+        private void LogRankTypeChange(SoldierWrapper soldier, PositionWrapper position)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                int fromGrade = soldier.Rank.Grade;
+                var fromType = soldier.Rank.Type;
+                int fromSpecId = soldier.Soldier.SpecialtyId;
+                int toGrade = position.Billet.Rank.Grade;
+                var toType = position.Billet.Rank.Type;
+                int toSpecId = position.Billet.Specialty.Id;
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+
+                    // Outgoing
+                    RankStatistics[templateId][fromType][fromGrade].TrackRankTransferFrom(soldier, CurrentIterationDate);
+                    SpecialtyStatistics[templateId][fromType][fromGrade][fromSpecId].TrackRankTransferFrom(soldier, CurrentIterationDate);
+
+                    // Incoming
+                    RankStatistics[templateId][toType][toGrade].TrackRankTransferInto(soldier);
+                    SpecialtyStatistics[templateId][toType][toGrade][toSpecId].TrackRankTransferInto(soldier);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
+            }
+        }
+
         private void LogRetiree(SoldierWrapper soldier)
         {
             // Log promotion data for current rank/grade
@@ -844,6 +900,29 @@ namespace Perscom
             }
         }
 
+        private void LogSoldierEntry(SoldierWrapper soldier)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                int grade = soldier.Rank.Grade;
+                var type = soldier.Rank.Type;
+                int specId = soldier.Soldier.SpecialtyId;
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+
+                    RankStatistics[templateId][type][grade].TrackPromotionIntoGrade(soldier);
+                    SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionIntoGrade(soldier);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
+            }
+        }
+
         private void LogPromotion(SoldierWrapper soldier)
         {
             // Log promotion data for current rank/grade
@@ -857,8 +936,14 @@ namespace Perscom
                 while (parentUnit != null)
                 {
                     var templateId = parentUnit.Unit.UnitTemplateId;
+
+                    // Track Promotion
                     RankStatistics[templateId][type][grade].TrackPromotionToNextGrade(soldier, CurrentDate);
                     SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionToNextGrade(soldier, CurrentDate);
+
+                    // Add soldier to incoming on Next grade
+                    RankStatistics[templateId][type][grade + 1].TrackPromotionIntoGrade(soldier);
+                    SpecialtyStatistics[templateId][type][grade + 1][specId].TrackPromotionIntoGrade(soldier);
 
                     // Move up
                     parentUnit = parentUnit.Parent;
@@ -957,7 +1042,7 @@ namespace Perscom
                 // Only fill entry positions!
                 if (pos.Billet.UsesCustomGenerator && Settings.ProcessRankType(pos.Billet.Rank.Type))
                 {
-                    var soldier = CreateSoldier(s, pos);
+                    var soldier = CreateSoldier(s, pos, out SpawnedSoldier spawned);
                     soldier.AssignPosition(pos, CurrentIterationDate, Database);
                 }
             }
@@ -969,7 +1054,7 @@ namespace Perscom
         /// <param name="grade">The rank level this new soldier will start out as</param>
         /// <param name="type">Indicates the rank classification for this soldier</param>
         /// <returns></returns>
-        private SoldierWrapper CreateSoldier(SoldierGenerator generator, PositionWrapper position)
+        private SoldierWrapper CreateSoldier(SoldierGenerator generator, PositionWrapper position, out SpawnedSoldier setting)
         {
             // Ensure the postion is empty! IF not, we will have soldiers
             // floating around never ever moving
@@ -977,7 +1062,11 @@ namespace Perscom
                 throw new ArgumentException("Position holder must be null before creating a new soldier!", "position");
 
             // Spawn a soldier generator setting
-            SpawnedSoldier setting = generator.Spawn();
+            setting = generator.Spawn();
+            if (setting == null)
+                throw new Exception("Unable to spawn soldier setting from soldier Generator!");
+
+            // Define vars
             SoldierWrapper wrapper = null;
 
             // If rankId is 0, then we create new
@@ -1021,25 +1110,21 @@ namespace Perscom
                 // ---------------------------
                 IEnumerable<SoldierWrapper> soldiers = topUnit.SoldiersByGrade[setting.Rank.Type][setting.Rank.Grade].Values.ToList();
                 if (!setting.UseRankGrade)
-                    soldiers = soldiers.Where(x => x.Rank.Id == setting.Rank.Id);
+                {
+                    int rankId = setting.Rank.Id;
+                    soldiers = soldiers.Where(x => x.Rank.Id == rankId);
+                }
 
                 // Find best soldier for lateral movement
                 wrapper = FindCrossPoolSoldier(soldiers.ToList(), setting, position);
 
                 // Grab our top filtered soldier
-                if (wrapper != null)
+                if (wrapper != null && setting.Career != null)
                 {
-                    // Promote soldier
-                    wrapper.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
-
-                    // Change career length?
-                    if (setting.Career != null)
-                    {
-                        // Assign the soldiers new career length based on Rank Type
-                        CareerLengthRange career = setting.Career.Spawn();
-                        wrapper.Soldier.SpawnRateId = career.Id;
-                        wrapper.Soldier.ExitIterationId = CurrentIterationDate.Id + career.GenerateLength();
-                    }
+                    // Assign the soldiers new career length based on Rank Type
+                    CareerLengthRange career = setting.Career.Spawn();
+                    wrapper.Soldier.SpawnRateId = career.Id;
+                    wrapper.Soldier.ExitIterationId = CurrentIterationDate.Id + career.GenerateLength();
                 }
             }
 

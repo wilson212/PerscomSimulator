@@ -410,7 +410,7 @@ namespace Perscom
                     foreach (int id in currentReqs.Except(newReqs))
                     {
                         DeleteQueryBuilder query = new DeleteQueryBuilder(db);
-                        query.From(nameof(BilletRequirement))
+                        query.From(nameof(BilletSpecialtyRequirement))
                             .Where("BilletId", Comparison.Equals, Billet.Id)
                             .And("SpecialtyId", Comparison.Equals, id);
                         query.Execute();
@@ -419,10 +419,10 @@ namespace Perscom
                     // Add
                     foreach (int id in newReqs.Except(currentReqs))
                     {
-                        var spec = new BilletRequirement();
+                        var spec = new BilletSpecialtyRequirement();
                         spec.BilletId = Billet.Id;
                         spec.SpecialtyId = id;
-                        db.BilletRequirements.Add(spec);
+                        db.BilletSpecialtyRequirements.Add(spec);
                     }
 
                     trans.Commit();

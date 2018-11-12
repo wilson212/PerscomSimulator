@@ -72,7 +72,9 @@ namespace Perscom
                 TreeNode parent = new TreeNode(name);
                 parent.Tag = type;
 
-                var list = ranks.Where(x => x.Type == type).OrderByDescending(x => x.Grade);
+                var list = ranks.Where(x => x.Type == type)
+                    .OrderByDescending(x => x.Grade)
+                    .ThenByDescending(x => x.Precedence);
 
                 // Add files in this directory
                 foreach (var rank in list)
@@ -185,6 +187,7 @@ namespace Perscom
                 SelectedRank.Name = rankNameBox.Text;
                 SelectedRank.Abbreviation = rankAbbrBox.Text;
                 SelectedRank.Grade = (int)rankGradeBox.Value;
+                SelectedRank.Precedence = (int)precedenceBox.Value;
                 SelectedRank.Image = imageSelect.SelectedItem.ToString();
                 SelectedRank.MaxTimeInGrade = (int)maxTigBox.Value;
                 SelectedRank.MinTimeInGrade = (int)minTigBox.Value;
@@ -241,6 +244,7 @@ namespace Perscom
             rankNameBox.Text = SelectedRank.Name;
             rankAbbrBox.Text = SelectedRank.Abbreviation;
             rankGradeBox.Value = SelectedRank.Grade;
+            precedenceBox.Value = SelectedRank.Precedence;
             maxTigBox.Value = SelectedRank.MaxTimeInGrade;
             minTigBox.Value = SelectedRank.MinTimeInGrade;
             promotableBox.Value = SelectedRank.PromotableAt;
@@ -282,6 +286,7 @@ namespace Perscom
             rankNameBox.Text = "";
             rankAbbrBox.Text = "";
             rankGradeBox.Value = 1;
+            precedenceBox.Value = 1;
             maxTigBox.Value = 0;
             minTigBox.Value = 0;
             promotableBox.Value = 12;

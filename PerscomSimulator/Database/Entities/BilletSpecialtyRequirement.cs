@@ -10,7 +10,7 @@ namespace Perscom.Database
     /// </summary>
     [Table]
     [CompositeUnique(nameof(BilletId), nameof(SpecialtyId))]
-    public class BilletRequirement : IEquatable<BilletRequirement>
+    public class BilletSpecialtyRequirement : IEquatable<BilletSpecialtyRequirement>
     {
         /// <summary>
         /// The Unique Requirement ID (Row ID)
@@ -93,18 +93,18 @@ namespace Perscom.Database
         #endregion
 
         /// <summary>
-        /// Compares a <see cref="BilletRequirement"/> with this one, and returns whether
+        /// Compares a <see cref="BilletSpecialtyRequirement"/> with this one, and returns whether
         /// or not the <see cref="BilletId"/> and <see cref="SpecialtyId"/> match.
         /// </summary>
         /// <remarks>Used in the <see cref="UnitTypeManagerForm"/></remarks>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool IsDuplicateOf(BilletRequirement other)
+        public bool IsDuplicateOf(BilletSpecialtyRequirement other)
         {
             return (BilletId == other.BilletId && SpecialtyId == other.SpecialtyId);
         }
 
-        public bool Equals(BilletRequirement other)
+        public bool Equals(BilletSpecialtyRequirement other)
         {
             if (other == null) return false;
             return (Id == other.Id);
@@ -112,7 +112,7 @@ namespace Perscom.Database
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as BilletRequirement);
+            return this.Equals(obj as BilletSpecialtyRequirement);
         }
 
         public override int GetHashCode() => Id;

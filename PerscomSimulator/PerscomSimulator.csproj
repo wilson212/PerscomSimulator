@@ -74,7 +74,7 @@
     <Compile Include="Controls\ListViewWithReordering.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Simulation\SoldierSorting.cs" />
+    <Compile Include="Simulation\Enums.cs" />
     <Compile Include="UI\SoldierConditionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -143,7 +143,7 @@
     </Compile>
     <Compile Include="Database\Entities\BilletSpawnSetting.cs" />
     <Compile Include="Database\Entities\BilletSpecialty.cs" />
-    <Compile Include="Database\Entities\BilletRequirement.cs" />
+    <Compile Include="Database\Entities\BilletSpecialtyRequirement.cs" />
     <Compile Include="Database\Entities\BilletCatagory.cs" />
     <Compile Include="Database\Entities\CareerLengthRange.cs" />
     <Compile Include="Database\Entities\Specialty.cs" />

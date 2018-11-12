@@ -11,7 +11,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(1, 12);
+        public static Version CurrentVersion { get; protected set; } = new Version(1, 14);
 
         /// <summary>
         /// Gets the current database tables version
@@ -33,9 +33,9 @@ namespace Perscom.Database
         public DbSet<BilletCatagory> BilletCatagories { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="BilletRequirement"/> entites stored in the database
+        /// Gets a set of <see cref="BilletSpecialtyRequirement"/> entites stored in the database
         /// </summary>
-        public DbSet<BilletRequirement> BilletRequirements { get; set; }
+        public DbSet<BilletSpecialtyRequirement> BilletSpecialtyRequirements { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="BilletSpawnSetting"/> entites stored in the database
@@ -144,7 +144,7 @@ namespace Perscom.Database
             DbVersions = new DbSet<DbVersion>(this);
             Billets = new DbSet<Billet>(this);
             BilletCatagories = new DbSet<BilletCatagory>(this);
-            BilletRequirements = new DbSet<BilletRequirement>(this);
+            BilletSpecialtyRequirements = new DbSet<BilletSpecialtyRequirement>(this);
             BilletSpawnSettings = new DbSet<BilletSpawnSetting>(this);
             BilletSpecialties = new DbSet<BilletSpecialty>(this);
             CareerGenerators = new DbSet<CareerGenerator>(this);
@@ -193,7 +193,7 @@ namespace Perscom.Database
             using (SQLiteTransaction tr = base.BeginTransaction())
             {
                 // Delete old table rementants
-                CodeFirstSQLite.DropTable<BilletRequirement>(this);
+                CodeFirstSQLite.DropTable<BilletSpecialtyRequirement>(this);
                 CodeFirstSQLite.DropTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.DropTable<BilletSpecialty>(this);
                 CodeFirstSQLite.DropTable<Billet>(this);
@@ -232,7 +232,7 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<Billet>(this);
                 CodeFirstSQLite.CreateTable<BilletSpecialty>(this);
                 CodeFirstSQLite.CreateTable<BilletSpawnSetting>(this);
-                CodeFirstSQLite.CreateTable<BilletRequirement>(this);
+                CodeFirstSQLite.CreateTable<BilletSpecialtyRequirement>(this);
 
                 // Add Echelons
                 Echelons = new DbSet<Echelon>(this);

@@ -94,8 +94,8 @@ namespace Perscom
             unitPersonelPieChart.ChartAreas[0].Area3DStyle.Inclination = 60;
 
             promotionPieChart.Series[0].Label = "#VALY (#PERCENT{P0})";
-            //promotionPieChart.Series[0]["PieLabelStyle"] = "Outside";
-            //promotionPieChart.Series[0]["PieLineColor"] = "Black";
+            promotionPieChart.Series[0]["PieLabelStyle"] = "Outside";
+            promotionPieChart.Series[0]["PieLineColor"] = "Black";
             promotionPieChart.ChartAreas[0].Area3DStyle.Enable3D = true;
             promotionPieChart.ChartAreas[0].Area3DStyle.Inclination = 60;
 
@@ -296,7 +296,7 @@ namespace Perscom
             int totalPriorGradeRetirements = 0;
 
             // Total number of soldiers who DID make this rank/grade
-            int totalAtThisRank = RankStatistics[template.Id][rank.Type][rank.Grade].TotalSoldiers;
+            int totalAtThisRank = RankStatistics[template.Id][rank.Type][rank.Grade].TotalSoldiersOutgoing;
 
             // Add up the total number of soldiers who did NOT make this
             // grade in the specified rank type
@@ -617,7 +617,7 @@ namespace Perscom
             {
                 // Grab stats
                 var stats = soldierData[rank.Grade];
-                if (stats.TotalSoldiers == 0)
+                if (stats.TotalSoldiersOutgoing == 0)
                 {
                     ResetTab5Labels();
                     return;
@@ -627,22 +627,38 @@ namespace Perscom
                 var rate = TotalPromotionRate(rank);
                 var deficit = GetAverageDeficitRate(rank);
 
-                int i = series.Points.AddY(stats.PromotionsToNextGrade / totalYears);
+                // Plot soldiers promoted
+                double ratio = Math.Round(stats.PromotionsToNextGrade / totalYears, 2);
+                int i = series.Points.AddY(ratio);
                 series.Points[i].LegendText = "Promoted";
 
-                i = series.Points.AddY(stats.TotalRetirements / totalYears);
+                // Plot soldiers retired
+                ratio = Math.Round(stats.TotalRetirements / totalYears, 2);
+                i = series.Points.AddY(ratio);
                 series.Points[i].LegendText = "Retired";
+
+                // Plos transfered soldiers
+                ratio = Math.Round(stats.TransfersFrom / totalYears, 2);
+                i = series.Points.AddY(ratio);
+                series.Points[i].LegendText = "Transfered Branches";
 
                 // Set label texts for statistical data
                 labelTotalSelectRate.Text = String.Format("{0}%", rate);
                 labelAvgDeficitRate.Text = String.Format("{0}%", deficit);
-                labelRankTotalSelected.Text = String.Format("{0:N0}", stats.TotalSoldiers);
+                labelRankTotalSelected.Text = String.Format("{0:N0}", stats.TotalSoldiersIncoming);
                 labelRankPromotions.Text = String.Format("{0:N0}", stats.PromotionsToNextGrade);
                 labelRankRetirements.Text = String.Format("{0:N0}", stats.TotalRetirements);
                 labelAvgTiS_Promoted.Text = String.Format("{0} years", Math.Round(stats.PromotedAverageTimeInService / 12, 1));
                 labelAvgTiS_Retirement.Text = String.Format("{0} years", Math.Round(stats.RetiredAverageTimeInService / 12, 1));
                 labelAvgTiG_Promotion.Text = String.Format("{0} months", Math.Round(stats.PromotedAverageTimeInGrade));
                 labelAvgTiG_Retirement.Text = String.Format("{0} months", Math.Round(stats.RetiredAverageTimeInGrade));
+
+                labelTransfersInto.Text = String.Format("{0:N0}", stats.TransfersInto);
+                labelTransferIntoRate.Text = String.Format("{0}%", stats.TransferIntoRate);
+
+                labelTransfersOut.Text = String.Format("{0:N0}", stats.TransfersFrom);
+                labelAvgTiS_Transfered.Text = String.Format("{0} years", Math.Round(stats.TransfersFromAverageTimeInService / 12, 1));
+                labelAvgTiG_Transfered.Text = String.Format("{0} months", Math.Round(stats.TransfersFromAverageTimeInGrade));
             }
             else
             {
@@ -1086,6 +1102,11 @@ namespace Perscom
 
                 return pageOffsets;
             }
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

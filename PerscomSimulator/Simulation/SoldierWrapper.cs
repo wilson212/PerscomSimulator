@@ -232,6 +232,14 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public bool IsPromotable(IterationDate currentDate, out PromotableStatus status)
         {
+            // Always approve a promotion to a different rank type,
+            // no matter if they are promotable or not!
+            if (Rank.Type != Position.Billet.Rank.Type)
+            {
+                status = PromotableStatus.Position;
+                return true;
+            }
+
             // Always approve a lateral promotion!
             if ((Rank.Grade == Position.Billet.Rank.Grade) && (Rank.Id != Position.Billet.Rank.Id))
             {
@@ -251,16 +259,14 @@ namespace Perscom.Simulation
                     status = PromotableStatus.Automatic;
                     return true;
                 }
-                else if (Rank.Type != Position.Billet.Rank.Type)
-                {
-                    status = PromotableStatus.Position;
-                    return true;
-                }
                 else if (Rank.Grade < Position.Billet.Rank.Grade)
                 {
                     status = PromotableStatus.Position;
                     return true;
                 }
+                //
+                // TODO: Billet Rank Ranges! Maybe add a property to Billet? (Billet.AutoPromoteInRankRange)
+                //
                 else
                 {
                     status = PromotableStatus.Normal;

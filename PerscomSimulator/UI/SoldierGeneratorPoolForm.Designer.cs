@@ -472,7 +472,7 @@
             this.label6.ShadowSoftness = 3F;
             this.label6.Size = new System.Drawing.Size(466, 37);
             this.label6.TabIndex = 0;
-            this.label6.Text = "Generate Soldier From Existing Soldier Pool";
+            this.label6.Text = "Select Soldier From Existing Soldier Pool";
             // 
             // SoldierGeneratorPoolForm
             // 

@@ -39,7 +39,7 @@ namespace Perscom.Database
                 RankGradeRanges.Add(type, new Range<int>(1, 1));
             }
 
-            foreach (Rank r in db.Ranks.OrderBy(x => x.Grade))
+            foreach (Rank r in db.Ranks.OrderBy(x => x.Grade).ThenBy(x => x.Precedence))
             {
                 RanksById.Add(r.Id, r);
                 if (RanksByGrade[r.Type].ContainsKey(r.Grade))

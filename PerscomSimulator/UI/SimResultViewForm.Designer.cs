@@ -98,6 +98,16 @@
             this.chart4 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.labelTransfersOut = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.labelAvgTiS_Transfered = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
+            this.labelAvgTiG_Transfered = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.labelTransfersInto = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.labelTransferIntoRate = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.labelAvgDeficitRate = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
@@ -137,6 +147,10 @@
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewImageColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -148,10 +162,6 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.headerPanel = new System.Windows.Forms.Panel();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
-            this.Column1 = new System.Windows.Forms.DataGridViewImageColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel3.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -637,7 +647,7 @@
             series7.MarkerColor = System.Drawing.Color.White;
             series7.MarkerSize = 7;
             series7.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series7.Name = "Total";
+            series7.Name = "Selected";
             series7.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
             series7.SmartLabelStyle.CalloutLineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
             series7.SmartLabelStyle.MinMovingDistance = 15D;
@@ -673,6 +683,16 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.labelTransfersOut);
+            this.groupBox2.Controls.Add(this.label20);
+            this.groupBox2.Controls.Add(this.labelAvgTiS_Transfered);
+            this.groupBox2.Controls.Add(this.label22);
+            this.groupBox2.Controls.Add(this.labelAvgTiG_Transfered);
+            this.groupBox2.Controls.Add(this.label24);
+            this.groupBox2.Controls.Add(this.labelTransfersInto);
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Controls.Add(this.labelTransferIntoRate);
+            this.groupBox2.Controls.Add(this.label18);
             this.groupBox2.Controls.Add(this.label15);
             this.groupBox2.Controls.Add(this.labelAvgDeficitRate);
             this.groupBox2.Controls.Add(this.label13);
@@ -691,17 +711,108 @@
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.labelTotalSelectRate);
-            this.groupBox2.Location = new System.Drawing.Point(538, 164);
+            this.groupBox2.Location = new System.Drawing.Point(529, 57);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(264, 260);
+            this.groupBox2.Size = new System.Drawing.Size(280, 382);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Statistical Data";
             // 
+            // labelTransfersOut
+            // 
+            this.labelTransfersOut.AutoSize = true;
+            this.labelTransfersOut.Location = new System.Drawing.Point(156, 307);
+            this.labelTransfersOut.Name = "labelTransfersOut";
+            this.labelTransfersOut.Size = new System.Drawing.Size(13, 13);
+            this.labelTransfersOut.TabIndex = 29;
+            this.labelTransfersOut.Text = "0";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.Location = new System.Drawing.Point(24, 307);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(92, 13);
+            this.label20.TabIndex = 28;
+            this.label20.Text = "Transfers Out: ";
+            // 
+            // labelAvgTiS_Transfered
+            // 
+            this.labelAvgTiS_Transfered.AutoSize = true;
+            this.labelAvgTiS_Transfered.Location = new System.Drawing.Point(156, 329);
+            this.labelAvgTiS_Transfered.Name = "labelAvgTiS_Transfered";
+            this.labelAvgTiS_Transfered.Size = new System.Drawing.Size(13, 13);
+            this.labelAvgTiS_Transfered.TabIndex = 27;
+            this.labelAvgTiS_Transfered.Text = "0";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(24, 329);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(108, 13);
+            this.label22.TabIndex = 26;
+            this.label22.Text = "Average TiS (T Out): ";
+            // 
+            // labelAvgTiG_Transfered
+            // 
+            this.labelAvgTiG_Transfered.AutoSize = true;
+            this.labelAvgTiG_Transfered.Location = new System.Drawing.Point(156, 353);
+            this.labelAvgTiG_Transfered.Name = "labelAvgTiG_Transfered";
+            this.labelAvgTiG_Transfered.Size = new System.Drawing.Size(13, 13);
+            this.labelAvgTiG_Transfered.TabIndex = 25;
+            this.labelAvgTiG_Transfered.Text = "0";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(23, 353);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(109, 13);
+            this.label24.TabIndex = 24;
+            this.label24.Text = "Average TiG (T Out): ";
+            // 
+            // labelTransfersInto
+            // 
+            this.labelTransfersInto.AutoSize = true;
+            this.labelTransfersInto.Location = new System.Drawing.Point(155, 47);
+            this.labelTransfersInto.Name = "labelTransfersInto";
+            this.labelTransfersInto.Size = new System.Drawing.Size(13, 13);
+            this.labelTransfersInto.TabIndex = 23;
+            this.labelTransfersInto.Text = "0";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(23, 47);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(78, 13);
+            this.label7.TabIndex = 22;
+            this.label7.Text = "Transfers Into: ";
+            // 
+            // labelTransferIntoRate
+            // 
+            this.labelTransferIntoRate.AutoSize = true;
+            this.labelTransferIntoRate.Location = new System.Drawing.Point(155, 69);
+            this.labelTransferIntoRate.Name = "labelTransferIntoRate";
+            this.labelTransferIntoRate.Size = new System.Drawing.Size(21, 13);
+            this.labelTransferIntoRate.TabIndex = 21;
+            this.labelTransferIntoRate.Text = "0%";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(23, 69);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(131, 13);
+            this.label18.TabIndex = 20;
+            this.label18.Text = "Transfer Into Percentage: ";
+            // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(24, 74);
+            this.label15.Location = new System.Drawing.Point(24, 114);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(112, 13);
             this.label15.TabIndex = 17;
@@ -710,7 +821,7 @@
             // labelAvgDeficitRate
             // 
             this.labelAvgDeficitRate.AutoSize = true;
-            this.labelAvgDeficitRate.Location = new System.Drawing.Point(158, 74);
+            this.labelAvgDeficitRate.Location = new System.Drawing.Point(155, 114);
             this.labelAvgDeficitRate.Name = "labelAvgDeficitRate";
             this.labelAvgDeficitRate.Size = new System.Drawing.Size(21, 13);
             this.labelAvgDeficitRate.TabIndex = 16;
@@ -719,16 +830,17 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(24, 26);
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(23, 25);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(82, 13);
+            this.label13.Size = new System.Drawing.Size(98, 13);
             this.label13.TabIndex = 15;
             this.label13.Text = "Total Selected: ";
             // 
             // labelRankTotalSelected
             // 
             this.labelRankTotalSelected.AutoSize = true;
-            this.labelRankTotalSelected.Location = new System.Drawing.Point(158, 26);
+            this.labelRankTotalSelected.Location = new System.Drawing.Point(154, 25);
             this.labelRankTotalSelected.Name = "labelRankTotalSelected";
             this.labelRankTotalSelected.Size = new System.Drawing.Size(13, 13);
             this.labelRankTotalSelected.TabIndex = 14;
@@ -737,7 +849,7 @@
             // labelRankRetirements
             // 
             this.labelRankRetirements.AutoSize = true;
-            this.labelRankRetirements.Location = new System.Drawing.Point(159, 186);
+            this.labelRankRetirements.Location = new System.Drawing.Point(156, 225);
             this.labelRankRetirements.Name = "labelRankRetirements";
             this.labelRankRetirements.Size = new System.Drawing.Size(13, 13);
             this.labelRankRetirements.TabIndex = 13;
@@ -746,16 +858,17 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(24, 186);
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(24, 225);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(69, 13);
+            this.label16.Size = new System.Drawing.Size(82, 13);
             this.label16.TabIndex = 12;
             this.label16.Text = "Retirements: ";
             // 
             // labelRankPromotions
             // 
             this.labelRankPromotions.AutoSize = true;
-            this.labelRankPromotions.Location = new System.Drawing.Point(159, 106);
+            this.labelRankPromotions.Location = new System.Drawing.Point(156, 145);
             this.labelRankPromotions.Name = "labelRankPromotions";
             this.labelRankPromotions.Size = new System.Drawing.Size(13, 13);
             this.labelRankPromotions.TabIndex = 11;
@@ -764,16 +877,17 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(24, 106);
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(24, 145);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(65, 13);
+            this.label14.Size = new System.Drawing.Size(77, 13);
             this.label14.TabIndex = 10;
             this.label14.Text = "Promotions: ";
             // 
             // labelAvgTiS_Promoted
             // 
             this.labelAvgTiS_Promoted.AutoSize = true;
-            this.labelAvgTiS_Promoted.Location = new System.Drawing.Point(159, 128);
+            this.labelAvgTiS_Promoted.Location = new System.Drawing.Point(156, 167);
             this.labelAvgTiS_Promoted.Name = "labelAvgTiS_Promoted";
             this.labelAvgTiS_Promoted.Size = new System.Drawing.Size(13, 13);
             this.labelAvgTiS_Promoted.TabIndex = 9;
@@ -782,7 +896,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(24, 128);
+            this.label10.Location = new System.Drawing.Point(24, 167);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(128, 13);
             this.label10.TabIndex = 8;
@@ -791,7 +905,7 @@
             // labelAvgTiG_Promotion
             // 
             this.labelAvgTiG_Promotion.AutoSize = true;
-            this.labelAvgTiG_Promotion.Location = new System.Drawing.Point(159, 152);
+            this.labelAvgTiG_Promotion.Location = new System.Drawing.Point(156, 191);
             this.labelAvgTiG_Promotion.Name = "labelAvgTiG_Promotion";
             this.labelAvgTiG_Promotion.Size = new System.Drawing.Size(13, 13);
             this.labelAvgTiG_Promotion.TabIndex = 7;
@@ -800,7 +914,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(24, 231);
+            this.label11.Location = new System.Drawing.Point(24, 270);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(133, 13);
             this.label11.TabIndex = 4;
@@ -809,7 +923,7 @@
             // labelAvgTiG_Retirement
             // 
             this.labelAvgTiG_Retirement.AutoSize = true;
-            this.labelAvgTiG_Retirement.Location = new System.Drawing.Point(159, 231);
+            this.labelAvgTiG_Retirement.Location = new System.Drawing.Point(156, 270);
             this.labelAvgTiG_Retirement.Name = "labelAvgTiG_Retirement";
             this.labelAvgTiG_Retirement.Size = new System.Drawing.Size(13, 13);
             this.labelAvgTiG_Retirement.TabIndex = 5;
@@ -818,7 +932,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(23, 152);
+            this.label12.Location = new System.Drawing.Point(23, 191);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(129, 13);
             this.label12.TabIndex = 6;
@@ -827,7 +941,7 @@
             // labelAvgTiS_Retirement
             // 
             this.labelAvgTiS_Retirement.AutoSize = true;
-            this.labelAvgTiS_Retirement.Location = new System.Drawing.Point(159, 208);
+            this.labelAvgTiS_Retirement.Location = new System.Drawing.Point(156, 247);
             this.labelAvgTiS_Retirement.Name = "labelAvgTiS_Retirement";
             this.labelAvgTiS_Retirement.Size = new System.Drawing.Size(13, 13);
             this.labelAvgTiS_Retirement.TabIndex = 3;
@@ -836,7 +950,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(23, 208);
+            this.label9.Location = new System.Drawing.Point(23, 247);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(132, 13);
             this.label9.TabIndex = 2;
@@ -845,7 +959,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(24, 50);
+            this.label8.Location = new System.Drawing.Point(24, 91);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(110, 13);
             this.label8.TabIndex = 1;
@@ -854,7 +968,7 @@
             // labelTotalSelectRate
             // 
             this.labelTotalSelectRate.AutoSize = true;
-            this.labelTotalSelectRate.Location = new System.Drawing.Point(158, 50);
+            this.labelTotalSelectRate.Location = new System.Drawing.Point(155, 91);
             this.labelTotalSelectRate.Name = "labelTotalSelectRate";
             this.labelTotalSelectRate.Size = new System.Drawing.Size(21, 13);
             this.labelTotalSelectRate.TabIndex = 0;
@@ -868,7 +982,7 @@
             legend7.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend7.Name = "Legend1";
             this.promotionPieChart.Legends.Add(legend7);
-            this.promotionPieChart.Location = new System.Drawing.Point(63, 31);
+            this.promotionPieChart.Location = new System.Drawing.Point(27, 57);
             this.promotionPieChart.Name = "promotionPieChart";
             series8.ChartArea = "ChartArea1";
             series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -876,7 +990,7 @@
             series8.Name = "Series1";
             series8.YValuesPerPoint = 4;
             this.promotionPieChart.Series.Add(series8);
-            this.promotionPieChart.Size = new System.Drawing.Size(345, 380);
+            this.promotionPieChart.Size = new System.Drawing.Size(470, 370);
             this.promotionPieChart.TabIndex = 1;
             this.promotionPieChart.Text = "chart3";
             title11.Name = "Title1";
@@ -891,17 +1005,16 @@
             this.groupBox1.Controls.Add(this.rankTypeBox5);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.rankSelectionBox);
-            this.groupBox1.Location = new System.Drawing.Point(538, 27);
+            this.groupBox1.Location = new System.Drawing.Point(26, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(265, 123);
+            this.groupBox1.Size = new System.Drawing.Size(783, 45);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Options";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(23, 34);
+            this.label6.Location = new System.Drawing.Point(55, 18);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(34, 13);
             this.label6.TabIndex = 4;
@@ -911,28 +1024,29 @@
             // 
             this.rankTypeBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.rankTypeBox5.FormattingEnabled = true;
-            this.rankTypeBox5.Location = new System.Drawing.Point(65, 31);
+            this.rankTypeBox5.Location = new System.Drawing.Point(97, 15);
             this.rankTypeBox5.Name = "rankTypeBox5";
-            this.rankTypeBox5.Size = new System.Drawing.Size(176, 21);
+            this.rankTypeBox5.Size = new System.Drawing.Size(289, 21);
             this.rankTypeBox5.TabIndex = 3;
             this.rankTypeBox5.SelectedIndexChanged += new System.EventHandler(this.rankTypeBox5_SelectedIndexChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(23, 79);
+            this.label5.Location = new System.Drawing.Point(396, 18);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(36, 13);
             this.label5.TabIndex = 2;
             this.label5.Text = "Rank:";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // rankSelectionBox
             // 
             this.rankSelectionBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.rankSelectionBox.FormattingEnabled = true;
-            this.rankSelectionBox.Location = new System.Drawing.Point(65, 76);
+            this.rankSelectionBox.Location = new System.Drawing.Point(438, 15);
             this.rankSelectionBox.Name = "rankSelectionBox";
-            this.rankSelectionBox.Size = new System.Drawing.Size(176, 21);
+            this.rankSelectionBox.Size = new System.Drawing.Size(289, 21);
             this.rankSelectionBox.TabIndex = 1;
             this.rankSelectionBox.SelectedIndexChanged += new System.EventHandler(this.rankSelectionBox_SelectedIndexChanged);
             // 
@@ -1088,6 +1202,39 @@
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseDoubleClick);
             // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Rank";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Name";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column2.Width = 315;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "Years In Service";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column3.Width = 150;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "Time In Grade";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column4.Width = 150;
+            // 
             // tabPage8
             // 
             this.tabPage8.Controls.Add(this.groupBox4);
@@ -1186,39 +1333,6 @@
             this.nameLabel.Size = new System.Drawing.Size(204, 34);
             this.nameLabel.TabIndex = 1;
             this.nameLabel.Text = "Simulation Results";
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "Rank";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Name";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column2.Width = 315;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "Years In Service";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column3.Width = 150;
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "Time In Grade";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            this.Column4.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column4.Width = 150;
             // 
             // SimResultViewForm
             // 
@@ -1363,5 +1477,15 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.Label labelTransfersOut;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label labelAvgTiS_Transfered;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Label labelAvgTiG_Transfered;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label labelTransfersInto;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label labelTransferIntoRate;
+        private System.Windows.Forms.Label label18;
     }
 }

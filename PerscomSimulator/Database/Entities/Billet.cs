@@ -305,13 +305,13 @@ namespace Perscom.Database
         public virtual IEnumerable<Position> Positions { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="BilletRequirement"/> entities that reference this 
+        /// Gets a list of <see cref="BilletSpecialtyRequirement"/> entities that reference this 
         /// <see cref="Billet"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<BilletRequirement> Requirements { get; set; }
+        public virtual IEnumerable<BilletSpecialtyRequirement> Requirements { get; set; }
 
         /// <summary>
         /// Gets the <see cref="BilletSpawnSetting"/> entity that reference this 
