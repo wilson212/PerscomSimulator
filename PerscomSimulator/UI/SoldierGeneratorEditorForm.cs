@@ -40,7 +40,7 @@ namespace Perscom
             using (AppDatabase db = new AppDatabase())
             {
                 // Fill Ranks
-                Ranks = db.Ranks.ToDictionary(x => x.Id, x => x);
+                Ranks = RankCache.RanksById;
                 CareerGens = new List<CareerGenerator>(db.CareerGenerators);
             }
 
@@ -119,8 +119,27 @@ namespace Perscom
                 builder.Clear();
 
                 // Create listview item
+                ListViewItem item = null;
                 Rank rank = RankCache.RanksById[setting.RankId];
-                ListViewItem item = new ListViewItem(rank.Name);
+                if (setting.UseRankGrade)
+                {
+                    var ranks = RankCache.RanksByGrade[setting.Rank.Type][setting.Rank.Grade];
+                    foreach (var r in ranks)
+                    {
+                        if (builder.Length > 0)
+                            builder.Append(", ");
+                        builder.Append(r.Name);
+                    }
+
+                    item = new ListViewItem(builder.ToString());
+                    builder.Clear();
+                }
+                else
+                {
+                    item = new ListViewItem(rank.Name);
+                }
+                
+                // Add probability
                 item.SubItems.Add($"Probability: {setting.Probability}%");
 
                 // Add career length change line

@@ -61,6 +61,19 @@ namespace System.Windows.Forms
         [DefaultValue(false)]
         public int BorderRoundRadius { get; set; } = 5;
 
+        public bool IncreaseHeight(int value)
+        {
+            if ((this.Height + value) > this.MaximumSize.Height)
+            {
+                return false;
+            }
+            else
+            {
+                this.Height += value;
+                return true;
+            }
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaintBackground(e);

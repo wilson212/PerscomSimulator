@@ -223,6 +223,18 @@ namespace Perscom
             applyButton.Enabled = enabled;
         }
 
+        private void ToggleForeignKeys(bool enabled)
+        {
+            // Update table cache
+            EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletExperience)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletExperienceFilter)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletExperienceGroup)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletExperienceSorting)).BuildInstanceForeignKeys = enabled;
+        }
+
         #region Panel Border Painting
 
         private void sidePanel_Paint(object sender, PaintEventArgs e)
@@ -516,9 +528,7 @@ namespace Perscom
                 billetsContextMenu.Enabled = false;
 
                 // Update table cache
-                EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = false;
-                EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = false;
-                EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = false;
+                ToggleForeignKeys(false);
 
                 // Open database and begin transaction
                 using (AppDatabase db = new AppDatabase())
@@ -544,9 +554,7 @@ namespace Perscom
                 billetsContextMenu.Enabled = true;
 
                 // Update table cache
-                EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = true;
-                EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = true;
-                EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = true;
+                ToggleForeignKeys(true);
             }
         }
 
@@ -823,9 +831,7 @@ namespace Perscom
                 billetsContextMenu.Enabled = false;
 
                 // Update table cache
-                EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = false;
-                EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = false;
-                EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = false;
+                ToggleForeignKeys(false);
 
                 // Open database and begin transaction
                 using (AppDatabase db = new AppDatabase())
@@ -861,9 +867,7 @@ namespace Perscom
                 billetsContextMenu.Enabled = true;
 
                 // Update table cache
-                EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = true;
-                EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = true;
-                EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = true;
+                ToggleForeignKeys(true);
             }
         }
 
@@ -887,13 +891,14 @@ namespace Perscom
                 PreferNonRepeats = billet.PreferNonRepeats,
                 PromotionPoolId = billet.PromotionPoolId,
                 RankId = billet.RankId,
-                Repeatable = billet.Repeatable,
+                Waiverable = billet.Waiverable,
                 Stature = billet.Stature,
                 UnitTypeId = SelectedTemplate.Id,
                 ZIndex = billet.ZIndex,
                 Selection = billet.Selection,
                 CanBePromotedEarly = billet.CanBePromotedEarly,
                 CanLateralEarly = billet.CanLateralEarly,
+                ExperienceLogic = billet.ExperienceLogic
             };
 
             // Add billet to database
@@ -931,6 +936,34 @@ namespace Perscom
                     SpecialtyId = item.SpecialtyId
                 };
                 db.BilletSpecialties.Add(spec);
+            }
+
+            // Add billet experience
+            foreach (var item in billet.Experience)
+            {
+                item.Billet = b;
+                db.BilletExperience.Add(item);
+            }
+
+            // Add billet filters
+            foreach (var item in billet.Filters)
+            {
+                item.Billet = b;
+                db.BilletExperienceFilters.Add(item);
+            }
+
+            // Add billet groups
+            foreach (var item in billet.Grouping)
+            {
+                item.Billet = b;
+                db.BilletExperienceGroups.Add(item);
+            }
+
+            // Add billet sorting
+            foreach (var item in billet.Sorting)
+            {
+                item.Billet = b;
+                db.BilletExperienceSorting.Add(item);
             }
 
             // Add billet to internal list

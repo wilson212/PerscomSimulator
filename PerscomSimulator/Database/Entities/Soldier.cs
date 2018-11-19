@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using CrossLite;
+﻿using CrossLite;
 using CrossLite.CodeFirst;
+using System.Collections.Generic;
 
 namespace Perscom.Database
 {
@@ -290,6 +290,15 @@ namespace Perscom.Database
         /// A lazy loaded enumeration
         /// </remarks>
         public virtual IEnumerable<Promotion> Promotions { get; set; }
+
+        /// <summary>
+        /// Gets a list of <see cref="SoldierExperience"/> entities that reference this 
+        /// <see cref="Soldier"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<SoldierExperience> Experience { get; set; }
 
         #endregion
     }

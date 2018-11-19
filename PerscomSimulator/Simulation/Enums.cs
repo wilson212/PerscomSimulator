@@ -4,7 +4,7 @@
     {
         TimeInService,
         TimeInGrade,
-        TimeInBillet,
+        TimeInPosition,
         TimeToRetirement
     }
 
@@ -12,7 +12,7 @@
     {
         TimeInService,
         TimeInGrade,
-        TimeInBillet,
+        TimeInPosition,
         TimeToRetirement
     }
 
@@ -28,7 +28,7 @@
 
     public enum SortMode
     {
-        HasValue,
-        ByValue
+        OrderByValue,
+        GroupByValue,
     }
 }

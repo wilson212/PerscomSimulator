@@ -11,7 +11,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(1, 14);
+        public static Version CurrentVersion { get; protected set; } = new Version(1, 15);
 
         /// <summary>
         /// Gets the current database tables version
@@ -31,6 +31,26 @@ namespace Perscom.Database
         /// Gets a set of <see cref="BilletCatagory"/> entites stored in the database
         /// </summary>
         public DbSet<BilletCatagory> BilletCatagories { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="Database.BilletExperience"/> entites stored in the database
+        /// </summary>
+        public DbSet<BilletExperience> BilletExperience { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="Database.BilletExperienceFilter"/> entites stored in the database
+        /// </summary>
+        public DbSet<BilletExperienceFilter> BilletExperienceFilters { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="Database.BilletExperienceGroup"/> entites stored in the database
+        /// </summary>
+        public DbSet<BilletExperienceGroup> BilletExperienceGroups { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="Database.BilletExperienceSorting"/> entites stored in the database
+        /// </summary>
+        public DbSet<BilletExperienceSorting> BilletExperienceSorting { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="BilletSpecialtyRequirement"/> entites stored in the database
@@ -61,6 +81,11 @@ namespace Perscom.Database
         /// Gets a set of <see cref="Echelon"/> entites stored in the database
         /// </summary>
         public DbSet<Echelon> Echelons { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="Database.Experience"/> entites stored in the database
+        /// </summary>
+        public DbSet<Experience> Experience { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Rank"/> entites stored in the database
@@ -144,12 +169,17 @@ namespace Perscom.Database
             DbVersions = new DbSet<DbVersion>(this);
             Billets = new DbSet<Billet>(this);
             BilletCatagories = new DbSet<BilletCatagory>(this);
+            BilletExperience = new DbSet<BilletExperience>(this);
+            BilletExperienceFilters = new DbSet<BilletExperienceFilter>(this);
+            BilletExperienceGroups = new DbSet<BilletExperienceGroup>(this);
+            BilletExperienceSorting = new DbSet<BilletExperienceSorting>(this);
             BilletSpecialtyRequirements = new DbSet<BilletSpecialtyRequirement>(this);
             BilletSpawnSettings = new DbSet<BilletSpawnSetting>(this);
             BilletSpecialties = new DbSet<BilletSpecialty>(this);
             CareerGenerators = new DbSet<CareerGenerator>(this);
             CareerLengthRange = new DbSet<CareerLengthRange>(this);
             Echelons = new DbSet<Echelon>(this);
+            Experience = new DbSet<Experience>(this);
             Ranks = new DbSet<Rank>(this);
             SoldierGenerators = new DbSet<SoldierGenerator>(this);
             SoldierGeneratorPools = new DbSet<SoldierGeneratorPool>(this);
@@ -196,6 +226,10 @@ namespace Perscom.Database
                 CodeFirstSQLite.DropTable<BilletSpecialtyRequirement>(this);
                 CodeFirstSQLite.DropTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.DropTable<BilletSpecialty>(this);
+                CodeFirstSQLite.DropTable<BilletExperienceFilter>(this);
+                CodeFirstSQLite.DropTable<BilletExperienceGroup>(this);
+                CodeFirstSQLite.DropTable<BilletExperienceSorting>(this);
+                CodeFirstSQLite.DropTable<BilletExperience>(this);
                 CodeFirstSQLite.DropTable<Billet>(this);
                 CodeFirstSQLite.DropTable<BilletCatagory>(this);
                 CodeFirstSQLite.DropTable<Specialty>(this);
@@ -209,6 +243,7 @@ namespace Perscom.Database
                 CodeFirstSQLite.DropTable<CareerGenerator>(this);
                 CodeFirstSQLite.DropTable<UnitTemplateAttachment>(this);
                 CodeFirstSQLite.DropTable<UnitTemplate>(this);
+                CodeFirstSQLite.DropTable<Experience>(this);
                 CodeFirstSQLite.DropTable<Echelon>(this);
                 CodeFirstSQLite.DropTable<Rank>(this);
                 CodeFirstSQLite.DropTable<DbVersion>(this);
@@ -217,6 +252,7 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<DbVersion>(this);
                 CodeFirstSQLite.CreateTable<Rank>(this);
                 CodeFirstSQLite.CreateTable<Echelon>(this);
+                CodeFirstSQLite.CreateTable<Experience>(this);
                 CodeFirstSQLite.CreateTable<UnitTemplate>(this);
                 CodeFirstSQLite.CreateTable<UnitTemplateAttachment>(this);
                 CodeFirstSQLite.CreateTable<CareerGenerator>(this);
@@ -230,6 +266,10 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<Specialty>(this);
                 CodeFirstSQLite.CreateTable<BilletCatagory>(this);
                 CodeFirstSQLite.CreateTable<Billet>(this);
+                CodeFirstSQLite.CreateTable<BilletExperience>(this);
+                CodeFirstSQLite.CreateTable<BilletExperienceFilter>(this);
+                CodeFirstSQLite.CreateTable<BilletExperienceGroup>(this);
+                CodeFirstSQLite.CreateTable<BilletExperienceSorting>(this);
                 CodeFirstSQLite.CreateTable<BilletSpecialty>(this);
                 CodeFirstSQLite.CreateTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.CreateTable<BilletSpecialtyRequirement>(this);

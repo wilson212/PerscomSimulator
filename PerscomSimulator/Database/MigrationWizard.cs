@@ -86,6 +86,9 @@ namespace Perscom.Database
                         case "1.13":
                             MigrateTo_1_14();
                             break;
+                        case "1.14":
+                            MigrateTo_1_15();
+                            break;
                         default:
                             throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
                     }
@@ -96,6 +99,30 @@ namespace Perscom.Database
 
                 // Always perform a vacuum to optimize the database
                 Database.Execute("VACUUM;");
+            }
+        }
+
+        private void MigrateTo_1_15()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create new tables
+                CodeFirstSQLite.CreateTable<Experience>(Database, TableCreationOptions.IfNotExists);
+                CodeFirstSQLite.CreateTable<BilletExperience>(Database, TableCreationOptions.IfNotExists);
+                CodeFirstSQLite.CreateTable<BilletExperienceFilter>(Database, TableCreationOptions.IfNotExists);
+                CodeFirstSQLite.CreateTable<BilletExperienceGroup>(Database, TableCreationOptions.IfNotExists);
+                CodeFirstSQLite.CreateTable<BilletExperienceSorting>(Database, TableCreationOptions.IfNotExists);
+
+                // Create queries
+                Database.Execute("ALTER TABLE `Billet` ADD COLUMN `ExperienceLogic` INTEGER NOT NULL DEFAULT 0;");
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.15"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
             }
         }
 
@@ -242,10 +269,10 @@ namespace Perscom.Database
             using (var trans = Database.BeginTransaction())
             {
                 // Create queries
-                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `FirstOrderedBy` INTEGER NOT NULL DEFAULT 0;");
-                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `FirstOrder` INTEGER NOT NULL DEFAULT 0;");
-                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `ThenOrderedBy` INTEGER NOT NULL DEFAULT 0;");
-                Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `ThenOrder` INTEGER NOT NULL DEFAULT 0;");
+                //Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `FirstOrderedBy` INTEGER NOT NULL DEFAULT 0;");
+                //Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `FirstOrder` INTEGER NOT NULL DEFAULT 0;");
+                //Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `ThenOrderedBy` INTEGER NOT NULL DEFAULT 0;");
+                //Database.Execute("ALTER TABLE `SoldierGeneratorPool` ADD COLUMN `ThenOrder` INTEGER NOT NULL DEFAULT 0;");
 
                 // Update database version
                 string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";

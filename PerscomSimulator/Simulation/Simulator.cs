@@ -1,11 +1,10 @@
-﻿using System;
+﻿using CrossLite;
+using Perscom.Database;
+using Perscom.Simulation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using CrossLite;
-using CrossLite.QueryBuilder;
-using Perscom.Database;
-using Perscom.Simulation;
 
 namespace Perscom
 {
@@ -103,9 +102,36 @@ namespace Perscom
         /// </summary>
         protected static RankType[] RankTypes { get; set; } = Enum.GetValues(typeof(RankType)).Cast<RankType>().ToArray();
 
-        protected Dictionary<int, IOrderedEnumerable<SoldierPoolSorting>> SoldierPoolSorting { get; set; }
+        /// <summary>
+        /// A Cache to hold Soldier Pool Sorting options.
+        /// </summary>
+        protected Dictionary<int, List<SoldierPoolSorting>> SoldierPoolOrdering { get; set; }
 
-        protected Dictionary<int, IOrderedEnumerable<SoldierPoolFilter>> SoldierPoolFiltering { get; set; }
+
+        /// <summary>
+        /// A Cache to hold Soldier Pool Filtering options.
+        /// </summary>
+        protected Dictionary<int, List<SoldierPoolFilter>> SoldierPoolFiltering { get; set; }
+
+        /// <summary>
+        /// A Cache to hold Billet Experience Given.
+        /// </summary>
+        protected Dictionary<int, List<BilletExperience>> BilletExperience { get; set; }
+
+        /// <summary>
+        /// A Cache to hold Soldier Billet Experience Filtering options.
+        /// </summary>
+        protected Dictionary<int, List<BilletExperienceFilter>> ExperienceFilters { get; set; }
+
+        /// <summary>
+        /// A Cache to hold Soldier Billet Experience Group options.
+        /// </summary>
+        protected Dictionary<int, List<BilletExperienceGroup>> ExperienceGroups { get; set; }
+
+        /// <summary>
+        /// A Cache to hold Soldier Billet Experience Sorting options.
+        /// </summary>
+        protected Dictionary<int, List<BilletExperienceSorting>> ExperienceOrdering { get; set; }
 
         /// <summary>
         /// Creates a new Simulator instance
@@ -131,8 +157,8 @@ namespace Perscom
             }
 
             // Load and Cache Soldier Pool Sortings and Filterings!
-            SoldierPoolFiltering = new Dictionary<int, IOrderedEnumerable<SoldierPoolFilter>>();
-            SoldierPoolSorting = new Dictionary<int, IOrderedEnumerable<SoldierPoolSorting>>();
+            SoldierPoolFiltering = new Dictionary<int, List<SoldierPoolFilter>>();
+            SoldierPoolOrdering = new Dictionary<int, List<SoldierPoolSorting>>();
             foreach (var item in db.SoldierGeneratorPools)
             {
                 var sorts = item.SoldierSorting?.ToArray();
@@ -140,12 +166,48 @@ namespace Perscom
 
                 if (sorts != null && sorts.Length > 0)
                 {
-                    SoldierPoolSorting.Add(item.Id, sorts.OrderBy(x => x.Precedence));
+                    SoldierPoolOrdering.Add(item.Id, sorts.OrderBy(x => x.Precedence).ToList());
                 }
 
                 if (filters != null && filters.Length > 0)
                 {
-                    SoldierPoolFiltering.Add(item.Id, filters.OrderBy(x => x.Precedence));
+                    SoldierPoolFiltering.Add(item.Id, filters.OrderBy(x => x.Precedence).ToList());
+                }
+            }
+
+            // Load and Cache Billet experience options
+            BilletExperience = new Dictionary<int, List<BilletExperience>>();
+            ExperienceFilters = new Dictionary<int, List<BilletExperienceFilter>>();
+            ExperienceOrdering = new Dictionary<int, List<BilletExperienceSorting>>();
+            ExperienceGroups = new Dictionary<int, List<BilletExperienceGroup>>();
+            foreach (var item in db.Billets)
+            {
+                // Check for experience given
+                var items = item.Experience.ToList();
+                if (items.Count > 0)
+                {
+                    BilletExperience.Add(item.Id, items);
+                }
+
+                // Check for filters
+                var filters = item.Filters.OrderBy(x => x.Precedence).ToList();
+                if (filters.Count() > 0)
+                {
+                    ExperienceFilters.Add(item.Id, filters);
+                }
+
+                // Check for Grouping
+                var groups = item.Grouping.OrderBy(x => x.Precedence).ToList();
+                if (groups.Count() > 0)
+                {
+                    ExperienceGroups.Add(item.Id, groups);
+                }
+
+                // Check for Sorting
+                var sorting = item.Sorting.OrderBy(x => x.Precedence).ToList();
+                if (sorting.Count() > 0)
+                {
+                    ExperienceOrdering.Add(item.Id, sorting);
                 }
             }
         }
@@ -294,8 +356,11 @@ namespace Perscom
                     // Save soldiers and their relevant data
                     foreach (SoldierWrapper s in ActiveDutySoldiers.Values)
                     {
-                        s.Save(Database, CurrentIterationDate);
-                        s.Dispose();
+                        if (!s.Soldier.Retired)
+                        {
+                            s.Save(Database, CurrentIterationDate);
+                            s.Dispose();
+                        }
                     }
 
                     // Save rank stats data
@@ -348,6 +413,7 @@ namespace Perscom
             EntityCache.GetTableMap(typeof(SpecialtyAssignment)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(Soldier)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(Promotion)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(SoldierExperience)).BuildInstanceForeignKeys = enabled;
         }
 
         /// <summary>
@@ -368,132 +434,180 @@ namespace Perscom
                     continue;
 
                 // Grab current holder
+                bool expGiven = false;
                 SoldierWrapper soldier = position.Holder;
                 RankType type = position.Billet.Rank.Type;
                 PromotableStatus status;
 
-                // Check if position is empty
-                if (position.IsEmpty)
+                // Label to return to if a soldier retired from this position this month
+                DoPositionCheck:
                 {
-                    // Is this an entry level position?
-                    if (position.Billet.UsesCustomGenerator)
-                    {
-                        var generator = SoldierGenerators[position.Billet.SpawnSetting.GeneratorId];
-                        soldier = CreateSoldier(generator, position, out SpawnedSoldier setting);
-
-                        // Did we spawn a soldier?
-                        if (soldier != null)
-                        {
-                            // Assign position
-                            soldier.AssignPosition(position, CurrentIterationDate, Database);
-
-                            // Create entry into statistics
-                            if (setting.Type == SpawnSoldierType.CreateNew)
-                                LogSoldierEntry(soldier);
-                        }
-                    }
-                    else
-                    {
-                        // Grab soldier pool
-                        soldier = FindBestSoldierFor(position);
-                        soldier?.AssignPosition(position, CurrentIterationDate, Database);
-                    }
-                }
-                // Process Lateral Movement
-                else if (position.Billet.MaxTourLength > 0)
-                {
-                    // If we are at max tour length, or past it,
-                    // we are a prime candidate for moving!
-                    if (soldier.IsPastMaxTourLength(CurrentIterationDate))
-                    {
-                        TryPerformLateralMovement(soldier, position);
-                    }
-                }
-
-                // If we could not find someone to fill the position
-                if (soldier == null)
-                {
+                    // Check if position is empty
                     if (position.IsEmpty)
-                        LogDeficit(position);
-
-                    continue;
-                }
-
-                // Define soldier vars
-                int grade = soldier.Rank.Grade;
-                int specId = soldier.Soldier.SpecialtyId;
-
-                // Check for retirement (forced by MaxTourLength, MaxTiG, or freewill)
-                if (soldier.IsRetiring(CurrentIterationDate))
-                {
-                    // Log retirement data for current rank/grade
-                    LogRetiree(soldier);
-
-                    // Remove the retired soldier from the roster
-                    ActiveDutySoldiers.Remove(soldier.Soldier.Id);
-
-                    // Say goodbye!
-                    soldier.Retire(CurrentIterationDate, Database);
-
-                    // Update soldier record
-                    soldier.Save(Database, CurrentIterationDate);
-
-                    // Call dispose!
-                    soldier.Dispose();
-                }
-
-                // Check for auto promotion and under-staff promotion
-                else if (soldier.IsPromotable(CurrentIterationDate, out status))
-                {
-                    if (status == PromotableStatus.Automatic || status == PromotableStatus.Position)
                     {
-                        // Dont log promotion data if switching rank types!
-                        if (soldier.Rank.Type != position.Billet.Rank.Type)
+                        // Is this an entry level position?
+                        if (position.Billet.UsesCustomGenerator)
                         {
-                            // Log transfer data for current rank/grade
-                            LogRankTypeChange(soldier, position);
+                            var generator = SoldierGenerators[position.Billet.SpawnSetting.GeneratorId];
+                            soldier = CreateSoldier(generator, position, out SpawnedSoldier setting);
 
-                            // Promote Soldier
-                            soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
+                            // Did we spawn a soldier?
+                            if (soldier != null)
+                            {
+                                // Give past months experience
+                                if (setting.Type != SpawnSoldierType.CreateNew && soldier.Position != null)
+                                {
+                                    GiveSoldierExperience(soldier, soldier.Position);
+                                    expGiven = true;
+                                }
+
+                                // Assign position
+                                soldier.AssignPosition(position, CurrentIterationDate, Database);
+
+                                // Create entry into statistics
+                                if (setting.Type == SpawnSoldierType.CreateNew)
+                                    LogSoldierEntry(soldier);
+                            }
                         }
                         else
                         {
-                            // Get the expected soldier rank/grade to promote from
-                            var expectedGrade = position.Billet.Rank.Grade - 1;
-
-                            // Promote soldier. Do not skip rank grades!
-                            if (soldier.Rank.Grade == expectedGrade)
+                            // Grab soldier pool
+                            soldier = FindBestSoldierFor(position);
+                            if (soldier != null)
                             {
-                                // Log promotion data for current rank/grade
-                                LogPromotion(soldier);
+                                // Give past months experience!
+                                GiveSoldierExperience(soldier, soldier.Position);
+                                expGiven = true;
 
-                                // Billet grade is 1 level higher or of a different Type!
+                                // Assign new position
+                                soldier.AssignPosition(position, CurrentIterationDate, Database);
+                            }
+                        }
+                    }
+                    else if (!expGiven)
+                    {
+                        // soldier could be null if a Lateral movement failed
+                        soldier = position.Holder;
+
+                        // Give Experience
+                        GiveSoldierExperience(soldier, position);
+
+                        // Process Lateral Movement
+                        if (position.Billet.MaxTourLength > 0)
+                        {
+                            // If we are at max tour length, or past it,
+                            // we are a prime candidate for moving!
+                            if (soldier.IsPastMaxTourLength(CurrentIterationDate))
+                            {
+                                TryPerformLateralMovement(soldier, position);
+                            }
+                        }
+                    }
+
+                    // If we could not find someone to fill the position
+                    if (position.IsEmpty)
+                    {
+                        LogDeficit(position);
+                        continue;
+                    }
+
+                    // Define soldier vars
+                    int grade = soldier.Rank.Grade;
+                    int specId = soldier.Soldier.SpecialtyId;
+
+                    // Check for retirement (forced by MaxTourLength, MaxTiG, or freewill)
+                    if (soldier.IsRetiring(CurrentIterationDate))
+                    {
+                        // Log retirement data for current rank/grade
+                        LogRetiree(soldier);
+
+                        // Remove the retired soldier from the roster
+                        ActiveDutySoldiers.Remove(soldier.Soldier.Id);
+
+                        // Say goodbye!
+                        soldier.Retire(CurrentIterationDate, Database);
+
+                        // Update soldier record
+                        soldier.Save(Database, CurrentIterationDate);
+
+                        // Call dispose!
+                        soldier.Dispose();
+                        soldier = null;
+
+                        // Go back and fill this position!
+                        goto DoPositionCheck;
+                    }
+
+                    // Check for auto promotion and under-staff promotion
+                    else if (soldier.IsPromotable(CurrentIterationDate, out status))
+                    {
+                        if (status == PromotableStatus.Automatic || status == PromotableStatus.Position)
+                        {
+                            // Dont log promotion data if switching rank types!
+                            if (soldier.Rank.Type != position.Billet.Rank.Type)
+                            {
+                                // Log transfer data for current rank/grade
+                                LogRankTypeChange(soldier, position);
+
+                                // Promote Soldier
                                 soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
                             }
                             else
                             {
-                                // Log promotion data for current rank/grade
-                                LogPromotion(soldier);
+                                // Get the expected soldier rank/grade to promote from
+                                var expectedGrade = position.Billet.Rank.Grade - 1;
 
-                                // Billet grade is multiple levels higher, SO we must promote one grade at
-                                // a time!
-                                Rank toRank = RankCache.GetNextGradeRanks(soldier.Rank).FirstOrDefault();
-                                if (toRank != null)
-                                    soldier.PromoteTo(CurrentIterationDate, toRank, Database);
+                                // Promote soldier. Do not skip rank grades!
+                                if (soldier.Rank.Grade == expectedGrade)
+                                {
+                                    // Log promotion data for current rank/grade
+                                    LogPromotion(soldier);
+
+                                    // Billet grade is 1 level higher or of a different Type!
+                                    soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
+                                }
                                 else
-                                    throw new Exception("Ran out of ranks? wtf");
+                                {
+                                    // Log promotion data for current rank/grade
+                                    LogPromotion(soldier);
+
+                                    // Billet grade is multiple levels higher, SO we must promote one grade at
+                                    // a time!
+                                    Rank toRank = RankCache.GetNextGradeRanks(soldier.Rank).FirstOrDefault();
+                                    if (toRank != null)
+                                        soldier.PromoteTo(CurrentIterationDate, toRank, Database);
+                                    else
+                                        throw new Exception("Ran out of ranks? wtf");
+                                }
                             }
                         }
+                        else if (status == PromotableStatus.Lateral)
+                        {
+                            // Do not log promotion since this is lateral
+                            soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
+                        }
                     }
-                    else if (status == PromotableStatus.Lateral)
+                    else if (soldier.IsStandIn())
                     {
-                        // Do not log promotion since this is lateral
-                        soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
+                        LogDeficit(position);
                     }
                 }
-                else if (soldier.IsStandIn())
+            }
+        }
+
+        /// <summary>
+        /// Gives a soldier experience
+        /// </summary>
+        /// <param name="soldier"></param>
+        /// <param name="position"></param>
+        private void GiveSoldierExperience(SoldierWrapper soldier, PositionWrapper position)
+        {
+            if (BilletExperience.ContainsKey(position.Billet.Id))
+            {
+                var items = BilletExperience[position.Billet.Id];
+                foreach (var item in items)
                 {
-                    LogDeficit(position);
+                    soldier.GiveExperience(item);
                 }
             }
         }
@@ -518,7 +632,11 @@ namespace Perscom
             UnitWrapper topUnit = position.PromotionPoolUnit;
             RankType type = position.Billet.Rank.Type;
             int grade = position.Billet.Rank.Grade;
+            int billetId = position.Billet.Id;
             BilletSelection[] illegalSelections = { BilletSelection.CustomGenerator, BilletSelection.PromotionOnly };
+
+            // Grab soldiers
+            IEnumerable<SoldierWrapper> soldiers = topUnit.SoldiersByGrade[type][grade].Values.ToList();
 
             // Can't lateral into this position if it uses a custom
             // selection generator or is PromotionOnly!
@@ -528,18 +646,60 @@ namespace Perscom
             // If this is lateral ONLY position, than we MUST force
             // people to move from higher stature units, otherwise the position
             // could be empty forver!
-            int val = (position.Billet.Selection == BilletSelection.LateralOnly) ? 0 : 1;
+            int val = (position.Billet.Selection == BilletSelection.LateralOnly) ? 3 : 2;
 
             // Get a list of soldiers that CAN do a lateral movement,
-            // Order by Desirability and Time in Billet
-            var soldiers = topUnit.SoldiersByGrade[type][grade].Values
-                .Where(x => IsCanidateForPosition(x, position) && GetLateralPromotionDesire(x, position) > val)
-                .OrderByDescending(x => GetLateralPromotionDesire(x, position))
-                .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
+            soldiers = soldiers.Where(x => IsCanidateForPosition(x, position) && GetLateralPromotionGroupId(x, position) <= val);
 
-            // Any canidates?
-            if (soldiers.Count() == 0)
+            // Do we have anyone left?
+            int count = soldiers.Count();
+            if (count == 0)
+            {
                 return false;
+            }
+
+            // Apply grouping and sorting only if we have more than 1 soldier
+            if (count > 1)
+            {
+                //
+                // 2. Apply Billet grouping
+                //
+                IEnumerable<SoldierGroupResult> groups = null;
+
+                // Do we have experience grouping as well?
+                if (ExperienceGroups.ContainsKey(billetId))
+                {
+                    // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
+                    var expGroups = ExperienceGroups[billetId];
+                    groups = soldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position), expGroups);
+                }
+                else
+                {
+                    groups = soldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position));
+                }
+
+                // Get topmost group with at least one soldier in it
+                // This list of soldiers will be the most prime canidates,
+                // hitting Most if Not All grouping requirements
+                soldiers = groups.GetPrimeSoldiers();
+
+                //
+                // 3. Apply soldier ordering
+                //
+                if (ExperienceOrdering.ContainsKey(billetId))
+                {
+                    // Grab experience sorting
+                    var experienceSorts = ExperienceOrdering[billetId];
+
+                    // Apply sorting using just experience
+                    soldiers = soldiers.OrderSoldiersBy(experienceSorts);
+                }
+                else
+                {
+                    // Apply sorting using just experience
+                    soldiers = soldiers.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                }
+            }
 
             // Now find someone we can switch with!
             foreach (var otherSoldier in soldiers)
@@ -561,19 +721,15 @@ namespace Perscom
                         continue;
                 }
 
-                // Make sure we are a canidate!
-                if (IsCanidateForPosition(soldier, pos))
-                {
-                    // Remove positions first!
-                    otherSoldier.RemoveFromPosition(CurrentIterationDate, Database);
-                    soldier.RemoveFromPosition(CurrentIterationDate, Database);
+                // Remove positions first!
+                otherSoldier.RemoveFromPosition(CurrentIterationDate, Database);
+                soldier.RemoveFromPosition(CurrentIterationDate, Database);
 
-                    // Assign new positions
-                    soldier.AssignPosition(pos, CurrentIterationDate, Database);
-                    otherSoldier.AssignPosition(position, CurrentIterationDate, Database);
+                // Assign new positions
+                soldier.AssignPosition(pos, CurrentIterationDate, Database);
+                otherSoldier.AssignPosition(position, CurrentIterationDate, Database);
 
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -593,8 +749,10 @@ namespace Perscom
         private SoldierWrapper FindBestSoldierFor(PositionWrapper position)
         {
             // Define position specific vars
+            IEnumerable<SoldierWrapper> primeSoldiers = null;
             UnitWrapper topUnit = position.PromotionPoolUnit;
             RankType type = position.Billet.Rank.Type;
+            var billetId = position.Billet.Billet.Id;
 
             // If promotion only, reduce the Grade level down one
             // to prevent any lateral movement
@@ -606,13 +764,9 @@ namespace Perscom
             // fill the slot, or run out of rank/grades to pull from.
             while (grade > 0)
             {
-                //
-                // === Apply Filters === //
-                //
-                // TODO: Apply filters to force lateral promotions
-                //
+                // Grab soldier list
+                primeSoldiers = topUnit.SoldiersByGrade[type][grade].Values;
                 IOrderedEnumerable<SoldierWrapper> soldiers;
-                IEnumerable<SoldierWrapper> primeSoldiers = new List<SoldierWrapper>();
                 bool isLateral = (grade == position.Billet.Rank.Grade);
 
                 // Quit if this is a lateral only position
@@ -625,73 +779,110 @@ namespace Perscom
                     // If this is lateral ONLY position, than we MUST force
                     // people to move from higher stature units, otherwise the position
                     // could be empty forver!
-                    int val = (position.Billet.Selection == BilletSelection.LateralOnly) ? 0 : 1;
+                    int val = (position.Billet.Selection == BilletSelection.LateralOnly) ? 3 : 2;
 
-                    // Apply initial filter
-                    primeSoldiers = topUnit.SoldiersByGrade[type][grade].Values
-                        .Where(x => IsCanidateForPosition(x, position) && GetLateralPromotionDesire(x, position) > val);
+                    //
+                    // 1. Apply initial filter, ensuring canadiatcy, and any kind of desire
+                    //
+                    primeSoldiers = primeSoldiers.Where(x => IsCanidateForPosition(x, position) && GetLateralPromotionGroupId(x, position) <= val);
 
-                    // Is this position NOT repeatable?
-                    if (!position.Billet.Billet.Repeatable)
-                    {
-                        soldiers = primeSoldiers
-                            .Where(x => !x.BilletsHeld.ContainsKey(position.Billet.Billet.Id))
-                            .OrderByDescending(x => GetLateralPromotionDesire(x, position))
-                            .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
-                    }
-                    else if (position.Billet.Billet.PreferNonRepeats)
-                    {
-                        // Check for repeatable preference
-                        soldiers = primeSoldiers
-                            .OrderBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0)
-                            .ThenByDescending(x => GetLateralPromotionDesire(x, position))
-                            .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
-                    }
-                    else
-                    {
-                        // Final filtering
-                        soldiers = primeSoldiers
-                            .OrderByDescending(x => GetLateralPromotionDesire(x, position))
-                            .ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
-                    }
                 }
                 else
                 {
-                    // Apply initial filter
-                    primeSoldiers = topUnit.SoldiersByGrade[type][grade].Values
-                        .Where(x => IsCanidateForPosition(x, position));
-
-                    // Is this position NOT repeatable?
-                    if (!position.Billet.Billet.Repeatable)
-                    {
-                        soldiers = primeSoldiers
-                            .Where(x => !x.BilletsHeld.ContainsKey(position.Billet.Billet.Id))
-                            .OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
-                    }
-                    else if (position.Billet.Billet.PreferNonRepeats)
-                    {
-                        // Check for repeatable preference
-                        soldiers = primeSoldiers
-                            .OrderBy(x => x.BilletsHeld.ContainsKey(position.Billet.Billet.Id) ? 1 : 0)
-                            .ThenByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
-                    }
-                    else
-                    {
-                        // Final filtering
-                        soldiers = primeSoldiers
-                            .OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
-                    }
+                    //
+                    // 1. Apply initial filter, ensuring canadiatcy
+                    //
+                    primeSoldiers = primeSoldiers.Where(x => IsCanidateForPosition(x, position));
                 }
 
-                // Check for an un-restricted soldier first
-                var wrapper = soldiers.FirstOrDefault();
-                if (wrapper != null)
-                {
-                    return wrapper;
-                }
-                else
+                // Is this position NOT repeatable?
+                if (!position.Billet.Billet.Waiverable)
+                    primeSoldiers = primeSoldiers.Where(x => !x.BilletsHeld.ContainsKey(billetId));
+
+                // Do we have anyone left?
+                int count = primeSoldiers.Count();
+                if (count == 0)
                 {
                     --grade;
+                    continue;
+                }
+
+                // Apply grouping and sorting only if we have more than 1 soldier
+                if (count > 1)
+                {
+                    //
+                    // 2. Apply Billet grouping
+                    //
+                    IEnumerable<SoldierGroupResult> groups = null;
+                    if (isLateral)
+                    {
+                        // Do we have experience grouping as well?
+                        if (ExperienceGroups.ContainsKey(billetId))
+                        {
+                            // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
+                            var expGroups = ExperienceGroups[billetId];
+                            groups = primeSoldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position), expGroups);
+                        }
+                        else
+                        {
+                            groups = primeSoldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position));
+                        }
+
+                        // Get topmost group with at least one soldier in it
+                        primeSoldiers = groups.GetPrimeSoldiers();
+                    }
+                    else if (ExperienceGroups.ContainsKey(billetId))
+                    {
+                        // Apply groups
+                        var expGroups = ExperienceGroups[billetId];
+                        groups = primeSoldiers.GroupSoldiersBy(expGroups.ToList());
+
+                        // Get topmost group with at least one soldier in it
+                        primeSoldiers = groups.GetPrimeSoldiers();
+                    }
+
+                    //
+                    // 3. Apply soldier ordering
+                    //
+                    if (ExperienceOrdering.ContainsKey(billetId))
+                    {
+                        // Grab experience sorting
+                        var experienceSorts = ExperienceOrdering[billetId];
+
+                        // Apply sorting using just experience
+                        soldiers = primeSoldiers.OrderSoldiersBy(experienceSorts);
+                    }
+                    else
+                    {
+                        // Apply sorting using just experience
+                        soldiers = primeSoldiers.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                    }
+
+                    // Check for an un-restricted soldier first
+                    var wrapper = soldiers.FirstOrDefault();
+                    if (wrapper != null)
+                    {
+                        return wrapper;
+                    }
+                    else
+                    {
+                        --grade;
+                        continue;
+                    }
+                }
+                else
+                {
+                    // Check for an un-restricted soldier first
+                    var wrapper = primeSoldiers.FirstOrDefault();
+                    if (wrapper != null)
+                    {
+                        return wrapper;
+                    }
+                    else
+                    {
+                        --grade;
+                        continue;
+                    }
                 }
             }
 
@@ -699,13 +890,20 @@ namespace Perscom
         }
 
         /// <summary>
-        /// Returns a desire rating for a soldier that is a candidate for a lateral promotion.
-        /// A higher returned number indicates a greater need or desire for a later promotion.
+        /// Returns a group rating for a soldier that is a candidate for a lateral promotion.
+        /// A higher returned number indicates a reduced need or desire for a lateral promotion.
         /// </summary>
         /// <param name="soldier"></param>
         /// <param name="position">The position we are potentially moving into</param>
         /// <returns></returns>
-        private int GetLateralPromotionDesire(SoldierWrapper soldier, PositionWrapper position)
+        /// <remarks>
+        /// 4 = Soldier Cant really move...
+        /// 3 = Downgrade position based on stature, Soldier doesn't want to
+        /// 2 = Upgrade to current position, Soldier wants to
+        /// 1 = Soldier should To move up very soon (Past MaxTourLength [Waiverable] or Very Near [Not Waiverable])
+        /// 0 = Soldier needs to move NOW (Not Waiverable, Will be forced to retire)
+        /// </remarks>
+        private int GetLateralPromotionGroupId(SoldierWrapper soldier, PositionWrapper position)
         {
             //
             // CAN WE EVEN?
@@ -713,7 +911,7 @@ namespace Perscom
             if (soldier.IsLockedInPosition(CurrentIterationDate))
             {
                 if (!soldier.Position.Billet.Billet.CanLateralEarly)
-                    return 0;
+                    return 4;
             }
 
             //
@@ -724,33 +922,16 @@ namespace Perscom
             // or we have surpassed our max tour length, return true
             if (soldier.IsNearMaxTourLength(CurrentIterationDate))
             {
-                if (soldier.Position.Billet.Billet.Repeatable)
+                if (soldier.Position.Billet.Billet.Waiverable)
                 {
-                    // If the spot prefers none repeats, then we must
-                    // return mid-level desire and Respect that!
-                    if (soldier.Position.Billet.Billet.PreferNonRepeats)
-                    {
-                        return 5;
-                    }
-
-                    // The position is repeatable, and does not mind
-                    // Repeat soldiers taking the spot...
-                    // Is this position more desirable at least?
-                    else if (soldier.Position.Billet.Stature < position.Billet.Stature)
-                    {
-                        return 4;
-                    }
-                    else
-                    {
-                        // We'll take it just for a change of scenery
-                        return 3;
-                    }
+                    // We'll take it just for a change of scenery
+                    return (soldier.IsPastMaxTourLength(CurrentIterationDate)) ? 1 : 2;
                 }
                 else
                 {
                     // We are nearing max tour length, and the position
                     // is NOT repeatable... shit! This is high candidacy
-                    return (soldier.IsPastMaxTourLength(CurrentIterationDate)) ? 7 : 6;
+                    return (soldier.IsPastMaxTourLength(CurrentIterationDate)) ? 0 : 1;
                 }
             }
 
@@ -759,7 +940,7 @@ namespace Perscom
             //
 
             // If the stature is higher, OF COURSE we want it!
-            return (soldier.Position.Billet.Stature < position.Billet.Stature) ? 2 : 1;
+            return (soldier.Position.Billet.Stature < position.Billet.Stature) ? 2 : 3;
         }
 
         /// <summary>
@@ -775,6 +956,10 @@ namespace Perscom
             // Positions are ordered at the start of the simulation by
             // Grade and Stature anyways, so it works out
             if (soldier.Assignment.AssignedIteration == CurrentIterationDate.Id)
+                return false;
+
+            // Make sure we are not retiring THIS round!
+            if (soldier.IsRetiring(CurrentIterationDate))
                 return false;
 
             // Don't move to the same billet we already sitting in
@@ -801,15 +986,20 @@ namespace Perscom
                 }
             }
 
-            // Check for repeatable position
-            if (!position.Billet.Billet.Repeatable)
+            // Apply Billet Filtering
+            int billetId = position.Billet.Id;
+            if (ExperienceFilters.ContainsKey(billetId))
             {
-                if (soldier.BilletsHeld.ContainsKey(position.Billet.Id))
-                    return false;
+                var filters = ExperienceFilters[billetId];
+                foreach (var filter in filters)
+                {
+                    if (!soldier.MeetsExperienceRequirement(filter))
+                        return false;
+                }
             }
 
             // Quit if this is a lateral only position
-            if (position.Billet.Billet.LateralOnly && (position.Billet.Rank.Grade != soldier.Rank.Grade))
+            if (position.Billet.Selection == BilletSelection.LateralOnly && (position.Billet.Rank.Grade != soldier.Rank.Grade))
             {
                 return false;
             }
@@ -845,134 +1035,6 @@ namespace Perscom
 
             // if we are here, we meet all requirements!
             return true;
-        }
-
-        private void LogRankTypeChange(SoldierWrapper soldier, PositionWrapper position)
-        {
-            // Log promotion data for current rank/grade
-            if (SkipYears == 0)
-            {
-                int fromGrade = soldier.Rank.Grade;
-                var fromType = soldier.Rank.Type;
-                int fromSpecId = soldier.Soldier.SpecialtyId;
-                int toGrade = position.Billet.Rank.Grade;
-                var toType = position.Billet.Rank.Type;
-                int toSpecId = position.Billet.Specialty.Id;
-                UnitWrapper parentUnit = soldier.Position.ParentUnit;
-
-                while (parentUnit != null)
-                {
-                    var templateId = parentUnit.Unit.UnitTemplateId;
-
-                    // Outgoing
-                    RankStatistics[templateId][fromType][fromGrade].TrackRankTransferFrom(soldier, CurrentIterationDate);
-                    SpecialtyStatistics[templateId][fromType][fromGrade][fromSpecId].TrackRankTransferFrom(soldier, CurrentIterationDate);
-
-                    // Incoming
-                    RankStatistics[templateId][toType][toGrade].TrackRankTransferInto(soldier);
-                    SpecialtyStatistics[templateId][toType][toGrade][toSpecId].TrackRankTransferInto(soldier);
-
-                    // Move up
-                    parentUnit = parentUnit.Parent;
-                }
-            }
-        }
-
-        private void LogRetiree(SoldierWrapper soldier)
-        {
-            // Log promotion data for current rank/grade
-            if (SkipYears == 0)
-            {
-                int grade = soldier.Rank.Grade;
-                var type = soldier.Rank.Type;
-                int specId = soldier.Soldier.SpecialtyId;
-                UnitWrapper parentUnit = soldier.Position.ParentUnit;
-
-                while (parentUnit != null)
-                {
-                    var templateId = parentUnit.Unit.UnitTemplateId;
-                    RankStatistics[templateId][type][grade].TrackRetiree(soldier, CurrentIterationDate);
-                    SpecialtyStatistics[templateId][type][grade][specId].TrackRetiree(soldier, CurrentIterationDate);
-
-                    // Move up
-                    parentUnit = parentUnit.Parent;
-                }
-            }
-        }
-
-        private void LogSoldierEntry(SoldierWrapper soldier)
-        {
-            // Log promotion data for current rank/grade
-            if (SkipYears == 0)
-            {
-                int grade = soldier.Rank.Grade;
-                var type = soldier.Rank.Type;
-                int specId = soldier.Soldier.SpecialtyId;
-                UnitWrapper parentUnit = soldier.Position.ParentUnit;
-
-                while (parentUnit != null)
-                {
-                    var templateId = parentUnit.Unit.UnitTemplateId;
-
-                    RankStatistics[templateId][type][grade].TrackPromotionIntoGrade(soldier);
-                    SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionIntoGrade(soldier);
-
-                    // Move up
-                    parentUnit = parentUnit.Parent;
-                }
-            }
-        }
-
-        private void LogPromotion(SoldierWrapper soldier)
-        {
-            // Log promotion data for current rank/grade
-            if (SkipYears == 0)
-            {
-                int grade = soldier.Rank.Grade;
-                var type = soldier.Rank.Type;
-                int specId = soldier.Soldier.SpecialtyId;
-                UnitWrapper parentUnit = soldier.Position.ParentUnit;
-
-                while (parentUnit != null)
-                {
-                    var templateId = parentUnit.Unit.UnitTemplateId;
-
-                    // Track Promotion
-                    RankStatistics[templateId][type][grade].TrackPromotionToNextGrade(soldier, CurrentDate);
-                    SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionToNextGrade(soldier, CurrentDate);
-
-                    // Add soldier to incoming on Next grade
-                    RankStatistics[templateId][type][grade + 1].TrackPromotionIntoGrade(soldier);
-                    SpecialtyStatistics[templateId][type][grade + 1][specId].TrackPromotionIntoGrade(soldier);
-
-                    // Move up
-                    parentUnit = parentUnit.Parent;
-                }
-            }
-        }
-
-        private void LogDeficit(PositionWrapper position)
-        {
-            // Log promotion data for current rank/grade
-            if (SkipYears == 0)
-            {
-                int grade = position.Billet.Rank.Grade;
-                var type = position.Billet.Rank.Type;
-                int specId = position.Billet.Specialty?.Id ?? -1;
-                UnitWrapper parentUnit = position.ParentUnit;
-
-                while (parentUnit != null)
-                {
-                    var templateId = parentUnit.Unit.UnitTemplateId;
-                    RankStatistics[templateId][type][grade].Deficit += 1;
-
-                    if (specId >= 0)
-                        SpecialtyStatistics[templateId][type][grade][specId].Deficit += 1;
-
-                    // Move up
-                    parentUnit = parentUnit.Parent;
-                }
-            }
         }
 
         /// <summary>
@@ -1145,51 +1207,106 @@ namespace Perscom
             if (soldiers.Count == 0)
                 return null;
 
+            // Setup variables
+            var billetId = position.Billet.Id;
+            IEnumerable<SoldierWrapper> candidates = soldiers;
+
             //
-            // 1. Apply filtering
+            // 1. Apply Soldier Pool filtering
             //
             if (SoldierPoolFiltering.ContainsKey(setting.Pool.Id))
             {
                 var items = SoldierPoolFiltering[setting.Pool.Id];
-                if (setting.Pool.FilterLogic == LogicOperator.And)
-                {
-                    foreach (var filter in items)
-                    {
-                        soldiers = FilterSoldierList(soldiers, filter.FilterBy, filter.Operator, filter.Value).ToList();
-                    }
-                }
-                else
-                {
-                    HashSet<SoldierWrapper> people = new HashSet<SoldierWrapper>();
-                    foreach (var filter in items)
-                    {
-                        people.UnionWith(FilterSoldierList(soldiers, filter.FilterBy, filter.Operator, filter.Value));
-                    }
-
-                    soldiers = people.ToList();
-                }
+                candidates = candidates.FilterSoldierList(items, setting.Pool.FilterLogic, CurrentIterationDate);
             }
 
+            // 
+            // 2. Billet Filtering by experience
             //
-            // 2. Apply soldier ordering
-            //
-            if (SoldierPoolSorting.ContainsKey(setting.Pool.Id))
+            if (ExperienceFilters.ContainsKey(billetId))
             {
-                var oList = soldiers.OrderBy(x => 1);
-                var items = SoldierPoolSorting[setting.Pool.Id];
-                foreach (var sort in items)
+                // Apply groups
+                var filters = ExperienceFilters[billetId];
+                candidates = candidates.FilterSoldierList(filters, position.Billet.Billet.ExperienceLogic);
+            }
+
+            // Do we have anyone left?
+            int count = candidates.Count();
+            if (count == 0)
+                return null;
+
+            // Apply grouping and sorting only if we have more than 1 soldier
+            if (count > 1)
+            {
+                //
+                // 3. Apply Billet grouping
+                //
+                if (ExperienceGroups.ContainsKey(billetId))
                 {
-                    oList = OrderSoldierList(oList, sort.SortBy, sort.Direction);
+                    // Apply groups
+                    var groups = ExperienceGroups[billetId];
+                    var result = candidates.GroupSoldiersBy(groups.ToList());
+
+                    // Get topmost group with at least one soldier in it
+                    // This list of soldiers will be the most prime canidates,
+                    // hitting Most if Not All grouping requirements
+                    candidates = result.GetPrimeSoldiers();
                 }
 
-                soldiers = oList.ToList();
+                //
+                // 4. Apply soldier ordering
+                //
+                if (ExperienceOrdering.ContainsKey(billetId))
+                {
+                    // Grab experience sorting
+                    var experienceSorts = ExperienceOrdering[billetId];
+
+                    // Check for pool sorting
+                    if (SoldierPoolOrdering.ContainsKey(setting.Pool.Id))
+                    {
+                        // Grab pool sorts
+                        var poolSorts = SoldierPoolOrdering[setting.Pool.Id];
+                        IOrderedEnumerable<SoldierWrapper> ordered = null;
+
+                        // Who sorts first?
+                        if (setting.Pool.OrdersBeforeBilletOrdering)
+                        {
+                            // Apply time sorting
+                            ordered = candidates.OrderSoldiersBy(poolSorts, CurrentIterationDate);
+
+                            // Apply experience sorting
+                            ordered = ordered.ThenOrderSoldiersBy(experienceSorts);
+                        }
+                        else
+                        {
+                            // Apply experience sorting
+                            ordered = candidates.OrderSoldiersBy(experienceSorts);
+
+                            // Apply time sorting
+                            ordered = ordered.ThenOrderSoldiersBy(poolSorts, CurrentIterationDate);
+                        }
+
+                        // Finally, collapse
+                        candidates = ordered.ToList();
+                    }
+                    else
+                    {
+                        // Apply sorting using just experience
+                        candidates = candidates.OrderSoldiersBy(experienceSorts);
+                    }
+                }
+                else if (SoldierPoolOrdering.ContainsKey(setting.Pool.Id))
+                {
+                    var poolSorts = SoldierPoolOrdering[setting.Pool.Id];
+                    candidates = candidates.OrderSoldiersBy(poolSorts, CurrentIterationDate);
+                }
             }
 
             //
-            // 3. Select the first elegible solder
+            // 5. Select the first elegible solder
             //
             PromotableStatus status;
-            foreach (var soldier in soldiers)
+            foreach (var soldier in candidates)
             {
                 // Must be promotable?
                 if (setting.Pool.MustBePromotable)
@@ -1212,86 +1329,131 @@ namespace Perscom
             return null;
         }
 
-        /// <summary>
-        /// This method is used to filter soldiers using the given SoldierPoolFilter, operator and value
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="filterBy"></param>
-        /// <param name="operator"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private IEnumerable<SoldierWrapper> FilterSoldierList(
-            IEnumerable<SoldierWrapper> list, 
-            SoldierFilter filterBy, 
-            ConditionOperator @operator, 
-            int value)
+        private void LogRankTypeChange(SoldierWrapper soldier, PositionWrapper position)
         {
-            switch (filterBy)
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
             {
-                default:
-                case SoldierFilter.TimeInBillet:
-                    return list.Where(x => EvaluateExpression(x.GetTimeInBillet(CurrentIterationDate), @operator, value));
-                case SoldierFilter.TimeInGrade:
-                    return list.Where(x => EvaluateExpression(x.GetTimeInGrade(CurrentIterationDate), @operator, value));
-                case SoldierFilter.TimeInService:
-                    return list.Where(x => EvaluateExpression(x.GetTimeInService(CurrentIterationDate), @operator, value));
-                case SoldierFilter.TimeToRetirement:
-                    return list.Where(x => EvaluateExpression(x.GetTimeUntilRetirement(CurrentIterationDate), @operator, value));
+                int fromGrade = soldier.Rank.Grade;
+                var fromType = soldier.Rank.Type;
+                int fromSpecId = soldier.Soldier.SpecialtyId;
+                int toGrade = position.Billet.Rank.Grade;
+                var toType = position.Billet.Rank.Type;
+                int toSpecId = position.Billet.Specialty.Id;
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+
+                    // Outgoing
+                    RankStatistics[templateId][fromType][fromGrade].TrackRankTransferFrom(soldier, CurrentIterationDate);
+                    SpecialtyStatistics[templateId][fromType][fromGrade][fromSpecId].TrackRankTransferFrom(soldier, CurrentIterationDate);
+
+                    // Incoming
+                    RankStatistics[templateId][toType][toGrade].TrackRankTransferInto(soldier);
+                    SpecialtyStatistics[templateId][toType][toGrade][toSpecId].TrackRankTransferInto(soldier);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
             }
         }
 
-        private bool EvaluateExpression(int value1, ConditionOperator @operator, int value2)
+        private void LogRetiree(SoldierWrapper soldier)
         {
-            switch (@operator)
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
             {
-                default:
-                case ConditionOperator.Equals:
-                    return (value1 == value2);
-                case ConditionOperator.GreaterThan:
-                    return (value1 > value2);
-                case ConditionOperator.GreaterThanOrEqualTo:
-                    return (value1 >= value2);
-                case ConditionOperator.LessThan:
-                    return (value1 < value2);
-                case ConditionOperator.LessThanOrEqualTo:
-                    return (value1 <= value2);
-                case ConditionOperator.NotEqualTo:
-                    return (value1 != value2);
+                int grade = soldier.Rank.Grade;
+                var type = soldier.Rank.Type;
+                int specId = soldier.Soldier.SpecialtyId;
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+                    RankStatistics[templateId][type][grade].TrackRetiree(soldier, CurrentIterationDate);
+                    SpecialtyStatistics[templateId][type][grade][specId].TrackRetiree(soldier, CurrentIterationDate);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
             }
         }
 
-        /// <summary>
-        /// This method is used to sort soldiers using the given SoldierSorting and direction
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="sortBy"></param>
-        /// <param name="direction"></param>
-        /// <returns></returns>
-        private IOrderedEnumerable<SoldierWrapper> OrderSoldierList(
-            IOrderedEnumerable<SoldierWrapper> list,
-            SoldierSorting sortBy,
-            Sorting direction)
+        private void LogSoldierEntry(SoldierWrapper soldier)
         {
-            switch (sortBy)
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
             {
-                default:
-                    return list;
-                case SoldierSorting.TimeInGrade:
-                    return (direction == Sorting.Ascending)
-                        ? list.ThenBy(x => x.GetTimeInGrade(CurrentIterationDate))
-                        : list.ThenByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
-                case SoldierSorting.TimeInService:
-                    return (direction == Sorting.Ascending)
-                        ? list.ThenBy(x => x.GetTimeInService(CurrentIterationDate))
-                        : list.ThenByDescending(x => x.GetTimeInService(CurrentIterationDate));
-                case SoldierSorting.TimeInBillet:
-                    return (direction == Sorting.Ascending)
-                        ? list.ThenBy(x => x.GetTimeInBillet(CurrentIterationDate))
-                        : list.ThenByDescending(x => x.GetTimeInBillet(CurrentIterationDate));
-                case SoldierSorting.TimeToRetirement:
-                    return (direction == Sorting.Ascending)
-                        ? list.ThenBy(x => x.GetTimeUntilRetirement(CurrentIterationDate))
-                        : list.ThenByDescending(x => x.GetTimeUntilRetirement(CurrentIterationDate));
+                int grade = soldier.Rank.Grade;
+                var type = soldier.Rank.Type;
+                int specId = soldier.Soldier.SpecialtyId;
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+
+                    RankStatistics[templateId][type][grade].TrackPromotionIntoGrade(soldier);
+                    SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionIntoGrade(soldier);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
+            }
+        }
+
+        private void LogPromotion(SoldierWrapper soldier)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                int grade = soldier.Rank.Grade;
+                var type = soldier.Rank.Type;
+                int specId = soldier.Soldier.SpecialtyId;
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+
+                    // Track Promotion
+                    RankStatistics[templateId][type][grade].TrackPromotionToNextGrade(soldier, CurrentDate);
+                    SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionToNextGrade(soldier, CurrentDate);
+
+                    // Add soldier to incoming on Next grade
+                    RankStatistics[templateId][type][grade + 1].TrackPromotionIntoGrade(soldier);
+                    SpecialtyStatistics[templateId][type][grade + 1][specId].TrackPromotionIntoGrade(soldier);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
+            }
+        }
+
+        private void LogDeficit(PositionWrapper position)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                int grade = position.Billet.Rank.Grade;
+                var type = position.Billet.Rank.Type;
+                int specId = position.Billet.Specialty?.Id ?? -1;
+                UnitWrapper parentUnit = position.ParentUnit;
+
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+                    RankStatistics[templateId][type][grade].Deficit += 1;
+
+                    if (specId >= 0)
+                        SpecialtyStatistics[templateId][type][grade][specId].Deficit += 1;
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
             }
         }
     }

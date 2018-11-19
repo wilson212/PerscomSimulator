@@ -1,14 +1,13 @@
-﻿using System;
+﻿using NodaTime;
+using Perscom.Database;
+using Perscom.Simulation;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using CrossLite;
-using NodaTime;
-using Perscom.Database;
-using Perscom.Simulation;
 
 namespace Perscom
 {
@@ -26,12 +25,14 @@ namespace Perscom
             panel2.BackColor = FormStyling.CHART_COLOR_DARK;
             panel4.BackColor = FormStyling.CHART_COLOR_DARK;
             panel5.BackColor = FormStyling.CHART_COLOR_DARK;
+            panel6.BackColor = FormStyling.CHART_COLOR_DARK;
 
             // Round corners on panels
             panel1.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel1.Width, panel1.Height, 5, 5));
             panel2.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel2.Width, panel2.Height, 5, 5));
             panel4.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel4.Width, panel4.Height, 5, 5));
             panel5.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel5.Width, panel5.Height, 5, 5));
+            panel6.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel6.Width, panel6.Height, 5, 5));
 
             // Extract data
             var position = soldier.Position;
@@ -192,6 +193,24 @@ namespace Perscom
                 dataGridView3.Rows.Add(row);
             }
 
+            // Fill Experience
+            customPanel4.Height = 0;
+            foreach (var exp in soldier.Soldier.Experience.OrderByDescending(x => x.Value))
+            {
+                var name = exp.Experience.Name;
+                row = new DataGridViewRow();
+                row.CreateCells(dataGridView3);
+                row.SetValues(new object[]
+                {
+                    name,
+                    exp.Value
+                });
+                dataGridView4.Rows.Add(row);
+
+                // Increase row size
+                customPanel4.IncreaseHeight(row.Height);
+            }
+
             // Hide selection on the data view grid
             dataGridView1.DefaultCellStyle.SelectionBackColor = dataGridView1.DefaultCellStyle.BackColor;
             dataGridView1.DefaultCellStyle.SelectionForeColor = dataGridView1.DefaultCellStyle.ForeColor;
@@ -199,6 +218,8 @@ namespace Perscom
             dataGridView2.DefaultCellStyle.SelectionForeColor = dataGridView2.DefaultCellStyle.ForeColor;
             dataGridView3.DefaultCellStyle.SelectionBackColor = dataGridView3.DefaultCellStyle.BackColor;
             dataGridView3.DefaultCellStyle.SelectionForeColor = dataGridView3.DefaultCellStyle.ForeColor;
+            dataGridView4.DefaultCellStyle.SelectionBackColor = dataGridView4.DefaultCellStyle.BackColor;
+            dataGridView4.DefaultCellStyle.SelectionForeColor = dataGridView4.DefaultCellStyle.ForeColor;
         }
 
         /// <summary>

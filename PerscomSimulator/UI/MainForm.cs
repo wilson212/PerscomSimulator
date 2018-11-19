@@ -358,6 +358,14 @@ namespace Perscom
             }
         }
 
+        private void manageExpMenuItem_Click(object sender, EventArgs e)
+        {
+            using (ExperienceForm form = new ExperienceForm())
+            {
+                form.ShowDialog();
+            }
+        }
+
         private void manageRanksMenuItem_Click(object sender, EventArgs e)
         {
             using (RankEditorForm form = new RankEditorForm())

@@ -50,6 +50,11 @@ namespace Perscom.Database
         public DbSet<SpecialtyAssignment> SpecialtyAssignments { get; set; }
 
         /// <summary>
+        /// Gets a set of <see cref="Database.SoldierExperience"/> entites stored in the database
+        /// </summary>
+        public DbSet<SoldierExperience> SoldierExperience { get; set; }
+
+        /// <summary>
         /// Gets a set of <see cref="Database.SpecialtyGradeStatistics"/> entites stored in the database
         /// </summary>
         public DbSet<SpecialtyGradeStatistics> SpecialtyGradeStatistics { get; set; }
@@ -80,6 +85,7 @@ namespace Perscom.Database
             Promotions = new DbSet<Promotion>(this);
             RankGradeStatistics = new DbSet<RankGradeStatistics>(this);
             Soldiers = new DbSet<Soldier>(this);
+            SoldierExperience = new DbSet<SoldierExperience>(this);
             SpecialtyAssignments = new DbSet<SpecialtyAssignment>(this);
             SpecialtyGradeStatistics = new DbSet<SpecialtyGradeStatistics>(this);
             Units = new DbSet<Unit>(this);
@@ -105,12 +111,14 @@ namespace Perscom.Database
                 CodeFirstSQLite.DropTable<UnitAttachment>(this);
                 CodeFirstSQLite.DropTable<Unit>(this);
                 CodeFirstSQLite.DropTable<Promotion>(this);
+                CodeFirstSQLite.DropTable<SoldierExperience>(this);
                 CodeFirstSQLite.DropTable<Soldier>(this);
                 CodeFirstSQLite.DropTable<IterationDate>(this);
 
                 // Create the needed database tables
                 CodeFirstSQLite.CreateTable<IterationDate>(this);
                 CodeFirstSQLite.CreateTable<Soldier>(this);
+                CodeFirstSQLite.CreateTable<SoldierExperience>(this);
                 CodeFirstSQLite.CreateTable<Promotion>(this);
                 CodeFirstSQLite.CreateTable<Unit>(this);
                 CodeFirstSQLite.CreateTable<UnitAttachment>(this);

@@ -1,16 +1,4 @@
 ﻿ - Track specialty transitions for statistics
  - Add the deficit rating for billets and positions
  - Add UnitTemplate statistics
- - Introduce a sort of Experience system, where billets can accumulate
-	promotion points for soldiers who sit in those billets
-
-New Entities For Experience System:
-
-> Billet.ExperienceLogic = [LogicOperator.And, LogicOperator.Or]
-> Billet.ExperienceSortMode = [SortMode.HasValue, SortMode.ByValue]
-
-> Experience (Id, Name) ***The Trait***
-> BilletExp (BilletId, ExperienceId, Rate) ***Experience Given***
-> BilletExpFilter (BilletId, ExperienceId, Operator, Value) ***Experience Required***
-> BilletExpSorting (BilletId, ExperienceId, Direction) ***Experience Sorting***
-> SoldierExp (SoldierId, ExperienceId, Value) ***Experience Recieved***
+ - Add a traits system?

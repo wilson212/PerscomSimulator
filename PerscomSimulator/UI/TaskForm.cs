@@ -229,5 +229,17 @@ namespace Perscom
         }
 
         #endregion
+
+        private void panelMain_Paint(object sender, PaintEventArgs e)
+        {
+            FormStyling.StyleFormHeader(panelMain, e);
+            base.OnPaint(e);
+        }
+
+        private void panelButton_Paint(object sender, PaintEventArgs e)
+        {
+            FormStyling.StyleFormFooter(panelButton, e);
+            base.OnPaint(e);
+        }
     }
 }

@@ -142,8 +142,6 @@ namespace Perscom
             root.Text = "Loading... Please Wait";
             treeView1.Nodes.Add(root);
 
-            Ranks = Database.Ranks.ToDictionary(x => x.Id, x => x);
-
             // Add billit catagories
             foreach (var cat in Database.BilletCatagories.OrderByDescending(x => x.ZIndex))
             {
@@ -159,6 +157,7 @@ namespace Perscom
             myImageList1.ColorDepth = ColorDepth.Depth32Bit;
 
             // Fill images
+            Ranks = Database.Ranks.ToDictionary(x => x.Id, x => x);
             foreach (var rank in Ranks)
             {
                 Image picture = ImageAccessor.GetImage(Path.Combine("Large", rank.Value.Image)) ?? new Bitmap(64, 64);

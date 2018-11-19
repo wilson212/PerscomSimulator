@@ -65,10 +65,53 @@
   <ItemGroup>
     <Compile Include="Application\Epoch.cs" />
     <Compile Include="Application\ExceptionHandler.cs" />
+    <Compile Include="Application\Condition.cs" />
+    <Compile Include="Database\Entities\BilletExperienceGroup.cs" />
+    <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="UI\ExperienceNameChangeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ExperienceNameChangeForm.Designer.cs">
+      <DependentUpon>ExperienceNameChangeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ExperienceGroupingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ExperienceGroupingForm.Designer.cs">
+      <DependentUpon>ExperienceGroupingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ExperienceFilterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ExperienceFilterForm.Designer.cs">
+      <DependentUpon>ExperienceFilterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\BilletSortingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\BilletSortingForm.Designer.cs">
+      <DependentUpon>BilletSortingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Database\Entities\BilletExperience.cs" />
+    <Compile Include="Database\Entities\BilletExperienceFilter.cs" />
+    <Compile Include="Database\Entities\BilletExperienceSorting.cs" />
+    <Compile Include="Database\Entities\SoldierExperience.cs" />
     <Compile Include="Database\Entities\SoldierPoolSorting.cs" />
     <Compile Include="Database\Entities\SoldierPoolFilter .cs" />
+    <Compile Include="Database\Entities\Experience.cs" />
+    <Compile Include="UI\ExperienceSelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ExperienceSelectForm.Designer.cs">
+      <DependentUpon>ExperienceSelectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ExperienceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ExperienceForm.Designer.cs">
+      <DependentUpon>ExperienceForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Simulation\BilletSelection.cs" />
-    <Compile Include="Simulation\SoldierSelector.cs" />
     <Compile Include="Simulation\SpawnedSoldier.cs" />
     <Compile Include="Database\Entities\SoldierGeneratorCareer.cs" />
     <Compile Include="Controls\ListViewWithReordering.cs">
@@ -260,11 +303,29 @@
     <Compile Include="UI\UnitTypeManagerForm.Designer.cs">
       <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UI\ExperienceNameChangeForm.resx">
+      <DependentUpon>ExperienceNameChangeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ExperienceGroupingForm.resx">
+      <DependentUpon>ExperienceGroupingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\BilletSortingForm.resx">
+      <DependentUpon>BilletSortingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ExperienceFilterForm.resx">
+      <DependentUpon>ExperienceFilterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ExperienceSelectForm.resx">
+      <DependentUpon>ExperienceSelectForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\CareerGeneratorEditorForm.resx">
       <DependentUpon>CareerGeneratorEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\CareerSpawnTemplateForm.resx">
       <DependentUpon>CareerSpawnTemplateForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ExperienceForm.resx">
+      <DependentUpon>ExperienceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SoldierConditionForm.resx">
       <DependentUpon>SoldierConditionForm.cs</DependentUpon>
@@ -314,6 +375,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SoldierViewForm.resx">
       <DependentUpon>SoldierViewForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\TaskForm.resx">
+      <DependentUpon>TaskForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\UnitTypeManagerForm.resx">
       <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
@@ -436,6 +500,7 @@
     <None Include="Resources\vistaerror.png" />
     <None Include="Resources\vistaInfo.png" />
     <None Include="Resources\vistaWarning.png" />
+    <None Include="Resources\plus.png" />
     <Content Include="SQLite.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -23,6 +23,8 @@ namespace Perscom
 
         private List<CareerGenerator> CareerGens { get; set; }
 
+        private Dictionary<int, Rank> Ranks { get; set; }
+
         public SoldierGeneratorPoolForm(SoldierGeneratorPool setting)
         {
             // Setup form controls
@@ -30,6 +32,7 @@ namespace Perscom
 
             // Save settings
             Selected = setting;
+            Ranks = new Dictionary<int, Rank>();
 
             // Fill Ranks
             using (AppDatabase db = new AppDatabase())
@@ -37,7 +40,10 @@ namespace Perscom
                 // Fill Ranks
                 var ranks = db.Ranks.OrderBy(x => x.Type).ThenBy(x => x.Grade);
                 foreach (var rank in ranks)
+                {
                     rankSelect.Items.Add(rank);
+                    Ranks.Add(rank.Id, rank);
+                }
 
                 if (ranks.Count() > 0)
                     rankSelect.SelectedIndex = 0;
@@ -151,8 +157,11 @@ namespace Perscom
             // Set form values for existing settings
             if (setting.RankId != 0)
             {
+                // Grab Rank. This can be null if this pool is not saved yet!
+                Rank rank = Ranks[setting.RankId];
+
                 // Get rank index
-                var index = rankSelect.Items.IndexOf(setting.Rank);
+                var index = rankSelect.Items.IndexOf(rank);
                 if (index >= 0)
                 {
                     rankSelect.SelectedIndex = index;
@@ -165,6 +174,7 @@ namespace Perscom
                 useRankGradeCheckBox.Checked = setting.UseRankGrade;
                 promotableCheckBox.Checked = setting.MustBePromotable;
                 lockedCheckBox.Checked = setting.NotLockedInBillet;
+                sortCheckBox.Checked = setting.OrdersBeforeBilletOrdering;
             }
         }
 
@@ -204,6 +214,7 @@ namespace Perscom
             Selected.MustBePromotable = promotableCheckBox.Checked;
             Selected.NotLockedInBillet = lockedCheckBox.Checked;
             Selected.FilterLogic = (andRadioButton.Checked) ? LogicOperator.And : LogicOperator.Or;
+            Selected.OrdersBeforeBilletOrdering = sortCheckBox.Checked;
 
             if (newCareerCheckBox.Checked)
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CrossLite;
 using CrossLite.CodeFirst;
+using CrossLite.QueryBuilder;
 using Perscom.Simulation;
 
 namespace Perscom.Database
@@ -111,14 +112,13 @@ namespace Perscom.Database
 
         /// <summary>
         /// Indicates whether the soldier holding this <see cref="Billet"/> is limited to
-        /// just 1 tour, and 1 tour only
+        /// the <see cref="MaxTourLength"/>, or can extend past this
         /// </summary>
-        [Column, Required, Default(1)]
-        public bool Repeatable { get; set; } = true;
+        [Column("Repeatable"), Required, Default(1)]
+        public bool Waiverable { get; set; } = true;
 
         /// <summary>
-        /// Indicates whether <see cref="Soldier"/>s whom never held this <see cref="Billet"/> 
-        /// before have priority over repeat <see cref="Soldier"/>s
+        /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
         public bool PreferNonRepeats { get; set; }
@@ -131,12 +131,6 @@ namespace Perscom.Database
         public BilletSelection Selection { get; set; } = BilletSelection.PromotionOrLateral;
 
         /// <summary>
-        /// DEPRECIATED
-        /// </summary>
-        [Column, Required, Default(0)]
-        public bool LateralOnly { get; set; }
-
-        /// <summary>
         /// Indicates whether the required <see cref="Specialty"/> are inversed, meaning
         /// that the <see cref="Soldier"/> must NOT have the <see cref="Specialty"/> listed
         /// to be considered for this billet
@@ -145,11 +139,23 @@ namespace Perscom.Database
         public bool InverseRequirements { get; set; }
 
         /// <summary>
+        /// Gets or sets the experience logic when applying filters
+        /// </summary>
+        [Column, Required, Default(0)]
+        public LogicOperator ExperienceLogic { get; set; }
+
+        /// <summary>
         /// Gets or sets the order in which this Billet will display in the Billet List View
         /// on the <see cref="UnitTypeManagerForm"/>, relative to the other billet ZIndexies.
         /// </summary>
         [Column, Required, Default(0)]
         public int ZIndex { get; set; } = 0;
+
+        /// <summary>
+        /// DEPRECIATED
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool LateralOnly { get; set; }
 
         #endregion
 
@@ -330,6 +336,42 @@ namespace Perscom.Database
         /// A lazy loaded enumeration
         /// </remarks>
         public virtual IEnumerable<BilletSpecialty> Specialties { get; set; }
+
+        /// <summary>
+        /// Gets a list of <see cref="BilletExperience"/> entities that reference this 
+        /// <see cref="Billet"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<BilletExperience> Experience { get; set; }
+
+        /// <summary>
+        /// Gets a list of <see cref="BilletExperienceSorting"/> entities that reference this 
+        /// <see cref="Billet"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<BilletExperienceSorting> Sorting { get; set; }
+
+        /// <summary>
+        /// Gets a list of <see cref="BilletExperienceGroup"/> entities that reference this 
+        /// <see cref="Billet"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<BilletExperienceGroup> Grouping { get; set; }
+
+        /// <summary>
+        /// Gets a list of <see cref="BilletExperienceFilter"/> entities that reference this 
+        /// <see cref="Billet"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<BilletExperienceFilter> Filters { get; set; }
 
         #endregion
 

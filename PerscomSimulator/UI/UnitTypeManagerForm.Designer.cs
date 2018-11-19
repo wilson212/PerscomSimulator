@@ -74,6 +74,7 @@
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -188,6 +189,8 @@
             this.label5.Size = new System.Drawing.Size(104, 13);
             this.label5.TabIndex = 36;
             this.label5.Text = "Short Name Format: ";
+            this.toolTip1.SetToolTip(this.label5, "Use the following codes:\r\n* n => To Title Case\r\n* i => Interger format\r\n* c => To" +
+        " Alpha-numeric letter");
             // 
             // label4
             // 
@@ -240,6 +243,8 @@
             this.label2.Size = new System.Drawing.Size(98, 13);
             this.label2.TabIndex = 30;
             this.label2.Text = "Unit Name Format: ";
+            this.toolTip1.SetToolTip(this.label2, "Use the following codes:\r\n* n => To Title Case\r\n* i => Interger format\r\n* c => To" +
+        " Alpha-numeric letter");
             // 
             // label7
             // 
@@ -579,5 +584,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem copyFromMenuItem;
         private System.Windows.Forms.ToolStripMenuItem duplicateBilletMenuItem;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

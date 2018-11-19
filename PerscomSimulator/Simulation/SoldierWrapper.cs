@@ -62,6 +62,11 @@ namespace Perscom.Simulation
         public Dictionary<int, BilletWrapper> BilletsHeld { get; set; } = new Dictionary<int, BilletWrapper>();
 
         /// <summary>
+        /// Gets a list of ExperienceId's and the value this soldier has accumulated
+        /// </summary>
+        public Dictionary<int, int> Experience { get; set; } = new Dictionary<int, int>();
+
+        /// <summary>
         /// Used for the Garbage Collector
         /// </summary>
         public bool Disposed { get; private set; }
@@ -112,15 +117,18 @@ namespace Perscom.Simulation
             {
                 // Remove ourselves from the position
                 RemoveFromPosition(currentDate, db);
-
-                // Set database flags
-                Soldier.Retired = true;
-                Soldier.ExitIterationId = currentDate.Id;
-                
-                // Save soldier properties
-                Soldier.RankId = Rank.Id;
-                Soldier.LastPromotionIterationId = LastPromotionDate.Id;
             }
+
+            // Set database flags
+            Soldier.Retired = true;
+            Soldier.ExitIterationId = currentDate.Id;
+
+            // Save soldier properties
+            Soldier.RankId = Rank.Id;
+            Soldier.LastPromotionIterationId = LastPromotionDate.Id;
+
+            // Clear assignment
+            Assignment = null;
         }
 
         // <summary>
@@ -143,7 +151,7 @@ namespace Perscom.Simulation
             if (Position.Billet.MaxTourLength > 0)
             {
                 int timeLeft = Position.Billet.MaxTourLength - GetTimeInBillet(currentDate);
-                if (timeLeft <= 0 && !Position.Billet.Billet.Repeatable)
+                if (timeLeft <= 0 && !Position.Billet.Billet.Waiverable)
                     return true;
             }
 
@@ -468,6 +476,66 @@ namespace Perscom.Simulation
         }
 
         /// <summary>
+        /// Gives the soldier the indicated experience
+        /// </summary>
+        /// <param name="item"></param>
+        public void GiveExperience(BilletExperience item)
+        {
+            // Ensure we have a key
+            if (!Experience.ContainsKey(item.ExperienceId))
+                Experience.Add(item.ExperienceId, 0);
+
+            // Add at the given rate
+            Experience[item.ExperienceId] += item.Rate;
+        }
+
+        /// <summary>
+        /// Evalutates the <see cref="BilletExperienceGroup"/>, returning a reversed
+        /// bool
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public int EvaluateLookUpReverse(BilletExperienceGroup selector)
+        {
+            if (Experience.TryGetValue(selector.ExperienceId, out int expValue))
+            {
+                return (Condition.EvaluateExpression(expValue, selector.Operator, selector.Value)) ? 0 : 1;
+            }
+
+            return 1;
+        }
+
+        /// <summary>
+        /// Returns whether or not this soldier has the required billet experience
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public bool MeetsExperienceRequirement(BilletExperienceFilter filter)
+        {
+            if (Experience.TryGetValue(filter.ExperienceId, out int expValue))
+            {
+                return Condition.EvaluateExpression(expValue, filter.Operator, filter.Value);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the current experience value this soldier has
+        /// </summary>
+        /// <param name="experienceId"></param>
+        /// <returns></returns>
+        public int GetExperienceValue(int experienceId)
+        {
+            if (Experience.TryGetValue(experienceId, out int Val))
+            {
+                return Val;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
         /// Saves the current soldier data to the database.
         /// </summary>
         /// <param name="database"></param>
@@ -476,9 +544,22 @@ namespace Perscom.Simulation
         {
             database.Soldiers.Update(Soldier);
 
+            // Save current position
             if (Position != null && !Soldier.Retired)
             {
                 database.Assignments.Add(Assignment);
+            }
+
+            // Save experiences
+            foreach (var exp in Experience)
+            {
+                var item = new SoldierExperience()
+                {
+                    Soldier = Soldier,
+                    ExperienceId = exp.Key,
+                    Value = exp.Value
+                };
+                database.SoldierExperience.Add(item);
             }
         }
 

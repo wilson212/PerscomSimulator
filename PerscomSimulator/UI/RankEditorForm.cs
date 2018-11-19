@@ -204,6 +204,9 @@ namespace Perscom
                     // Update
                     db.Ranks.Update(SelectedRank);
                 }
+
+                // Reset Rank Cache!
+                RankCache.Load(db);
             }
 
             // Refill tree

@@ -76,34 +76,16 @@ namespace Perscom.Database
         public LogicOperator FilterLogic { get; set; }
 
         /// <summary>
+        /// Indicates whether Soldier pool ordering is preformed before Billet Ordering
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool OrdersBeforeBilletOrdering { get; set; }
+
+        /// <summary>
         /// DEPRECIATED
         /// </summary>
         [Column, Required, Default(0)]
         public bool OrderedBySeniority { get; set; }
-
-        /// <summary>
-        /// DEPRECIATED
-        /// </summary>
-        [Column, Required, Default(0)]
-        public SoldierSorting FirstOrderedBy { get; set; }
-
-        /// <summary>
-        /// DEPRECIATED
-        /// </summary>
-        [Column, Required, Default(0)]
-        public Sorting FirstOrder { get; set; } = Sorting.Ascending;
-
-        /// <summary>
-        /// DEPRECIATED
-        /// </summary>
-        [Column, Required, Default(0)]
-        public SoldierSorting ThenOrderedBy { get; set; }
-
-        /// <summary>
-        /// DEPRECIATED
-        /// </summary>
-        [Column, Required, Default(0)]
-        public Sorting ThenOrder { get; set; } = Sorting.Ascending;
 
         #endregion
 

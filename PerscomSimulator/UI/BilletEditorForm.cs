@@ -20,12 +20,28 @@ namespace Perscom
 
         protected List<Specialty> Requirements { get; set; } = new List<Specialty>();
 
+        protected List<BilletExperience> ExperienceGiven { get; set; } = new List<BilletExperience>();
+
+        protected List<BilletExperienceGroup> ExperienceGrouping { get; set; } = new List<BilletExperienceGroup>();
+
+        protected List<BilletExperienceSorting> ExperienceSorting { get; set; } = new List<BilletExperienceSorting>();
+
+        protected List<BilletExperienceFilter> ExperienceFilters { get; set; } = new List<BilletExperienceFilter>();
+
+        protected Dictionary<int, Experience> Experience { get; set; }
+
+        protected bool ExperienceChanged { get; set; }
+
+        protected bool GroupingChanged { get; set; }
+
+        protected bool SortingChanged { get; set; }
+
+        protected bool FiltersChanged { get; set; }
+
         public BilletEditorForm(UnitTemplate template, Billet billet)
         {
             // Setup form controls
             InitializeComponent();
-            headerPanel.BackColor = FormStyling.THEME_COLOR_DARK;
-            bottomPanel.BackColor = FormStyling.THEME_COLOR_GRAY;
             inverseCheckBox.BackColor = Color.Transparent;
 
             // Set internal properties
@@ -46,11 +62,10 @@ namespace Perscom
                 earlyPromotionCheckBox.Checked = billet.CanBePromotedEarly;
                 earlyLatteralCheckBox.Checked = billet.CanLateralEarly;
                 inverseCheckBox.Checked = billet.InverseRequirements;
-                //lateralCheckBox.Checked = billet.LateralOnly;
-                repeatCheckBox.Checked = billet.Repeatable;
-                preferedCheckBox.Checked = billet.PreferNonRepeats;
+                repeatCheckBox.Checked = billet.Waiverable;
                 zIndexBox.Value = billet.ZIndex;
                 soldierSpawnSelect.SelectedIndex = (int)billet.Selection;
+                orRadioButton.Checked = (billet.ExperienceLogic == LogicOperator.Or);
 
                 // Get rank index
                 var index = billetRankSelect.Items.IndexOf(billet.Rank);
@@ -86,7 +101,7 @@ namespace Perscom
 
                 // Add generator settings
                 Requirements.AddRange(billet.Requirements.Select(x => x.Specialty));
-                FillListView();
+                FillSpecialtyListView();
 
                 // Spawn Settings
                 var spawn = billet.SpawnSettings.FirstOrDefault();
@@ -113,7 +128,173 @@ namespace Perscom
                         specialtySelect.SelectedIndex = index;
                     }
                 }
+
+                // Experience
+                ExperienceGiven.AddRange(billet.Experience);
+                ExperienceFilters.AddRange(billet.Filters);
+                ExperienceSorting.AddRange(billet.Sorting);
+                ExperienceGrouping.AddRange(billet.Grouping);
+                FillExperienceListView();
+                FillSortingListView();
+                FillGroupingListView();
+                FillFiltersListView();
             }
+        }
+
+        private void CheckExperience(int experienceId)
+        {
+            if (!Experience.ContainsKey(experienceId))
+            {
+                using (AppDatabase db = new AppDatabase())
+                {
+                    Experience = db.Experience.ToDictionary(x => x.Id, y => y);
+                }
+            }
+        }
+
+        private void FillFiltersListView()
+        {
+            // Reset listview
+            filterListView.Items.Clear();
+
+            // Prepare update
+            filterListView.BeginUpdate();
+
+            // Do we even have items to show?
+            if (ExperienceFilters.Count > 0)
+            {
+                // Order them
+                int i = 0;
+                var ordered = ExperienceFilters.OrderBy(x => x.Precedence);
+
+                // Add each item
+                foreach (var thing in ordered)
+                {
+                    // Check for new items added!
+                    CheckExperience(thing.ExperienceId);
+
+                    // Add item to list
+                    //var req = (andRadioButton.Checked) ? "And: " : "Or: ";
+                    //var text = (i > 0) ? req : "Where:";
+                    var item = new ListViewItem(Experience[thing.ExperienceId].ToString());
+                    item.SubItems.Add(thing.Operator.ToString());
+                    item.SubItems.Add(thing.Value.ToString());
+                    item.Tag = thing;
+                    filterListView.Items.Add(item);
+                    i++;
+                }
+            }
+
+            // End update
+            filterListView.EndUpdate();
+        }
+
+        private void FillSortingListView()
+        {
+            // Reset listview
+            sortingListView.Items.Clear();
+
+            // Prepare update
+            sortingListView.BeginUpdate();
+
+            // Do we even have items to show?
+            if (ExperienceSorting.Count > 0)
+            {
+                // Order them
+                int i = 0;
+                var ordered = ExperienceSorting.OrderBy(x => x.Precedence);
+
+                // Add each item
+                foreach (var thing in ordered)
+                {
+                    // Check for new items added!
+                    CheckExperience(thing.ExperienceId);
+
+                    // Add item to list
+                    var text = (i > 0) ? "Then By:" : "Order By:";
+                    var item = new ListViewItem(text);
+                    item.SubItems.Add(Experience[thing.ExperienceId].ToString());
+                    item.SubItems.Add(thing.Direction.ToString());
+                    item.Tag = thing;
+                    sortingListView.Items.Add(item);
+                    i++;
+                }
+            }
+
+            // End update
+            sortingListView.EndUpdate();
+        }
+
+        private void FillGroupingListView()
+        {
+            // Reset listview
+            groupingListView.Items.Clear();
+
+            // Prepare update
+            groupingListView.BeginUpdate();
+
+            // Do we even have items to show?
+            if (ExperienceGrouping.Count > 0)
+            {
+                // Order them
+                int i = 0;
+                var ordered = ExperienceGrouping.OrderBy(x => x.Precedence);
+
+                // Add each item
+                foreach (var thing in ordered)
+                {
+                    // Check for new items added!
+                    CheckExperience(thing.ExperienceId);
+
+                    // Add item to list
+                    var text = (i > 0) ? "Then By:" : "Group By:";
+                    var item = new ListViewItem(text);
+                    item.SubItems.Add(Experience[thing.ExperienceId].ToString());
+                    item.SubItems.Add(thing.Operator.ToString());
+                    item.SubItems.Add(thing.Value.ToString());
+                    item.Tag = thing;
+                    groupingListView.Items.Add(item);
+                    i++;
+                }
+            }
+
+            // End update
+            groupingListView.EndUpdate();
+        }
+
+        private void FillExperienceListView()
+        {
+            // Reset listview
+            experienceListView.Items.Clear();
+
+            // Prepare update
+            experienceListView.BeginUpdate();
+
+            // Do we even have items to show?
+            if (ExperienceGiven.Count > 0)
+            {
+                // Order them
+                int i = 0;
+                var ordered = ExperienceGiven.OrderByDescending(x => x.Rate).ThenBy(x => x.ExperienceId);
+
+                // Add each item
+                foreach (var thing in ordered)
+                {
+                    // Check for new items added!
+                    CheckExperience(thing.ExperienceId);
+
+                    // Add item to list
+                    var text = Experience[thing.ExperienceId].ToString();
+                    var item = new ListViewItem(text);
+                    item.SubItems.Add($"{thing.Rate.ToString()}x");
+                    item.Tag = thing;
+                    experienceListView.Items.Add(item);
+                    i++;
+                }
+            }
+
+            // End update
+            experienceListView.EndUpdate();
         }
 
         private void FillRanksAndCatagories()
@@ -164,28 +345,10 @@ namespace Perscom
 
                 if (spawnGenSelect.Items.Count > 0)
                     spawnGenSelect.SelectedIndex = 0;
+
+                // Experience
+                Experience = db.Experience.ToDictionary(x => x.Id, y => y);
             }
-        }
-
-        private void FillListView()
-        {
-            // Prepare update
-            listView1.BeginUpdate();
-
-            // Reset listview
-            listView1.Items.Clear();
-
-            // Create ListView items
-            foreach (Specialty spec in Requirements.OrderBy(x => x.Code))
-            {
-                ListViewItem item = new ListViewItem(spec.Code);
-                item.SubItems.Add(spec.Name);
-                item.Tag = spec;
-                listView1.Items.Add(item);
-            }
-
-            // End update
-            listView1.EndUpdate();
         }
 
         private bool CreatesNewSoldiers()
@@ -253,14 +416,6 @@ namespace Perscom
                     if (index > 0)
                         specialtySelect.SelectedIndex = index;
                 }
-
-                //
-                // Filter and Adjust specialty requirements
-                //
-
-                //
-                // Set spawn MOS?
-                //
             }
         }
 
@@ -274,7 +429,7 @@ namespace Perscom
             specialtySelect.Enabled = specialtyCheckBox.Checked;
 
             // Billet must change MOS if its an entry level billet
-            if (!specialtyCheckBox.Checked && !CreatesNewSoldiers())
+            if (!specialtyCheckBox.Checked && CreatesNewSoldiers())
                 specialtyCheckBox.Checked = true;
         }
 
@@ -339,14 +494,14 @@ namespace Perscom
             Billet.CanRetireEarly = earlyRetireCheckBox.Checked;
             Billet.CanBePromotedEarly = earlyPromotionCheckBox.Checked;
             Billet.CanLateralEarly = earlyLatteralCheckBox.Checked;
-            Billet.Repeatable = repeatCheckBox.Checked;
-            Billet.PreferNonRepeats = preferedCheckBox.Checked;
+            Billet.Waiverable = repeatCheckBox.Checked;
             Billet.InverseRequirements = inverseCheckBox.Checked;
             Billet.UnitTypeId = Template.Id;
             Billet.BilletCatagoryId = ((BilletCatagory)billetCatSelect.SelectedItem).Id;
             Billet.PromotionPoolId = ((Echelon)promotionPoolSelect.SelectedItem).Id;
             Billet.ZIndex = (int)zIndexBox.Value;
             Billet.Selection = (BilletSelection)soldierSpawnSelect.SelectedIndex;
+            Billet.ExperienceLogic = (andRadioButton.Checked) ? LogicOperator.And : LogicOperator.Or;
 
             using (AppDatabase db = new AppDatabase())
             using (SQLiteTransaction trans = db.BeginTransaction())
@@ -402,14 +557,17 @@ namespace Perscom
                         db.BilletSpawnSettings.RemoveRange(Billet.SpawnSettings);
                     }
 
+                    // ***************************************************************************
                     // Apply required specialties
-                    var currentReqs = Billet.Requirements.Select(x => x.SpecialtyId);
-                    var newReqs = Requirements.Select(x => x.Id).ToList();
+                    // ***************************************************************************
+                    DeleteQueryBuilder query;
+                    IEnumerable<int> currentItems = Billet.Requirements.Select(x => x.SpecialtyId);
+                    IEnumerable<int> selectedItems = Requirements.Select(x => x.Id).ToList();
 
                     // Remove
-                    foreach (int id in currentReqs.Except(newReqs))
+                    foreach (int id in currentItems.Except(selectedItems))
                     {
-                        DeleteQueryBuilder query = new DeleteQueryBuilder(db);
+                        query = new DeleteQueryBuilder(db);
                         query.From(nameof(BilletSpecialtyRequirement))
                             .Where("BilletId", Comparison.Equals, Billet.Id)
                             .And("SpecialtyId", Comparison.Equals, id);
@@ -417,7 +575,7 @@ namespace Perscom
                     }
 
                     // Add
-                    foreach (int id in newReqs.Except(currentReqs))
+                    foreach (int id in selectedItems.Except(currentItems))
                     {
                         var spec = new BilletSpecialtyRequirement();
                         spec.BilletId = Billet.Id;
@@ -425,6 +583,96 @@ namespace Perscom
                         db.BilletSpecialtyRequirements.Add(spec);
                     }
 
+                    // ***************************************************************************
+                    // Apply Experience Given
+                    // ***************************************************************************
+
+                    if (ExperienceChanged)
+                    {
+                        // Remove All
+                        query = new DeleteQueryBuilder(db);
+                        query.From(nameof(BilletExperience))
+                            .Where("BilletId", Comparison.Equals, Billet.Id);
+                        query.Execute();
+
+                        // Re-add what we have
+                        foreach (var item in ExperienceGiven)
+                        {
+                            item.Billet = Billet;
+                            db.BilletExperience.Add(item);
+                        }
+                    }
+
+                    // ***************************************************************************
+                    // Apply Experience Required
+                    // ***************************************************************************
+
+                    int i = 1;
+                    if (FiltersChanged)
+                    {
+                        // Remove All
+                        query = new DeleteQueryBuilder(db);
+                        query.From(nameof(BilletExperienceFilter))
+                            .Where("BilletId", Comparison.Equals, Billet.Id);
+                        query.Execute();
+
+                        // Re-add what we have
+                        foreach (var item in ExperienceFilters)
+                        {
+                            item.Billet = Billet;
+                            item.Precedence = i;
+                            db.BilletExperienceFilters.Add(item);
+                            i++;
+                        }
+                    }
+
+                    // ***************************************************************************
+                    // Apply Experience Grouping
+                    // ***************************************************************************
+
+                    if (GroupingChanged)
+                    {
+                        // Remove All
+                        query = new DeleteQueryBuilder(db);
+                        query.From(nameof(BilletExperienceGroup))
+                            .Where("BilletId", Comparison.Equals, Billet.Id);
+                        query.Execute();
+
+                        // Re-add what we have
+                        i = 1;
+                        foreach (var item in ExperienceGrouping)
+                        {
+                            item.Billet = Billet;
+                            item.Precedence = i;
+                            db.BilletExperienceGroups.Add(item);
+                            i++;
+                        }
+                    }
+
+                    // ***************************************************************************
+                    // Apply Experience Sorting
+                    // ***************************************************************************
+
+                    if (SortingChanged)
+                    {
+                        // Remove All
+                        query = new DeleteQueryBuilder(db);
+                        query.From(nameof(BilletExperienceSorting))
+                            .Where("BilletId", Comparison.Equals, Billet.Id);
+                        query.Execute();
+
+                        // Re-add what we have
+                        i = 1;
+                        foreach (var item in ExperienceSorting)
+                        {
+                            item.Billet = Billet;
+                            item.Precedence = i;
+                            db.BilletExperienceSorting.Add(item);
+                            i++;
+                        }
+                    }
+
+                    // Save
                     trans.Commit();
                 }
                 catch (Exception ex)
@@ -444,6 +692,26 @@ namespace Perscom
             MessageBox.Show(message, "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
+        private void repeatCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void andRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            /* Re-apply text
+            int i = 0;
+            var op = (andRadioButton.Checked) ? "And: " : "Or: ";
+            foreach (ListViewItem item in filterListView.Items)
+            {
+                item.Text = (i > 0) ? op : "Where:"; ;
+                i++;
+            }
+            */
+        }
+
+        #region Edit Required Specialties
+
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //bool ebl = listView1.SelectedItems.Count > 0;
@@ -461,56 +729,534 @@ namespace Perscom
                 if (result == DialogResult.OK)
                 {
                     // Update listView
-                    FillListView();
+                    FillSpecialtyListView();
                 }
             }
         }
 
-        private void repeatCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void FillSpecialtyListView()
         {
-            bool check = repeatCheckBox.Checked;
-            preferedCheckBox.Enabled = check;
-            if (!check)
-                preferedCheckBox.Checked = false;
+            // Prepare update
+            listView1.BeginUpdate();
+
+            // Reset listview
+            listView1.Items.Clear();
+
+            // Create ListView items
+            foreach (Specialty spec in Requirements.OrderBy(x => x.Code))
+            {
+                ListViewItem item = new ListViewItem(spec.Code);
+                item.SubItems.Add(spec.Name);
+                item.Tag = spec;
+                listView1.Items.Add(item);
+            }
+
+            // End update
+            listView1.EndUpdate();
         }
+
+        #endregion Edit Required Specialties
+
+        #region Add Experience Menu
+
+        private void givesExpMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Ensure we have an item selected!
+            var items = experienceListView.SelectedItems;
+            removeItemToolStripMenuItem.Enabled = (items.Count != 0);
+            editItemToolStripMenuItem.Enabled = (items.Count != 0);
+        }
+
+        private void addNewToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var exp = new BilletExperience() { Billet = Billet };
+            using (ExperienceSelectForm form = new ExperienceSelectForm(exp))
+            {
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Check for duplicate
+                    if (ExperienceGiven.Any(x => x.IsDuplicateOf(exp)))
+                    {
+                        ShowErrorMessage("Duplicate item entered. This Billet already offers this experience!");
+                        return;
+                    }
+
+                    // Add item!
+                    ExperienceGiven.Add(exp);
+
+                    // Finally, Re-fill list!
+                    FillExperienceListView();
+
+                    // Flag change
+                    ExperienceChanged = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Add experience given menu item click
+        /// </summary>
+        private void editItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Make sure we have an item selected!
+            if (experienceListView.SelectedItems.Count == 0)
+                return;
+
+            // Get selected item
+            var selected = experienceListView.SelectedItems[0].Tag as BilletExperience;
+            if (selected == null)
+                return;
+
+            // open editor!
+            using (ExperienceSelectForm form = new ExperienceSelectForm(selected))
+            {
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Finally, Re-fill list!
+                    FillExperienceListView();
+
+                    // Flag change
+                    ExperienceChanged = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove experience given menu item click
+        /// </summary>
+        private void removeItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Make sure we have an item selected!
+            if (experienceListView.SelectedItems.Count == 0)
+                return;
+
+            // Get selected item
+            var selected = experienceListView.SelectedItems[0].Tag as BilletExperience;
+            if (selected == null)
+                return;
+
+            // Remove item
+            int index = ExperienceGiven.FindIndex(x => x.IsDuplicateOf(selected));
+            if (index >= 0)
+            {
+                ExperienceGiven.RemoveAt(index);
+
+                // Refill list view
+                FillExperienceListView();
+
+                // Flag change
+                ExperienceChanged = true;
+            }
+        }
+
+        #endregion #region Add Experience Menu
+
+        #region #region Edit Experience Required Menu
+
+        private void requiredExpMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Ensure we have an item selected!
+            var items = filterListView.SelectedItems;
+            editItemToolStripMenuItem1.Enabled = (items.Count != 0);
+            removeItemToolStripMenuItem1.Enabled = (items.Count != 0);
+        }
+
+        private void addRequiredExperienceToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var filter = new BilletExperienceFilter() { Billet = Billet };
+
+            using (var form = new ExperienceFilterForm(filter))
+            {
+                var result = form.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    if (ExperienceFilters.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
+                    {
+                        ShowErrorMessage("No duplicates allowed. Filter option already exists!");
+                        return;
+                    }
+
+                    // Add item
+                    ExperienceFilters.Add(filter);
+
+                    // Finally, Re-fill list!
+                    FillFiltersListView();
+
+                    // Flag change
+                    FiltersChanged = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Edit experience required menu item click
+        /// </summary>
+        private void editRequiredExperienceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Make sure we have an item selected!
+            if (filterListView.SelectedItems.Count == 0)
+                return;
+
+            // Get selected item
+            var selected = filterListView.SelectedItems[0].Tag as BilletExperienceFilter;
+            if (selected == null)
+                return;
+
+            // open editor!
+            using (ExperienceFilterForm form = new ExperienceFilterForm(selected))
+            {
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Finally, Re-fill list!
+                    FillFiltersListView();
+
+                    // Flag change
+                    FiltersChanged = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove experience Required menu item click
+        /// </summary>
+        private void removeItemToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Make sure we have an item selected!
+            if (filterListView.SelectedItems.Count == 0)
+                return;
+
+            // Get selected item
+            var selected = filterListView.SelectedItems[0].Tag as BilletExperienceFilter;
+            if (selected == null)
+                return;
+
+            // Remove item
+            int index = ExperienceFilters.FindIndex(x => x.IsDuplicateOf(selected));
+            if (index >= 0)
+            {
+                ExperienceFilters.RemoveAt(index);
+
+                // Refill list view
+                FillFiltersListView();
+
+                // Flag change
+                FiltersChanged = true;
+            }
+        }
+
+        #endregion Edit Experience Required Menu
+
+        #region Edit Experience Sorting Menu
+
+        /// <summary>
+        /// Edit experience sorting menu item click
+        /// </summary>
+        private void addSortingItemsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sort = new BilletExperienceSorting() { Billet = Billet };
+
+            using (var form = new BilletSortingForm(sort))
+            {
+                var result = form.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    if (ExperienceSorting.FindIndex(x => x.IsDuplicateOf(sort)) > -1)
+                    {
+                        ShowErrorMessage("No duplicates allowed. Sorting option already exists!");
+                        return;
+                    }
+
+                    // Add item
+                    ExperienceSorting.Add(sort);
+
+                    // Finally, Re-fill list!
+                    FillSortingListView();
+
+                    // Flag change
+                    SortingChanged = true;
+                }
+            }
+        }
+
+        private void editSortingItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Make sure we have an item selected!
+            if (sortingListView.SelectedItems.Count == 0)
+                return;
+
+            // Get selected item
+            var selected = sortingListView.SelectedItems[0].Tag as BilletExperienceSorting;
+            if (selected == null)
+                return;
+
+            // open editor!
+            using (var form = new BilletSortingForm(selected))
+            {
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Finally, Re-fill list!
+                    FillSortingListView();
+
+                    // Flag change
+                    SortingChanged = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Edit experience sorting menu item click
+        /// </summary>
+        private void removeItemToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            // Get selected item
+            ListViewItem item = sortingListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
+            if (item == null) return;
+
+            // Get item index
+            var sortOption = (BilletExperienceSorting)item.Tag;
+            int index = ExperienceSorting.FindIndex(x => x.IsDuplicateOf(sortOption));
+            if (index < 0) return;
+
+            // Remove item from list
+            ExperienceSorting.RemoveAt(index);
+            sortingListView.Items.Remove(item);
+
+            // Flag change
+            SortingChanged = true;
+
+            // Re-apply text
+            int i = 0;
+            foreach (ListViewItem item2 in sortingListView.Items)
+            {
+                item2.Text = (i > 0) ? "Then By:" : "Order By:";
+                i++;
+            }
+        }
+
+        #endregion Edit Experience Sorting Menu
+
+        #region Edit Experience Grouping Menu
+
+        private void groupContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Ensure we have an item selected!
+            var items = groupingListView.SelectedItems;
+            editGroupItemToolStripMenuItem.Enabled = (items.Count != 0);
+            removeItemToolStripMenuItem3.Enabled = (items.Count != 0);
+        }
+
+        private void addGroupingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var filter = new BilletExperienceGroup() { Billet = Billet };
+
+            using (var form = new ExperienceGroupingForm(filter))
+            {
+                var result = form.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    if (ExperienceGrouping.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
+                    {
+                        ShowErrorMessage("No duplicates allowed. Grouping option already exists!");
+                        return;
+                    }
+
+                    // Add item
+                    ExperienceGrouping.Add(filter);
+
+                    // Finally, Re-fill list!
+                    FillGroupingListView();
+
+                    // Flag change
+                    GroupingChanged = true;
+                }
+            }
+        }
+
+        private void editGroupItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Make sure we have an item selected!
+            if (groupingListView.SelectedItems.Count == 0)
+                return;
+
+            // Get selected item
+            var selected = groupingListView.SelectedItems[0].Tag as BilletExperienceGroup;
+            if (selected == null)
+                return;
+
+            // open editor!
+            using (var form = new ExperienceGroupingForm(selected))
+            {
+                var result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    // Finally, Re-fill list!
+                    FillGroupingListView();
+
+                    // Flag change
+                    GroupingChanged = true;
+                }
+            }
+        }
+
+        private void removeItemToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            // Make sure we have an item selected!
+            if (groupingListView.SelectedItems.Count == 0)
+                return;
+
+            // Get selected item
+            var selected = groupingListView.SelectedItems[0].Tag as BilletExperienceGroup;
+            if (selected == null)
+                return;
+
+            // Remove item
+            int index = ExperienceGrouping.FindIndex(x => x.IsDuplicateOf(selected));
+            if (index >= 0)
+            {
+                ExperienceGrouping.RemoveAt(index);
+
+                // Refill list view
+                FillGroupingListView();
+
+                // Flag change
+                GroupingChanged = true;
+            }
+        }
+
+        #endregion Edit Experience Grouping Menu
+
+        #region Column Width Change Events
+
+        private void sortingListView_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = sortingListView.Columns[e.ColumnIndex].Width;
+        }
+
+        private void filterListView_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = filterListView.Columns[e.ColumnIndex].Width;
+        }
+
+        private void groupingListView_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = groupingListView.Columns[e.ColumnIndex].Width;
+        }
+
+        #endregion Column Width Change Events
+
+        #region Drag and Drop Events
+
+        private void sortingListView_DragDrop(object sender, DragEventArgs e)
+        {
+            // Re-apply text
+            int i = 0;
+            foreach (ListViewItem item in sortingListView.Items)
+            {
+                item.Text = (i > 0) ? "Then By:" : "Order By:";
+                i++;
+            }
+        }
+
+        private void groupingListView_DragDrop(object sender, DragEventArgs e)
+        {
+            // Re-apply text
+            int i = 0;
+            foreach (ListViewItem item in groupingListView.Items)
+            {
+                item.Text = (i > 0) ? "Then By:" : "Group By:";
+                i++;
+            }
+        }
+
+        private void sortingListView_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
+            {
+                var items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
+                var tag = items[0].Tag as BilletExperienceSorting;
+                if (tag == null)
+                {
+
+                    e.Effect = DragDropEffects.None;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.Move;
+                }
+            }
+        }
+
+        private void groupingListView_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
+            {
+                var items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
+                var tag = items[0].Tag as BilletExperienceGroup;
+                if (tag == null)
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.Move;
+                }
+            }
+        }
+
+        private void sortingListView_DragOver(object sender, DragEventArgs e)
+        {
+            //sortingListView_DragEnter(sender, e);
+        }
+
+        private void groupingListView_DragOver(object sender, DragEventArgs e)
+        {
+            //groupingListView_DragEnter(sender, e);
+        }
+
+        #endregion
+
+        #region Double Mouse Click Events
+
+        private void filterListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            editRequiredExperienceToolStripMenuItem_Click(sender, e);
+        }
+
+        private void sortingListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            editSortingItemToolStripMenuItem_Click(sender, e);
+        }
+
+        private void groupingListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            editGroupItemToolStripMenuItem_Click(sender, e);
+        }
+
+        private void experienceListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            editItemToolStripMenuItem_Click(sender, e);
+        }
+
+        #endregion
 
         #region Panel Border Painting
 
         private void headerPanel_Paint(object sender, PaintEventArgs e)
         {
-            // Create pen.
-            Pen blackPen = new Pen(Color.FromArgb(36, 36, 36), 1);
-            Pen greyPen = new Pen(Color.FromArgb(62, 62, 62), 1);
-
-            // Create points that define line.
-            Point point1 = new Point(0, headerPanel.Height - 3);
-            Point point2 = new Point(headerPanel.Width, headerPanel.Height - 3);
-            e.Graphics.DrawLine(greyPen, point1, point2);
-
-            // Create points that define line.
-            point1 = new Point(0, headerPanel.Height - 2);
-            point2 = new Point(headerPanel.Width, headerPanel.Height - 2);
-            e.Graphics.DrawLine(blackPen, point1, point2);
-
-            // Create points that define line.
-            point1 = new Point(0, headerPanel.Height - 1);
-            point2 = new Point(headerPanel.Width, headerPanel.Height - 1);
-            e.Graphics.DrawLine(greyPen, point1, point2);
-
+            FormStyling.StyleFormHeader(headerPanel, e);
             base.OnPaint(e);
         }
 
         private void bottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            // Create pen.
-            Pen blackPen = new Pen(Color.Gray, 1);
-
-            // Create points that define line.
-            Point point1 = new Point(0, 0);
-            Point point2 = new Point(bottomPanel.Width, 0);
-
-            // Draw line to screen.
-            e.Graphics.DrawLine(blackPen, point1, point2);
+            FormStyling.StyleFormFooter(bottomPanel, e);
             base.OnPaint(e);
         }
 

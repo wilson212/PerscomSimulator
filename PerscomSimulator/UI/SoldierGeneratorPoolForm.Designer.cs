@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SoldierGeneratorPoolForm));
             this.mainPanel = new System.Windows.Forms.Panel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -69,6 +70,11 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
+            this.sortCheckBox = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.mainPanel.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -80,10 +86,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).BeginInit();
             this.bottomPanel.SuspendLayout();
             this.headerPanel.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainPanel
             // 
+            this.mainPanel.Controls.Add(this.groupBox5);
             this.mainPanel.Controls.Add(this.groupBox4);
             this.mainPanel.Controls.Add(this.groupBox2);
             this.mainPanel.Controls.Add(this.groupBox3);
@@ -91,7 +99,7 @@
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 75);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(944, 386);
+            this.mainPanel.Size = new System.Drawing.Size(944, 426);
             this.mainPanel.TabIndex = 11;
             // 
             // groupBox4
@@ -105,7 +113,7 @@
             this.groupBox4.Size = new System.Drawing.Size(417, 173);
             this.groupBox4.TabIndex = 22;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Filtering";
+            this.groupBox4.Text = "Filtering*";
             // 
             // label1
             // 
@@ -214,13 +222,14 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.sortCheckBox);
             this.groupBox2.Controls.Add(this.sortingListView);
             this.groupBox2.Location = new System.Drawing.Point(510, 199);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(417, 173);
             this.groupBox2.TabIndex = 21;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Sorting";
+            this.groupBox2.Text = "Sorting **";
             // 
             // sortingListView
             // 
@@ -432,7 +441,7 @@
             this.bottomPanel.BackColor = System.Drawing.SystemColors.ControlLight;
             this.bottomPanel.Controls.Add(this.saveButton);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Location = new System.Drawing.Point(0, 461);
+            this.bottomPanel.Location = new System.Drawing.Point(0, 501);
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(944, 60);
             this.bottomPanel.TabIndex = 10;
@@ -474,16 +483,68 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Select Soldier From Existing Soldier Pool";
             // 
+            // sortCheckBox
+            // 
+            this.sortCheckBox.AutoSize = true;
+            this.sortCheckBox.Location = new System.Drawing.Point(91, 19);
+            this.sortCheckBox.Name = "sortCheckBox";
+            this.sortCheckBox.Size = new System.Drawing.Size(180, 17);
+            this.sortCheckBox.TabIndex = 47;
+            this.sortCheckBox.Text = "Sort before using Billet sorting ***";
+            this.sortCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.label2.Location = new System.Drawing.Point(18, 17);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(194, 13);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "* Filtering is done BEFORE billet filltering";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.label3.Location = new System.Drawing.Point(551, 17);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(341, 13);
+            this.label3.TabIndex = 24;
+            this.label3.Text = "*** Billet experience sorting is preformed first, unless this box is checked.";
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.label4);
+            this.groupBox5.Controls.Add(this.label2);
+            this.groupBox5.Controls.Add(this.label3);
+            this.groupBox5.Location = new System.Drawing.Point(17, 378);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(910, 42);
+            this.groupBox5.TabIndex = 25;
+            this.groupBox5.TabStop = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.label4.Location = new System.Drawing.Point(243, 17);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(293, 13);
+            this.label4.TabIndex = 25;
+            this.label4.Text = "** Billet Experience Grouping is preformed before any Sorting.";
+            // 
             // SoldierGeneratorPoolForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(944, 521);
+            this.ClientSize = new System.Drawing.Size(944, 561);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.bottomPanel);
             this.Controls.Add(this.headerPanel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SoldierGeneratorPoolForm";
@@ -494,6 +555,7 @@
             this.groupBox4.PerformLayout();
             this.contextMenuStrip2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -503,6 +565,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.rankPicture)).EndInit();
             this.bottomPanel.ResumeLayout(false);
             this.headerPanel.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -549,5 +613,10 @@
         private System.Windows.Forms.ToolStripMenuItem addNewFilterToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem removeFilterItemToolStripMenuItem;
+        private System.Windows.Forms.CheckBox sortCheckBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label label4;
     }
 }
