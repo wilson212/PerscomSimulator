@@ -5,55 +5,47 @@ using System;
 namespace Perscom.Database
 {
     [Table]
-    public class BilletStatistics
+    public class BilletStatistics : AbstractBilletStatistics
     {
         /// <summary>
         /// 
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, PrimaryKey]
         public int BilletId { get; set; }
 
-        /// <summary>
-        /// Gets or Sets the total number of soldiers who held this Billet
-        /// </summary>
-        [Column, Required]
-        public int TotalSoldiersIncoming { get; set; } = 0;
+        #region Virtual Foreign Keys
 
         /// <summary>
-        /// Gets or Sets the total number of soldiers who held this Billet, and were
-        /// either promoted or retired out, or were transfered OUT of this Billet
+        /// Gets the <see cref="Database.Billet"/> entity that this entity references.
         /// </summary>
-        [Column, Required]
-        public int TotalSoldiersOutgoing { get; set; } = 0;
+        [InverseKey("Id")]
+        [ForeignKey("BilletId",
+            OnDelete = ReferentialIntegrity.Cascade,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<Billet> FK_Billet { get; set; }
+
+        #endregion
+
+        #region Foreign Key Properties
 
         /// <summary>
-        /// Gets or Sets the total accumulative months for all
-        /// soldiers who held this Billet
+        /// Gets or Sets the <see cref="Database.Billet"/> that 
+        /// this entity references.
         /// </summary>
-        [Column, Required]
-        public int TotalMonthsInBillet { get; set; } = 0;
-
-        /// <summary>
-        /// The total number of months that a billet was filled by a stand in soldier.
-        /// </summary>
-        [Column, Required]
-        public int StandInDeficit { get; set; }
-
-        /// <summary>
-        /// The total number of months that a billet was empty.
-        /// </summary>
-        [Column, Required]
-        public int EmptyDeficit { get; set; }
-
-        /// <summary>
-        /// Gets the average time in grade (months) for this grade.
-        /// </summary>
-        public decimal AverageTimeInBillet
+        public Billet Billet
         {
             get
             {
-                return (TotalSoldiersOutgoing == 0) ? 0 : Math.Round(TotalMonthsInBillet / (decimal)TotalSoldiersOutgoing, 2);
+                return FK_Billet?.Fetch();
+            }
+            set
+            {
+                BilletId = value.Id;
+                FK_Billet?.Refresh();
             }
         }
+
+        #endregion
     }
 }

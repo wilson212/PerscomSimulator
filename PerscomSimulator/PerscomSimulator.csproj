@@ -66,6 +66,7 @@
     <Compile Include="Application\Epoch.cs" />
     <Compile Include="Application\ExceptionHandler.cs" />
     <Compile Include="Application\Condition.cs" />
+    <Compile Include="Database\Entities\AbstractBilletStatistics.cs" />
     <Compile Include="Database\Entities\BilletExperienceGroup.cs" />
     <Compile Include="Database\Entities\BilletStatistics.cs" />
     <Compile Include="Database\Entities\PositionStatistics.cs" />

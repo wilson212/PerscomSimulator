@@ -217,21 +217,21 @@ namespace Perscom
 
                 // Check for filters
                 var filters = item.Filters.OrderBy(x => x.Precedence).ToList();
-                if (filters.Count() > 0)
+                if (filters.Count > 0)
                 {
                     ExperienceFilters.Add(item.Id, filters);
                 }
 
                 // Check for Grouping
                 var groups = item.Grouping.OrderBy(x => x.Precedence).ToList();
-                if (groups.Count() > 0)
+                if (groups.Count > 0)
                 {
                     ExperienceGroups.Add(item.Id, groups);
                 }
 
                 // Check for Sorting
                 var sorting = item.Sorting.OrderBy(x => x.Precedence).ToList();
-                if (sorting.Count() > 0)
+                if (sorting.Count > 0)
                 {
                     ExperienceOrdering.Add(item.Id, sorting);
                 }
@@ -519,7 +519,7 @@ namespace Perscom
                                 }
 
                                 // Assign position
-                                AssignPositionToSoldier(soldier, position);
+                                AssignPositionToSoldier(soldier, position, false);
 
                                 // Create entry into statistics
                                 if (setting.Type == SpawnSoldierType.CreateNew)
@@ -537,7 +537,7 @@ namespace Perscom
                                 expGiven = true;
 
                                 // Assign new position
-                                AssignPositionToSoldier(soldier, position);
+                                AssignPositionToSoldier(soldier, position, true);
                             }
                         }
                     }
@@ -577,7 +577,6 @@ namespace Perscom
                     {
                         // Log retirement data for current rank/grade
                         LogRetiree(soldier);
-                        LogPositionEmptied(position);
 
                         // Remove the retired soldier from the roster
                         ActiveDutySoldiers.Remove(soldier.Soldier.Id);
@@ -634,8 +633,6 @@ namespace Perscom
                                     Rank toRank = RankCache.GetNextGradeRanks(soldier.Rank).FirstOrDefault();
                                     if (toRank != null)
                                         soldier.PromoteTo(CurrentIterationDate, toRank, Database);
-                                    else
-                                        throw new Exception("Ran out of ranks? wtf");
                                 }
                             }
                         }
@@ -654,23 +651,37 @@ namespace Perscom
         }
 
         /// <summary>
-        /// Assigns a soldier to a position, and logs the information
+        /// Assigns a soldier to a position, and logs the position exchange information
         /// </summary>
         /// <param name="soldier"></param>
         /// <param name="position"></param>
-        private void AssignPositionToSoldier(SoldierWrapper soldier, PositionWrapper position)
+        private void AssignPositionToSoldier(SoldierWrapper soldier, PositionWrapper position, bool log)
         {
+            // Determine if this is a promotion or not
+            bool isPromotion = (soldier.Rank.Type != position.Billet.Rank.Type
+                || soldier.Rank.Grade < position.Billet.Rank.Grade
+            );
+
             // Log outgoing
-            if (soldier.Position != null)
+            if (log && soldier.Position != null)
             {
-                LogPositionEmptied(soldier.Position);
+                if (isPromotion)
+                    LogPositionPromotedOut(soldier.Position, soldier);
+                else
+                    LogPositionLateralOut(soldier.Position, soldier);
             }
 
             // Assign the position
             soldier.AssignPosition(position, CurrentIterationDate, Database);
 
             // Log incoming
-            LogPositionAssigned(position);
+            if (log)
+            {
+                if (isPromotion)
+                    LogPositionPromotedInto(position, soldier);
+                else
+                    LogPositionLateralInto(position, soldier);
+            }
         }
 
         /// <summary>
@@ -729,54 +740,43 @@ namespace Perscom
             // Get a list of soldiers that CAN do a lateral movement,
             soldiers = soldiers.Where(x => IsCanidateForPosition(x, position) && GetLateralPromotionGroupId(x, position) <= val);
 
-            // Do we have anyone left?
-            int count = soldiers.Count();
-            if (count == 0)
+            //
+            // 2. Apply Billet grouping
+            //
+            IEnumerable<SoldierGroupResult> groups = null;
+
+            // Do we have experience grouping as well?
+            if (ExperienceGroups.ContainsKey(billetId))
             {
-                return false;
+                // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
+                var expGroups = ExperienceGroups[billetId];
+                groups = soldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position), expGroups);
+            }
+            else
+            {
+                groups = soldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position));
             }
 
-            // Apply grouping and sorting only if we have more than 1 soldier
-            if (count > 1)
+            // Get topmost group with at least one soldier in it
+            // This list of soldiers will be the most prime canidates,
+            // hitting Most if Not All grouping requirements
+            soldiers = groups.GetPrimeSoldiers();
+
+            //
+            // 3. Apply soldier ordering
+            //
+            if (ExperienceOrdering.ContainsKey(billetId))
             {
-                //
-                // 2. Apply Billet grouping
-                //
-                IEnumerable<SoldierGroupResult> groups = null;
+                // Grab experience sorting
+                var experienceSorts = ExperienceOrdering[billetId];
 
-                // Do we have experience grouping as well?
-                if (ExperienceGroups.ContainsKey(billetId))
-                {
-                    // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
-                    var expGroups = ExperienceGroups[billetId];
-                    groups = soldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position), expGroups);
-                }
-                else
-                {
-                    groups = soldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position));
-                }
-
-                // Get topmost group with at least one soldier in it
-                // This list of soldiers will be the most prime canidates,
-                // hitting Most if Not All grouping requirements
-                soldiers = groups.GetPrimeSoldiers();
-
-                //
-                // 3. Apply soldier ordering
-                //
-                if (ExperienceOrdering.ContainsKey(billetId))
-                {
-                    // Grab experience sorting
-                    var experienceSorts = ExperienceOrdering[billetId];
-
-                    // Apply sorting using just experience
-                    soldiers = soldiers.OrderSoldiersBy(experienceSorts);
-                }
-                else
-                {
-                    // Apply sorting using just experience
-                    soldiers = soldiers.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
-                }
+                // Apply sorting using just experience
+                soldiers = soldiers.OrderSoldiersBy(experienceSorts);
+            }
+            else
+            {
+                // Apply sorting using just experience
+                soldiers = soldiers.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
             }
 
             // Now find someone we can switch with!
@@ -800,8 +800,8 @@ namespace Perscom
                 }
 
                 // Log!
-                LogPositionEmptied(soldier.Position);
-                LogPositionEmptied(otherSoldier.Position);
+                LogPositionLateralOut(position, soldier);
+                LogPositionLateralOut(pos, otherSoldier);
 
                 // Remove positions first!
                 otherSoldier.RemoveFromPosition(CurrentIterationDate, Database);
@@ -812,8 +812,8 @@ namespace Perscom
                 otherSoldier.AssignPosition(position, CurrentIterationDate, Database);
 
                 // Log!
-                LogPositionAssigned(soldier.Position);
-                LogPositionAssigned(otherSoldier.Position);
+                LogPositionLateralInto(pos, soldier);
+                LogPositionLateralInto(position, otherSoldier);
 
                 // Return success
                 return true;
@@ -886,90 +886,64 @@ namespace Perscom
                 if (!position.Billet.Billet.Waiverable)
                     primeSoldiers = primeSoldiers.Where(x => !x.BilletsHeld.ContainsKey(billetId));
 
-                // Do we have anyone left?
-                int count = primeSoldiers.Count();
-                if (count == 0)
+                //
+                // 2. Apply Billet grouping
+                //
+                IEnumerable<SoldierGroupResult> groups = null;
+                if (isLateral)
                 {
-                    --grade;
-                    continue;
+                    // Do we have experience grouping as well?
+                    if (ExperienceGroups.ContainsKey(billetId))
+                    {
+                        // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
+                        var expGroups = ExperienceGroups[billetId];
+                        groups = primeSoldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position), expGroups);
+                    }
+                    else
+                    {
+                        groups = primeSoldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position));
+                    }
+
+                    // Get topmost group with at least one soldier in it
+                    primeSoldiers = groups.GetPrimeSoldiers();
+                }
+                else if (ExperienceGroups.ContainsKey(billetId))
+                {
+                    // Apply groups
+                    var expGroups = ExperienceGroups[billetId];
+                    groups = primeSoldiers.GroupSoldiersBy(expGroups.ToList());
+
+                    // Get topmost group with at least one soldier in it
+                    primeSoldiers = groups.GetPrimeSoldiers();
                 }
 
-                // Apply grouping and sorting only if we have more than 1 soldier
-                if (count > 1)
+                //
+                // 3. Apply soldier ordering
+                //
+                if (ExperienceOrdering.ContainsKey(billetId))
                 {
-                    //
-                    // 2. Apply Billet grouping
-                    //
-                    IEnumerable<SoldierGroupResult> groups = null;
-                    if (isLateral)
-                    {
-                        // Do we have experience grouping as well?
-                        if (ExperienceGroups.ContainsKey(billetId))
-                        {
-                            // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
-                            var expGroups = ExperienceGroups[billetId];
-                            groups = primeSoldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position), expGroups);
-                        }
-                        else
-                        {
-                            groups = primeSoldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position));
-                        }
+                    // Grab experience sorting
+                    var experienceSorts = ExperienceOrdering[billetId];
 
-                        // Get topmost group with at least one soldier in it
-                        primeSoldiers = groups.GetPrimeSoldiers();
-                    }
-                    else if (ExperienceGroups.ContainsKey(billetId))
-                    {
-                        // Apply groups
-                        var expGroups = ExperienceGroups[billetId];
-                        groups = primeSoldiers.GroupSoldiersBy(expGroups.ToList());
-
-                        // Get topmost group with at least one soldier in it
-                        primeSoldiers = groups.GetPrimeSoldiers();
-                    }
-
-                    //
-                    // 3. Apply soldier ordering
-                    //
-                    if (ExperienceOrdering.ContainsKey(billetId))
-                    {
-                        // Grab experience sorting
-                        var experienceSorts = ExperienceOrdering[billetId];
-
-                        // Apply sorting using just experience
-                        soldiers = primeSoldiers.OrderSoldiersBy(experienceSorts);
-                    }
-                    else
-                    {
-                        // Apply sorting using just experience
-                        soldiers = primeSoldiers.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
-                    }
-
-                    // Check for an un-restricted soldier first
-                    var wrapper = soldiers.FirstOrDefault();
-                    if (wrapper != null)
-                    {
-                        return wrapper;
-                    }
-                    else
-                    {
-                        --grade;
-                        continue;
-                    }
+                    // Apply sorting using just experience
+                    soldiers = primeSoldiers.OrderSoldiersBy(experienceSorts);
                 }
                 else
                 {
-                    // Check for an un-restricted soldier first
-                    var wrapper = primeSoldiers.FirstOrDefault();
-                    if (wrapper != null)
-                    {
-                        return wrapper;
-                    }
-                    else
-                    {
-                        --grade;
-                        continue;
-                    }
+                    // Apply sorting using just experience
+                    soldiers = primeSoldiers.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
+                }
+
+                // Check for an un-restricted soldier first
+                var wrapper = soldiers.FirstOrDefault();
+                if (wrapper != null)
+                {
+                    return wrapper;
+                }
+                else
+                {
+                    --grade;
+                    continue;
                 }
             }
 
@@ -1200,8 +1174,8 @@ namespace Perscom
 
                 // Create data
                 PositionStatistics.Add(pos.Position.Id, new PositionStatistics() { PositionId = pos.Position.Id });
-                if (!BilletStatistics.ContainsKey(pos.Billet.Id))
-                    BilletStatistics.Add(pos.Billet.Id, new BilletStatistics() { BilletId = pos.Billet.Id });
+                if (!BilletStatistics.ContainsKey(pos.Position.BilletId))
+                    BilletStatistics.Add(pos.Position.BilletId, new BilletStatistics() { BilletId = pos.Position.BilletId });
             }
         }
 
@@ -1463,8 +1437,20 @@ namespace Perscom
                 int grade = soldier.Rank.Grade;
                 var type = soldier.Rank.Type;
                 int specId = soldier.Soldier.SpecialtyId;
-                UnitWrapper parentUnit = soldier.Position.ParentUnit;
 
+                // Update position statistics
+                var pos = PositionStatistics[soldier.Position.Position.Id];
+                pos.TotalSoldiersOutgoing += 1;
+                pos.TotalSoldiersRetireOut += 1;
+                pos.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
+
+                var bill = BilletStatistics[soldier.Position.Position.BilletId];
+                bill.TotalSoldiersOutgoing += 1;
+                bill.TotalSoldiersRetireOut += 1;
+                bill.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
+
+                // Log rank stats
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
                 while (parentUnit != null)
                 {
                     var templateId = parentUnit.Unit.UnitTemplateId;
@@ -1497,6 +1483,13 @@ namespace Perscom
                     // Move up
                     parentUnit = parentUnit.Parent;
                 }
+
+                // Update position statistics
+                var pos = PositionStatistics[soldier.Position.Position.Id];
+                pos.TotalSoldiersIncoming += 1;
+
+                var bill = BilletStatistics[soldier.Position.Position.BilletId];
+                bill.TotalSoldiersIncoming += 1;
             }
         }
 
@@ -1560,33 +1553,95 @@ namespace Perscom
                 if (position.IsEmpty)
                 {
                     PositionStatistics[position.Position.Id].EmptyDeficit += 1;
-                    BilletStatistics[position.Billet.Id].EmptyDeficit += 1;
+                    BilletStatistics[position.Position.BilletId].EmptyDeficit += 1;
                 }
                 else if (position.Holder.IsStandIn())
                 {
                     PositionStatistics[position.Position.Id].StandInDeficit += 1;
-                    BilletStatistics[position.Billet.Id].StandInDeficit += 1;
+                    BilletStatistics[position.Position.BilletId].StandInDeficit += 1;
                 }
             }
         }
 
-        private void LogPositionAssigned(PositionWrapper position)
+        private void LogPositionPromotedInto(PositionWrapper position, SoldierWrapper soldier)
         {
             // Log promotion data for current rank/grade
             if (SkipYears == 0)
             {
-                PositionStatistics[position.Position.Id].TotalSoldiersIncoming += 1;
-                BilletStatistics[position.Billet.Id].TotalSoldiersIncoming += 1;
+                bool isGettingPromo = (
+                    soldier.IsPromotable(CurrentIterationDate, out PromotableStatus status) 
+                    && status == PromotableStatus.Position
+                );
+                int tig = soldier.GetTimeInGrade(CurrentIterationDate);
+                int tis = soldier.GetTimeInService(CurrentIterationDate);
+
+                var pos = PositionStatistics[position.Position.Id];
+                pos.TotalSoldiersIncoming += 1;
+                pos.TotalSoldiersPromotedIn += 1;
+                pos.TotalMonthsInGradeIncoming += (isGettingPromo) ? 0 : tig;
+                pos.TotalMonthsInServiceIncoming += tis;
+
+                var bill = BilletStatistics[position.Position.BilletId];
+                bill.TotalSoldiersIncoming += 1;
+                bill.TotalSoldiersPromotedIn += 1;
+                bill.TotalMonthsInGradeIncoming += (isGettingPromo) ? 0 : tig;
+                bill.TotalMonthsInServiceIncoming += tis;
             }
         }
 
-        private void LogPositionEmptied(PositionWrapper position)
+        private void LogPositionPromotedOut(PositionWrapper position, SoldierWrapper soldier)
         {
             // Log promotion data for current rank/grade
             if (SkipYears == 0)
             {
-                PositionStatistics[position.Position.Id].TotalSoldiersOutgoing += 1;
-                BilletStatistics[position.Billet.Id].TotalSoldiersOutgoing += 1;
+                var pos = PositionStatistics[position.Position.Id];
+                pos.TotalSoldiersOutgoing += 1;
+                pos.TotalSoldiersPromotedOut += 1;
+                pos.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
+
+                var bill = BilletStatistics[position.Position.BilletId];
+                bill.TotalSoldiersOutgoing += 1;
+                bill.TotalSoldiersPromotedOut += 1;
+                bill.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
+            }
+        }
+
+        private void LogPositionLateralInto(PositionWrapper position, SoldierWrapper soldier)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                int tig = soldier.GetTimeInGrade(CurrentIterationDate);
+                int tis = soldier.GetTimeInService(CurrentIterationDate);
+
+                var pos = PositionStatistics[position.Position.Id];
+                pos.TotalSoldiersIncoming += 1;
+                pos.TotalSoldiersLateralIn += 1;
+                pos.TotalMonthsInGradeIncoming += tig;
+                pos.TotalMonthsInServiceIncoming += tis;
+
+                var bill = BilletStatistics[position.Position.BilletId];
+                bill.TotalSoldiersIncoming += 1;
+                bill.TotalSoldiersLateralIn += 1;
+                bill.TotalMonthsInGradeIncoming += tig;
+                bill.TotalMonthsInServiceIncoming += tis;
+            }
+        }
+
+        private void LogPositionLateralOut(PositionWrapper position, SoldierWrapper soldier)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                var pos = PositionStatistics[position.Position.Id];
+                pos.TotalSoldiersOutgoing += 1;
+                pos.TotalSoldiersLateralOut += 1;
+                pos.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
+
+                var bill = BilletStatistics[position.Position.BilletId];
+                bill.TotalSoldiersOutgoing += 1;
+                bill.TotalSoldiersLateralOut += 1;
+                bill.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
             }
         }
 

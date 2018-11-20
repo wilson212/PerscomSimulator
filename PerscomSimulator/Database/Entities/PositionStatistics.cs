@@ -1,59 +1,50 @@
 ﻿using CrossLite;
 using CrossLite.CodeFirst;
-using System;
 
 namespace Perscom.Database
 {
     [Table]
-    public class PositionStatistics
+    public class PositionStatistics : AbstractBilletStatistics
     {
         /// <summary>
         /// 
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, PrimaryKey]
         public int PositionId { get; set; }
 
-        /// <summary>
-        /// Gets or Sets the total number of soldiers who held this Billet
-        /// </summary>
-        [Column, Required]
-        public int TotalSoldiersIncoming { get; set; } = 0;
+        #region Virtual Foreign Keys
 
         /// <summary>
-        /// Gets or Sets the total number of soldiers who held this Billet, and were
-        /// either promoted or retired out, or were transfered OUT of this Billet
+        /// Gets the <see cref="Database.Position"/> entity that this entity references.
         /// </summary>
-        [Column, Required]
-        public int TotalSoldiersOutgoing { get; set; } = 0;
+        [InverseKey("Id")]
+        [ForeignKey("PositionId",
+            OnDelete = ReferentialIntegrity.Cascade,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<Position> FK_Position { get; set; }
+
+        #endregion
+
+        #region Foreign Key Properties
 
         /// <summary>
-        /// Gets or Sets the total accumulative months for all
-        /// soldiers who held this Billet
+        /// Gets or Sets the <see cref="Database.Position"/> that 
+        /// this entity references.
         /// </summary>
-        [Column, Required]
-        public int TotalMonthsInPosition { get; set; } = 0;
-
-        /// <summary>
-        /// The total number of months that a billet was filled by a stand in soldier.
-        /// </summary>
-        [Column, Required]
-        public int StandInDeficit { get; set; }
-
-        /// <summary>
-        /// The total number of months that a billet was empty.
-        /// </summary>
-        [Column, Required]
-        public int EmptyDeficit { get; set; }
-
-        /// <summary>
-        /// Gets the average time in grade (months) for this grade.
-        /// </summary>
-        public decimal AverageTimeInPosition
+        public Position Position
         {
             get
             {
-                return (TotalSoldiersOutgoing == 0) ? 0 : Math.Round(TotalMonthsInPosition / (decimal)TotalSoldiersOutgoing, 2);
+                return FK_Position?.Fetch();
+            }
+            set
+            {
+                PositionId = value.Id;
+                FK_Position?.Refresh();
             }
         }
+
+        #endregion
     }
 }

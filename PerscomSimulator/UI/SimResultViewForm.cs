@@ -1118,7 +1118,7 @@ namespace Perscom
                     var posId = Database.ExecuteScalar<int>(query);
 
                     // Create Wrapper
-                    using (var form = new PositionStatsForm(posId, CurrentIterationDate))
+                    using (var form = new PositionStatsForm(Database, posId, CurrentIterationDate))
                     {
                         TaskForm.CloseForm();
 

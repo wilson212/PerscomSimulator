@@ -56,7 +56,7 @@ namespace Perscom.Simulation
             Cache = new Dictionary<int, BilletWrapper>();
         }
 
-        public BilletWrapper(Billet billet)
+        private BilletWrapper(Billet billet)
         {
             Billet = billet;
             Rank = billet.Rank;
