@@ -62,6 +62,16 @@ namespace Perscom.Simulation
         public Dictionary<int, BilletWrapper> BilletsHeld { get; set; } = new Dictionary<int, BilletWrapper>();
 
         /// <summary>
+        /// Contains a list of soldier promotions
+        /// </summary>
+        public List<Promotion> Promotions { get; set; } = new List<Promotion>();
+
+        /// <summary>
+        /// Contains a list of soldier promotions
+        /// </summary>
+        public List<PastAssignment> PastAssignments { get; set; } = new List<PastAssignment>();
+
+        /// <summary>
         /// Gets a list of ExperienceId's and the value this soldier has accumulated
         /// </summary>
         public Dictionary<int, int> Experience { get; set; } = new Dictionary<int, int>();
@@ -192,7 +202,7 @@ namespace Perscom.Simulation
             if (newRank.Id == Soldier.RankId) return;
 
             // Create promotion record
-            db.Promotions.Add(new Promotion()
+            Promotions.Add(new Promotion()
             {
                 IterationId = date.Id,
                 SoldierId = Soldier.Id,
@@ -550,6 +560,18 @@ namespace Perscom.Simulation
                 database.Assignments.Add(Assignment);
             }
 
+            // Save promotions
+            foreach (var item in Promotions)
+            {
+                database.Promotions.Add(item);
+            }
+
+            // Save past assignments
+            foreach (var item in PastAssignments)
+            {
+                database.PastAssignments.Add(item);
+            }
+
             // Save experiences
             foreach (var exp in Experience)
             {
@@ -570,7 +592,7 @@ namespace Perscom.Simulation
         private void LogAssignment(IterationDate date, SimDatabase db)
         {
             // Store past assignment
-            db.PastAssignments.Add(new PastAssignment()
+            PastAssignments.Add(new PastAssignment()
             {
                 PositionId = Position.Position.Id,
                 SoldierId = Soldier.Id,
@@ -606,6 +628,12 @@ namespace Perscom.Simulation
             {
                 BilletsHeld.Clear();
                 BilletsHeld = null;
+
+                Promotions.Clear();
+                Promotions = null;
+
+                PastAssignments.Clear();
+                PastAssignments = null;
 
                 GC.SuppressFinalize(this);
                 Disposed = true;

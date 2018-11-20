@@ -67,7 +67,16 @@
     <Compile Include="Application\ExceptionHandler.cs" />
     <Compile Include="Application\Condition.cs" />
     <Compile Include="Database\Entities\BilletExperienceGroup.cs" />
+    <Compile Include="Database\Entities\BilletStatistics.cs" />
+    <Compile Include="Database\Entities\PositionStatistics.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Extensions\StopWatchExtensions.cs" />
+    <Compile Include="UI\PositionStatsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\PositionStatsForm.Designer.cs">
+      <DependentUpon>PositionStatsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ExperienceNameChangeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -303,6 +312,9 @@
     <Compile Include="UI\UnitTypeManagerForm.Designer.cs">
       <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UI\PositionStatsForm.resx">
+      <DependentUpon>PositionStatsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\ExperienceNameChangeForm.resx">
       <DependentUpon>ExperienceNameChangeForm.cs</DependentUpon>
     </EmbeddedResource>

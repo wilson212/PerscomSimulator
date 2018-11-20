@@ -16,12 +16,9 @@ namespace Perscom
     {
         private static Dictionary<int, UnitStatistics> UnitStats { get; set; }
 
-        private static Dictionary<int, UnitTemplateWrapper> UnitTemplates { get; set; }
-
         static UnitBuilder()
         {
             UnitStats = new Dictionary<int, UnitStatistics>();
-            UnitTemplates = new Dictionary<int, UnitTemplateWrapper>();
         }
 
         public static void ClearUnitStats()
@@ -32,7 +29,6 @@ namespace Perscom
         public static void ClearCache()
         {
             UnitStats.Clear();
-            UnitTemplates.Clear();
         }
 
         /// <summary>

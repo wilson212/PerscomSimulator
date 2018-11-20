@@ -1078,6 +1078,62 @@ namespace Perscom
             });
         }
 
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            // Ensure we have a selected item
+            viewSoldierToolStripMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
+            viewPositionStatisticsToolStripMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
+        }
+
+        private void viewSoldierToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listView2_DoubleClick(sender, e);
+        }
+
+        private async void viewPositionStatisticsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Ensure we have a selected item
+            if (listView2.SelectedItems.Count == 0)
+                return;
+
+            // Grab Billet from selected item tag
+            if (listView2.SelectedItems[0].Tag == null) return;
+            var soldierId = (int)listView2.SelectedItems[0].Tag;
+            if (soldierId == 0) return;
+
+            // Show Task Form!
+            TaskForm.Show(this, "Loading", "Loading position statistics... Please Wait", false);
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    // Fetch Position id
+                    var query = "SELECT `PositionId` FROM `Assignment` WHERE `SoldierId`=" + soldierId;
+                    var posId = Database.ExecuteScalar<int>(query);
+
+                    // Create Wrapper
+                    using (var form = new PositionStatsForm(posId, CurrentIterationDate))
+                    {
+                        TaskForm.CloseForm();
+
+                        // Show soldier dialog
+                        form.ShowDialog();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TaskForm.CloseForm();
+                    ExceptionHandler.ShowException(ex);
+                }
+            });
+        }
+
         /// <summary>
         /// A class used to specify the total records in a <see cref="BindingNavigator"/>
         /// </summary>
@@ -1108,11 +1164,6 @@ namespace Perscom
 
                 return pageOffsets;
             }
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -15,6 +15,11 @@ namespace Perscom.Database
         public DbSet<Assignment> Assignments { get; set; }
 
         /// <summary>
+        /// Gets a set of <see cref="BilletStatistics"/> entites stored in the database
+        /// </summary>
+        public DbSet<BilletStatistics> BilletStatistics { get; set; }
+
+        /// <summary>
         /// Gets a set of <see cref="IterationDate"/> entites stored in the database
         /// </summary>
         public DbSet<IterationDate> IterationDates { get; set; }
@@ -28,6 +33,11 @@ namespace Perscom.Database
         /// Gets a set of <see cref="Position"/> entites stored in the database
         /// </summary>
         public DbSet<Position> Positions { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="PositionStatistics"/> entites stored in the database
+        /// </summary>
+        public DbSet<PositionStatistics> PositionStatistics { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Promotion"/> entites stored in the database
@@ -79,9 +89,11 @@ namespace Perscom.Database
         {
             // Create Database Sets
             Assignments = new DbSet<Assignment>(this);
+            BilletStatistics = new DbSet<BilletStatistics>(this);
             IterationDates = new DbSet<IterationDate>(this);
             PastAssignments = new DbSet<PastAssignment>(this);
             Positions = new DbSet<Position>(this);
+            PositionStatistics = new DbSet<PositionStatistics>(this);
             Promotions = new DbSet<Promotion>(this);
             RankGradeStatistics = new DbSet<RankGradeStatistics>(this);
             Soldiers = new DbSet<Soldier>(this);
@@ -102,6 +114,8 @@ namespace Perscom.Database
             using (SQLiteTransaction tr = base.BeginTransaction())
             {
                 // Delete old table rementants
+                CodeFirstSQLite.DropTable<PositionStatistics>(this);
+                CodeFirstSQLite.DropTable<BilletStatistics>(this);
                 CodeFirstSQLite.DropTable<SpecialtyGradeStatistics>(this);
                 CodeFirstSQLite.DropTable<RankGradeStatistics>(this);
                 CodeFirstSQLite.DropTable<SpecialtyAssignment>(this);
@@ -128,6 +142,8 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<SpecialtyAssignment>(this);
                 CodeFirstSQLite.CreateTable<RankGradeStatistics>(this);
                 CodeFirstSQLite.CreateTable<SpecialtyGradeStatistics>(this);
+                CodeFirstSQLite.CreateTable<BilletStatistics>(this);
+                CodeFirstSQLite.CreateTable<PositionStatistics>(this);
 
                 // Commit the transaction
                 tr.Commit();

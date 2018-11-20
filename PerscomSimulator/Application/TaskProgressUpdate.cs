@@ -27,6 +27,11 @@ namespace Perscom
         public string MessageText = String.Empty;
 
         /// <summary>
+        /// Sets the Footer Message of the TaskForm
+        /// </summary>
+        public string FooterText = String.Empty;
+
+        /// <summary>
         /// Gets or Sets whether the progress bar is set, or incremented from its current value
         /// </summary>
         public bool IncrementProgress = false;

@@ -3,13 +3,16 @@ using Perscom.Database;
 using Perscom.Simulation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
 namespace Perscom
 {
-    public class Simulator
+    public class Simulator : IDisposable
     {
+        protected bool IsDisposed { get; set; }
+
         protected SimDatabase Database { get; set; }
 
         /// <summary>
@@ -71,6 +74,24 @@ namespace Perscom
         }
 
         /// <summary>
+        /// [BilletId => BilletStatistics]
+        /// </summary>
+        public Dictionary<int, BilletStatistics> BilletStatistics
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// [PositionId => PositionStatistics]
+        /// </summary>
+        public Dictionary<int, PositionStatistics> PositionStatistics
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
         /// The Unit that is processing in this Simulator instance
         /// </summary>
         public UnitWrapper ProcessingUnit { get; protected set; }
@@ -87,9 +108,14 @@ namespace Perscom
         protected int TotalYearsRan { get; set; } = 0;
 
         /// <summary>
-        /// The total number of years the simulation was ran
+        /// The total number of Iterations the simulation ran
         /// </summary>
         protected int Iteration { get; set; } = 1;
+
+        /// <summary>
+        /// The total number of Iterations the simulation ran
+        /// </summary>
+        protected int StopIteration { get; set; } = 1;
 
         /// <summary>
         /// Gets or Sets the <see cref="RandomNameGenerator"/> used to assign
@@ -224,15 +250,16 @@ namespace Perscom
         {
             // Check data
             if (totalYears < skipYears)
-                throw new ArgumentException("skipYears cannot be less than totalYears", "skipYears");
+                throw new ArgumentException("totalYears cannot be less than skipYears", "totalYears");
 
             // First, set the end date
             SkipYears = skipYears;
             TotalYearsRan = 0;
+            StopIteration = totalYears * 12;
 
             // Set initial dates
             EndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            StartDate = EndDate.AddYears(-totalYears);
+            StartDate = EndDate.AddYears(-totalYears).AddMonths(1);
             CurrentDate = StartDate;
 
             // Wrap in an exception block
@@ -293,6 +320,10 @@ namespace Perscom
                 // Variable holder for the month name
                 string name = String.Empty;
 
+                // Create a stopwatch
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+
                 // Main Loop
                 while (EndDate != CurrentDate)
                 {
@@ -317,10 +348,25 @@ namespace Perscom
                             throw new Exception("Date and Iteration dont match!");
                         }
 
+                        // Get esitmated time left
+                        string message = $"Processing {name} of year {TotalYearsRan + 1} of {totalYears}\n\n";
+                        if (timer.Elapsed.TotalSeconds >= 120)
+                        {
+                            message += String.Format(
+                                "Time Elapsed: {0:mm\\:ss}; Esitmated Time Remaining: {1:mm\\:ss}",
+                                timer.Elapsed,
+                                timer.GetEta(Iteration, StopIteration)
+                            );
+                        }
+                        else
+                        {
+                            message += String.Format("Time Elapsed: {0:mm\\:ss}", timer.Elapsed);
+                        }
+
                         // Update progress window
                         name = CurrentDate.ToString("MMMM");
                         update = new TaskProgressUpdate();
-                        update.MessageText = $"Processing {name} of year {TotalYearsRan + 1} of {totalYears}";
+                        update.MessageText = message;
                         progress.Report(update);
 
                         // Now do promotions
@@ -380,6 +426,14 @@ namespace Perscom
                                     Database.SpecialtyGradeStatistics.Add(stat);
                                 }
 
+                    // Save billet stats data
+                    foreach (var stat in BilletStatistics.Values)
+                        Database.BilletStatistics.Add(stat);
+
+                    // Save positional stats data
+                    foreach (var stat in PositionStatistics.Values)
+                        Database.PositionStatistics.Add(stat);
+
                     // Save
                     trans.Commit();
                 }
@@ -433,6 +487,9 @@ namespace Perscom
                 if (!Settings.ProcessRankType(position.Billet.Rank.Type))
                     continue;
 
+                // Log position data
+                LogPositionState(position);
+
                 // Grab current holder
                 bool expGiven = false;
                 SoldierWrapper soldier = position.Holder;
@@ -462,7 +519,7 @@ namespace Perscom
                                 }
 
                                 // Assign position
-                                soldier.AssignPosition(position, CurrentIterationDate, Database);
+                                AssignPositionToSoldier(soldier, position);
 
                                 // Create entry into statistics
                                 if (setting.Type == SpawnSoldierType.CreateNew)
@@ -480,7 +537,7 @@ namespace Perscom
                                 expGiven = true;
 
                                 // Assign new position
-                                soldier.AssignPosition(position, CurrentIterationDate, Database);
+                                AssignPositionToSoldier(soldier, position);
                             }
                         }
                     }
@@ -520,6 +577,7 @@ namespace Perscom
                     {
                         // Log retirement data for current rank/grade
                         LogRetiree(soldier);
+                        LogPositionEmptied(position);
 
                         // Remove the retired soldier from the roster
                         ActiveDutySoldiers.Remove(soldier.Soldier.Id);
@@ -593,6 +651,26 @@ namespace Perscom
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Assigns a soldier to a position, and logs the information
+        /// </summary>
+        /// <param name="soldier"></param>
+        /// <param name="position"></param>
+        private void AssignPositionToSoldier(SoldierWrapper soldier, PositionWrapper position)
+        {
+            // Log outgoing
+            if (soldier.Position != null)
+            {
+                LogPositionEmptied(soldier.Position);
+            }
+
+            // Assign the position
+            soldier.AssignPosition(position, CurrentIterationDate, Database);
+
+            // Log incoming
+            LogPositionAssigned(position);
         }
 
         /// <summary>
@@ -721,6 +799,10 @@ namespace Perscom
                         continue;
                 }
 
+                // Log!
+                LogPositionEmptied(soldier.Position);
+                LogPositionEmptied(otherSoldier.Position);
+
                 // Remove positions first!
                 otherSoldier.RemoveFromPosition(CurrentIterationDate, Database);
                 soldier.RemoveFromPosition(CurrentIterationDate, Database);
@@ -729,6 +811,11 @@ namespace Perscom
                 soldier.AssignPosition(pos, CurrentIterationDate, Database);
                 otherSoldier.AssignPosition(position, CurrentIterationDate, Database);
 
+                // Log!
+                LogPositionAssigned(soldier.Position);
+                LogPositionAssigned(otherSoldier.Position);
+
+                // Return success
                 return true;
             }
 
@@ -1049,6 +1136,9 @@ namespace Perscom
             ActiveDutySoldiers = new Dictionary<int, SoldierWrapper>();
             RankStatistics = new Dictionary<int, Dictionary<RankType, Dictionary<int, RankGradeStatistics>>>();
             SpecialtyStatistics = new Dictionary<int, Dictionary<RankType, Dictionary<int, Dictionary<int, SpecialtyGradeStatistics>>>>();
+            PositionStatistics = new Dictionary<int, PositionStatistics>(Positions.Count);
+            BilletStatistics = new Dictionary<int, BilletStatistics>();
+
 
             // Build our Statistics Dictionaries
             foreach (UnitTemplate template in Database.UnitTemplates)
@@ -1107,6 +1197,11 @@ namespace Perscom
                     var soldier = CreateSoldier(s, pos, out SpawnedSoldier spawned);
                     soldier.AssignPosition(pos, CurrentIterationDate, Database);
                 }
+
+                // Create data
+                PositionStatistics.Add(pos.Position.Id, new PositionStatistics() { PositionId = pos.Position.Id });
+                if (!BilletStatistics.ContainsKey(pos.Billet.Id))
+                    BilletStatistics.Add(pos.Billet.Id, new BilletStatistics() { BilletId = pos.Billet.Id });
             }
         }
 
@@ -1454,6 +1549,92 @@ namespace Perscom
                     // Move up
                     parentUnit = parentUnit.Parent;
                 }
+            }
+        }
+
+        private void LogPositionState(PositionWrapper position)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                if (position.IsEmpty)
+                {
+                    PositionStatistics[position.Position.Id].EmptyDeficit += 1;
+                    BilletStatistics[position.Billet.Id].EmptyDeficit += 1;
+                }
+                else if (position.Holder.IsStandIn())
+                {
+                    PositionStatistics[position.Position.Id].StandInDeficit += 1;
+                    BilletStatistics[position.Billet.Id].StandInDeficit += 1;
+                }
+            }
+        }
+
+        private void LogPositionAssigned(PositionWrapper position)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                PositionStatistics[position.Position.Id].TotalSoldiersIncoming += 1;
+                BilletStatistics[position.Billet.Id].TotalSoldiersIncoming += 1;
+            }
+        }
+
+        private void LogPositionEmptied(PositionWrapper position)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                PositionStatistics[position.Position.Id].TotalSoldiersOutgoing += 1;
+                BilletStatistics[position.Billet.Id].TotalSoldiersOutgoing += 1;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!IsDisposed)
+            {
+                IsDisposed = true;
+
+                // Clear positions
+                Positions.Clear();
+                Positions = null;
+
+                // Clear soldiers
+                ActiveDutySoldiers.Clear();
+                ActiveDutySoldiers = null;
+
+                // Clear soldier generators
+                SoldierGenerators.Clear();
+                SoldierGenerators = null;
+
+                // Clear everything!
+                RankStatistics.Clear();
+                RankStatistics = null;
+
+                SpecialtyStatistics.Clear();
+                SpecialtyStatistics = null;
+
+                BilletStatistics.Clear();
+                BilletStatistics = null;
+
+                PositionStatistics.Clear();
+                PositionStatistics = null;
+
+                BilletExperience.Clear();
+                BilletExperience = null;
+
+                ExperienceFilters.Clear();
+                ExperienceFilters = null;
+
+                ExperienceGroups.Clear();
+                ExperienceGroups = null;
+
+                ExperienceOrdering.Clear();
+                ExperienceOrdering = null;
+
+                SoldierPoolFiltering.Clear();
+                SoldierPoolFiltering = null;
             }
         }
     }

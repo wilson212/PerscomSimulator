@@ -67,6 +67,13 @@ namespace Perscom
             if (e.MessageText.Length > 0)
                 labelContent.Text = e.MessageText;
 
+            // Wrap this in an invoke t
+            if (e.FooterText.Length > 0)
+            {
+                labelFooterText.Visible = true;
+                labelFooterText.Text = e.FooterText;
+            }
+
             // Update window title
             if (e.WindowTitle.Length > 0)
                 Text = e.WindowTitle;

@@ -77,12 +77,12 @@
             this.panelProgressBar.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelProgressBar.Location = new System.Drawing.Point(0, 80);
             this.panelProgressBar.Name = "panelProgressBar";
-            this.panelProgressBar.Size = new System.Drawing.Size(434, 35);
+            this.panelProgressBar.Size = new System.Drawing.Size(434, 50);
             this.panelProgressBar.TabIndex = 3;
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(50, 8);
+            this.progressBar.Location = new System.Drawing.Point(50, 14);
             this.progressBar.MarqueeAnimationSpeed = 20;
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(370, 18);
@@ -95,7 +95,7 @@
             this.panelButton.Controls.Add(this.labelFooterText);
             this.panelButton.Controls.Add(this.CancelBtn);
             this.panelButton.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelButton.Location = new System.Drawing.Point(0, 115);
+            this.panelButton.Location = new System.Drawing.Point(0, 130);
             this.panelButton.Name = "panelButton";
             this.panelButton.Size = new System.Drawing.Size(434, 40);
             this.panelButton.TabIndex = 4;
@@ -106,7 +106,7 @@
             this.labelFooterText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelFooterText.AutoSize = true;
-            this.labelFooterText.Location = new System.Drawing.Point(50, 11);
+            this.labelFooterText.Location = new System.Drawing.Point(50, 15);
             this.labelFooterText.MaximumSize = new System.Drawing.Size(280, 0);
             this.labelFooterText.MinimumSize = new System.Drawing.Size(280, 0);
             this.labelFooterText.Name = "labelFooterText";
@@ -169,7 +169,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(434, 145);
+            this.ClientSize = new System.Drawing.Size(434, 172);
             this.ControlBox = false;
             this.Controls.Add(this.panelButton);
             this.Controls.Add(this.panelProgressBar);

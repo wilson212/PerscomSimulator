@@ -18,11 +18,6 @@ namespace Perscom
     public partial class MainForm : Form
     {
         /// <summary>
-        /// The current running Simulation
-        /// </summary>
-        public Simulator Simulation { get; protected set; }
-
-        /// <summary>
         /// The cancellation token for the simulator
         /// </summary>
         protected CancellationTokenSource CancelToken { get; set; }
@@ -263,8 +258,13 @@ namespace Perscom
                             ProcessWarrant = warrantMenuItem.Checked
                         };
 
-                        Simulation = new Simulator(simDb, unit, settings);
-                        Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, CancelToken.Token);
+                        using (var Simulation = new Simulator(simDb, unit, settings))
+                        {
+                            Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, CancelToken.Token);
+                        }
+
+                        // Clear up memory
+                        unit = null;
                     });
 
                     SimulationRan = true;
@@ -273,6 +273,10 @@ namespace Perscom
                     TaskForm.Cancelled -= TaskForm_Cancelled;
                     TaskForm.CloseForm();
 
+                    // Finally, call garbage collector
+                    GC.Collect();
+
+                    // Show form
                     using (SimResultViewForm form = new SimResultViewForm(simDb))
                     {
                         form.ShowDialog();
@@ -289,7 +293,7 @@ namespace Perscom
             finally
             {
                 // Enable Button
-                generateButton.Enabled = true;
+                //generateButton.Enabled = true;
             }
         }
 

@@ -29,14 +29,18 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend7 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title13 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.DataVisualization.Charting.Title title14 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.sidePanel = new System.Windows.Forms.Panel();
             this.newButton = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createNewGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.removeGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
             this.mainPanel = new System.Windows.Forms.Panel();
@@ -64,11 +68,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.nameBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createNewGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.sidePanel.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.headerPanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -76,7 +77,6 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.groupBox3.SuspendLayout();
-            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // sidePanel
@@ -87,7 +87,7 @@
             this.sidePanel.Location = new System.Drawing.Point(0, 75);
             this.sidePanel.Name = "sidePanel";
             this.sidePanel.Padding = new System.Windows.Forms.Padding(5, 10, 0, 0);
-            this.sidePanel.Size = new System.Drawing.Size(240, 547);
+            this.sidePanel.Size = new System.Drawing.Size(200, 547);
             this.sidePanel.TabIndex = 22;
             this.sidePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.sidePanel_Paint);
             // 
@@ -113,6 +113,35 @@
             this.treeView1.TabStop = false;
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
             // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createNewGeneratorToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.removeGeneratorToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(191, 54);
+            this.contextMenuStrip2.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
+            // 
+            // createNewGeneratorToolStripMenuItem
+            // 
+            this.createNewGeneratorToolStripMenuItem.Name = "createNewGeneratorToolStripMenuItem";
+            this.createNewGeneratorToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.createNewGeneratorToolStripMenuItem.Text = "Create New Generator";
+            this.createNewGeneratorToolStripMenuItem.Click += new System.EventHandler(this.createNewGeneratorToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(187, 6);
+            // 
+            // removeGeneratorToolStripMenuItem
+            // 
+            this.removeGeneratorToolStripMenuItem.Name = "removeGeneratorToolStripMenuItem";
+            this.removeGeneratorToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.removeGeneratorToolStripMenuItem.Text = "Remove Generator";
+            this.removeGeneratorToolStripMenuItem.Click += new System.EventHandler(this.removeGeneratorToolStripMenuItem_Click);
+            // 
             // headerPanel
             // 
             this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
@@ -121,7 +150,7 @@
             this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.headerPanel.Location = new System.Drawing.Point(0, 0);
             this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(1224, 75);
+            this.headerPanel.Size = new System.Drawing.Size(1174, 75);
             this.headerPanel.TabIndex = 21;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
@@ -145,9 +174,9 @@
             this.mainPanel.Controls.Add(this.groupBox1);
             this.mainPanel.Controls.Add(this.groupBox3);
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel.Location = new System.Drawing.Point(240, 75);
+            this.mainPanel.Location = new System.Drawing.Point(200, 75);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(984, 547);
+            this.mainPanel.Size = new System.Drawing.Size(974, 547);
             this.mainPanel.TabIndex = 24;
             // 
             // groupBox4
@@ -264,44 +293,44 @@
             // 
             // chart1
             // 
-            chartArea7.AxisX.IsMarginVisible = false;
-            chartArea7.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea7.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
-            chartArea7.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea7);
+            chartArea1.AxisX.IsMarginVisible = false;
+            chartArea1.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea1.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dot;
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend7.Enabled = false;
-            legend7.Name = "Legend1";
-            this.chart1.Legends.Add(legend7);
+            legend1.Enabled = false;
+            legend1.Name = "Legend1";
+            this.chart1.Legends.Add(legend1);
             this.chart1.Location = new System.Drawing.Point(3, 16);
             this.chart1.Name = "chart1";
-            series7.BorderWidth = 2;
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series7.Legend = "Legend1";
-            series7.MarkerBorderWidth = 0;
-            series7.MarkerColor = System.Drawing.Color.Black;
-            series7.MarkerSize = 7;
-            series7.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series7.Name = "Series1";
-            series7.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
-            series7.SmartLabelStyle.MinMovingDistance = 10D;
-            series7.SmartLabelStyle.MovingDirection = ((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles)((((((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Top | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Bottom) 
+            series1.BorderWidth = 2;
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+            series1.Legend = "Legend1";
+            series1.MarkerBorderWidth = 0;
+            series1.MarkerColor = System.Drawing.Color.Black;
+            series1.MarkerSize = 7;
+            series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series1.Name = "Series1";
+            series1.SmartLabelStyle.AllowOutsidePlotArea = System.Windows.Forms.DataVisualization.Charting.LabelOutsidePlotAreaStyle.No;
+            series1.SmartLabelStyle.MinMovingDistance = 10D;
+            series1.SmartLabelStyle.MovingDirection = ((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles)((((((System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Top | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Bottom) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Right) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.Left) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.TopLeft) 
             | System.Windows.Forms.DataVisualization.Charting.LabelAlignmentStyles.TopRight)));
-            this.chart1.Series.Add(series7);
+            this.chart1.Series.Add(series1);
             this.chart1.Size = new System.Drawing.Size(594, 258);
             this.chart1.TabIndex = 2;
             this.chart1.Text = "Time In Grade for Promotion";
-            title13.Name = "Title1";
-            title13.Text = "Career Length Over Time";
-            title14.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
-            title14.Name = "Title2";
-            title14.Text = "Number of Soldiers";
-            this.chart1.Titles.Add(title13);
-            this.chart1.Titles.Add(title14);
+            title1.Name = "Title1";
+            title1.Text = "Career Length Over Time";
+            title2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Left;
+            title2.Name = "Title2";
+            title2.Text = "Number of Soldiers";
+            this.chart1.Titles.Add(title1);
+            this.chart1.Titles.Add(title2);
             // 
             // groupBox3
             // 
@@ -392,41 +421,12 @@
             this.label1.TabIndex = 17;
             this.label1.Text = "Generator Name: ";
             // 
-            // contextMenuStrip2
-            // 
-            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createNewGeneratorToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.removeGeneratorToolStripMenuItem});
-            this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(191, 54);
-            this.contextMenuStrip2.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip2_Opening);
-            // 
-            // createNewGeneratorToolStripMenuItem
-            // 
-            this.createNewGeneratorToolStripMenuItem.Name = "createNewGeneratorToolStripMenuItem";
-            this.createNewGeneratorToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.createNewGeneratorToolStripMenuItem.Text = "Create New Generator";
-            this.createNewGeneratorToolStripMenuItem.Click += new System.EventHandler(this.createNewGeneratorToolStripMenuItem_Click);
-            // 
-            // removeGeneratorToolStripMenuItem
-            // 
-            this.removeGeneratorToolStripMenuItem.Name = "removeGeneratorToolStripMenuItem";
-            this.removeGeneratorToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.removeGeneratorToolStripMenuItem.Text = "Remove Generator";
-            this.removeGeneratorToolStripMenuItem.Click += new System.EventHandler(this.removeGeneratorToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(187, 6);
-            // 
             // CareerGeneratorEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(1224, 622);
+            this.ClientSize = new System.Drawing.Size(1174, 622);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.sidePanel);
             this.Controls.Add(this.headerPanel);
@@ -437,6 +437,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "CareerGeneratorEditorForm";
             this.sidePanel.ResumeLayout(false);
+            this.contextMenuStrip2.ResumeLayout(false);
             this.headerPanel.ResumeLayout(false);
             this.mainPanel.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
@@ -445,7 +446,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
