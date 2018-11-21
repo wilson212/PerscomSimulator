@@ -463,6 +463,8 @@ namespace Perscom
         /// <param name="enabled"></param>
         private void SetTableForeignKeyStatus(bool enabled)
         {
+            EntityCache.GetTableMap(typeof(RankGradeStatistics)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(SpecialtyGradeStatistics)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(PastAssignment)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(SpecialtyAssignment)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(Soldier)).BuildInstanceForeignKeys = enabled;

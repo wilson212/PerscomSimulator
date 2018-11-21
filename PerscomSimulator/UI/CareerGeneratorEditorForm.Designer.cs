@@ -94,9 +94,9 @@
             // 
             // newButton
             // 
-            this.newButton.Location = new System.Drawing.Point(31, 511);
+            this.newButton.Location = new System.Drawing.Point(44, 511);
             this.newButton.Name = "newButton";
-            this.newButton.Size = new System.Drawing.Size(177, 23);
+            this.newButton.Size = new System.Drawing.Size(112, 23);
             this.newButton.TabIndex = 11;
             this.newButton.TabStop = false;
             this.newButton.Text = "New";
@@ -109,7 +109,7 @@
             this.treeView1.ContextMenuStrip = this.contextMenuStrip2;
             this.treeView1.Location = new System.Drawing.Point(1, 7);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(234, 490);
+            this.treeView1.Size = new System.Drawing.Size(182, 490);
             this.treeView1.TabIndex = 0;
             this.treeView1.TabStop = false;
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);

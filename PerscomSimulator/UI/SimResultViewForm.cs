@@ -307,7 +307,7 @@ namespace Perscom
 
                 // Add total retirements at this grade to the total cumulative retirements
                 var info = RankStatistics[template.Id][rank.Type][r.Grade];
-                totalPriorGradeRetirements += info.TotalRetirements;
+                totalPriorGradeRetirements +=  info.TotalRetirements;
             }
 
             // Get the total number of soldiers up to this rank and grade point
@@ -570,7 +570,7 @@ namespace Perscom
                 chart4.Series[1].Points[p].Label = $"{rate}%";
 
                 // Promotable soldiers whom did, or could have been promoted but retired too soon
-                rate = (double)stats.SelectionRate;
+                rate = (double)stats.PromotablePercentage;
                 p = chart4.Series[0].Points.AddY(rate);
                 chart4.Series[0].Points[p].Label = $"{rate}%";
 

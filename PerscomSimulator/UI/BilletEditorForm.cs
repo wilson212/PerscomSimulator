@@ -131,9 +131,9 @@ namespace Perscom
 
                 // Experience
                 ExperienceGiven.AddRange(billet.Experience);
-                ExperienceFilters.AddRange(billet.Filters);
-                ExperienceSorting.AddRange(billet.Sorting);
-                ExperienceGrouping.AddRange(billet.Grouping);
+                ExperienceFilters.AddRange(billet.Filters.OrderBy(x => x.Precedence));
+                ExperienceSorting.AddRange(billet.Sorting.OrderBy(x => x.Precedence));
+                ExperienceGrouping.AddRange(billet.Grouping.OrderBy(x => x.Precedence));
                 FillExperienceListView();
                 FillSortingListView();
                 FillGroupingListView();
@@ -165,10 +165,9 @@ namespace Perscom
             {
                 // Order them
                 int i = 0;
-                var ordered = ExperienceFilters.OrderBy(x => x.Precedence);
 
                 // Add each item
-                foreach (var thing in ordered)
+                foreach (var thing in ExperienceFilters)
                 {
                     // Check for new items added!
                     CheckExperience(thing.ExperienceId);
@@ -202,10 +201,9 @@ namespace Perscom
             {
                 // Order them
                 int i = 0;
-                var ordered = ExperienceSorting.OrderBy(x => x.Precedence);
 
                 // Add each item
-                foreach (var thing in ordered)
+                foreach (var thing in ExperienceSorting)
                 {
                     // Check for new items added!
                     CheckExperience(thing.ExperienceId);
@@ -238,10 +236,9 @@ namespace Perscom
             {
                 // Order them
                 int i = 0;
-                var ordered = ExperienceGrouping.OrderBy(x => x.Precedence);
 
                 // Add each item
-                foreach (var thing in ordered)
+                foreach (var thing in ExperienceGrouping)
                 {
                     // Check for new items added!
                     CheckExperience(thing.ExperienceId);

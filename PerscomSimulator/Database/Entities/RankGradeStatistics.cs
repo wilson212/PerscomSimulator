@@ -14,20 +14,34 @@ namespace Perscom.Database
         /// <summary>
         /// 
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, PrimaryKey]
         public RankType RankType { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, PrimaryKey]
         public int RankGrade { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        [Column, Required, PrimaryKey]
+        [Column, PrimaryKey]
         public int UnitTemplateId { get; set; }
+
+        #region Virtual Foreign Keys
+
+        /// <summary>
+        /// Gets the <see cref="UnitTemplate"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("UnitTemplateId",
+            OnDelete = ReferentialIntegrity.Cascade,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<UnitTemplate> FK_Parent { get; set; }
+
+        #endregion
 
         #region Total Statistics 
 
@@ -237,6 +251,22 @@ namespace Perscom.Database
         #endregion Transfer Into Statistics
 
         /// <summary>
+        /// Gets the percentage of soldiers who made Promotable Status to the next Rank Grade
+        /// </summary>
+        public decimal PromotablePercentage
+        {
+            get
+            {
+                // If no-one got promoted, then the rate is 0 obviously
+                if (TotalSoldiersOutgoing == 0) return 0;
+
+                // Get the count of promotable only.
+                int totalPromotable = PromotionsToNextGrade + TotalPromotableRetirees;
+                return Math.Round(totalPromotable / (decimal)TotalSoldiersOutgoing, 2) * 100;
+            }
+        }
+
+        /// <summary>
         /// Gets the precentage of soldiers who advanced to the next grade total, including
         /// those who were never promotable.
         /// </summary>
@@ -248,7 +278,7 @@ namespace Perscom.Database
         /// This value DOES NOT count soldiers who were transfered OUT of this Rank 
         /// into a different <see cref="Simulation.RankType"/>
         /// </summary>
-        public decimal SelectionRate
+        public decimal PromotableSelectionRate
         {
             get
             {
@@ -321,8 +351,7 @@ namespace Perscom.Database
             RetiredTotalMonthsInService += tis;
 
             // Promotable?
-            PromotableStatus type;
-            if (soldier.IsPromotable(currentDate, out type))
+            if (soldier.IsPromotable(currentDate))
                 TotalPromotableRetirees += 1;
         }
 
