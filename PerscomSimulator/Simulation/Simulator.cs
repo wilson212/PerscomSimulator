@@ -350,7 +350,7 @@ namespace Perscom
 
                         // Get esitmated time left
                         string message = $"Processing {name} of year {TotalYearsRan + 1} of {totalYears}\n\n";
-                        if (timer.Elapsed.TotalSeconds >= 120)
+                        if (timer.Elapsed.TotalSeconds >= 60)
                         {
                             message += String.Format(
                                 "Time Elapsed: {0:mm\\:ss}; Esitmated Time Remaining: {1:mm\\:ss}",

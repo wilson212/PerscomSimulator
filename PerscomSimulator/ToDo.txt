@@ -2,3 +2,4 @@
  - Add the deficit rating for billets and positions
  - Add UnitTemplate statistics
  - Add a traits system?
+ - Billet Rank Ranges! Maybe add a property to Billet? (Billet.AutoPromoteInRankRange)

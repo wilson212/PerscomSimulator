@@ -512,6 +512,15 @@ namespace Perscom
             FillBilletsListView();
         }
 
+        private void editBillitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Ensure we have a selected item
+            if (listView2.SelectedItems.Count == 0)
+                return;
+
+            listView2_DoubleClick(sender, e);
+        }
+
         private void duplicateBilletMenuItem_Click(object sender, EventArgs e)
         {
             // Ensure we have a selected item
@@ -685,6 +694,7 @@ namespace Perscom
             // Fill List Views
             FillBilletsListView();
             FillUnitsListView();
+            RefreshUnitBilletsCopyMenuItems();
             RefreshBilletCopyMenuItems();
 
             // Enable fields
@@ -728,6 +738,7 @@ namespace Perscom
         private void billetsContextMenu_Opening(object sender, CancelEventArgs e)
         {
             removeBilletMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
+            editBillitToolStripMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
             duplicateBilletMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
         }
 
@@ -767,10 +778,11 @@ namespace Perscom
         private void echelonTypeSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Refresh items
+            RefreshUnitBilletsCopyMenuItems();
             RefreshBilletCopyMenuItems();
         }
 
-        private void RefreshBilletCopyMenuItems()
+        private void RefreshUnitBilletsCopyMenuItems()
         {
             // Grab selected echelon
             Echelon echelon = (Echelon)echelonTypeSelect.SelectedItem;
@@ -869,6 +881,106 @@ namespace Perscom
                 // Update table cache
                 ToggleForeignKeys(true);
             }
+        }
+
+        private void RefreshBilletCopyMenuItems()
+        {
+            // Grab selected echelon
+            Echelon echelon = (Echelon)echelonTypeSelect.SelectedItem;
+            if (echelon == null) return;
+
+            // Clear old items
+            copyBilletFromToolStripMenuItem.DropDownItems.Clear();
+            copyBilletFromToolStripMenuItem.Enabled = false;
+
+            using (AppDatabase db = new AppDatabase())
+            {
+                // Fetch all Unit Templates from this echelon
+                var builder = new SelectQueryBuilder(db);
+                builder.From(nameof(UnitTemplate))
+                    .SelectAll()
+                    .Where(nameof(UnitTemplate.EchelonId), Comparison.Equals, echelon.Id);
+
+                // Add UnitTemplate as a menu item
+                foreach (var ec in builder.ExecuteQuery<UnitTemplate>())
+                {
+                    // Dont add ourselves!
+                    if (SelectedTemplate.Id == ec.Id)
+                        continue;
+
+                    // Add the template as an option
+                    ToolStripMenuItem item = new ToolStripMenuItem(ec.Name);
+
+                    // Add it's billet children!
+                    foreach (var b in ec.Billets)
+                    {
+                        ToolStripMenuItem subItem = new ToolStripMenuItem(b.Name);
+                        subItem.Tag = b;
+                        subItem.Click += SubItem_Click;
+                        item.DropDownItems.Add(subItem);
+                    }
+
+                    //item.Click += Item_Click;
+                    copyBilletFromToolStripMenuItem.DropDownItems.Add(item);
+                }
+            }
+
+            // Only enable if we have items
+            if (copyBilletFromToolStripMenuItem.DropDownItems.Count > 0)
+                copyBilletFromToolStripMenuItem.Enabled = true;
+        }
+
+        private void SubItem_Click(object sender, EventArgs e)
+        {
+            // Grab menu item
+            ToolStripItem menuItem = sender as ToolStripItem;
+            if (menuItem == null) return;
+
+            // Grab template
+            Billet billet = menuItem.Tag as Billet;
+            if (billet == null) return;
+
+            // As user to verify
+            var res = MessageBox.Show(
+                $"Are you sure you want to copy the billet {billet.Name}?",
+                "Verify", MessageBoxButtons.YesNo, MessageBoxIcon.Warning
+            );
+            if (res != DialogResult.Yes) return;
+
+            try
+            {
+                // Disable menu
+                billetsContextMenu.Enabled = false;
+
+                // Update table cache
+                ToggleForeignKeys(false);
+
+                // Open database and begin transaction
+                using (AppDatabase db = new AppDatabase())
+                using (var trans = db.BeginTransaction())
+                {
+                    DuplicateBillet(db, billet);
+
+                    // Commit changes
+                    trans.Commit();
+
+                    // Update billet view
+                    FillBilletsListView();
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.ShowException(ex);
+            }
+            finally
+            {
+                // Enable menu
+                billetsContextMenu.Enabled = true;
+
+                // Update table cache
+                ToggleForeignKeys(true);
+            }
+
         }
 
         /// <summary>

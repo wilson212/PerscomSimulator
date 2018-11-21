@@ -28,7 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SoldierSortingForm));
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.sortingDirectionBox = new System.Windows.Forms.ComboBox();
+            this.sortingTypeSelect = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.addButton = new System.Windows.Forms.Button();
@@ -36,8 +39,6 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.sortingTypeSelect = new System.Windows.Forms.ComboBox();
-            this.sortingDirectionBox = new System.Windows.Forms.ComboBox();
             this.mainPanel.SuspendLayout();
             this.bottomPanel.SuspendLayout();
             this.headerPanel.SuspendLayout();
@@ -55,6 +56,27 @@
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(411, 161);
             this.mainPanel.TabIndex = 11;
+            // 
+            // sortingDirectionBox
+            // 
+            this.sortingDirectionBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.sortingDirectionBox.FormattingEnabled = true;
+            this.sortingDirectionBox.Items.AddRange(new object[] {
+            "Ascending",
+            "Descending"});
+            this.sortingDirectionBox.Location = new System.Drawing.Point(144, 92);
+            this.sortingDirectionBox.Name = "sortingDirectionBox";
+            this.sortingDirectionBox.Size = new System.Drawing.Size(202, 21);
+            this.sortingDirectionBox.TabIndex = 15;
+            // 
+            // sortingTypeSelect
+            // 
+            this.sortingTypeSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.sortingTypeSelect.FormattingEnabled = true;
+            this.sortingTypeSelect.Location = new System.Drawing.Point(144, 51);
+            this.sortingTypeSelect.Name = "sortingTypeSelect";
+            this.sortingTypeSelect.Size = new System.Drawing.Size(202, 21);
+            this.sortingTypeSelect.TabIndex = 14;
             // 
             // label2
             // 
@@ -130,27 +152,6 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Apply Soldier Sorting";
             // 
-            // sortingTypeSelect
-            // 
-            this.sortingTypeSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.sortingTypeSelect.FormattingEnabled = true;
-            this.sortingTypeSelect.Location = new System.Drawing.Point(144, 51);
-            this.sortingTypeSelect.Name = "sortingTypeSelect";
-            this.sortingTypeSelect.Size = new System.Drawing.Size(202, 21);
-            this.sortingTypeSelect.TabIndex = 14;
-            // 
-            // sortingDirectionBox
-            // 
-            this.sortingDirectionBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.sortingDirectionBox.FormattingEnabled = true;
-            this.sortingDirectionBox.Items.AddRange(new object[] {
-            "Ascending",
-            "Descending"});
-            this.sortingDirectionBox.Location = new System.Drawing.Point(144, 92);
-            this.sortingDirectionBox.Name = "sortingDirectionBox";
-            this.sortingDirectionBox.Size = new System.Drawing.Size(202, 21);
-            this.sortingDirectionBox.TabIndex = 15;
-            // 
             // SoldierSortingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -160,7 +161,8 @@
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.bottomPanel);
             this.Controls.Add(this.headerPanel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SoldierSortingForm";

@@ -212,8 +212,12 @@ namespace Perscom
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            unitSelect.SelectedIndex = 0;
-            rankTypeBox.SelectedIndex = 0;
+            if (unitSelect.Items.Count > 0)
+                unitSelect.SelectedIndex = 0;
+
+            if (rankTypeBox.Items.Count > 0)
+                rankTypeBox.SelectedIndex = 0;
+
             rankTypeBox.SelectedIndexChanged += rankTypeBox_SelectedIndexChanged;
         }
 

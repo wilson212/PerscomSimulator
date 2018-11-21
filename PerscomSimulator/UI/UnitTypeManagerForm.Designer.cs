@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UnitTypeManagerForm));
             this.sidePanel = new System.Windows.Forms.Panel();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.deleteButton = new System.Windows.Forms.Button();
@@ -54,6 +55,7 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.billetsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyBilletFromToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -73,8 +75,10 @@
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.ShadowLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.editBillitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label6 = new System.Windows.Forms.ShadowLabel();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -189,8 +193,8 @@
             this.label5.Size = new System.Drawing.Size(104, 13);
             this.label5.TabIndex = 36;
             this.label5.Text = "Short Name Format: ";
-            this.toolTip1.SetToolTip(this.label5, "Use the following codes:\r\n* n => To Title Case\r\n* i => Interger format\r\n* c => To" +
-        " Alpha-numeric letter");
+            this.toolTip1.SetToolTip(this.label5, "Use the following codes:\r\n* %n => To Title Case\r\n* %i => Interger format\r\n* %c =>" +
+        " To Alpha-numeric letter");
             // 
             // label4
             // 
@@ -243,8 +247,8 @@
             this.label2.Size = new System.Drawing.Size(98, 13);
             this.label2.TabIndex = 30;
             this.label2.Text = "Unit Name Format: ";
-            this.toolTip1.SetToolTip(this.label2, "Use the following codes:\r\n* n => To Title Case\r\n* i => Interger format\r\n* c => To" +
-        " Alpha-numeric letter");
+            this.toolTip1.SetToolTip(this.label2, "Use the following codes:\r\n* %n => To Title Case\r\n* %i => Interger format\r\n* %c =>" +
+        " To Alpha-numeric letter");
             // 
             // label7
             // 
@@ -321,52 +325,61 @@
             // 
             this.billetsContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addBilletMenuItem,
-            this.removeBilletMenuItem,
+            this.copyBilletFromToolStripMenuItem,
             this.duplicateBilletMenuItem,
+            this.toolStripSeparator4,
+            this.editBillitToolStripMenuItem,
+            this.removeBilletMenuItem,
             this.toolStripSeparator3,
             this.copyFromMenuItem,
             this.toolStripSeparator2,
             this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(154, 126);
+            this.billetsContextMenu.Size = new System.Drawing.Size(185, 176);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
             // 
             this.addBilletMenuItem.Name = "addBilletMenuItem";
-            this.addBilletMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.addBilletMenuItem.Size = new System.Drawing.Size(184, 22);
             this.addBilletMenuItem.Text = "Add Billet";
             this.addBilletMenuItem.Click += new System.EventHandler(this.addBilletMenuItem_Click);
+            // 
+            // copyBilletFromToolStripMenuItem
+            // 
+            this.copyBilletFromToolStripMenuItem.Name = "copyBilletFromToolStripMenuItem";
+            this.copyBilletFromToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.copyBilletFromToolStripMenuItem.Text = "Copy Billet From";
             // 
             // removeBilletMenuItem
             // 
             this.removeBilletMenuItem.Name = "removeBilletMenuItem";
-            this.removeBilletMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.removeBilletMenuItem.Size = new System.Drawing.Size(184, 22);
             this.removeBilletMenuItem.Text = "Remove Billet";
             this.removeBilletMenuItem.Click += new System.EventHandler(this.removeBilletMenuItem_Click);
             // 
             // duplicateBilletMenuItem
             // 
             this.duplicateBilletMenuItem.Name = "duplicateBilletMenuItem";
-            this.duplicateBilletMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.duplicateBilletMenuItem.Size = new System.Drawing.Size(184, 22);
             this.duplicateBilletMenuItem.Text = "Duplicate Billet";
             this.duplicateBilletMenuItem.Click += new System.EventHandler(this.duplicateBilletMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(150, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(181, 6);
             // 
             // copyFromMenuItem
             // 
             this.copyFromMenuItem.Name = "copyFromMenuItem";
-            this.copyFromMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.copyFromMenuItem.Text = "Copy From";
+            this.copyFromMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.copyFromMenuItem.Text = "Copy All Billets From";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(150, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(181, 6);
             // 
             // viewModeToolStripMenuItem
             // 
@@ -374,7 +387,7 @@
             this.largeIconsToolStripMenuItem,
             this.tilesToolStripMenuItem});
             this.viewModeToolStripMenuItem.Name = "viewModeToolStripMenuItem";
-            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.viewModeToolStripMenuItem.Text = "View Mode";
             // 
             // largeIconsToolStripMenuItem
@@ -496,6 +509,18 @@
             this.headerPanel.TabIndex = 4;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(181, 6);
+            // 
+            // editBillitToolStripMenuItem
+            // 
+            this.editBillitToolStripMenuItem.Name = "editBillitToolStripMenuItem";
+            this.editBillitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.editBillitToolStripMenuItem.Text = "Edit Billit";
+            this.editBillitToolStripMenuItem.Click += new System.EventHandler(this.editBillitToolStripMenuItem_Click);
+            // 
             // label6
             // 
             this.label6.BackColor = System.Drawing.Color.Transparent;
@@ -520,6 +545,9 @@
             this.Controls.Add(this.sidePanel);
             this.Controls.Add(this.headerPanel);
             this.Controls.Add(this.bottomPanel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "UnitTypeManagerForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Unit Template Manager";
@@ -585,5 +613,8 @@
         private System.Windows.Forms.ToolStripMenuItem copyFromMenuItem;
         private System.Windows.Forms.ToolStripMenuItem duplicateBilletMenuItem;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.ToolStripMenuItem copyBilletFromToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem editBillitToolStripMenuItem;
     }
 }
