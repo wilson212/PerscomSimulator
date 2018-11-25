@@ -82,6 +82,7 @@
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addGroupingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editGroupItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -122,7 +123,6 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mainPanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -624,6 +624,7 @@
             this.spawnGenSelect.Name = "spawnGenSelect";
             this.spawnGenSelect.Size = new System.Drawing.Size(202, 21);
             this.spawnGenSelect.TabIndex = 13;
+            this.spawnGenSelect.SelectedIndexChanged += new System.EventHandler(this.spawnGenSelect_SelectedIndexChanged);
             // 
             // tabPage2
             // 
@@ -694,12 +695,17 @@
             // columnHeader12
             // 
             this.columnHeader12.Text = "";
-            this.columnHeader12.Width = 175;
+            this.columnHeader12.Width = 225;
             // 
             // columnHeader13
             // 
             this.columnHeader13.Text = "";
-            this.columnHeader13.Width = 150;
+            this.columnHeader13.Width = 125;
+            // 
+            // columnHeader14
+            // 
+            this.columnHeader14.Text = "";
+            this.columnHeader14.Width = 40;
             // 
             // groupContextMenuStrip
             // 
@@ -979,32 +985,32 @@
             this.toolStripSeparator2,
             this.removeItemToolStripMenuItem1});
             this.requiredExpMenuStrip.Name = "requiredExpMenuStrip";
-            this.requiredExpMenuStrip.Size = new System.Drawing.Size(206, 76);
+            this.requiredExpMenuStrip.Size = new System.Drawing.Size(168, 76);
             this.requiredExpMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.requiredExpMenuStrip_Opening);
             // 
             // editRequiredExperienceToolStripMenuItem
             // 
             this.editRequiredExperienceToolStripMenuItem.Name = "editRequiredExperienceToolStripMenuItem";
-            this.editRequiredExperienceToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
-            this.editRequiredExperienceToolStripMenuItem.Text = "Add Required Experience";
+            this.editRequiredExperienceToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.editRequiredExperienceToolStripMenuItem.Text = "Add Requirement";
             this.editRequiredExperienceToolStripMenuItem.Click += new System.EventHandler(this.addRequiredExperienceToolStripMenuItem1_Click);
             // 
             // editItemToolStripMenuItem1
             // 
             this.editItemToolStripMenuItem1.Name = "editItemToolStripMenuItem1";
-            this.editItemToolStripMenuItem1.Size = new System.Drawing.Size(205, 22);
+            this.editItemToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
             this.editItemToolStripMenuItem1.Text = "Edit Item";
             this.editItemToolStripMenuItem1.Click += new System.EventHandler(this.editRequiredExperienceToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(202, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(164, 6);
             // 
             // removeItemToolStripMenuItem1
             // 
             this.removeItemToolStripMenuItem1.Name = "removeItemToolStripMenuItem1";
-            this.removeItemToolStripMenuItem1.Size = new System.Drawing.Size(205, 22);
+            this.removeItemToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
             this.removeItemToolStripMenuItem1.Text = "Remove Item";
             this.removeItemToolStripMenuItem1.Click += new System.EventHandler(this.removeItemToolStripMenuItem1_Click);
             // 
@@ -1054,10 +1060,6 @@
             this.label6.Size = new System.Drawing.Size(242, 37);
             this.label6.TabIndex = 0;
             this.label6.Text = "Billet Manager";
-            // 
-            // columnHeader14
-            // 
-            this.columnHeader14.Text = "";
             // 
             // BilletEditorForm
             // 

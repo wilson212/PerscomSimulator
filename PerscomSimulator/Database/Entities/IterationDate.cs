@@ -27,5 +27,10 @@ namespace Perscom.Database
         /// </summary>
         [Column, Required]
         public DateTime Date { get; set; }
+
+        public int MonthsDifference(IterationDate date)
+        {
+            return Math.Abs(this.Id - date.Id);
+        }
     }
 }

@@ -230,9 +230,9 @@ namespace Perscom
             EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(BilletExperience)).BuildInstanceForeignKeys = enabled;
-            EntityCache.GetTableMap(typeof(BilletExperienceFilter)).BuildInstanceForeignKeys = enabled;
-            EntityCache.GetTableMap(typeof(BilletExperienceGroup)).BuildInstanceForeignKeys = enabled;
-            EntityCache.GetTableMap(typeof(BilletExperienceSorting)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletSelectionFilter)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletSelectionGroup)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletSelectionSorting)).BuildInstanceForeignKeys = enabled;
         }
 
         #region Panel Border Painting
@@ -382,7 +382,7 @@ namespace Perscom
                 .ToArray();
 
             // Alert the user if any sub units are a higher level
-            if (items.Count() > 0)
+            if (items.Length > 0)
             {
                 ShowErrorMessage($"A sub unit template ({items[0].Name}) has a higher hierarchy level that the current template!");
                 return;
@@ -468,6 +468,10 @@ namespace Perscom
             applyButton.Text = "Apply Changes";
             listView1.Enabled = true;
             listView2.Enabled = true;
+
+            // Refill stuff
+            RefreshBilletCopyMenuItems();
+            RefreshUnitBilletsCopyMenuItems();
         }
 
         #endregion Button Events
@@ -737,9 +741,11 @@ namespace Perscom
         /// </summary>
         private void billetsContextMenu_Opening(object sender, CancelEventArgs e)
         {
-            removeBilletMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
-            editBillitToolStripMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
-            duplicateBilletMenuItem.Enabled = (listView2.SelectedItems.Count > 0);
+            bool enabled = (listView2.SelectedItems.Count > 0);
+            removeBilletMenuItem.Enabled = enabled;
+            editBillitToolStripMenuItem.Enabled = enabled;
+            duplicateBilletMenuItem.Enabled = enabled;
+            importBilletChangesMenuItem.Enabled = enabled;
         }
 
         /// <summary>
@@ -893,6 +899,9 @@ namespace Perscom
             copyBilletFromToolStripMenuItem.DropDownItems.Clear();
             copyBilletFromToolStripMenuItem.Enabled = false;
 
+            importBilletChangesMenuItem.DropDownItems.Clear();
+            importBilletChangesMenuItem.Enabled = false;
+
             using (AppDatabase db = new AppDatabase())
             {
                 // Fetch all Unit Templates from this echelon
@@ -909,28 +918,38 @@ namespace Perscom
                         continue;
 
                     // Add the template as an option
-                    ToolStripMenuItem item = new ToolStripMenuItem(ec.Name);
+                    var item = new ToolStripMenuItem(ec.Name);
+                    var item2 = new ToolStripMenuItem(ec.Name);
 
                     // Add it's billet children!
                     foreach (var b in ec.Billets)
                     {
-                        ToolStripMenuItem subItem = new ToolStripMenuItem(b.Name);
-                        subItem.Tag = b;
-                        subItem.Click += SubItem_Click;
-                        item.DropDownItems.Add(subItem);
+                        var subItem1 = new ToolStripMenuItem(b.Name);
+                        subItem1.Tag = b;
+                        subItem1.Click += CopyBilletSubItem_Click;
+                        item.DropDownItems.Add(subItem1);
+
+                        var subItem2 = new ToolStripMenuItem(b.Name);
+                        subItem2.Tag = b;
+                        subItem2.Click += ImportBilletChangesSubItem_Click;
+                        item2.DropDownItems.Add(subItem2);
                     }
 
                     //item.Click += Item_Click;
                     copyBilletFromToolStripMenuItem.DropDownItems.Add(item);
+                    importBilletChangesMenuItem.DropDownItems.Add(item2);
                 }
             }
 
             // Only enable if we have items
             if (copyBilletFromToolStripMenuItem.DropDownItems.Count > 0)
                 copyBilletFromToolStripMenuItem.Enabled = true;
+
+            if (importBilletChangesMenuItem.DropDownItems.Count > 0)
+                importBilletChangesMenuItem.Enabled = true;
         }
 
-        private void SubItem_Click(object sender, EventArgs e)
+        private void CopyBilletSubItem_Click(object sender, EventArgs e)
         {
             // Grab menu item
             ToolStripItem menuItem = sender as ToolStripItem;
@@ -980,6 +999,67 @@ namespace Perscom
                 // Update table cache
                 ToggleForeignKeys(true);
             }
+        }
+
+        private void ImportBilletChangesSubItem_Click(object sender, EventArgs e)
+        {
+            // Grab menu item
+            ToolStripItem menuItem = sender as ToolStripItem;
+            if (menuItem == null) return;
+
+            // Grab template
+            Billet billet = menuItem.Tag as Billet;
+            if (billet == null) return;
+
+            // Ensure we have a selected item
+            if (listView2.SelectedItems.Count == 0)
+                return;
+
+            // Grab Billet from selected item tag
+            var selectedBillet = listView2.SelectedItems[0].Tag as Billet;
+            if (selectedBillet == null) return;
+
+
+            // As user to verify
+            var res = MessageBox.Show(
+                $"Are you sure you want to Import the billet {billet.Name} into {selectedBillet.Name}?",
+                "Verify", MessageBoxButtons.YesNo, MessageBoxIcon.Warning
+            );
+            if (res != DialogResult.Yes) return;
+
+            try
+            {
+                // Disable menu
+                billetsContextMenu.Enabled = false;
+
+                // Update table cache
+                ToggleForeignKeys(false);
+
+                // Open database and begin transaction
+                using (AppDatabase db = new AppDatabase())
+                using (var trans = db.BeginTransaction())
+                {
+                    DuplicateBillet(db, billet, selectedBillet);
+
+                    // Commit changes
+                    trans.Commit();
+
+                    // Update billet view
+                    FillBilletsListView();
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.ShowException(ex);
+            }
+            finally
+            {
+                // Enable menu
+                billetsContextMenu.Enabled = true;
+
+                // Update table cache
+                ToggleForeignKeys(true);
+            }
 
         }
 
@@ -988,40 +1068,78 @@ namespace Perscom
         /// </summary>
         /// <param name="db"></param>
         /// <param name="billet"></param>
-        private void DuplicateBillet(AppDatabase db, Billet billet)
+        private void DuplicateBillet(AppDatabase db, Billet billet, Billet intoBillet = null)
         {
-            // Create new copy of billet
-            Billet b = new Billet()
+            if (intoBillet == null)
             {
-                BilletCatagoryId = billet.BilletCatagoryId,
-                CanRetireEarly = billet.CanRetireEarly,
-                InverseRequirements = billet.InverseRequirements,
-                MaxRankId = billet.MaxRankId,
-                MaxTourLength = billet.MaxTourLength,
-                MinTourLength = billet.MinTourLength,
-                Name = billet.Name,
-                PreferNonRepeats = billet.PreferNonRepeats,
-                PromotionPoolId = billet.PromotionPoolId,
-                RankId = billet.RankId,
-                Waiverable = billet.Waiverable,
-                Stature = billet.Stature,
-                UnitTypeId = SelectedTemplate.Id,
-                ZIndex = billet.ZIndex,
-                Selection = billet.Selection,
-                CanBePromotedEarly = billet.CanBePromotedEarly,
-                CanLateralEarly = billet.CanLateralEarly,
-                ExperienceLogic = billet.ExperienceLogic
-            };
+                // Create new copy of billet
+                intoBillet = new Billet()
+                {
+                    BilletCatagoryId = billet.BilletCatagoryId,
+                    CanRetireEarly = billet.CanRetireEarly,
+                    InverseRequirements = billet.InverseRequirements,
+                    MaxRankId = billet.MaxRankId,
+                    MaxTourLength = billet.MaxTourLength,
+                    MinTourLength = billet.MinTourLength,
+                    Name = billet.Name,
+                    PromotionPoolId = billet.PromotionPoolId,
+                    RankId = billet.RankId,
+                    Waiverable = billet.Waiverable,
+                    Stature = billet.Stature,
+                    UnitTypeId = SelectedTemplate.Id,
+                    ZIndex = billet.ZIndex,
+                    Selection = billet.Selection,
+                    CanBePromotedEarly = billet.CanBePromotedEarly,
+                    CanLateralEarly = billet.CanLateralEarly,
+                    ExperienceLogic = billet.ExperienceLogic
+                };
 
-            // Add billet to database
-            db.Billets.Add(b);
+                // Add billet to database
+                db.Billets.Add(intoBillet);
+
+                // Add billet to internal list
+                Billets.Add(intoBillet);
+            }
+            else
+            {
+                // Create new copy of billet
+                intoBillet.BilletCatagoryId = billet.BilletCatagoryId;
+                intoBillet.CanRetireEarly = billet.CanRetireEarly;
+                intoBillet.InverseRequirements = billet.InverseRequirements;
+                intoBillet.MaxRankId = billet.MaxRankId;
+                intoBillet.MaxTourLength = billet.MaxTourLength;
+                intoBillet.MinTourLength = billet.MinTourLength;
+                intoBillet.Name = billet.Name;
+                intoBillet.PromotionPoolId = billet.PromotionPoolId;
+                intoBillet.RankId = billet.RankId;
+                intoBillet.Waiverable = billet.Waiverable;
+                intoBillet.Stature = billet.Stature;
+                intoBillet.UnitTypeId = SelectedTemplate.Id;
+                intoBillet.ZIndex = billet.ZIndex;
+                intoBillet.Selection = billet.Selection;
+                intoBillet.CanBePromotedEarly = billet.CanBePromotedEarly;
+                intoBillet.CanLateralEarly = billet.CanLateralEarly;
+                intoBillet.ExperienceLogic = billet.ExperienceLogic;
+
+                // Add billet to database
+                db.Billets.Update(intoBillet);
+
+                // Clear old data
+                db.BilletSpecialtyRequirements.RemoveRange(intoBillet.Requirements);
+                db.BilletSpecialties.RemoveRange(intoBillet.Specialties);
+                db.BilletSpawnSettings.RemoveRange(intoBillet.SpawnSettings);
+                db.BilletExperience.RemoveRange(intoBillet.Experience);
+                db.BilletSelectionFilters.RemoveRange(intoBillet.Filters);
+                db.BilletSelectionGroups.RemoveRange(intoBillet.Grouping);
+                db.BilletSelectionSorting.RemoveRange(intoBillet.Sorting);
+            }
 
             // Add billet requirements
             foreach (var item in billet.Requirements)
             {
                 var req = new BilletSpecialtyRequirement()
                 {
-                    BilletId = b.Id,
+                    BilletId = intoBillet.Id,
                     SpecialtyId = item.SpecialtyId
                 };
                 db.BilletSpecialtyRequirements.Add(req);
@@ -1032,7 +1150,7 @@ namespace Perscom
             {
                 var req = new BilletSpawnSetting()
                 {
-                    Billet = b,
+                    Billet = intoBillet,
                     GeneratorId = item.GeneratorId,
                     SpecialtyId = item.SpecialtyId
                 };
@@ -1044,7 +1162,7 @@ namespace Perscom
             {
                 var spec = new BilletSpecialty()
                 {
-                    Billet = b,
+                    Billet = intoBillet,
                     SpecialtyId = item.SpecialtyId
                 };
                 db.BilletSpecialties.Add(spec);
@@ -1053,33 +1171,33 @@ namespace Perscom
             // Add billet experience
             foreach (var item in billet.Experience)
             {
-                item.Billet = b;
+                item.Billet = intoBillet;
                 db.BilletExperience.Add(item);
             }
 
             // Add billet filters
             foreach (var item in billet.Filters)
             {
-                item.Billet = b;
-                db.BilletExperienceFilters.Add(item);
+                item.Billet = intoBillet;
+                db.BilletSelectionFilters.Add(item);
             }
 
             // Add billet groups
             foreach (var item in billet.Grouping)
             {
-                item.Billet = b;
-                db.BilletExperienceGroups.Add(item);
+                item.Billet = intoBillet;
+                db.BilletSelectionGroups.Add(item);
             }
 
             // Add billet sorting
             foreach (var item in billet.Sorting)
             {
-                item.Billet = b;
-                db.BilletExperienceSorting.Add(item);
+                item.Billet = intoBillet;
+                db.BilletSelectionSorting.Add(item);
             }
 
-            // Add billet to internal list
-            Billets.Add(b);
+            // Call refresh
+            //db.Billets.Refresh(intoBillet);
         }
     }
 }

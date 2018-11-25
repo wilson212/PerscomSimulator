@@ -114,14 +114,8 @@ namespace Perscom.Database
         /// Indicates whether the soldier holding this <see cref="Billet"/> is limited to
         /// the <see cref="MaxTourLength"/>, or can extend past this
         /// </summary>
-        [Column("Repeatable"), Required, Default(1)]
+        [Column, Required, Default(1)]
         public bool Waiverable { get; set; } = true;
-
-        /// <summary>
-        /// DEPRECIATED
-        /// </summary>
-        [Column, Required, Default(0)]
-        public bool PreferNonRepeats { get; set; }
 
         /// <summary>
         /// Gets or sets the selection process the <see cref="Simulator"/>
@@ -150,12 +144,6 @@ namespace Perscom.Database
         /// </summary>
         [Column, Required, Default(0)]
         public int ZIndex { get; set; } = 0;
-
-        /// <summary>
-        /// DEPRECIATED
-        /// </summary>
-        [Column, Required, Default(0)]
-        public bool LateralOnly { get; set; }
 
         #endregion
 
@@ -347,31 +335,31 @@ namespace Perscom.Database
         public virtual IEnumerable<BilletExperience> Experience { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="BilletExperienceSorting"/> entities that reference this 
+        /// Gets a list of <see cref="BilletSelectionSorting"/> entities that reference this 
         /// <see cref="Billet"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<BilletExperienceSorting> Sorting { get; set; }
+        public virtual IEnumerable<BilletSelectionSorting> Sorting { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="BilletExperienceGroup"/> entities that reference this 
+        /// Gets a list of <see cref="BilletSelectionGroup"/> entities that reference this 
         /// <see cref="Billet"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<BilletExperienceGroup> Grouping { get; set; }
+        public virtual IEnumerable<BilletSelectionGroup> Grouping { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="BilletExperienceFilter"/> entities that reference this 
+        /// Gets a list of <see cref="BilletSelectionFilter"/> entities that reference this 
         /// <see cref="Billet"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<BilletExperienceFilter> Filters { get; set; }
+        public virtual IEnumerable<BilletSelectionFilter> Filters { get; set; }
 
         #endregion
 

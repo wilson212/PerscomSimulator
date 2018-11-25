@@ -42,22 +42,23 @@ namespace Perscom
 
         public static IEnumerable<SoldierGroupResult> GroupSoldiersBy(
             this IEnumerable<SoldierWrapper> elements, 
-            List<BilletExperienceGroup> groupings)
+            IEnumerable<AbstractFilter> groupings,
+            IterationDate date)
         {
-            if (groupings.Count > 0)
+            if (groupings.Count() > 0)
             {
                 var selector = groupings.First();
 
                 //reduce the list recursively until zero
                 var nextSelectors = groupings.Skip(1).ToList();
                 return
-                    elements.GroupBy(x => x.EvaluateLookUpReverse(selector)).Select(
+                    elements.GroupBy(x => x.EvaluateLookUpReverse(selector, date)).Select(
                         g => new SoldierGroupResult
                         {
                             Key = g.Key,
                             Count = g.Count(),
                             Soldiers = g,
-                            SubGroups = g.GroupSoldiersBy(nextSelectors)
+                            SubGroups = g.GroupSoldiersBy(nextSelectors, date)
                         });
             }
 
@@ -67,7 +68,8 @@ namespace Perscom
         public static IEnumerable<SoldierGroupResult> GroupSoldiersBy(
             this IEnumerable<SoldierWrapper> elements,
             Func<SoldierWrapper, int> selector,
-            List<BilletExperienceGroup> groupings)
+            IEnumerable<BilletSelectionGroup> groupings,
+            IterationDate date)
         {
             if (groupings.Count() > 0)
             {
@@ -80,11 +82,11 @@ namespace Perscom
                             Key = g.Key,
                             Count = g.Count(),
                             Soldiers = g,
-                            SubGroups = g.GroupSoldiersBy(nextSelectors)
+                            SubGroups = g.GroupSoldiersBy(nextSelectors, date)
                         });
             }
 
-            return null;
+            return GroupSoldiersBy(elements, selector);
         }
 
         public static IEnumerable<SoldierGroupResult> GroupSoldiersBy(
@@ -126,7 +128,8 @@ namespace Perscom
 
         public static IOrderedEnumerable<SoldierWrapper> OrderSoldiersBy(
             this IEnumerable<SoldierWrapper> elements,
-            List<BilletExperienceSorting> sorting)
+            IEnumerable<AbstractSort> sorting,
+            IterationDate date)
         {
             if (sorting.Count() > 0)
             {
@@ -137,67 +140,10 @@ namespace Perscom
 
                 // Do initial sorting
                 var oList = (selector.Direction == Sorting.Ascending)
-                   ? elements.OrderBy(x => x.GetExperienceValue(selector.ExperienceId))
-                   : elements.OrderByDescending(x => x.GetExperienceValue(selector.ExperienceId));
+                   ? elements.OrderBy(x => x.GetValue(selector.Selector, selector.SelectorId, date))
+                   : elements.OrderByDescending(x => x.GetValue(selector.Selector, selector.SelectorId, date));
 
-                // Apply additional sorting
-                foreach (var sort in nextSelectors)
-                {
-                    oList = oList.ThenOrderSoldiersBy(sort);
-                }
-
-                return oList;
-            }
-
-            return elements.OrderBy(x => x);
-        }
-
-        public static IOrderedEnumerable<SoldierWrapper> OrderSoldiersBy(
-            this IEnumerable<SoldierWrapper> elements,
-            List<SoldierPoolSorting> sorting,
-            IterationDate date)
-        {
-            if (sorting.Count() > 0)
-            {
-                var selector = sorting.First();
-
-                // reduce the list recursively until zero
-                var nextSelectors = sorting.Skip(1);
-
-                // Do initial sorting
-                IOrderedEnumerable<SoldierWrapper> oList = null;
-                switch(selector.SortBy)
-                {
-                    default:
-                    case SoldierSorting.TimeInGrade:
-                        oList = (selector.Direction == Sorting.Ascending)
-                            ? elements.OrderBy(x => x.GetTimeInGrade(date))
-                            : elements.OrderByDescending(x => x.GetTimeInGrade(date));
-                        break;
-                    case SoldierSorting.TimeInService:
-                        oList = (selector.Direction == Sorting.Ascending)
-                            ? elements.OrderBy(x => x.GetTimeInService(date))
-                            : elements.OrderByDescending(x => x.GetTimeInService(date));
-                        break;
-                    case SoldierSorting.TimeInPosition:
-                        oList = (selector.Direction == Sorting.Ascending)
-                            ? elements.OrderBy(x => x.GetTimeInBillet(date))
-                            : elements.OrderByDescending(x => x.GetTimeInBillet(date));
-                        break;
-                    case SoldierSorting.TimeToRetirement:
-                        oList = (selector.Direction == Sorting.Ascending)
-                            ? elements.OrderBy(x => x.GetTimeUntilRetirement(date))
-                            : elements.OrderByDescending(x => x.GetTimeUntilRetirement(date));
-                        break;
-                }
-
-                // Apply additional sorting
-                foreach (var sort in nextSelectors)
-                {
-                    oList = oList.ThenOrderSoldiersBy(sort, date);
-                }
-
-                return oList;
+                return oList.ThenOrderSoldiersBy(nextSelectors, date);
             }
 
             return elements.OrderBy(x => x);
@@ -205,64 +151,7 @@ namespace Perscom
 
         public static IOrderedEnumerable<SoldierWrapper> ThenOrderSoldiersBy(
             this IOrderedEnumerable<SoldierWrapper> elements,
-            List<BilletExperienceSorting> selectors)
-        {
-            var soldiers = elements;
-            foreach (var ordering in selectors)
-            {
-                soldiers = soldiers.ThenOrderSoldiersBy(ordering);
-            }
-
-            return soldiers;
-        }
-
-        public static IOrderedEnumerable<SoldierWrapper> ThenOrderSoldiersBy(
-            this IOrderedEnumerable<SoldierWrapper> elements,
-            BilletExperienceSorting selector)
-        {
-            return (selector.Direction == Sorting.Ascending)
-                    ? elements.ThenBy(x => x.GetExperienceValue(selector.ExperienceId))
-                    : elements.ThenByDescending(x => x.GetExperienceValue(selector.ExperienceId));
-        }
-
-        /// <summary>
-        /// This method is used to sort soldiers using the given SoldierSorting and direction
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="sortBy"></param>
-        /// <param name="direction"></param>
-        /// <returns></returns>
-        public static IOrderedEnumerable<SoldierWrapper> ThenOrderSoldiersBy(
-            this IOrderedEnumerable<SoldierWrapper> list,
-            SoldierPoolSorting selector,
-            IterationDate date)
-        {
-            switch (selector.SortBy)
-            {
-                default:
-                    return list;
-                case SoldierSorting.TimeInGrade:
-                    return (selector.Direction == Sorting.Ascending)
-                        ? list.ThenBy(x => x.GetTimeInGrade(date))
-                        : list.ThenByDescending(x => x.GetTimeInGrade(date));
-                case SoldierSorting.TimeInService:
-                    return (selector.Direction == Sorting.Ascending)
-                        ? list.ThenBy(x => x.GetTimeInService(date))
-                        : list.ThenByDescending(x => x.GetTimeInService(date));
-                case SoldierSorting.TimeInPosition:
-                    return (selector.Direction == Sorting.Ascending)
-                        ? list.ThenBy(x => x.GetTimeInBillet(date))
-                        : list.ThenByDescending(x => x.GetTimeInBillet(date));
-                case SoldierSorting.TimeToRetirement:
-                    return (selector.Direction == Sorting.Ascending)
-                        ? list.ThenBy(x => x.GetTimeUntilRetirement(date))
-                        : list.ThenByDescending(x => x.GetTimeUntilRetirement(date));
-            }
-        }
-
-        public static IOrderedEnumerable<SoldierWrapper> ThenOrderSoldiersBy(
-            this IOrderedEnumerable<SoldierWrapper> elements,
-            List<SoldierPoolSorting> selectors,
+            IEnumerable<AbstractSort> selectors,
             IterationDate date)
         {
             var soldiers = elements;
@@ -274,52 +163,14 @@ namespace Perscom
             return soldiers;
         }
 
-        /// <summary>
-        /// This method is used to filter soldiers using the given SoldierPoolFilters
-        /// </summary>
-        /// <param name="filters"></param>
-        /// <param name="logicOperator"></param>
-        /// <param name="date"></param>
-        /// <returns></returns>
-        public static IEnumerable<SoldierWrapper> FilterSoldierList(
-            this IEnumerable<SoldierWrapper> list,
-            List<BilletExperienceFilter> filters,
-            LogicOperator logicOperator)
+        public static IOrderedEnumerable<SoldierWrapper> ThenOrderSoldiersBy(
+            this IOrderedEnumerable<SoldierWrapper> elements,
+            AbstractSort selector,
+            IterationDate date)
         {
-            IEnumerable<SoldierWrapper> soldiers = list;
-            if (logicOperator == LogicOperator.And)
-            {
-                foreach (var filter in filters)
-                {
-                    soldiers = soldiers.FilterSoldierList(filter).ToList();
-                }
-            }
-            else
-            {
-                HashSet<SoldierWrapper> people = new HashSet<SoldierWrapper>();
-                foreach (var filter in filters)
-                {
-                    people.UnionWith(people.FilterSoldierList(filter));
-                }
-
-                soldiers = people.ToList();
-            }
-
-            return soldiers;
-        }
-
-        /// <summary>
-        /// This method is used to filter soldiers using the given SoldierPoolFilter, operator and value
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="filter"></param>
-        /// <param name="date"></param>
-        /// <returns></returns>
-        public static IEnumerable<SoldierWrapper> FilterSoldierList(
-            this IEnumerable<SoldierWrapper> list,
-            BilletExperienceFilter filter)
-        {
-            return list.Where(x => x.MeetsExperienceRequirement(filter));
+            return (selector.Direction == Sorting.Ascending)
+                    ? elements.ThenBy(x => x.GetValue(selector.Selector, selector.SelectorId, date))
+                    : elements.ThenByDescending(x => x.GetValue(selector.Selector, selector.SelectorId, date));
         }
 
         /// <summary>
@@ -331,7 +182,7 @@ namespace Perscom
         /// <returns></returns>
         public static IEnumerable<SoldierWrapper> FilterSoldierList(
             this IEnumerable<SoldierWrapper> list,
-            List<SoldierPoolFilter> filters,
+            IEnumerable<AbstractFilter> filters,
             LogicOperator logicOperator,
             IterationDate date)
         {
@@ -366,29 +217,10 @@ namespace Perscom
         /// <returns></returns>
         public static IEnumerable<SoldierWrapper> FilterSoldierList(
             this IEnumerable<SoldierWrapper> list,
-            SoldierPoolFilter filter,
+            AbstractFilter filter,
             IterationDate date)
         {
-            switch (filter.FilterBy)
-            {
-                default:
-                case SoldierFilter.TimeInPosition:
-                    return list.Where(
-                        x => Condition.EvaluateExpression(x.GetTimeInBillet(date), filter.Operator, filter.Value)
-                    );
-                case SoldierFilter.TimeInGrade:
-                    return list.Where(
-                        x => Condition.EvaluateExpression(x.GetTimeInGrade(date), filter.Operator, filter.Value)
-                    );
-                case SoldierFilter.TimeInService:
-                    return list.Where(
-                        x => Condition.EvaluateExpression(x.GetTimeInService(date), filter.Operator, filter.Value)
-                    );
-                case SoldierFilter.TimeToRetirement:
-                    return list.Where(
-                        x => Condition.EvaluateExpression(x.GetTimeUntilRetirement(date), filter.Operator, filter.Value)
-                    );
-            }
+            return list.Where(x => x.EvaluateFilter(filter, date));
         }
     }
 

@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RankEditorForm));
             this.headerPanel = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.ShadowLabel();
             this.sidePanel = new System.Windows.Forms.Panel();
             this.deleteButton = new System.Windows.Forms.Button();
             this.newButton = new System.Windows.Forms.Button();
@@ -58,6 +57,7 @@
             this.rankTypeSelect = new System.Windows.Forms.ComboBox();
             this.imageSelect = new System.Windows.Forms.ComboBox();
             this.rankPicture = new System.Windows.Forms.PictureBox();
+            this.label6 = new System.Windows.Forms.ShadowLabel();
             this.headerPanel.SuspendLayout();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
@@ -82,20 +82,6 @@
             this.headerPanel.Size = new System.Drawing.Size(797, 75);
             this.headerPanel.TabIndex = 2;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
-            // 
-            // label6
-            // 
-            this.label6.BackColor = System.Drawing.Color.Transparent;
-            this.label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.ForeColor = System.Drawing.SystemColors.Control;
-            this.label6.Location = new System.Drawing.Point(26, 22);
-            this.label6.Name = "label6";
-            this.label6.ShadowDirection = 90;
-            this.label6.ShadowOpacity = 225;
-            this.label6.ShadowSoftness = 3F;
-            this.label6.Size = new System.Drawing.Size(242, 37);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Rank Settings";
             // 
             // sidePanel
             // 
@@ -182,12 +168,13 @@
             this.precedenceBox.Location = new System.Drawing.Point(211, 96);
             this.precedenceBox.Name = "precedenceBox";
             this.precedenceBox.Size = new System.Drawing.Size(95, 20);
-            this.precedenceBox.TabIndex = 28;
+            this.precedenceBox.TabIndex = 6;
             this.precedenceBox.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
+            this.precedenceBox.Enter += new System.EventHandler(this.precedenceBox_Enter);
             // 
             // label9
             // 
@@ -215,12 +202,13 @@
             0});
             this.promotableBox.Name = "promotableBox";
             this.promotableBox.Size = new System.Drawing.Size(95, 20);
-            this.promotableBox.TabIndex = 8;
+            this.promotableBox.TabIndex = 9;
             this.promotableBox.Value = new decimal(new int[] {
             12,
             0,
             0,
             0});
+            this.promotableBox.Enter += new System.EventHandler(this.promotableBox_Enter);
             // 
             // label5
             // 
@@ -247,6 +235,7 @@
             0,
             0,
             0});
+            this.rankGradeBox.Enter += new System.EventHandler(this.rankGradeBox_Enter);
             // 
             // label4
             // 
@@ -263,7 +252,7 @@
             this.autoPromoteCheckBox.Location = new System.Drawing.Point(338, 205);
             this.autoPromoteCheckBox.Name = "autoPromoteCheckBox";
             this.autoPromoteCheckBox.Size = new System.Drawing.Size(130, 17);
-            this.autoPromoteCheckBox.TabIndex = 9;
+            this.autoPromoteCheckBox.TabIndex = 10;
             this.autoPromoteCheckBox.Text = "Automatically Promote";
             this.autoPromoteCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -273,13 +262,15 @@
             this.rankNameBox.Name = "rankNameBox";
             this.rankNameBox.Size = new System.Drawing.Size(196, 20);
             this.rankNameBox.TabIndex = 3;
+            this.rankNameBox.Enter += new System.EventHandler(this.rankNameBox_Enter);
             // 
             // maxTigBox
             // 
             this.maxTigBox.Location = new System.Drawing.Point(211, 168);
             this.maxTigBox.Name = "maxTigBox";
             this.maxTigBox.Size = new System.Drawing.Size(95, 20);
-            this.maxTigBox.TabIndex = 7;
+            this.maxTigBox.TabIndex = 8;
+            this.maxTigBox.Enter += new System.EventHandler(this.maxTigBox_Enter);
             // 
             // label3
             // 
@@ -295,12 +286,13 @@
             this.minTigBox.Location = new System.Drawing.Point(211, 132);
             this.minTigBox.Name = "minTigBox";
             this.minTigBox.Size = new System.Drawing.Size(95, 20);
-            this.minTigBox.TabIndex = 6;
+            this.minTigBox.TabIndex = 7;
             this.minTigBox.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
+            this.minTigBox.Enter += new System.EventHandler(this.minTigBox_Enter);
             // 
             // label2
             // 
@@ -316,7 +308,7 @@
             this.applyButton.Location = new System.Drawing.Point(173, 250);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(150, 30);
-            this.applyButton.TabIndex = 10;
+            this.applyButton.TabIndex = 11;
             this.applyButton.Text = "Apply";
             this.applyButton.UseVisualStyleBackColor = true;
             this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
@@ -389,6 +381,20 @@
             this.rankPicture.Size = new System.Drawing.Size(64, 64);
             this.rankPicture.TabIndex = 14;
             this.rankPicture.TabStop = false;
+            // 
+            // label6
+            // 
+            this.label6.BackColor = System.Drawing.Color.Transparent;
+            this.label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.ForeColor = System.Drawing.SystemColors.Control;
+            this.label6.Location = new System.Drawing.Point(26, 22);
+            this.label6.Name = "label6";
+            this.label6.ShadowDirection = 90;
+            this.label6.ShadowOpacity = 225;
+            this.label6.ShadowSoftness = 3F;
+            this.label6.Size = new System.Drawing.Size(242, 37);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Rank Settings";
             // 
             // RankEditorForm
             // 

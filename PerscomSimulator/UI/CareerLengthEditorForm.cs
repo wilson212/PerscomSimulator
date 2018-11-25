@@ -1,7 +1,6 @@
-﻿using System;
-using System.Drawing;
+﻿using Perscom.Database;
+using System;
 using System.Windows.Forms;
-using Perscom.Database;
 
 namespace Perscom
 {
@@ -18,7 +17,7 @@ namespace Perscom
             // Fill default values
             probInput.SetValueInRange(rate.Probability);
             minInput.SetValueInRange(rate.MinCareerLength);
-            maxInput.SetValueInRange(rate.MaxCareerLength);
+            rangeInput.SetValueInRange(rate.MaxCareerLength - rate.MinCareerLength);
         }
 
         private void applyButton_Click(object sender, EventArgs e)
@@ -28,7 +27,7 @@ namespace Perscom
             {
                 Probability = (int)probInput.Value,
                 MinCareerLength = (int)minInput.Value,
-                MaxCareerLength = (int)maxInput.Value
+                MaxCareerLength = (int)(minInput.Value + rangeInput.Value)
             };
 
             // Just cancel and close if no changes were made
@@ -39,10 +38,10 @@ namespace Perscom
                 return;
             }
 
-            // Fill Rank Details
+            // Fill Details
             SelectedRate.Probability = (int)probInput.Value;
             SelectedRate.MinCareerLength = (int)minInput.Value;
-            SelectedRate.MaxCareerLength = (int)maxInput.Value;
+            SelectedRate.MaxCareerLength = (int)(minInput.Value + rangeInput.Value);
 
             // Return OK
             this.DialogResult = DialogResult.OK;
@@ -54,6 +53,12 @@ namespace Perscom
         private void headerPanel_Paint(object sender, PaintEventArgs e)
         {
             FormStyling.StyleFormHeader(headerPanel, e);
+            base.OnPaint(e);
+        }
+
+        private void bottomPanel_Paint(object sender, PaintEventArgs e)
+        {
+            FormStyling.StyleFormFooter(bottomPanel, e);
             base.OnPaint(e);
         }
 
@@ -69,9 +74,20 @@ namespace Perscom
             probInput.Select(0, probInput.Text.Length);
         }
 
-        private void maxInput_Enter(object sender, EventArgs e)
+        private void rangeInput_Enter(object sender, EventArgs e)
         {
-            maxInput.Select(0, maxInput.Text.Length);
+            rangeInput.Select(0, rangeInput.Text.Length);
+        }
+
+        private void minInput_ValueChanged(object sender, EventArgs e)
+        {
+            int total = (int)(minInput.Value + rangeInput.Value);
+            labelMaxLength.Text = $"{total} months";
+        }
+
+        private void maxInput_ValueChanged(object sender, EventArgs e)
+        {
+            minInput_ValueChanged(sender, e);
         }
     }
 }

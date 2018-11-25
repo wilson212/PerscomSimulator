@@ -1007,7 +1007,7 @@ namespace Perscom
                         item.SubItems.Add(rank.Name);
                         item.SubItems.Add(pos["Name"].ToString());
                         item.ImageKey = String.Concat(Ranks[rank.Id].Image, "_empty");
-                        item.Tag = 0;
+                        item.Tag = new PositionResult() { SoldierId = 0, PositionId = posId };
 
                         // Add to list next
                         Groups[gId].Items.Add(item);
@@ -1025,7 +1025,11 @@ namespace Perscom
                         item.SubItems.Add(rank.Name);
                         item.SubItems.Add(pos["Name"].ToString());
                         item.ImageKey = Ranks[rank.Id].Image;
-                        item.Tag = int.Parse(row["SoldierId"].ToString());
+                        item.Tag = new PositionResult()
+                        {
+                            SoldierId = int.Parse(row["SoldierId"].ToString()),
+                            PositionId = posId
+                        };
 
                         // Add to list next
                         Groups[gId].Items.Add(item);
@@ -1046,8 +1050,8 @@ namespace Perscom
 
             // Grab Billet from selected item tag
             if (listView2.SelectedItems[0].Tag == null) return;
-            var soldierId = (int)listView2.SelectedItems[0].Tag;
-            if (soldierId == 0) return;
+            var pos = (PositionResult)listView2.SelectedItems[0].Tag;
+            if (pos == null || pos.SoldierId == 0) return;
 
             // Show Task Form!
             TaskForm.Show(this, "Loading", "Loading soldier statistics... Please Wait", false);
@@ -1055,7 +1059,7 @@ namespace Perscom
             await Task.Run(() =>
             {
                 // Fetch Soldier
-                var query = "SELECT * FROM `Soldier` WHERE `Id`=" + soldierId;
+                var query = "SELECT * FROM `Soldier` WHERE `Id`=" + pos.SoldierId;
                 var s = Database.Query<Soldier>(query).FirstOrDefault();
                 if (s == null)
                 {
@@ -1103,8 +1107,8 @@ namespace Perscom
 
             // Grab Billet from selected item tag
             if (listView2.SelectedItems[0].Tag == null) return;
-            var soldierId = (int)listView2.SelectedItems[0].Tag;
-            if (soldierId == 0) return;
+            var pos = (PositionResult)listView2.SelectedItems[0].Tag;
+            if (pos ==null) return;
 
             // Show Task Form!
             TaskForm.Show(this, "Loading", "Loading position statistics... Please Wait", false);
@@ -1113,12 +1117,8 @@ namespace Perscom
             {
                 try
                 {
-                    // Fetch Position id
-                    var query = "SELECT `PositionId` FROM `Assignment` WHERE `SoldierId`=" + soldierId;
-                    var posId = Database.ExecuteScalar<int>(query);
-
                     // Create Wrapper
-                    using (var form = new PositionStatsForm(Database, posId, CurrentIterationDate))
+                    using (var form = new PositionStatsForm(Database, pos.PositionId, CurrentIterationDate))
                     {
                         TaskForm.CloseForm();
 
@@ -1164,6 +1164,13 @@ namespace Perscom
 
                 return pageOffsets;
             }
+        }
+
+        protected class PositionResult
+        {
+            public int SoldierId { get; set; }
+
+            public int PositionId { get; set; }
         }
     }
 }

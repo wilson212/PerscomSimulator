@@ -322,6 +322,36 @@ namespace Perscom
             // Reset form
             newButton_Click(sender, e);
         }
+
+        private void rankGradeBox_Enter(object sender, EventArgs e)
+        {
+            rankGradeBox.Select(0, rankGradeBox.Text.Length);
+        }
+
+        private void precedenceBox_Enter(object sender, EventArgs e)
+        {
+            precedenceBox.Select(0, precedenceBox.Text.Length);
+        }
+
+        private void minTigBox_Enter(object sender, EventArgs e)
+        {
+            minTigBox.Select(0, minTigBox.Text.Length);
+        }
+
+        private void maxTigBox_Enter(object sender, EventArgs e)
+        {
+            maxTigBox.Select(0, maxTigBox.Text.Length);
+        }
+
+        private void promotableBox_Enter(object sender, EventArgs e)
+        {
+            promotableBox.Select(0, promotableBox.Text.Length);
+        }
+
+        private void rankNameBox_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 
     #endregion

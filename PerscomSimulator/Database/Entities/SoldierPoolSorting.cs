@@ -1,13 +1,11 @@
 ﻿using CrossLite;
 using CrossLite.CodeFirst;
-using CrossLite.QueryBuilder;
 using System;
 
 namespace Perscom.Database
 {
     [Table]
-    [CompositeUnique(nameof(SoldierGeneratorPoolId), nameof(Precedence))]
-    public class SoldierPoolSorting : IEquatable<SoldierPoolSorting>
+    public class SoldierPoolSorting : AbstractSort, IEquatable<SoldierPoolSorting>
     {
         #region Columns
 
@@ -16,24 +14,6 @@ namespace Perscom.Database
         /// </summary>
         [Column, PrimaryKey]
         public int SoldierGeneratorPoolId { get; protected set; }
-
-        /// <summary>
-        /// Gets or Sets the <see cref="SoldierGenerator.Id"/> that this entity references
-        /// </summary>
-        [Column, PrimaryKey]
-        public SoldierSorting SortBy { get; set; }
-
-        /// <summary>
-        /// Indicates the order or priority this sorting is applied
-        /// </summary>
-        [Column, Required]
-        public int Precedence { get; set; }
-
-        /// <summary>
-        /// The sorting direction
-        /// </summary>
-        [Column, Required]
-        public Sorting Direction { get; set; }
 
         #endregion
 
@@ -74,13 +54,17 @@ namespace Perscom.Database
 
         /// <summary>
         /// Compares a <see cref="SoldierPoolSorting"/> with this one, and returns whether
-        /// or not the RankId and GeneratorId's match
+        /// the identifying properties match
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
         public bool IsDuplicateOf(SoldierPoolSorting other)
         {
-            return (SoldierGeneratorPoolId == other.SoldierGeneratorPoolId && SortBy == other.SortBy);
+            return (
+                Selector == other.Selector
+                && SelectorId == other.SelectorId
+                && Direction == other.Direction
+            );
         }
 
         public bool Equals(SoldierPoolSorting other)

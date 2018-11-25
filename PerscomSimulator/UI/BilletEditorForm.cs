@@ -22,11 +22,11 @@ namespace Perscom
 
         protected List<BilletExperience> ExperienceGiven { get; set; } = new List<BilletExperience>();
 
-        protected List<BilletExperienceGroup> ExperienceGrouping { get; set; } = new List<BilletExperienceGroup>();
+        protected List<BilletSelectionGroup> SelectionGrouping { get; set; } = new List<BilletSelectionGroup>();
 
-        protected List<BilletExperienceSorting> ExperienceSorting { get; set; } = new List<BilletExperienceSorting>();
+        protected List<BilletSelectionSorting> SelectionSorting { get; set; } = new List<BilletSelectionSorting>();
 
-        protected List<BilletExperienceFilter> ExperienceFilters { get; set; } = new List<BilletExperienceFilter>();
+        protected List<BilletSelectionFilter> SelectionFilters { get; set; } = new List<BilletSelectionFilter>();
 
         protected Dictionary<int, Experience> Experience { get; set; }
 
@@ -131,9 +131,9 @@ namespace Perscom
 
                 // Experience
                 ExperienceGiven.AddRange(billet.Experience);
-                ExperienceFilters.AddRange(billet.Filters.OrderBy(x => x.Precedence));
-                ExperienceSorting.AddRange(billet.Sorting.OrderBy(x => x.Precedence));
-                ExperienceGrouping.AddRange(billet.Grouping.OrderBy(x => x.Precedence));
+                SelectionFilters.AddRange(billet.Filters.OrderBy(x => x.Precedence));
+                SelectionSorting.AddRange(billet.Sorting.OrderBy(x => x.Precedence));
+                SelectionGrouping.AddRange(billet.Grouping.OrderBy(x => x.Precedence));
                 FillExperienceListView();
                 FillSortingListView();
                 FillGroupingListView();
@@ -152,6 +152,22 @@ namespace Perscom
             }
         }
 
+        protected string GetNameFrom(ClauseLeftSelector selector, int id)
+        {
+            switch (selector)
+            {
+                default:
+                case ClauseLeftSelector.SoldierValue:
+                    return $"Soldier.{((SoldierFunction)id)}";
+                case ClauseLeftSelector.SoldierPosition:
+                    return $"Position.{((PositionFunction)id)}";
+                case ClauseLeftSelector.SoldierExperience:
+                    // Check for new experience items added!
+                    CheckExperience(id);
+                    return $"Experience.{Experience[id]}";
+            }
+        }
+
         private void FillFiltersListView()
         {
             // Reset listview
@@ -161,23 +177,20 @@ namespace Perscom
             filterListView.BeginUpdate();
 
             // Do we even have items to show?
-            if (ExperienceFilters.Count > 0)
+            if (SelectionFilters.Count > 0)
             {
                 // Order them
                 int i = 0;
 
                 // Add each item
-                foreach (var thing in ExperienceFilters)
+                foreach (var thing in SelectionFilters)
                 {
-                    // Check for new items added!
-                    CheckExperience(thing.ExperienceId);
-
                     // Add item to list
                     //var req = (andRadioButton.Checked) ? "And: " : "Or: ";
                     //var text = (i > 0) ? req : "Where:";
-                    var item = new ListViewItem(Experience[thing.ExperienceId].ToString());
+                    var item = new ListViewItem(GetNameFrom(thing.Selector, thing.SelectorId));
                     item.SubItems.Add(thing.Operator.ToString());
-                    item.SubItems.Add(thing.Value.ToString());
+                    item.SubItems.Add(thing.RightValue.ToString());
                     item.Tag = thing;
                     filterListView.Items.Add(item);
                     i++;
@@ -197,21 +210,22 @@ namespace Perscom
             sortingListView.BeginUpdate();
 
             // Do we even have items to show?
-            if (ExperienceSorting.Count > 0)
+            if (SelectionSorting.Count > 0)
             {
                 // Order them
                 int i = 0;
 
                 // Add each item
-                foreach (var thing in ExperienceSorting)
+                foreach (var thing in SelectionSorting)
                 {
-                    // Check for new items added!
-                    CheckExperience(thing.ExperienceId);
+                    // Check for new experience items added!
+                    if (thing.Selector == ClauseLeftSelector.SoldierExperience)
+                        CheckExperience(thing.SelectorId);
 
                     // Add item to list
                     var text = (i > 0) ? "Then By:" : "Order By:";
                     var item = new ListViewItem(text);
-                    item.SubItems.Add(Experience[thing.ExperienceId].ToString());
+                    item.SubItems.Add(GetNameFrom(thing.Selector, thing.SelectorId));
                     item.SubItems.Add(thing.Direction.ToString());
                     item.Tag = thing;
                     sortingListView.Items.Add(item);
@@ -232,23 +246,24 @@ namespace Perscom
             groupingListView.BeginUpdate();
 
             // Do we even have items to show?
-            if (ExperienceGrouping.Count > 0)
+            if (SelectionGrouping.Count > 0)
             {
                 // Order them
                 int i = 0;
 
                 // Add each item
-                foreach (var thing in ExperienceGrouping)
+                foreach (var thing in SelectionGrouping)
                 {
-                    // Check for new items added!
-                    CheckExperience(thing.ExperienceId);
+                    // Check for new experience items added!
+                    if (thing.Selector == ClauseLeftSelector.SoldierExperience)
+                        CheckExperience(thing.SelectorId);
 
                     // Add item to list
                     var text = (i > 0) ? "Then By:" : "Group By:";
                     var item = new ListViewItem(text);
-                    item.SubItems.Add(Experience[thing.ExperienceId].ToString());
+                    item.SubItems.Add(GetNameFrom(thing.Selector, thing.SelectorId));
                     item.SubItems.Add(thing.Operator.ToString());
-                    item.SubItems.Add(thing.Value.ToString());
+                    item.SubItems.Add(thing.RightValue.ToString());
                     item.Tag = thing;
                     groupingListView.Items.Add(item);
                     i++;
@@ -351,6 +366,19 @@ namespace Perscom
         private bool CreatesNewSoldiers()
         {
             var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
+            if (selected == BilletSelection.CustomGenerator)
+            {
+                // Fetch spawn Generator
+                SoldierGenerator gen = (SoldierGenerator)spawnGenSelect.SelectedItem;
+                return gen.CreatesNewSoldiers;
+            }
+
+            return false;
+        }
+
+        private bool UsesCustomSpawnGenerator()
+        {
+            var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
             return (selected == BilletSelection.CustomGenerator);
         }
 
@@ -432,11 +460,10 @@ namespace Perscom
 
         private void soldierSpawnSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
-            if (CreatesNewSoldiers())
+            if (UsesCustomSpawnGenerator())
             {
                 // Billet must change MOS if its an entry level billet
-                if (!specialtyCheckBox.Checked)
+                if (!specialtyCheckBox.Checked && CreatesNewSoldiers())
                     specialtyCheckBox.Checked = true;
 
                 spawnGenSelect.Enabled = true;
@@ -444,6 +471,16 @@ namespace Perscom
             else
             {
                 spawnGenSelect.Enabled = false;
+            }
+        }
+
+        private void spawnGenSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (UsesCustomSpawnGenerator())
+            {
+                // Billet must change MOS if its an entry level billet
+                if (!specialtyCheckBox.Checked && CreatesNewSoldiers())
+                    specialtyCheckBox.Checked = true;
             }
         }
 
@@ -538,10 +575,10 @@ namespace Perscom
                     }
 
                     // Apply Spawn Settings
-                    if (createsNewSoldiers)
+                    if (UsesCustomSpawnGenerator())
                     {
                         // Fill spawn settings values
-                        var current = Billet.SpawnSettings.FirstOrDefault() ?? new BilletSpawnSetting();
+                        var current = Billet.SpawnSettings?.FirstOrDefault() ?? new BilletSpawnSetting();
                         current.Billet = Billet;
                         current.GeneratorId = ((SoldierGenerator)spawnGenSelect.SelectedItem).Id;
                         current.SpecialtyId = ((Specialty)specialtySelect.SelectedItem).Id;
@@ -609,16 +646,16 @@ namespace Perscom
                     {
                         // Remove All
                         query = new DeleteQueryBuilder(db);
-                        query.From(nameof(BilletExperienceFilter))
+                        query.From(nameof(BilletSelectionFilter))
                             .Where("BilletId", Comparison.Equals, Billet.Id);
                         query.Execute();
 
                         // Re-add what we have
-                        foreach (var item in ExperienceFilters)
+                        foreach (var item in SelectionFilters)
                         {
                             item.Billet = Billet;
                             item.Precedence = i;
-                            db.BilletExperienceFilters.Add(item);
+                            db.BilletSelectionFilters.Add(item);
                             i++;
                         }
                     }
@@ -631,17 +668,17 @@ namespace Perscom
                     {
                         // Remove All
                         query = new DeleteQueryBuilder(db);
-                        query.From(nameof(BilletExperienceGroup))
+                        query.From(nameof(BilletSelectionGroup))
                             .Where("BilletId", Comparison.Equals, Billet.Id);
                         query.Execute();
 
                         // Re-add what we have
                         i = 1;
-                        foreach (var item in ExperienceGrouping)
+                        foreach (var item in SelectionGrouping)
                         {
                             item.Billet = Billet;
                             item.Precedence = i;
-                            db.BilletExperienceGroups.Add(item);
+                            db.BilletSelectionGroups.Add(item);
                             i++;
                         }
                     }
@@ -654,17 +691,17 @@ namespace Perscom
                     {
                         // Remove All
                         query = new DeleteQueryBuilder(db);
-                        query.From(nameof(BilletExperienceSorting))
+                        query.From(nameof(BilletSelectionSorting))
                             .Where("BilletId", Comparison.Equals, Billet.Id);
                         query.Execute();
 
                         // Re-add what we have
                         i = 1;
-                        foreach (var item in ExperienceSorting)
+                        foreach (var item in SelectionSorting)
                         {
                             item.Billet = Billet;
                             item.Precedence = i;
-                            db.BilletExperienceSorting.Add(item);
+                            db.BilletSelectionSorting.Add(item);
                             i++;
                         }
                     }
@@ -862,21 +899,21 @@ namespace Perscom
 
         private void addRequiredExperienceToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            var filter = new BilletExperienceFilter() { Billet = Billet };
+            var filter = new BilletSelectionFilter() { Billet = Billet };
 
-            using (var form = new ExperienceFilterForm(filter))
+            using (var form = new SoldierFilterForm(filter, false))
             {
                 var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
-                    if (ExperienceFilters.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
+                    if (SelectionFilters.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
                     {
                         ShowErrorMessage("No duplicates allowed. Filter option already exists!");
                         return;
                     }
 
                     // Add item
-                    ExperienceFilters.Add(filter);
+                    SelectionFilters.Add(filter);
 
                     // Finally, Re-fill list!
                     FillFiltersListView();
@@ -897,12 +934,12 @@ namespace Perscom
                 return;
 
             // Get selected item
-            var selected = filterListView.SelectedItems[0].Tag as BilletExperienceFilter;
+            var selected = filterListView.SelectedItems[0].Tag as BilletSelectionFilter;
             if (selected == null)
                 return;
 
             // open editor!
-            using (ExperienceFilterForm form = new ExperienceFilterForm(selected))
+            using (SoldierFilterForm form = new SoldierFilterForm(selected, false))
             {
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)
@@ -926,15 +963,15 @@ namespace Perscom
                 return;
 
             // Get selected item
-            var selected = filterListView.SelectedItems[0].Tag as BilletExperienceFilter;
+            var selected = filterListView.SelectedItems[0].Tag as BilletSelectionFilter;
             if (selected == null)
                 return;
 
             // Remove item
-            int index = ExperienceFilters.FindIndex(x => x.IsDuplicateOf(selected));
+            int index = SelectionFilters.FindIndex(x => x.IsDuplicateOf(selected));
             if (index >= 0)
             {
-                ExperienceFilters.RemoveAt(index);
+                SelectionFilters.RemoveAt(index);
 
                 // Refill list view
                 FillFiltersListView();
@@ -953,21 +990,21 @@ namespace Perscom
         /// </summary>
         private void addSortingItemsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var sort = new BilletExperienceSorting() { Billet = Billet };
+            var sort = new BilletSelectionSorting() { Billet = Billet };
 
-            using (var form = new BilletSortingForm(sort))
+            using (var form = new SoldierSortingForm(sort))
             {
                 var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
-                    if (ExperienceSorting.FindIndex(x => x.IsDuplicateOf(sort)) > -1)
+                    if (SelectionSorting.FindIndex(x => x.IsDuplicateOf(sort)) > -1)
                     {
                         ShowErrorMessage("No duplicates allowed. Sorting option already exists!");
                         return;
                     }
 
                     // Add item
-                    ExperienceSorting.Add(sort);
+                    SelectionSorting.Add(sort);
 
                     // Finally, Re-fill list!
                     FillSortingListView();
@@ -985,12 +1022,12 @@ namespace Perscom
                 return;
 
             // Get selected item
-            var selected = sortingListView.SelectedItems[0].Tag as BilletExperienceSorting;
+            var selected = sortingListView.SelectedItems[0].Tag as BilletSelectionSorting;
             if (selected == null)
                 return;
 
             // open editor!
-            using (var form = new BilletSortingForm(selected))
+            using (var form = new SoldierSortingForm(selected))
             {
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)
@@ -1014,12 +1051,12 @@ namespace Perscom
             if (item == null) return;
 
             // Get item index
-            var sortOption = (BilletExperienceSorting)item.Tag;
-            int index = ExperienceSorting.FindIndex(x => x.IsDuplicateOf(sortOption));
+            var sortOption = (BilletSelectionSorting)item.Tag;
+            int index = SelectionSorting.FindIndex(x => x.IsDuplicateOf(sortOption));
             if (index < 0) return;
 
             // Remove item from list
-            ExperienceSorting.RemoveAt(index);
+            SelectionSorting.RemoveAt(index);
             sortingListView.Items.Remove(item);
 
             // Flag change
@@ -1048,21 +1085,21 @@ namespace Perscom
 
         private void addGroupingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var filter = new BilletExperienceGroup() { Billet = Billet };
+            var filter = new BilletSelectionGroup() { Billet = Billet };
 
-            using (var form = new ExperienceGroupingForm(filter))
+            using (var form = new SoldierFilterForm(filter, true))
             {
                 var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
-                    if (ExperienceGrouping.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
+                    if (SelectionGrouping.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
                     {
                         ShowErrorMessage("No duplicates allowed. Grouping option already exists!");
                         return;
                     }
 
                     // Add item
-                    ExperienceGrouping.Add(filter);
+                    SelectionGrouping.Add(filter);
 
                     // Finally, Re-fill list!
                     FillGroupingListView();
@@ -1080,12 +1117,12 @@ namespace Perscom
                 return;
 
             // Get selected item
-            var selected = groupingListView.SelectedItems[0].Tag as BilletExperienceGroup;
+            var selected = groupingListView.SelectedItems[0].Tag as BilletSelectionGroup;
             if (selected == null)
                 return;
 
             // open editor!
-            using (var form = new ExperienceGroupingForm(selected))
+            using (var form = new SoldierFilterForm(selected, true))
             {
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)
@@ -1106,15 +1143,15 @@ namespace Perscom
                 return;
 
             // Get selected item
-            var selected = groupingListView.SelectedItems[0].Tag as BilletExperienceGroup;
+            var selected = groupingListView.SelectedItems[0].Tag as BilletSelectionGroup;
             if (selected == null)
                 return;
 
             // Remove item
-            int index = ExperienceGrouping.FindIndex(x => x.IsDuplicateOf(selected));
+            int index = SelectionGrouping.FindIndex(x => x.IsDuplicateOf(selected));
             if (index >= 0)
             {
-                ExperienceGrouping.RemoveAt(index);
+                SelectionGrouping.RemoveAt(index);
 
                 // Refill list view
                 FillGroupingListView();
@@ -1177,7 +1214,7 @@ namespace Perscom
             if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
             {
                 var items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
-                var tag = items[0].Tag as BilletExperienceSorting;
+                var tag = items[0].Tag as BilletSelectionSorting;
                 if (tag == null)
                 {
 
@@ -1195,7 +1232,7 @@ namespace Perscom
             if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
             {
                 var items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
-                var tag = items[0].Tag as BilletExperienceGroup;
+                var tag = items[0].Tag as BilletSelectionGroup;
                 if (tag == null)
                 {
                     e.Effect = DragDropEffects.None;

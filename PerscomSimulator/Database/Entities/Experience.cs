@@ -35,22 +35,22 @@ namespace Perscom.Database
         public virtual IEnumerable<BilletExperience> BilletExperience { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="BilletExperienceSorting"/> entities that reference this 
+        /// Gets a list of <see cref="BilletSelectionSorting"/> entities that reference this 
         /// <see cref="Experience"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<BilletExperienceSorting> BilletSorts { get; set; }
+        public virtual IEnumerable<BilletSelectionSorting> BilletSorts { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="BilletExperienceFilter"/> entities that reference this 
+        /// Gets a list of <see cref="BilletSelectionFilter"/> entities that reference this 
         /// <see cref="Experience"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<BilletExperienceFilter> BilletFilters { get; set; }
+        public virtual IEnumerable<BilletSelectionFilter> BilletFilters { get; set; }
 
         #endregion
 

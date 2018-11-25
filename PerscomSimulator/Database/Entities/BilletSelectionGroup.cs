@@ -4,13 +4,17 @@ using CrossLite.CodeFirst;
 namespace Perscom.Database
 {
     [Table]
-    public class BilletStatistics : AbstractBilletStatistics
+    public class BilletSelectionGroup : AbstractFilter
     {
+        #region Columns
+
         /// <summary>
-        /// 
+        /// The <see cref="Database.Billet"/> entity we are a child of
         /// </summary>
         [Column, PrimaryKey]
         public int BilletId { get; set; }
+
+        #endregion Columns
 
         #region Virtual Foreign Keys
 
@@ -46,5 +50,25 @@ namespace Perscom.Database
         }
 
         #endregion
+
+        /// <summary>
+        /// Compares a <see cref="BilletSelectionGroup"/> with this one, and returns whether
+        /// the identifying properties match
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool IsDuplicateOf(BilletSelectionGroup other)
+        {
+            return (
+                Selector == other.Selector
+                && SelectorId == other.SelectorId
+            );
+        }
+
+        public bool Equals(BilletSelectionGroup other)
+        {
+            if (other == null) return false;
+            return (this.IsDuplicateOf(other));
+        }
     }
 }

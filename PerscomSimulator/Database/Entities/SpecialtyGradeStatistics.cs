@@ -22,7 +22,7 @@ namespace Perscom.Database
             OnDelete = ReferentialIntegrity.Cascade,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        protected virtual ForeignKey<Specialty> FK_Parent { get; set; }
+        protected virtual ForeignKey<Specialty> FK_Specialty { get; set; }
 
         #endregion
     }

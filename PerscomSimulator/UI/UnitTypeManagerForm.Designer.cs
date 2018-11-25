@@ -56,8 +56,10 @@
             this.billetsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyBilletFromToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.editBillitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.copyFromMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -76,8 +78,7 @@
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.editBillitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importBilletChangesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label6 = new System.Windows.Forms.ShadowLabel();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
@@ -329,57 +330,70 @@
             this.duplicateBilletMenuItem,
             this.toolStripSeparator4,
             this.editBillitToolStripMenuItem,
+            this.importBilletChangesMenuItem,
             this.removeBilletMenuItem,
             this.toolStripSeparator3,
             this.copyFromMenuItem,
             this.toolStripSeparator2,
             this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(185, 176);
+            this.billetsContextMenu.Size = new System.Drawing.Size(201, 198);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
             // 
             this.addBilletMenuItem.Name = "addBilletMenuItem";
-            this.addBilletMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.addBilletMenuItem.Text = "Add Billet";
+            this.addBilletMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.addBilletMenuItem.Text = "Create New Billet";
             this.addBilletMenuItem.Click += new System.EventHandler(this.addBilletMenuItem_Click);
             // 
             // copyBilletFromToolStripMenuItem
             // 
             this.copyBilletFromToolStripMenuItem.Name = "copyBilletFromToolStripMenuItem";
-            this.copyBilletFromToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.copyBilletFromToolStripMenuItem.Text = "Copy Billet From";
-            // 
-            // removeBilletMenuItem
-            // 
-            this.removeBilletMenuItem.Name = "removeBilletMenuItem";
-            this.removeBilletMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.removeBilletMenuItem.Text = "Remove Billet";
-            this.removeBilletMenuItem.Click += new System.EventHandler(this.removeBilletMenuItem_Click);
+            this.copyBilletFromToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.copyBilletFromToolStripMenuItem.Text = "Duplicate Existing Billet";
             // 
             // duplicateBilletMenuItem
             // 
             this.duplicateBilletMenuItem.Name = "duplicateBilletMenuItem";
-            this.duplicateBilletMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.duplicateBilletMenuItem.Text = "Duplicate Billet";
+            this.duplicateBilletMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.duplicateBilletMenuItem.Text = "Duplicate Selected Billet";
             this.duplicateBilletMenuItem.Click += new System.EventHandler(this.duplicateBilletMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(197, 6);
+            // 
+            // editBillitToolStripMenuItem
+            // 
+            this.editBillitToolStripMenuItem.Name = "editBillitToolStripMenuItem";
+            this.editBillitToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.editBillitToolStripMenuItem.Text = "Edit Billit";
+            this.editBillitToolStripMenuItem.Click += new System.EventHandler(this.editBillitToolStripMenuItem_Click);
+            // 
+            // removeBilletMenuItem
+            // 
+            this.removeBilletMenuItem.Name = "removeBilletMenuItem";
+            this.removeBilletMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.removeBilletMenuItem.Text = "Remove Billet";
+            this.removeBilletMenuItem.Click += new System.EventHandler(this.removeBilletMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(181, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(197, 6);
             // 
             // copyFromMenuItem
             // 
             this.copyFromMenuItem.Name = "copyFromMenuItem";
-            this.copyFromMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.copyFromMenuItem.Size = new System.Drawing.Size(200, 22);
             this.copyFromMenuItem.Text = "Copy All Billets From";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(181, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(197, 6);
             // 
             // viewModeToolStripMenuItem
             // 
@@ -387,7 +401,7 @@
             this.largeIconsToolStripMenuItem,
             this.tilesToolStripMenuItem});
             this.viewModeToolStripMenuItem.Name = "viewModeToolStripMenuItem";
-            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.viewModeToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
             this.viewModeToolStripMenuItem.Text = "View Mode";
             // 
             // largeIconsToolStripMenuItem
@@ -509,17 +523,11 @@
             this.headerPanel.TabIndex = 4;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
-            // toolStripSeparator4
+            // importBilletChangesMenuItem
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(181, 6);
-            // 
-            // editBillitToolStripMenuItem
-            // 
-            this.editBillitToolStripMenuItem.Name = "editBillitToolStripMenuItem";
-            this.editBillitToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.editBillitToolStripMenuItem.Text = "Edit Billit";
-            this.editBillitToolStripMenuItem.Click += new System.EventHandler(this.editBillitToolStripMenuItem_Click);
+            this.importBilletChangesMenuItem.Name = "importBilletChangesMenuItem";
+            this.importBilletChangesMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.importBilletChangesMenuItem.Text = "Import Billet Changes";
             // 
             // label6
             // 
@@ -616,5 +624,6 @@
         private System.Windows.Forms.ToolStripMenuItem copyBilletFromToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem editBillitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importBilletChangesMenuItem;
     }
 }

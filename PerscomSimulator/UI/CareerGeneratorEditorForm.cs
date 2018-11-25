@@ -383,8 +383,11 @@ namespace Perscom
 
         private void addNewToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Grab Min time in length
+            int i = (CareerLengths.Count > 0) ? CareerLengths.Max(x => x.MaxCareerLength) : 0;
+
             // Grab Billet from selected item tag
-            var rate = new CareerLengthRange();
+            var rate = new CareerLengthRange() { MinCareerLength = i + 1, MaxCareerLength = i + 12 };
 
             // Get the selected billet
             using (var form = new CareerLengthEditorForm(rate))

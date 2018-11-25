@@ -15,9 +15,11 @@ namespace Perscom
     {
         protected SoldierGeneratorPool Selected { get; set; }
 
-        protected List<SoldierPoolSorting> SortingOptions { get; set; } = new List<SoldierPoolSorting>();
+        protected Dictionary<int, Experience> Experience { get; set; }
 
-        protected List<SoldierPoolFilter> FilterOptions { get; set; } = new List<SoldierPoolFilter>();
+        protected List<SoldierPoolSorting> SelectionSorting { get; set; } = new List<SoldierPoolSorting>();
+
+        protected List<SoldierPoolFilter> SelectionFilters { get; set; } = new List<SoldierPoolFilter>();
 
         private CareerGenerator SelectedNewCareer { get; set; }
 
@@ -47,6 +49,9 @@ namespace Perscom
 
                 if (ranks.Count() > 0)
                     rankSelect.SelectedIndex = 0;
+
+                // Fill Experience
+                Experience = db.Experience.ToDictionary(x => x.Id, y => y);
 
                 // Fill career generators
                 CareerGens = new List<CareerGenerator>(db.CareerGenerators);
@@ -104,19 +109,10 @@ namespace Perscom
                 if (sorting != null && sorting.Count() > 0)
                 {
                     // Order them
-                    int i = 0;
                     var ordered = sorting.OrderBy(x => x.Precedence);
                     foreach (var thing in ordered)
                     {
-                        SortingOptions.Add(thing);
-
-                        var text = (i > 0) ? "Then By:" : "Order By:";
-                        var item = new ListViewItem(text);
-                        item.SubItems.Add(thing.SortBy.ToString());
-                        item.SubItems.Add(thing.Direction.ToString());
-                        item.Tag = thing;
-                        sortingListView.Items.Add(item);
-                        i++;
+                        SelectionSorting.Add(thing);
                     }
                 }
 
@@ -135,24 +131,17 @@ namespace Perscom
                 if (filtering != null && filtering.Count() > 0)
                 {
                     // Order them
-                    int i = 0;
                     var ordered = filtering.OrderBy(x => x.Precedence);
                     foreach (var thing in ordered)
                     {
-                        FilterOptions.Add(thing);
-
-                        var req = (andRadioButton.Checked) ? "And: " : "Or: ";
-                        var text = (i > 0) ? req : "Where:";
-                        var item = new ListViewItem(text);
-                        item.SubItems.Add(thing.FilterBy.ToString());
-                        item.SubItems.Add(thing.Operator.ToString());
-                        item.SubItems.Add(thing.Value.ToString());
-                        item.Tag = thing;
-                        filterListView.Items.Add(item);
-                        i++;
+                        SelectionFilters.Add(thing);
                     }
                 }
             }
+
+            // Fill Filters and Sorting!
+            FillFiltersListView();
+            FillSortingListView();
 
             // Set form values for existing settings
             if (setting.RankId != 0)
@@ -176,6 +165,102 @@ namespace Perscom
                 lockedCheckBox.Checked = setting.NotLockedInBillet;
                 sortCheckBox.Checked = setting.OrdersBeforeBilletOrdering;
             }
+        }
+
+        protected string GetNameFrom(ClauseLeftSelector selector, int id)
+        {
+            switch (selector)
+            {
+                default:
+                case ClauseLeftSelector.SoldierValue:
+                    return $"Soldier.{((SoldierFunction)id)}";
+                case ClauseLeftSelector.SoldierPosition:
+                    return $"Position.{((PositionFunction)id)}";
+                case ClauseLeftSelector.SoldierExperience:
+                    // Check for new experience items added!
+                    CheckExperience(id);
+                    return $"Experience.{Experience[id]}";
+            }
+        }
+
+        private void CheckExperience(int experienceId)
+        {
+            if (!Experience.ContainsKey(experienceId))
+            {
+                using (AppDatabase db = new AppDatabase())
+                {
+                    Experience = db.Experience.ToDictionary(x => x.Id, y => y);
+                }
+            }
+        }
+
+        private void FillFiltersListView()
+        {
+            // Reset listview
+            filterListView.Items.Clear();
+
+            // Prepare update
+            filterListView.BeginUpdate();
+
+            // Do we even have items to show?
+            if (SelectionFilters.Count > 0)
+            {
+                // Order them
+                int i = 0;
+
+                // Add each item
+                foreach (var thing in SelectionFilters)
+                {
+                    var req = (andRadioButton.Checked) ? "And: " : "Or: ";
+                    var text = (i > 0) ? req : "Where:";
+                    var item = new ListViewItem(text);
+                    item.SubItems.Add(GetNameFrom(thing.Selector, thing.SelectorId));
+                    item.SubItems.Add(thing.Operator.ToString());
+                    item.SubItems.Add(thing.RightValue.ToString());
+                    item.Tag = thing;
+                    filterListView.Items.Add(item);
+                    i++;
+                }
+            }
+
+            // End update
+            filterListView.EndUpdate();
+        }
+
+        private void FillSortingListView()
+        {
+            // Reset listview
+            sortingListView.Items.Clear();
+
+            // Prepare update
+            sortingListView.BeginUpdate();
+
+            // Do we even have items to show?
+            if (SelectionSorting.Count > 0)
+            {
+                // Order them
+                int i = 0;
+
+                // Add each item
+                foreach (var thing in SelectionSorting)
+                {
+                    // Check for new experience items added!
+                    if (thing.Selector == ClauseLeftSelector.SoldierExperience)
+                        CheckExperience(thing.SelectorId);
+
+                    // Add item to list
+                    var text = (i > 0) ? "Then By:" : "Order By:";
+                    var item = new ListViewItem(text);
+                    item.SubItems.Add(GetNameFrom(thing.Selector, thing.SelectorId));
+                    item.SubItems.Add(thing.Direction.ToString());
+                    item.Tag = thing;
+                    sortingListView.Items.Add(item);
+                    i++;
+                }
+            }
+
+            // End update
+            sortingListView.EndUpdate();
         }
 
         /// <summary>
@@ -229,33 +314,33 @@ namespace Perscom
             // Re-apply sorting
             if (sortingListView.Items.Count > 0)
             {
-                SortingOptions = new List<SoldierPoolSorting>();
+                SelectionSorting = new List<SoldierPoolSorting>();
 
                 int i = 1;
                 foreach (ListViewItem item in sortingListView.Items)
                 {
                     var newItem = (SoldierPoolSorting)item.Tag;
                     newItem.Precedence = i++;
-                    SortingOptions.Add(newItem);
+                    SelectionSorting.Add(newItem);
                 }
 
-                Selected.TemporarySoldierSorting = SortingOptions;
+                Selected.TemporarySoldierSorting = SelectionSorting;
             }
 
             // Re-apply filtering
             if (filterListView.Items.Count > 0)
             {
-                FilterOptions = new List<SoldierPoolFilter>();
+                SelectionFilters = new List<SoldierPoolFilter>();
 
                 int i = 1;
                 foreach (ListViewItem item in filterListView.Items)
                 {
                     var newItem = (SoldierPoolFilter)item.Tag;
                     newItem.Precedence = i++;
-                    FilterOptions.Add(newItem);
+                    SelectionFilters.Add(newItem);
                 }
 
-                Selected.TemporarySoldierFiltering = FilterOptions;
+                Selected.TemporarySoldierFiltering = SelectionFilters;
             }
 
             this.DialogResult = DialogResult.OK;
@@ -307,34 +392,22 @@ namespace Perscom
 
         private void addNewSortingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var form = new SoldierSortingForm(SoldierSorting.TimeInService, Sorting.Ascending))
+            var sort = new SoldierPoolSorting();
+            using (var form = new SoldierSortingForm(sort))
             {
                 var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
-                    // Ensure we aren't a duplicate!
-                    var sort = new SoldierPoolSorting()
-                    {
-                        SoldierPool = Selected,
-                        Direction = form.Direction,
-                        SortBy = form.SortBy
-                    };
-
-                    if (SortingOptions.FindIndex(x => x.IsDuplicateOf(sort)) > -1)
+                    // Check for duplicates
+                    if (SelectionSorting.FindIndex(x => x.IsDuplicateOf(sort)) > -1)
                     {
                         ShowErrorMessage("No duplicates allowed. Sorting option already exists!");
                         return;
                     }
 
-                    SortingOptions.Add(sort);
-
-                    // Add item
-                    var text = (sortingListView.Items.Count > 0) ? "Then By:" : "Order By:";
-                    var item = new ListViewItem(text);
-                    item.SubItems.Add(form.SortBy.ToString());
-                    item.SubItems.Add(form.Direction.ToString());
-                    item.Tag = sort;
-                    sortingListView.Items.Add(item);
+                    // Add item and redraw
+                    SelectionSorting.Add(sort);
+                    FillSortingListView();
                 }
             }
         }
@@ -347,20 +420,12 @@ namespace Perscom
 
             // Get item index
             var sortOption = (SoldierPoolSorting)item.Tag;
-            int index = SortingOptions.FindIndex(x => x.IsDuplicateOf(sortOption));
+            int index = SelectionSorting.FindIndex(x => x.IsDuplicateOf(sortOption));
             if (index < 0) return;
 
             // Remove item from list
-            SortingOptions.RemoveAt(index);
-            sortingListView.Items.Remove(item);
-
-            // Re-apply text
-            int i = 0;
-            foreach (ListViewItem item2 in sortingListView.Items)
-            {
-                item2.Text = (i > 0) ? "Then By:" : "Order By:";
-                i++;
-            }
+            SelectionSorting.RemoveAt(index);
+            FillSortingListView();
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -395,37 +460,24 @@ namespace Perscom
 
         private void addNewFilterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var form = new SoldierConditionForm(SoldierFilter.TimeInService, ConditionOperator.Equals, 0))
+            // Create new filter
+            var filter = new SoldierPoolFilter();
+
+            using (var form = new SoldierFilterForm(filter, false))
             {
                 var result = form.ShowDialog(this);
                 if (result == DialogResult.OK)
                 {
-                    // Ensure we aren't a duplicate!
-                    var filter = new SoldierPoolFilter
-                    {
-                        SoldierPool = Selected,
-                        FilterBy = form.Filter,
-                        Operator = form.Operator,
-                        Value = form.Value
-                    };
-
-                    if (FilterOptions.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
+                    // Check for duplicates
+                    if (SelectionFilters.FindIndex(x => x.IsDuplicateOf(filter)) > -1)
                     {
                         ShowErrorMessage("No duplicates allowed. Filter option already exists!");
                         return;
                     }
 
-                    FilterOptions.Add(filter);
-
-                    // Add item
-                    var op = (andRadioButton.Checked) ? "And: " : "Or: ";
-                    var text = (filterListView.Items.Count > 0) ? op : "Where:";
-                    var item = new ListViewItem(text);
-                    item.SubItems.Add(form.Filter.ToString());
-                    item.SubItems.Add(form.Operator.ToString());
-                    item.SubItems.Add(form.Value.ToString());
-                    item.Tag = filter;
-                    filterListView.Items.Add(item);
+                    // Add item and re-draw
+                    SelectionFilters.Add(filter);
+                    FillFiltersListView();
                 }
             }
         }
@@ -438,20 +490,49 @@ namespace Perscom
 
             // Get item index
             var option = (SoldierPoolFilter)item.Tag;
-            int index = FilterOptions.FindIndex(x => x.IsDuplicateOf(option));
+            int index = SelectionFilters.FindIndex(x => x.IsDuplicateOf(option));
             if (index < 0) return;
 
             // Remove item from list
-            FilterOptions.RemoveAt(index);
-            filterListView.Items.Remove(item);
+            SelectionFilters.RemoveAt(index);
 
-            // Re-apply text
-            int i = 0;
-            var op = (andRadioButton.Checked) ? "And: " : "Or: ";
-            foreach (ListViewItem item2 in filterListView.Items)
+            // Redraw filterListView
+            FillFiltersListView();
+        }
+
+        private void filterListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // Get selected item
+            ListViewItem item = filterListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
+            if (item == null) return;
+
+            AbstractFilter filter = (SoldierPoolFilter)item.Tag;
+            using (var form = new SoldierFilterForm(filter, false))
             {
-                item2.Text = (i > 0) ? op : "Where:"; ;
-                i++;
+                var result = form.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    // Add item and re-draw
+                    FillFiltersListView();
+                }
+            }
+        }
+
+        private void sortingListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // Get selected item
+            ListViewItem item = sortingListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
+            if (item == null) return;
+
+            AbstractSort filter = (SoldierPoolSorting)item.Tag;
+            using (var form = new SoldierSortingForm(filter))
+            {
+                var result = form.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    // Add item and re-draw
+                    FillSortingListView();
+                }
             }
         }
 

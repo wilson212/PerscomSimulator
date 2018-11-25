@@ -16,7 +16,7 @@
         TimeToRetirement
     }
 
-    public enum ConditionOperator
+    public enum ComparisonOperator
     {
         Equals,
         NotEqualTo,
@@ -24,11 +24,5 @@
         GreaterThanOrEqualTo,
         LessThan,
         LessThanOrEqualTo
-    }
-
-    public enum SortMode
-    {
-        OrderByValue,
-        GroupByValue,
     }
 }

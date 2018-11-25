@@ -168,7 +168,7 @@ namespace Perscom.Simulation
             // Check for max time in grade
             if (Rank.MaxTimeInGrade > 0)
             {
-                int months = currentDate.Date.MonthDifference(LastGradeChangeDate.Date);
+                int months = currentDate.Id - LastGradeChangeDate.Id;
                 if (months >= Rank.MaxTimeInGrade)
                     return true;
             }
@@ -266,7 +266,7 @@ namespace Perscom.Simulation
             }
 
             // Check if soldier is promotable based on TIG
-            int months = currentDate.Id - LastPromotionDate.Id;
+            int months = currentDate.Id - LastGradeChangeDate.Id;
             bool promotable = (months >= Rank.PromotableAt);
 
             // If the soldier is promotable, then set the status
@@ -389,6 +389,8 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public int GetTimeUntilRetirement(IterationDate currentDate)
         {
+            // Reversed, since ExitIterationId will always be greater or equal to
+            // the current iteration date
             return Soldier.ExitIterationId - currentDate.Id;
         }
 
@@ -434,7 +436,7 @@ namespace Perscom.Simulation
         /// <summary>
         /// Indicates whether this soldier is at or past thier Max Tour Length
         /// </summary>
-        /// <param name="currentDate"></param>
+        /// <param name="currentDate">the current simulation <see cref="IterationDate"/></param>
         /// <returns></returns>
         public bool IsPastMaxTourLength(IterationDate currentDate)
         {
@@ -500,56 +502,123 @@ namespace Perscom.Simulation
         }
 
         /// <summary>
-        /// Evalutates the <see cref="BilletExperienceGroup"/>, returning a reversed
-        /// bool
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public int EvaluateLookUpReverse(BilletExperienceGroup selector)
-        {
-            if (Experience.TryGetValue(selector.ExperienceId, out int expValue))
-            {
-                return (Condition.EvaluateExpression(expValue, selector.Operator, selector.Value)) ? 0 : 1;
-            }
-
-            return 1;
-        }
-
-        /// <summary>
-        /// Returns whether or not this soldier has the required billet experience
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        public bool MeetsExperienceRequirement(BilletExperienceFilter filter)
-        {
-            if (Experience.TryGetValue(filter.ExperienceId, out int expValue))
-            {
-                return Condition.EvaluateExpression(expValue, filter.Operator, filter.Value);
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Returns the current experience value this soldier has
         /// </summary>
         /// <param name="experienceId"></param>
         /// <returns></returns>
         public int GetExperienceValue(int experienceId)
         {
-            if (Experience.TryGetValue(experienceId, out int Val))
+            Experience.TryGetValue(experienceId, out int val);
+            return val;
+        }
+
+        /// <summary>
+        /// Evalutates the <see cref="AbstractFilter"/>, returning a reversed
+        /// integer value of the result, which is used for ordering Groups
+        /// </summary>
+        /// <param name="selector">the <see cref="AbstractFilter"/> to evaluate</param>
+        /// <param name="date">the current simulation <see cref="IterationDate"/></param>
+        /// <returns>0 if true, 1 if false</returns>
+        public int EvaluateLookUpReverse(AbstractFilter selector, IterationDate date)
+        {
+            return (EvaluateFilter(selector, date)) ? 0 : 1;
+        }
+
+        /// <summary>
+        /// Gets a value from this <see cref="Database.Soldier"/>
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="selectorId"></param>
+        /// <param name="date">the current simulation <see cref="IterationDate"/></param>
+        /// <returns></returns>
+        public int GetValue(ClauseLeftSelector selector, int selectorId, IterationDate date)
+        {
+            switch (selector)
             {
-                return Val;
+                default:
+                    throw new ArgumentOutOfRangeException("selector");
+                case ClauseLeftSelector.SoldierExperience:
+                    return GetExperienceValue(selectorId);
+                case ClauseLeftSelector.SoldierPosition:
+                    return GetPositionValue((PositionFunction)selectorId, date);
+                case ClauseLeftSelector.SoldierValue:
+                    return GetSoldierValue((SoldierFunction)selectorId, date);
+            }
+        }
+
+        /// <summary>
+        /// Gets a soldier value from this <see cref="Database.Soldier"/>
+        /// </summary>
+        /// <param name="function"></param>
+        /// <param name="date">the current simulation <see cref="IterationDate"/></param>
+        /// <returns></returns>
+        public int GetSoldierValue(SoldierFunction function, IterationDate date)
+        {
+            switch (function)
+            {
+                default:
+                case SoldierFunction.TimeInService:
+                    return GetTimeInService(date);
+                case SoldierFunction.TimeInGrade:
+                    return GetTimeInGrade(date);
+                case SoldierFunction.TimeInPosition:
+                    return GetTimeInBillet(date);
+                case SoldierFunction.TimeInRank:
+                    return date.MonthsDifference(LastPromotionDate);
+                case SoldierFunction.TimeToRetirement:
+                    return GetTimeUntilRetirement(date);
+            }
+        }
+
+        /// <summary>
+        /// Gets a positional value from this <see cref="Database.Soldier"/>
+        /// </summary>
+        /// <param name="function"></param>
+        /// <param name="date">the current simulation <see cref="IterationDate"/></param>
+        /// <returns></returns>
+        public int GetPositionValue(PositionFunction function, IterationDate date)
+        {
+            switch (function)
+            {
+                default:
+                case PositionFunction.BilletId:
+                    return Position.Billet.Id;
+                case PositionFunction.BilletStature:
+                    return Position.Position.Billet.Stature;
+            }
+        }
+
+        /// <summary>
+        /// Evaluates the provided <see cref="AbstractFilter"/> against this soldier
+        /// and returns the result
+        /// </summary>
+        /// <param name="filter">the <see cref="AbstractFilter"/> to evaluate</param>
+        /// <param name="date">the current simulation <see cref="IterationDate"/></param>
+        /// <returns></returns>
+        public bool EvaluateFilter(AbstractFilter filter, IterationDate date)
+        {
+            int leftValue = 0;
+            switch (filter.Selector)
+            {
+                case ClauseLeftSelector.SoldierExperience:
+                    leftValue = GetExperienceValue(filter.SelectorId);
+                    break;
+                case ClauseLeftSelector.SoldierPosition:
+                    leftValue = GetPositionValue((PositionFunction)filter.SelectorId, date);
+                    break;
+                case ClauseLeftSelector.SoldierValue:
+                    leftValue = GetSoldierValue((SoldierFunction)filter.SelectorId, date);
+                    break;
             }
 
-            return 0;
+            return Condition.EvaluateExpression(leftValue, filter.Operator, filter.RightValue);
         }
 
         /// <summary>
         /// Saves the current soldier data to the database.
         /// </summary>
         /// <param name="database"></param>
-        /// <param name="date"></param>
+        /// <param name="date">the current simulation <see cref="IterationDate"/></param>
         public void Save(SimDatabase database, IterationDate date)
         {
             database.Soldiers.Update(Soldier);
@@ -588,7 +657,7 @@ namespace Perscom.Simulation
         /// <summary>
         /// Moves the current soldier assignment into a past assignment
         /// </summary>
-        /// <param name="date"></param>
+        /// <param name="date">the current simulation <see cref="IterationDate"/></param>
         private void LogAssignment(IterationDate date, SimDatabase db)
         {
             // Store past assignment

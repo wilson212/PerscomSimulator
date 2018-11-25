@@ -81,12 +81,6 @@ namespace Perscom.Database
         [Column, Required, Default(0)]
         public bool OrdersBeforeBilletOrdering { get; set; }
 
-        /// <summary>
-        /// DEPRECIATED
-        /// </summary>
-        [Column, Required, Default(0)]
-        public bool OrderedBySeniority { get; set; }
-
         #endregion
 
         #region Virtual Foreign Keys

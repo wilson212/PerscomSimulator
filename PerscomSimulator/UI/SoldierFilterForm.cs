@@ -1,5 +1,4 @@
-﻿using CrossLite.QueryBuilder;
-using Perscom.Database;
+﻿using Perscom.Database;
 using System;
 using System.Data;
 using System.Linq;
@@ -7,20 +6,39 @@ using System.Windows.Forms;
 
 namespace Perscom
 {
-    public partial class SoldierSortingForm : Form
+    public partial class SoldierFilterForm : Form
     {
-        private AbstractSort Selected { get; set; }
+        private AbstractFilter Selected { get; set; }
 
-        public SoldierSortingForm(AbstractSort item)
+        public SoldierFilterForm(AbstractFilter filter, bool useGrouping)
         {
             // Create controls
             InitializeComponent();
 
+            // Grouping?
+            if (useGrouping)
+            {
+                this.Text = "Soldier Grouping Selection";
+                labelHeader.Text = "Apply Soldier Grouping";
+            }
+
             // Fill selected variable
-            Selected = item ?? throw new ArgumentException("Item cannot be null", "item");
+            Selected = filter ?? throw new ArgumentException("Filter cannot be null", "filter");
 
             // Set value first
-            sortingDirectionBox.SelectedIndex = (int)Selected.Direction;
+            numericUpDown1.SetValueInRange(filter.RightValue);
+
+            // Then add operator types
+            foreach (var val in Enum.GetValues(typeof(ComparisonOperator)).Cast<ComparisonOperator>())
+            {
+                operatorSelectBox.Items.Add(val);
+
+                // Is this what we are editing?
+                if (Selected.Operator == val)
+                {
+                    operatorSelectBox.SelectedIndex = operatorSelectBox.Items.Count - 1;
+                }
+            }
 
             // Finally add methods
             foreach (var val in Enum.GetValues(typeof(ClauseLeftSelector)).Cast<ClauseLeftSelector>())
@@ -156,7 +174,8 @@ namespace Perscom
             }
 
             // Set value
-            Selected.Direction = (Sorting)sortingDirectionBox.SelectedIndex;
+            Selected.Operator = (ComparisonOperator)operatorSelectBox.SelectedItem;
+            Selected.RightValue = (int)numericUpDown1.Value;
 
             // Close dialog and Signal OK
             this.DialogResult = DialogResult.OK;

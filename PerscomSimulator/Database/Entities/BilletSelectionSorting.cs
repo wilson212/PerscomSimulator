@@ -1,16 +1,21 @@
 ﻿using CrossLite;
 using CrossLite.CodeFirst;
+using System;
 
 namespace Perscom.Database
 {
     [Table]
-    public class BilletStatistics : AbstractBilletStatistics
+    public class BilletSelectionSorting : AbstractSort, IEquatable<BilletSelectionSorting>
     {
+        #region Columns
+
         /// <summary>
-        /// 
+        /// The <see cref="Database.Billet"/> entity we are a child of
         /// </summary>
         [Column, PrimaryKey]
         public int BilletId { get; set; }
+
+        #endregion Columns
 
         #region Virtual Foreign Keys
 
@@ -46,5 +51,26 @@ namespace Perscom.Database
         }
 
         #endregion
+
+        /// <summary>
+        /// Compares a <see cref="BilletSelectionSorting"/> with this one, and returns whether
+        /// the identifying properties match
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool IsDuplicateOf(BilletSelectionSorting other)
+        {
+            return (
+                Selector == other.Selector
+                && SelectorId == other.SelectorId
+                && Direction == other.Direction
+            );
+        }
+
+        public bool Equals(BilletSelectionSorting other)
+        {
+            if (other == null) return false;
+            return (this.IsDuplicateOf(other));
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(1, 15);
+        public static Version CurrentVersion { get; protected set; } = new Version(1, 0);
 
         /// <summary>
         /// Gets the current database tables version
@@ -38,19 +38,19 @@ namespace Perscom.Database
         public DbSet<BilletExperience> BilletExperience { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="Database.BilletExperienceFilter"/> entites stored in the database
+        /// Gets a set of <see cref="Database.BilletSelectionFilter"/> entites stored in the database
         /// </summary>
-        public DbSet<BilletExperienceFilter> BilletExperienceFilters { get; set; }
+        public DbSet<BilletSelectionFilter> BilletSelectionFilters { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="Database.BilletExperienceGroup"/> entites stored in the database
+        /// Gets a set of <see cref="Database.BilletSelectionGroup"/> entites stored in the database
         /// </summary>
-        public DbSet<BilletExperienceGroup> BilletExperienceGroups { get; set; }
+        public DbSet<BilletSelectionGroup> BilletSelectionGroups { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="Database.BilletExperienceSorting"/> entites stored in the database
+        /// Gets a set of <see cref="Database.BilletSelectionSorting"/> entites stored in the database
         /// </summary>
-        public DbSet<BilletExperienceSorting> BilletExperienceSorting { get; set; }
+        public DbSet<BilletSelectionSorting> BilletSelectionSorting { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="BilletSpecialtyRequirement"/> entites stored in the database
@@ -170,9 +170,9 @@ namespace Perscom.Database
             Billets = new DbSet<Billet>(this);
             BilletCatagories = new DbSet<BilletCatagory>(this);
             BilletExperience = new DbSet<BilletExperience>(this);
-            BilletExperienceFilters = new DbSet<BilletExperienceFilter>(this);
-            BilletExperienceGroups = new DbSet<BilletExperienceGroup>(this);
-            BilletExperienceSorting = new DbSet<BilletExperienceSorting>(this);
+            BilletSelectionFilters = new DbSet<BilletSelectionFilter>(this);
+            BilletSelectionGroups = new DbSet<BilletSelectionGroup>(this);
+            BilletSelectionSorting = new DbSet<BilletSelectionSorting>(this);
             BilletSpecialtyRequirements = new DbSet<BilletSpecialtyRequirement>(this);
             BilletSpawnSettings = new DbSet<BilletSpawnSetting>(this);
             BilletSpecialties = new DbSet<BilletSpecialty>(this);
@@ -226,9 +226,9 @@ namespace Perscom.Database
                 CodeFirstSQLite.DropTable<BilletSpecialtyRequirement>(this);
                 CodeFirstSQLite.DropTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.DropTable<BilletSpecialty>(this);
-                CodeFirstSQLite.DropTable<BilletExperienceFilter>(this);
-                CodeFirstSQLite.DropTable<BilletExperienceGroup>(this);
-                CodeFirstSQLite.DropTable<BilletExperienceSorting>(this);
+                CodeFirstSQLite.DropTable<BilletSelectionFilter>(this);
+                CodeFirstSQLite.DropTable<BilletSelectionGroup>(this);
+                CodeFirstSQLite.DropTable<BilletSelectionSorting>(this);
                 CodeFirstSQLite.DropTable<BilletExperience>(this);
                 CodeFirstSQLite.DropTable<Billet>(this);
                 CodeFirstSQLite.DropTable<BilletCatagory>(this);
@@ -267,9 +267,9 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<BilletCatagory>(this);
                 CodeFirstSQLite.CreateTable<Billet>(this);
                 CodeFirstSQLite.CreateTable<BilletExperience>(this);
-                CodeFirstSQLite.CreateTable<BilletExperienceFilter>(this);
-                CodeFirstSQLite.CreateTable<BilletExperienceGroup>(this);
-                CodeFirstSQLite.CreateTable<BilletExperienceSorting>(this);
+                CodeFirstSQLite.CreateTable<BilletSelectionFilter>(this);
+                CodeFirstSQLite.CreateTable<BilletSelectionGroup>(this);
+                CodeFirstSQLite.CreateTable<BilletSelectionSorting>(this);
                 CodeFirstSQLite.CreateTable<BilletSpecialty>(this);
                 CodeFirstSQLite.CreateTable<BilletSpawnSetting>(this);
                 CodeFirstSQLite.CreateTable<BilletSpecialtyRequirement>(this);

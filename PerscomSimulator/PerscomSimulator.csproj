@@ -66,10 +66,14 @@
     <Compile Include="Application\Epoch.cs" />
     <Compile Include="Application\ExceptionHandler.cs" />
     <Compile Include="Application\Condition.cs" />
-    <Compile Include="Database\Entities\AbstractBilletStatistics.cs" />
-    <Compile Include="Database\Entities\BilletExperienceGroup.cs" />
+    <Compile Include="Database\Entities\Abstract\AbstractSort.cs" />
+    <Compile Include="Database\Entities\Abstract\AbstractBilletStatistics.cs" />
+    <Compile Include="Database\Entities\Abstract\AbstractFilter.cs" />
+    <Compile Include="Database\Entities\BilletSelectionGroup.cs" />
     <Compile Include="Database\Entities\BilletStatistics.cs" />
     <Compile Include="Database\Entities\PositionStatistics.cs" />
+    <Compile Include="Database\Entities\RankGrade.cs" />
+    <Compile Include="Database\Enums.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\StopWatchExtensions.cs" />
     <Compile Include="UI\PositionStatsForm.cs">
@@ -84,27 +88,21 @@
     <Compile Include="UI\ExperienceNameChangeForm.Designer.cs">
       <DependentUpon>ExperienceNameChangeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\ExperienceGroupingForm.cs">
+    <Compile Include="UI\SoldierFilterForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\ExperienceGroupingForm.Designer.cs">
-      <DependentUpon>ExperienceGroupingForm.cs</DependentUpon>
+    <Compile Include="UI\SoldierFilterForm.Designer.cs">
+      <DependentUpon>SoldierFilterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\ExperienceFilterForm.cs">
+    <Compile Include="UI\SoldierSortingForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\ExperienceFilterForm.Designer.cs">
-      <DependentUpon>ExperienceFilterForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\BilletSortingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\BilletSortingForm.Designer.cs">
-      <DependentUpon>BilletSortingForm.cs</DependentUpon>
+    <Compile Include="UI\SoldierSortingForm.Designer.cs">
+      <DependentUpon>SoldierSortingForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Database\Entities\BilletExperience.cs" />
-    <Compile Include="Database\Entities\BilletExperienceFilter.cs" />
-    <Compile Include="Database\Entities\BilletExperienceSorting.cs" />
+    <Compile Include="Database\Entities\BilletSelectionFilter.cs" />
+    <Compile Include="Database\Entities\BilletSelectionSorting.cs" />
     <Compile Include="Database\Entities\SoldierExperience.cs" />
     <Compile Include="Database\Entities\SoldierPoolSorting.cs" />
     <Compile Include="Database\Entities\SoldierPoolFilter .cs" />
@@ -128,18 +126,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Simulation\Enums.cs" />
-    <Compile Include="UI\SoldierConditionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SoldierConditionForm.Designer.cs">
-      <DependentUpon>SoldierConditionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\SoldierSortingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SoldierSortingForm.Designer.cs">
-      <DependentUpon>SoldierSortingForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\NumericUpDownExtensions.cs" />
@@ -313,14 +299,11 @@
     <EmbeddedResource Include="UI\ExperienceNameChangeForm.resx">
       <DependentUpon>ExperienceNameChangeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\ExperienceGroupingForm.resx">
-      <DependentUpon>ExperienceGroupingForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\SoldierSortingForm.resx">
+      <DependentUpon>SoldierSortingForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\BilletSortingForm.resx">
-      <DependentUpon>BilletSortingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ExperienceFilterForm.resx">
-      <DependentUpon>ExperienceFilterForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\SoldierFilterForm.resx">
+      <DependentUpon>SoldierFilterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ExperienceSelectForm.resx">
       <DependentUpon>ExperienceSelectForm.cs</DependentUpon>
@@ -330,9 +313,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ExperienceForm.resx">
       <DependentUpon>ExperienceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\SoldierConditionForm.resx">
-      <DependentUpon>SoldierConditionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SoldierGeneratorPoolForm.resx">
       <DependentUpon>SoldierGeneratorPoolForm.cs</DependentUpon>
@@ -345,9 +325,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SoldierGeneratorEditorForm.resx">
       <DependentUpon>SoldierGeneratorEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\SoldierSortingForm.resx">
-      <DependentUpon>SoldierSortingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SpecialtyEditorForm.resx">
       <DependentUpon>SpecialtyEditorForm.cs</DependentUpon>

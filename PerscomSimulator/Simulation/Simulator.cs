@@ -145,19 +145,19 @@ namespace Perscom
         protected Dictionary<int, List<BilletExperience>> BilletExperience { get; set; }
 
         /// <summary>
-        /// A Cache to hold Soldier Billet Experience Filtering options.
+        /// A Cache to hold Soldier Billet Selection Filtering options.
         /// </summary>
-        protected Dictionary<int, List<BilletExperienceFilter>> ExperienceFilters { get; set; }
+        protected Dictionary<int, List<BilletSelectionFilter>> BilletFilters { get; set; }
 
         /// <summary>
-        /// A Cache to hold Soldier Billet Experience Group options.
+        /// A Cache to hold Soldier Billet Selection Group options.
         /// </summary>
-        protected Dictionary<int, List<BilletExperienceGroup>> ExperienceGroups { get; set; }
+        protected Dictionary<int, List<BilletSelectionGroup>> BilletGroups { get; set; }
 
         /// <summary>
-        /// A Cache to hold Soldier Billet Experience Sorting options.
+        /// A Cache to hold Soldier Billet Selection Sorting options.
         /// </summary>
-        protected Dictionary<int, List<BilletExperienceSorting>> ExperienceOrdering { get; set; }
+        protected Dictionary<int, List<BilletSelectionSorting>> BilletOrdering { get; set; }
 
         /// <summary>
         /// Creates a new Simulator instance
@@ -203,9 +203,9 @@ namespace Perscom
 
             // Load and Cache Billet experience options
             BilletExperience = new Dictionary<int, List<BilletExperience>>();
-            ExperienceFilters = new Dictionary<int, List<BilletExperienceFilter>>();
-            ExperienceOrdering = new Dictionary<int, List<BilletExperienceSorting>>();
-            ExperienceGroups = new Dictionary<int, List<BilletExperienceGroup>>();
+            BilletFilters = new Dictionary<int, List<BilletSelectionFilter>>();
+            BilletOrdering = new Dictionary<int, List<BilletSelectionSorting>>();
+            BilletGroups = new Dictionary<int, List<BilletSelectionGroup>>();
             foreach (var item in db.Billets)
             {
                 // Check for experience given
@@ -219,21 +219,21 @@ namespace Perscom
                 var filters = item.Filters.OrderBy(x => x.Precedence).ToList();
                 if (filters.Count > 0)
                 {
-                    ExperienceFilters.Add(item.Id, filters);
+                    BilletFilters.Add(item.Id, filters);
                 }
 
                 // Check for Grouping
                 var groups = item.Grouping.OrderBy(x => x.Precedence).ToList();
                 if (groups.Count > 0)
                 {
-                    ExperienceGroups.Add(item.Id, groups);
+                    BilletGroups.Add(item.Id, groups);
                 }
 
                 // Check for Sorting
                 var sorting = item.Sorting.OrderBy(x => x.Precedence).ToList();
                 if (sorting.Count > 0)
                 {
-                    ExperienceOrdering.Add(item.Id, sorting);
+                    BilletOrdering.Add(item.Id, sorting);
                 }
             }
         }
@@ -687,7 +687,7 @@ namespace Perscom
         }
 
         /// <summary>
-        /// Gives a soldier experience
+        /// Gives a soldier the <see cref="Experience"/> items provided by the position
         /// </summary>
         /// <param name="soldier"></param>
         /// <param name="position"></param>
@@ -727,7 +727,7 @@ namespace Perscom
             BilletSelection[] illegalSelections = { BilletSelection.CustomGenerator, BilletSelection.PromotionOnly };
 
             // Grab soldiers
-            IEnumerable<SoldierWrapper> soldiers = topUnit.SoldiersByGrade[type][grade].Values.ToList();
+            IEnumerable<SoldierWrapper> soldiers = topUnit.SoldiersByGrade[type][grade].Values;
 
             // Can't lateral into this position if it uses a custom
             // selection generator or is PromotionOnly!
@@ -742,17 +742,25 @@ namespace Perscom
             // Get a list of soldiers that CAN do a lateral movement,
             soldiers = soldiers.Where(x => IsCanidateForPosition(x, position) && GetLateralPromotionGroupId(x, position) <= val);
 
+            // Do we have any soldiers?
+            if (soldiers.Count() == 0)
+                return false;
+
             //
             // 2. Apply Billet grouping
             //
             IEnumerable<SoldierGroupResult> groups = null;
 
             // Do we have experience grouping as well?
-            if (ExperienceGroups.ContainsKey(billetId))
+            if (BilletGroups.ContainsKey(billetId))
             {
                 // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
-                var expGroups = ExperienceGroups[billetId];
-                groups = soldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position), expGroups);
+                var expGroups = BilletGroups[billetId];
+                groups = soldiers.GroupSoldiersBy(
+                    x => GetLateralPromotionGroupId(x, position), 
+                    expGroups, 
+                    CurrentIterationDate
+                );
             }
             else
             {
@@ -767,13 +775,13 @@ namespace Perscom
             //
             // 3. Apply soldier ordering
             //
-            if (ExperienceOrdering.ContainsKey(billetId))
+            if (BilletOrdering.ContainsKey(billetId))
             {
                 // Grab experience sorting
-                var experienceSorts = ExperienceOrdering[billetId];
+                var experienceSorts = BilletOrdering[billetId];
 
                 // Apply sorting using just experience
-                soldiers = soldiers.OrderSoldiersBy(experienceSorts);
+                soldiers = soldiers.OrderSoldiersBy(experienceSorts, CurrentIterationDate);
             }
             else
             {
@@ -884,9 +892,12 @@ namespace Perscom
                     primeSoldiers = primeSoldiers.Where(x => IsCanidateForPosition(x, position));
                 }
 
-                // Is this position NOT repeatable?
-                if (!position.Billet.Billet.Waiverable)
-                    primeSoldiers = primeSoldiers.Where(x => !x.BilletsHeld.ContainsKey(billetId));
+                // Do we have any soldiers?
+                if (primeSoldiers.Count() == 0)
+                {
+                    --grade;
+                    continue;
+                }
 
                 //
                 // 2. Apply Billet grouping
@@ -895,11 +906,15 @@ namespace Perscom
                 if (isLateral)
                 {
                     // Do we have experience grouping as well?
-                    if (ExperienceGroups.ContainsKey(billetId))
+                    if (BilletGroups.ContainsKey(billetId))
                     {
                         // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
-                        var expGroups = ExperienceGroups[billetId];
-                        groups = primeSoldiers.GroupSoldiersBy(x => GetLateralPromotionGroupId(x, position), expGroups);
+                        var expGroups = BilletGroups[billetId];
+                        groups = primeSoldiers.GroupSoldiersBy(
+                            x => GetLateralPromotionGroupId(x, position), 
+                            expGroups, 
+                            CurrentIterationDate
+                        );
                     }
                     else
                     {
@@ -909,11 +924,11 @@ namespace Perscom
                     // Get topmost group with at least one soldier in it
                     primeSoldiers = groups.GetPrimeSoldiers();
                 }
-                else if (ExperienceGroups.ContainsKey(billetId))
+                else if (BilletGroups.ContainsKey(billetId))
                 {
                     // Apply groups
-                    var expGroups = ExperienceGroups[billetId];
-                    groups = primeSoldiers.GroupSoldiersBy(expGroups.ToList());
+                    var expGroups = BilletGroups[billetId];
+                    groups = primeSoldiers.GroupSoldiersBy(expGroups, CurrentIterationDate);
 
                     // Get topmost group with at least one soldier in it
                     primeSoldiers = groups.GetPrimeSoldiers();
@@ -922,13 +937,13 @@ namespace Perscom
                 //
                 // 3. Apply soldier ordering
                 //
-                if (ExperienceOrdering.ContainsKey(billetId))
+                if (BilletOrdering.ContainsKey(billetId))
                 {
                     // Grab experience sorting
-                    var experienceSorts = ExperienceOrdering[billetId];
+                    var experienceSorts = BilletOrdering[billetId];
 
                     // Apply sorting using just experience
-                    soldiers = primeSoldiers.OrderSoldiersBy(experienceSorts);
+                    soldiers = primeSoldiers.OrderSoldiersBy(experienceSorts, CurrentIterationDate);
                 }
                 else
                 {
@@ -1051,12 +1066,12 @@ namespace Perscom
 
             // Apply Billet Filtering
             int billetId = position.Billet.Id;
-            if (ExperienceFilters.ContainsKey(billetId))
+            if (BilletFilters.ContainsKey(billetId))
             {
-                var filters = ExperienceFilters[billetId];
+                var filters = BilletFilters[billetId];
                 foreach (var filter in filters)
                 {
-                    if (!soldier.MeetsExperienceRequirement(filter))
+                    if (!soldier.EvaluateFilter(filter, CurrentIterationDate))
                         return false;
                 }
             }
@@ -1138,8 +1153,7 @@ namespace Perscom
                             UnitTemplateId = template.Id,
                             RankGrade = i,
                             RankType = type
-                        }
-                        );
+                        });
 
                         var dict = new Dictionary<int, SpecialtyGradeStatistics>();
                         foreach (Specialty spec in specialties)
@@ -1150,8 +1164,7 @@ namespace Perscom
                                 SpecialtyId = spec.Id,
                                 RankGrade = i,
                                 RankType = type
-                            }
-                            );
+                            });
                         }
 
                         SpecialtyStatistics[template.Id][type].Add(i, dict);
@@ -1294,29 +1307,30 @@ namespace Perscom
             // 
             // 2. Billet Filtering by experience
             //
-            if (ExperienceFilters.ContainsKey(billetId))
+            if (BilletFilters.ContainsKey(billetId))
             {
                 // Apply groups
-                var filters = ExperienceFilters[billetId];
-                candidates = candidates.FilterSoldierList(filters, position.Billet.Billet.ExperienceLogic);
+                var filters = BilletFilters[billetId];
+                candidates = candidates.FilterSoldierList(filters, position.Billet.Billet.ExperienceLogic, CurrentIterationDate);
             }
 
             // Do we have anyone left?
             int count = candidates.Count();
             if (count == 0)
+            {
                 return null;
-
+            }
             // Apply grouping and sorting only if we have more than 1 soldier
-            if (count > 1)
+            else if (count > 1)
             {
                 //
                 // 3. Apply Billet grouping
                 //
-                if (ExperienceGroups.ContainsKey(billetId))
+                if (BilletGroups.ContainsKey(billetId))
                 {
                     // Apply groups
-                    var groups = ExperienceGroups[billetId];
-                    var result = candidates.GroupSoldiersBy(groups.ToList());
+                    var groups = BilletGroups[billetId];
+                    var result = candidates.GroupSoldiersBy(groups, CurrentIterationDate);
 
                     // Get topmost group with at least one soldier in it
                     // This list of soldiers will be the most prime canidates,
@@ -1327,10 +1341,10 @@ namespace Perscom
                 //
                 // 4. Apply soldier ordering
                 //
-                if (ExperienceOrdering.ContainsKey(billetId))
+                if (BilletOrdering.ContainsKey(billetId))
                 {
                     // Grab experience sorting
-                    var experienceSorts = ExperienceOrdering[billetId];
+                    var experienceSorts = BilletOrdering[billetId];
 
                     // Check for pool sorting
                     if (SoldierPoolOrdering.ContainsKey(setting.Pool.Id))
@@ -1346,12 +1360,12 @@ namespace Perscom
                             ordered = candidates.OrderSoldiersBy(poolSorts, CurrentIterationDate);
 
                             // Apply experience sorting
-                            ordered = ordered.ThenOrderSoldiersBy(experienceSorts);
+                            ordered = ordered.ThenOrderSoldiersBy(experienceSorts, CurrentIterationDate);
                         }
                         else
                         {
                             // Apply experience sorting
-                            ordered = candidates.OrderSoldiersBy(experienceSorts);
+                            ordered = candidates.OrderSoldiersBy(experienceSorts, CurrentIterationDate);
 
                             // Apply time sorting
                             ordered = ordered.ThenOrderSoldiersBy(poolSorts, CurrentIterationDate);
@@ -1363,7 +1377,7 @@ namespace Perscom
                     else
                     {
                         // Apply sorting using just experience
-                        candidates = candidates.OrderSoldiersBy(experienceSorts);
+                        candidates = candidates.OrderSoldiersBy(experienceSorts, CurrentIterationDate);
                     }
                 }
                 else if (SoldierPoolOrdering.ContainsKey(setting.Pool.Id))
@@ -1681,14 +1695,14 @@ namespace Perscom
                 BilletExperience.Clear();
                 BilletExperience = null;
 
-                ExperienceFilters.Clear();
-                ExperienceFilters = null;
+                BilletFilters.Clear();
+                BilletFilters = null;
 
-                ExperienceGroups.Clear();
-                ExperienceGroups = null;
+                BilletGroups.Clear();
+                BilletGroups = null;
 
-                ExperienceOrdering.Clear();
-                ExperienceOrdering = null;
+                BilletOrdering.Clear();
+                BilletOrdering = null;
 
                 SoldierPoolFiltering.Clear();
                 SoldierPoolFiltering = null;

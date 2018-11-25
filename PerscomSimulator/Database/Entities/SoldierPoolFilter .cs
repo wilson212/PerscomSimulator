@@ -5,7 +5,7 @@ using System;
 namespace Perscom.Database
 {
     [Table]
-    public class SoldierPoolFilter : IEquatable<SoldierPoolFilter>
+    public class SoldierPoolFilter : AbstractFilter, IEquatable<SoldierPoolFilter>
     {
         #region Columns
 
@@ -14,30 +14,6 @@ namespace Perscom.Database
         /// </summary>
         [Column, PrimaryKey]
         public int SoldierGeneratorPoolId { get; protected set; }
-
-        /// <summary>
-        /// Indicates the order or priority this condition is applied
-        /// </summary>
-        [Column, PrimaryKey]
-        public int Precedence { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [Column, Required]
-        public SoldierFilter FilterBy { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [Column, Required]
-        public ConditionOperator Operator { get; set; }
-
-        /// <summary>
-        /// The condition value
-        /// </summary>
-        [Column, Required]
-        public int Value { get; set; }
 
         #endregion
 
@@ -77,18 +53,17 @@ namespace Perscom.Database
         #endregion
 
         /// <summary>
-        /// Compares a <see cref="SoldierPoolSorting"/> with this one, and returns whether
-        /// or not the RankId and GeneratorId's match
+        /// Compares a <see cref="SoldierPoolFilter"/> with this one, and returns whether
+        /// the identifying properties match
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
         public bool IsDuplicateOf(SoldierPoolFilter other)
         {
-            return (
-                SoldierGeneratorPoolId == other.SoldierGeneratorPoolId
+            return (Selector == other.Selector
+                && SelectorId == other.SelectorId
                 && Operator == other.Operator
-                && FilterBy == other.FilterBy
-                && Value == other.Value
+                && RightValue == other.RightValue
             );
         }
 
