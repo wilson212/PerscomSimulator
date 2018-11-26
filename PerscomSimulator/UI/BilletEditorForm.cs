@@ -186,9 +186,10 @@ namespace Perscom
                 foreach (var thing in SelectionFilters)
                 {
                     // Add item to list
-                    //var req = (andRadioButton.Checked) ? "And: " : "Or: ";
-                    //var text = (i > 0) ? req : "Where:";
-                    var item = new ListViewItem(GetNameFrom(thing.Selector, thing.SelectorId));
+                    var req = (andRadioButton.Checked) ? "And: " : "Or: ";
+                    var text = (i > 0) ? req : "Where:";
+                    var item = new ListViewItem(text);
+                    item.SubItems.Add(GetNameFrom(thing.Selector, thing.SelectorId));
                     item.SubItems.Add(thing.Operator.ToString());
                     item.SubItems.Add(thing.RightValue.ToString());
                     item.Tag = thing;
@@ -733,15 +734,14 @@ namespace Perscom
 
         private void andRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            /* Re-apply text
+            // Re-apply text
             int i = 0;
             var op = (andRadioButton.Checked) ? "And: " : "Or: ";
             foreach (ListViewItem item in filterListView.Items)
             {
-                item.Text = (i > 0) ? op : "Where:"; ;
+                item.Text = (i > 0) ? op : "Where:";
                 i++;
             }
-            */
         }
 
         #region Edit Required Specialties

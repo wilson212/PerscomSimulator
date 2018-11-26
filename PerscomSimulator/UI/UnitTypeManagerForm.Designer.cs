@@ -59,6 +59,7 @@
             this.duplicateBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.editBillitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importBilletChangesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeBilletMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.copyFromMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,9 +78,10 @@
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.finalizeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.importBilletChangesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label6 = new System.Windows.Forms.ShadowLabel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.label14 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -138,6 +140,8 @@
             // 
             // mainPanel
             // 
+            this.mainPanel.Controls.Add(this.label8);
+            this.mainPanel.Controls.Add(this.label14);
             this.mainPanel.Controls.Add(this.applyButton);
             this.mainPanel.Controls.Add(this.groupBox3);
             this.mainPanel.Controls.Add(this.groupBox2);
@@ -154,7 +158,7 @@
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(431, 30);
             this.applyButton.TabIndex = 4;
-            this.applyButton.Text = "Apply";
+            this.applyButton.Text = "Apply Changes";
             this.applyButton.UseVisualStyleBackColor = true;
             this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
             // 
@@ -174,7 +178,7 @@
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Location = new System.Drawing.Point(16, 23);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(340, 259);
+            this.groupBox3.Size = new System.Drawing.Size(340, 248);
             this.groupBox3.TabIndex = 1;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Details";
@@ -291,10 +295,10 @@
             this.groupBox2.Controls.Add(this.listView2);
             this.groupBox2.Location = new System.Drawing.Point(369, 23);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(463, 430);
+            this.groupBox2.Size = new System.Drawing.Size(463, 410);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Billets";
+            this.groupBox2.Text = "Billets**";
             // 
             // listView2
             // 
@@ -307,7 +311,7 @@
             this.listView2.Location = new System.Drawing.Point(3, 16);
             this.listView2.MultiSelect = false;
             this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(457, 411);
+            this.listView2.Size = new System.Drawing.Size(457, 391);
             this.listView2.TabIndex = 1;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.DoubleClick += new System.EventHandler(this.listView2_DoubleClick);
@@ -372,6 +376,12 @@
             this.editBillitToolStripMenuItem.Text = "Edit Billit";
             this.editBillitToolStripMenuItem.Click += new System.EventHandler(this.editBillitToolStripMenuItem_Click);
             // 
+            // importBilletChangesMenuItem
+            // 
+            this.importBilletChangesMenuItem.Name = "importBilletChangesMenuItem";
+            this.importBilletChangesMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.importBilletChangesMenuItem.Text = "Import Billet Changes";
+            // 
             // removeBilletMenuItem
             // 
             this.removeBilletMenuItem.Name = "removeBilletMenuItem";
@@ -423,12 +433,12 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.listView1);
-            this.groupBox1.Location = new System.Drawing.Point(16, 288);
+            this.groupBox1.Location = new System.Drawing.Point(16, 280);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(340, 165);
+            this.groupBox1.Size = new System.Drawing.Size(340, 153);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Sub Units";
+            this.groupBox1.Text = "Sub Units*";
             // 
             // listView1
             // 
@@ -443,7 +453,7 @@
             this.listView1.Location = new System.Drawing.Point(3, 16);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(334, 146);
+            this.listView1.Size = new System.Drawing.Size(334, 134);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -453,11 +463,12 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 250;
+            this.columnHeader1.Width = 275;
             // 
             // columnHeader4
             // 
             this.columnHeader4.Text = "Count";
+            this.columnHeader4.Width = 55;
             // 
             // subUnitsContextMenu
             // 
@@ -523,12 +534,6 @@
             this.headerPanel.TabIndex = 4;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
-            // importBilletChangesMenuItem
-            // 
-            this.importBilletChangesMenuItem.Name = "importBilletChangesMenuItem";
-            this.importBilletChangesMenuItem.Size = new System.Drawing.Size(200, 22);
-            this.importBilletChangesMenuItem.Text = "Import Billet Changes";
-            // 
             // label6
             // 
             this.label6.BackColor = System.Drawing.Color.Transparent;
@@ -542,6 +547,27 @@
             this.label6.Size = new System.Drawing.Size(242, 37);
             this.label6.TabIndex = 0;
             this.label6.Text = "Unit Template Manager";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.label14.Location = new System.Drawing.Point(16, 435);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(292, 13);
+            this.label14.TabIndex = 41;
+            this.label14.Text = "* Click, hold and drag unit templates to add them as sub units";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.label8.Location = new System.Drawing.Point(369, 435);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(463, 13);
+            this.label8.TabIndex = 42;
+            this.label8.Text = "** Billets are saved after the Billet Editor screen is closed. Right click to ope" +
+    "n context menu options";
             // 
             // UnitTypeManagerForm
             // 
@@ -561,6 +587,7 @@
             this.Text = "Unit Template Manager";
             this.sidePanel.ResumeLayout(false);
             this.mainPanel.ResumeLayout(false);
+            this.mainPanel.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -625,5 +652,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem editBillitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importBilletChangesMenuItem;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label8;
     }
 }

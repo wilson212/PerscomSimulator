@@ -217,12 +217,12 @@
             // columnHeader4
             // 
             this.columnHeader4.Text = "";
-            this.columnHeader4.Width = 55;
+            this.columnHeader4.Width = 50;
             // 
             // columnHeader5
             // 
             this.columnHeader5.Text = "";
-            this.columnHeader5.Width = 175;
+            this.columnHeader5.Width = 195;
             // 
             // columnHeader6
             // 
@@ -311,17 +311,16 @@
             // columnHeader1
             // 
             this.columnHeader1.Text = "";
-            this.columnHeader1.Width = 65;
             // 
             // columnHeader2
             // 
             this.columnHeader2.Text = "";
-            this.columnHeader2.Width = 220;
+            this.columnHeader2.Width = 255;
             // 
             // columnHeader3
             // 
             this.columnHeader3.Text = "";
-            this.columnHeader3.Width = 120;
+            this.columnHeader3.Width = 90;
             // 
             // contextMenuStrip1
             // 

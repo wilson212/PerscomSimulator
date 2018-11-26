@@ -78,28 +78,18 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label13 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.groupingListView = new System.Windows.Forms.ListViewWithReordering();
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addGroupingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editGroupItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.removeItemToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.sortingListView = new System.Windows.Forms.ListViewWithReordering();
-            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.expSortingMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editSortingItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editSortingItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.removeItemToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.inverseCheckBox = new Perscom.MyCheckBox();
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -122,7 +112,19 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.headerPanel = new System.Windows.Forms.Panel();
+            this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groupingListView = new System.Windows.Forms.ListViewWithReordering();
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.sortingListView = new System.Windows.Forms.ListViewWithReordering();
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.inverseCheckBox = new Perscom.MyCheckBox();
             this.label6 = new System.Windows.Forms.ShadowLabel();
+            this.label14 = new System.Windows.Forms.Label();
             this.mainPanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -628,6 +630,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label14);
             this.tabPage2.Controls.Add(this.label13);
             this.tabPage2.Controls.Add(this.groupBox9);
             this.tabPage2.Controls.Add(this.groupBox8);
@@ -644,7 +647,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(32, 23);
+            this.label13.Location = new System.Drawing.Point(32, 18);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(842, 26);
             this.label13.TabIndex = 39;
@@ -653,59 +656,12 @@
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.groupingListView);
-            this.groupBox9.Location = new System.Drawing.Point(18, 295);
+            this.groupBox9.Location = new System.Drawing.Point(18, 275);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(465, 190);
             this.groupBox9.TabIndex = 38;
             this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Group Soldiers By Having Experience (Soft Filter)";
-            // 
-            // groupingListView
-            // 
-            this.groupingListView.AllowDrop = true;
-            this.groupingListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.groupingListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.groupingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader8,
-            this.columnHeader12,
-            this.columnHeader13,
-            this.columnHeader14});
-            this.groupingListView.ContextMenuStrip = this.groupContextMenuStrip;
-            this.groupingListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupingListView.FullRowSelect = true;
-            this.groupingListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.groupingListView.Location = new System.Drawing.Point(3, 16);
-            this.groupingListView.MultiSelect = false;
-            this.groupingListView.Name = "groupingListView";
-            this.groupingListView.Scrollable = false;
-            this.groupingListView.Size = new System.Drawing.Size(459, 171);
-            this.groupingListView.TabIndex = 1;
-            this.groupingListView.UseCompatibleStateImageBehavior = false;
-            this.groupingListView.View = System.Windows.Forms.View.Details;
-            this.groupingListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.groupingListView_ColumnWidthChanging);
-            this.groupingListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.groupingListView_DragDrop);
-            this.groupingListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.groupingListView_DragEnter);
-            this.groupingListView.DragOver += new System.Windows.Forms.DragEventHandler(this.groupingListView_DragOver);
-            this.groupingListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.groupingListView_MouseDoubleClick);
-            // 
-            // columnHeader8
-            // 
-            this.columnHeader8.Text = "";
-            // 
-            // columnHeader12
-            // 
-            this.columnHeader12.Text = "";
-            this.columnHeader12.Width = 225;
-            // 
-            // columnHeader13
-            // 
-            this.columnHeader13.Text = "";
-            this.columnHeader13.Width = 125;
-            // 
-            // columnHeader14
-            // 
-            this.columnHeader14.Text = "";
-            this.columnHeader14.Width = 40;
+            this.groupBox9.Text = "Group Soldiers By Having Experience (Soft Filter)*";
             // 
             // groupContextMenuStrip
             // 
@@ -747,54 +703,12 @@
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.sortingListView);
-            this.groupBox8.Location = new System.Drawing.Point(511, 295);
+            this.groupBox8.Location = new System.Drawing.Point(511, 275);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(465, 190);
             this.groupBox8.TabIndex = 37;
             this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Experience Sorting";
-            // 
-            // sortingListView
-            // 
-            this.sortingListView.AllowDrop = true;
-            this.sortingListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.sortingListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.sortingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader9,
-            this.columnHeader10,
-            this.columnHeader11});
-            this.sortingListView.ContextMenuStrip = this.expSortingMenuStrip;
-            this.sortingListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sortingListView.FullRowSelect = true;
-            this.sortingListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.sortingListView.Location = new System.Drawing.Point(3, 16);
-            this.sortingListView.MultiSelect = false;
-            this.sortingListView.Name = "sortingListView";
-            this.sortingListView.Scrollable = false;
-            this.sortingListView.Size = new System.Drawing.Size(459, 171);
-            this.sortingListView.TabIndex = 0;
-            this.sortingListView.UseCompatibleStateImageBehavior = false;
-            this.sortingListView.View = System.Windows.Forms.View.Details;
-            this.sortingListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.sortingListView_ColumnWidthChanging);
-            this.sortingListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.sortingListView_DragDrop);
-            this.sortingListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.sortingListView_DragEnter);
-            this.sortingListView.DragOver += new System.Windows.Forms.DragEventHandler(this.sortingListView_DragOver);
-            this.sortingListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.sortingListView_MouseDoubleClick);
-            // 
-            // columnHeader9
-            // 
-            this.columnHeader9.Text = "";
-            this.columnHeader9.Width = 70;
-            // 
-            // columnHeader10
-            // 
-            this.columnHeader10.Text = "";
-            this.columnHeader10.Width = 280;
-            // 
-            // columnHeader11
-            // 
-            this.columnHeader11.Text = "";
-            this.columnHeader11.Width = 100;
+            this.groupBox8.Text = "Experience Sorting*";
             // 
             // expSortingMenuStrip
             // 
@@ -836,23 +750,12 @@
             // 
             this.groupBox5.Controls.Add(this.inverseCheckBox);
             this.groupBox5.Controls.Add(this.listView1);
-            this.groupBox5.Location = new System.Drawing.Point(18, 85);
+            this.groupBox5.Location = new System.Drawing.Point(18, 65);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(465, 190);
             this.groupBox5.TabIndex = 36;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Required Specialties For Soldier Consideration";
-            // 
-            // inverseCheckBox
-            // 
-            this.inverseCheckBox.AutoSize = true;
-            this.inverseCheckBox.BackColor = System.Drawing.Color.Transparent;
-            this.inverseCheckBox.Location = new System.Drawing.Point(289, 19);
-            this.inverseCheckBox.Name = "inverseCheckBox";
-            this.inverseCheckBox.Size = new System.Drawing.Size(129, 17);
-            this.inverseCheckBox.TabIndex = 4;
-            this.inverseCheckBox.Text = "Inverse Requirements";
-            this.inverseCheckBox.UseVisualStyleBackColor = true;
             // 
             // listView1
             // 
@@ -902,7 +805,7 @@
             this.groupBox6.Controls.Add(this.orRadioButton);
             this.groupBox6.Controls.Add(this.label12);
             this.groupBox6.Controls.Add(this.filterListView);
-            this.groupBox6.Location = new System.Drawing.Point(511, 85);
+            this.groupBox6.Location = new System.Drawing.Point(511, 65);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(465, 190);
             this.groupBox6.TabIndex = 34;
@@ -913,7 +816,7 @@
             // 
             this.andRadioButton.AutoSize = true;
             this.andRadioButton.Checked = true;
-            this.andRadioButton.Location = new System.Drawing.Point(291, 18);
+            this.andRadioButton.Location = new System.Drawing.Point(156, 18);
             this.andRadioButton.Name = "andRadioButton";
             this.andRadioButton.Size = new System.Drawing.Size(36, 17);
             this.andRadioButton.TabIndex = 51;
@@ -925,7 +828,7 @@
             // orRadioButton
             // 
             this.orRadioButton.AutoSize = true;
-            this.orRadioButton.Location = new System.Drawing.Point(333, 18);
+            this.orRadioButton.Location = new System.Drawing.Point(198, 18);
             this.orRadioButton.Name = "orRadioButton";
             this.orRadioButton.Size = new System.Drawing.Size(43, 17);
             this.orRadioButton.TabIndex = 50;
@@ -935,7 +838,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(233, 20);
+            this.label12.Location = new System.Drawing.Point(98, 20);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(52, 13);
             this.label12.TabIndex = 49;
@@ -946,6 +849,7 @@
             this.filterListView.AllowDrop = true;
             this.filterListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.filterListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader15,
             this.columnHeader3,
             this.columnHeader5,
             this.columnHeader6});
@@ -965,17 +869,18 @@
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "Name";
-            this.columnHeader3.Width = 210;
+            this.columnHeader3.Text = "";
+            this.columnHeader3.Width = 230;
             // 
             // columnHeader5
             // 
             this.columnHeader5.Text = "";
-            this.columnHeader5.Width = 180;
+            this.columnHeader5.Width = 125;
             // 
             // columnHeader6
             // 
-            this.columnHeader6.Text = "Value";
+            this.columnHeader6.Text = "";
+            this.columnHeader6.Width = 50;
             // 
             // requiredExpMenuStrip
             // 
@@ -1047,6 +952,110 @@
             this.headerPanel.TabIndex = 3;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
+            // columnHeader15
+            // 
+            this.columnHeader15.Text = "";
+            this.columnHeader15.Width = 50;
+            // 
+            // groupingListView
+            // 
+            this.groupingListView.AllowDrop = true;
+            this.groupingListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupingListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.groupingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader8,
+            this.columnHeader12,
+            this.columnHeader13,
+            this.columnHeader14});
+            this.groupingListView.ContextMenuStrip = this.groupContextMenuStrip;
+            this.groupingListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupingListView.FullRowSelect = true;
+            this.groupingListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.groupingListView.Location = new System.Drawing.Point(3, 16);
+            this.groupingListView.MultiSelect = false;
+            this.groupingListView.Name = "groupingListView";
+            this.groupingListView.Scrollable = false;
+            this.groupingListView.Size = new System.Drawing.Size(459, 171);
+            this.groupingListView.TabIndex = 1;
+            this.groupingListView.UseCompatibleStateImageBehavior = false;
+            this.groupingListView.View = System.Windows.Forms.View.Details;
+            this.groupingListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.groupingListView_ColumnWidthChanging);
+            this.groupingListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.groupingListView_DragDrop);
+            this.groupingListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.groupingListView_DragEnter);
+            this.groupingListView.DragOver += new System.Windows.Forms.DragEventHandler(this.groupingListView_DragOver);
+            this.groupingListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.groupingListView_MouseDoubleClick);
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "";
+            // 
+            // columnHeader12
+            // 
+            this.columnHeader12.Text = "";
+            this.columnHeader12.Width = 225;
+            // 
+            // columnHeader13
+            // 
+            this.columnHeader13.Text = "";
+            this.columnHeader13.Width = 125;
+            // 
+            // columnHeader14
+            // 
+            this.columnHeader14.Text = "";
+            this.columnHeader14.Width = 40;
+            // 
+            // sortingListView
+            // 
+            this.sortingListView.AllowDrop = true;
+            this.sortingListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.sortingListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.sortingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader9,
+            this.columnHeader10,
+            this.columnHeader11});
+            this.sortingListView.ContextMenuStrip = this.expSortingMenuStrip;
+            this.sortingListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sortingListView.FullRowSelect = true;
+            this.sortingListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.sortingListView.Location = new System.Drawing.Point(3, 16);
+            this.sortingListView.MultiSelect = false;
+            this.sortingListView.Name = "sortingListView";
+            this.sortingListView.Scrollable = false;
+            this.sortingListView.Size = new System.Drawing.Size(459, 171);
+            this.sortingListView.TabIndex = 0;
+            this.sortingListView.UseCompatibleStateImageBehavior = false;
+            this.sortingListView.View = System.Windows.Forms.View.Details;
+            this.sortingListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.sortingListView_ColumnWidthChanging);
+            this.sortingListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.sortingListView_DragDrop);
+            this.sortingListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.sortingListView_DragEnter);
+            this.sortingListView.DragOver += new System.Windows.Forms.DragEventHandler(this.sortingListView_DragOver);
+            this.sortingListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.sortingListView_MouseDoubleClick);
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "";
+            // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "";
+            this.columnHeader10.Width = 300;
+            // 
+            // columnHeader11
+            // 
+            this.columnHeader11.Text = "";
+            this.columnHeader11.Width = 90;
+            // 
+            // inverseCheckBox
+            // 
+            this.inverseCheckBox.AutoSize = true;
+            this.inverseCheckBox.BackColor = System.Drawing.Color.Transparent;
+            this.inverseCheckBox.Location = new System.Drawing.Point(289, 19);
+            this.inverseCheckBox.Name = "inverseCheckBox";
+            this.inverseCheckBox.Size = new System.Drawing.Size(129, 17);
+            this.inverseCheckBox.TabIndex = 4;
+            this.inverseCheckBox.Text = "Inverse Requirements";
+            this.inverseCheckBox.UseVisualStyleBackColor = true;
+            // 
             // label6
             // 
             this.label6.BackColor = System.Drawing.Color.Transparent;
@@ -1060,6 +1069,16 @@
             this.label6.Size = new System.Drawing.Size(242, 37);
             this.label6.TabIndex = 0;
             this.label6.Text = "Billet Manager";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.label14.Location = new System.Drawing.Point(15, 468);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(184, 13);
+            this.label14.TabIndex = 40;
+            this.label14.Text = "* Click, hold and drag to re-order items";
             // 
             // BilletEditorForm
             // 
@@ -1207,5 +1226,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.ToolStripMenuItem editSortingItemToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader columnHeader14;
+        private System.Windows.Forms.ColumnHeader columnHeader15;
+        private System.Windows.Forms.Label label14;
     }
 }

@@ -1668,43 +1668,43 @@ namespace Perscom
                 IsDisposed = true;
 
                 // Clear positions
-                Positions.Clear();
+                Positions?.Clear();
                 Positions = null;
 
                 // Clear soldiers
-                ActiveDutySoldiers.Clear();
+                ActiveDutySoldiers?.Clear();
                 ActiveDutySoldiers = null;
 
                 // Clear soldier generators
-                SoldierGenerators.Clear();
+                SoldierGenerators?.Clear();
                 SoldierGenerators = null;
 
                 // Clear everything!
-                RankStatistics.Clear();
+                RankStatistics?.Clear();
                 RankStatistics = null;
 
-                SpecialtyStatistics.Clear();
+                SpecialtyStatistics?.Clear();
                 SpecialtyStatistics = null;
 
-                BilletStatistics.Clear();
+                BilletStatistics?.Clear();
                 BilletStatistics = null;
 
-                PositionStatistics.Clear();
+                PositionStatistics?.Clear();
                 PositionStatistics = null;
 
-                BilletExperience.Clear();
+                BilletExperience?.Clear();
                 BilletExperience = null;
 
-                BilletFilters.Clear();
+                BilletFilters?.Clear();
                 BilletFilters = null;
 
-                BilletGroups.Clear();
+                BilletGroups?.Clear();
                 BilletGroups = null;
 
-                BilletOrdering.Clear();
+                BilletOrdering?.Clear();
                 BilletOrdering = null;
 
-                SoldierPoolFiltering.Clear();
+                SoldierPoolFiltering?.Clear();
                 SoldierPoolFiltering = null;
             }
         }
