@@ -178,7 +178,7 @@ namespace Perscom
 
             string query = "SELECT * FROM `UnitAttachment` WHERE `ParentId`=" + unit.Id;
             var attachments = Database.Query<UnitAttachment>(query);
-            PopulateTree(ref root, unit.Attachments);
+            PopulateTree(root, attachments);
 
             // An exception is thrown here if we close the Window too quickly
             try
@@ -198,7 +198,7 @@ namespace Perscom
             catch (InvalidOperationException) { }
         }
 
-        public void PopulateTree(ref TreeNode root, IEnumerable<UnitAttachment> attachments)
+        public void PopulateTree(TreeNode parent, IEnumerable<UnitAttachment> attachments)
         {
             // An exception is thrown here if we clost the Window too quickly
             try
@@ -215,13 +215,34 @@ namespace Perscom
 
                     query = "SELECT * FROM `UnitAttachment` WHERE `ParentId`=" + unit.Id;
                     var children = Database.Query<UnitAttachment>(query);
-                    PopulateTree(ref child, children);
-                    root.Nodes.Add(child);
+
+                    // Since we are cross-threaded, invoke changes
+                    treeView1.Invoke((MethodInvoker)delegate
+                    {
+                        parent.Nodes.Add(child);
+                    });
                 }
             }
             catch (ObjectDisposedException)
             {
 
+            }
+        }
+
+        private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            // Get selected Node
+            foreach (TreeNode child in e.Node.Nodes)
+            {
+                // Grab child unit
+                Unit childUnit = (Unit)child.Tag;
+
+                // Grab attachments
+                string query = "SELECT * FROM `UnitAttachment` WHERE `ParentId`=" + childUnit.Id;
+                var attachments = Database.Query<UnitAttachment>(query);
+
+                // Load each childs children
+                PopulateTree(child, attachments);
             }
         }
 
@@ -992,8 +1013,10 @@ namespace Perscom
             {
                 // Get selected Node
                 TreeNode node = treeView1.SelectedNode;
-                Unit unit = node.Tag as Unit;
+                if (node == null) return;
 
+                // Grab selected unit from Node tag
+                Unit unit = node.Tag as Unit;
                 if (unit == null) return;
 
                 // Prepare update

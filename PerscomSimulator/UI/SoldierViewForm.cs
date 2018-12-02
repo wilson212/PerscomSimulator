@@ -113,27 +113,42 @@ namespace Perscom
                 char code = char.ToUpper(RankCache.GetCodeByRankType(info.ToRank.Type));
                 string desc = String.Empty;
 
+                // Create row
+                row = new DataGridViewRow();
+                row.CreateCells(dataGridView1);
+
+                // Update last grade change
                 if (toRank.Grade == soldier.Rank.Grade && toRank.Type == soldier.Rank.Type)
                 {
                     lastPromo = info.Date.Date;
                 }
 
                 // Get description of the move
-                if (toRank.Grade > fromRank.Grade || toRank.Type != fromRank.Type)
+                if (toRank.Type != fromRank.Type)
                 {
                     desc = $"Promoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
+                    row.DefaultCellStyle.SelectionBackColor = Color.LightSteelBlue;
+                    row.DefaultCellStyle.BackColor = Color.LightSteelBlue;
+                }
+                else if (toRank.Grade > fromRank.Grade)
+                {
+                    desc = $"Promoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
+                    //row.DefaultCellStyle.SelectionBackColor = Color.PaleGreen;
+                    //row.DefaultCellStyle.BackColor = Color.PaleGreen;
                 }
                 else if (toRank.Grade < fromRank.Grade)
                 {
                     desc = $"Demoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
+                    row.DefaultCellStyle.SelectionBackColor = Color.LightCoral;
+                    row.DefaultCellStyle.BackColor = Color.LightCoral;
                 }
                 else
                 {
                     desc = $"Laterally Promoted to {info.ToRank.Name} ({code}-{toRank.Grade})";
+                    //row.DefaultCellStyle.SelectionBackColor = Color.Plum;
+                    //row.DefaultCellStyle.BackColor = Color.Plum;
                 }
 
-                row = new DataGridViewRow();
-                row.CreateCells(dataGridView1);
                 row.SetValues(new object[]
                 {
                     info.Date.Date.ToShortDateString(),

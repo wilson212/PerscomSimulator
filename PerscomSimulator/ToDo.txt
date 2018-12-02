@@ -2,3 +2,9 @@
  - Add UnitTemplate statistics
  - Add a traits system?
  - Billet Rank Ranges! Maybe add a property to Billet? (Billet.AutoPromoteInRankRange)
+ - Add billet selection procedures
+ - Establish Rank Grades seperate from Ranks
+
+-> SelectionProcedure (Id, Name)
+--> BilletProcedure (ProcedureId, BilletId, )
+---> 
