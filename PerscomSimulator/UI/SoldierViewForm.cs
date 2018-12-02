@@ -139,7 +139,7 @@ namespace Perscom
                     info.Date.Date.ToShortDateString(),
                     desc,
                     Math.Round((double)info.TimeInService / 12, 2).ToString(),
-                    info.PreviousTimeInGrade
+                    info.PreviousTimeInRank
                 });
                 dataGridView1.Rows.Add(row);
             }

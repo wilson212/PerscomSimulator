@@ -31,6 +31,12 @@
         /// Should be laterally promoted because they are in a position of 
         /// the same grade as their current rank, but different variant.
         /// </summary>
-        Lateral
+        Lateral,
+
+        /// <summary>
+        /// Should be demoted in grade due to being in a position of
+        /// a lower grade than thier current rank
+        /// </summary>
+        Demotion
     }
 }

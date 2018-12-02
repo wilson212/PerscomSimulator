@@ -46,11 +46,11 @@ namespace Perscom.Database
         public int IterationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of months Time in Grade this <see cref="Soldier"/>
+        /// Gets or sets the number of months this <see cref="Soldier"/>
         /// held the <see cref="FromRank"/>
         /// </summary>
         [Column, Required]
-        public int PreviousTimeInGrade { get; set; }
+        public int PreviousTimeInRank { get; set; }
 
         /// <summary>
         /// Gets or sets the number of months Time in Service this <see cref="Soldier"/>
@@ -58,6 +58,12 @@ namespace Perscom.Database
         /// </summary>
         [Column, Required]
         public int TimeInService { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of months Time in Grade for this <see cref="Soldier"/>
+        /// </summary>
+        [Column, Required]
+        public int TimeSinceLastGradeChange { get; set; }
 
         #endregion
 

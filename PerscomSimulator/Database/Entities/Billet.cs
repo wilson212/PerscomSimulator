@@ -50,6 +50,12 @@ namespace Perscom.Database
         public int MaxRankId { get; set; }
 
         /// <summary>
+        /// Gets or sets the <see cref="BilletFlag"/> of this Billet
+        /// </summary>
+        [Column, Required]
+        public BilletFlag Flag { get; set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="Echelon"/> level in which we will find soldiers
         /// to fill this position
         /// </summary>
@@ -123,6 +129,23 @@ namespace Perscom.Database
         /// </summary>
         [Column, Required, Default(0)]
         public BilletSelection Selection { get; set; } = BilletSelection.PromotionOrLateral;
+
+        /// <summary>
+        /// Indicates whether the soldier holding this <see cref="Billet"/> will be
+        /// demoted in <see cref="Database.Rank.Grade"/> if their current grade
+        /// is higher than the <see cref="MaxRank.Grade"/>. This option is only
+        /// used if the <see cref="Selection"/> equals <see cref="BilletSelection.CustomGenerator"/>
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool DemoteOverRanked { get; set; } = false;
+
+        /// <summary>
+        /// Indicates whether the soldier holding this <see cref="Billet"/> will be
+        /// automatically promoted in <see cref="Database.Rank.Grade"/> if their current grade
+        /// is lower than the <see cref="MaxRank.Grade"/>.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public bool AutoPromoteInRankRange { get; set; } = false;
 
         /// <summary>
         /// Indicates whether the required <see cref="Specialty"/> are inversed, meaning

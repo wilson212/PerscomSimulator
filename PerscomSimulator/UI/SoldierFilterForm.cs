@@ -28,18 +28,6 @@ namespace Perscom
             // Set value first
             numericUpDown1.SetValueInRange(filter.RightValue);
 
-            // Then add operator types
-            foreach (var val in Enum.GetValues(typeof(ComparisonOperator)).Cast<ComparisonOperator>())
-            {
-                operatorSelectBox.Items.Add(val);
-
-                // Is this what we are editing?
-                if (Selected.Operator == val)
-                {
-                    operatorSelectBox.SelectedIndex = operatorSelectBox.Items.Count - 1;
-                }
-            }
-
             // Finally add methods
             foreach (var val in Enum.GetValues(typeof(ClauseLeftSelector)).Cast<ClauseLeftSelector>())
             {
@@ -54,7 +42,53 @@ namespace Perscom
 
             // Fill select box
             FillSelectBox(false);
+
+            // Then add operator types
+            //FillOperatorCatagories();
+
+            // Button
             addButton.Enabled = (Selected.SelectorId == (int)ClauseLeftSelector.SoldierExperience);
+        }
+
+        private void FillOperatorCatagories()
+        {
+            // Clear old junk
+            operatorSelectBox.Items.Clear();
+
+            // Check for a bool based value
+            bool isBoolValue = (methodSelectBox.SelectedIndex == 1 && selectorSelectBox.SelectedIndex >= 2);
+            if (isBoolValue && operatorSelectBox.Items.Count != 2)
+            {
+                operatorSelectBox.Items.Add(ComparisonOperator.Equals);
+                operatorSelectBox.Items.Add(ComparisonOperator.NotEqualTo);
+
+                // Is this what we are editing?
+                operatorSelectBox.SelectedIndex = (Selected.Operator == ComparisonOperator.NotEqualTo) ? 1 : 0;
+
+                // Set Min and Max values
+                numericUpDown1.Value = 0;
+                numericUpDown1.Maximum = 1;
+                numericUpDown1.SetValueInRange(Selected.RightValue);
+            }
+            else if (operatorSelectBox.Items.Count == 0 || operatorSelectBox.Items.Count == 2)
+            {
+                // Then add operator types
+                foreach (var val in Enum.GetValues(typeof(ComparisonOperator)).Cast<ComparisonOperator>())
+                {
+                    operatorSelectBox.Items.Add(val);
+
+                    // Is this what we are editing?
+                    if (Selected.Operator == val)
+                    {
+                        operatorSelectBox.SelectedIndex = operatorSelectBox.Items.Count - 1;
+                    }
+                }
+
+                // Set Min and Max values
+                numericUpDown1.Value = 0;
+                numericUpDown1.Maximum = 1000;
+                numericUpDown1.SetValueInRange(Selected.RightValue);
+            }
         }
 
         private void FillSelectBox(bool methodChanged)
@@ -127,6 +161,9 @@ namespace Perscom
         private void selectorSelectBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             addButton.Enabled = (selectorSelectBox.SelectedIndex == (int)ClauseLeftSelector.SoldierExperience);
+
+            // Refill options
+            FillOperatorCatagories();
         }
 
         private void addButton_Click(object sender, EventArgs e)

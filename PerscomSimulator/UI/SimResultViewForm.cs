@@ -433,10 +433,17 @@ namespace Perscom
             RankType type = (RankType)rankTypeBox1.SelectedItem;
             var ranks = RankCache.GetRankListByType(type);
 
+            // Check for Specialty. If we have one, switch the rank type to match
+            if (specialty != null && specialty.Type != type)
+            {
+                rankTypeBox1.SelectedIndex = (int)specialty.Type;
+                return;
+            }
+
             // Grab filtered soldier list
             var soldierData = (specialty == null) 
-                ? RankStatistics[selected.Id][type]
-                : SpecialtyStatistics[selected.Id][type][specialty.Id];
+            ? RankStatistics[selected.Id][type]
+            : SpecialtyStatistics[selected.Id][type][specialty.Id];
 
             // Plot the average time in grade for each grade
             foreach (var rank in soldierData.OrderBy(x => x.Key).Take(soldierData.Count - 1))
@@ -472,6 +479,14 @@ namespace Perscom
             chart2.Series[0].Points.Clear();
             RankType type = (RankType)rankTypeBox2.SelectedItem;
             var ranks = RankCache.GetRankListByType(type);
+
+            // Check for Specialty. If we have one, switch the rank type to match
+            if (specialty != null && specialty.Type != type)
+            {
+                // This will Invoke this method again, so return afterwards
+                rankTypeBox2.SelectedIndex = (int)specialty.Type;
+                return;
+            }
 
             // Grab filtered soldier list
             var soldierData = (specialty == null)
@@ -513,6 +528,14 @@ namespace Perscom
             RankType type = (RankType)rankTypeBox3.SelectedItem;
             var ranks = RankCache.GetRankListByType(type);
 
+            // Check for Specialty. If we have one, switch the rank type to match
+            if (specialty != null && specialty.Type != type)
+            {
+                // This will Invoke this method again, so return afterwards
+                rankTypeBox3.SelectedIndex = (int)specialty.Type;
+                return;
+            }
+
             // Grab filtered soldier list
             var soldierData = (specialty == null)
                 ? RankStatistics[selected.Id][type]
@@ -551,6 +574,14 @@ namespace Perscom
             chart4.Series[1].Points.Clear();
             RankType type = (RankType)rankTypeBox4.SelectedItem;
             var ranks = RankCache.GetRankListByType(type);
+
+            // Check for Specialty. If we have one, switch the rank type to match
+            if (specialty != null && specialty.Type != type)
+            {
+                // This will Invoke this method again, so return afterwards
+                rankTypeBox4.SelectedIndex = (int)specialty.Type;
+                return;
+            }
 
             // Grab filtered soldier list
             var soldierData = (specialty == null)
@@ -601,6 +632,14 @@ namespace Perscom
             Series series = promotionPieChart.Series[0];
             RankType type = (RankType)rankTypeBox5.SelectedItem;
             double totalYears = (int)TotalYearsRan;
+
+            // Check for Specialty. If we have one, switch the rank type to match
+            if (specialty != null && specialty.Type != type)
+            {
+                // This will Invoke this method again, so return afterwards
+                rankTypeBox5.SelectedIndex = (int)specialty.Type;
+                return;
+            }
 
             // Grab filtered soldier list
             var soldierData = (specialty == null)

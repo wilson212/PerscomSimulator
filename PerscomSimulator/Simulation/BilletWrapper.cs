@@ -49,6 +49,10 @@ namespace Perscom.Simulation
 
         public BilletSelection Selection => Billet.Selection;
 
+        public bool AutoPromoteInRankRange => Billet.AutoPromoteInRankRange;
+
+        public bool DemoteOverRanked => Billet.DemoteOverRanked;
+
         protected static Dictionary<int, BilletWrapper> Cache { get; set; }
 
         static BilletWrapper()

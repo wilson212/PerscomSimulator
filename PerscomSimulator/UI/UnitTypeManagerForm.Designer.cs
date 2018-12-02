@@ -35,6 +35,8 @@
             this.deleteButton = new System.Windows.Forms.Button();
             this.newButton = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             this.applyButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.shortNameBox = new System.Windows.Forms.TextBox();
@@ -80,8 +82,6 @@
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.label14 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.sidePanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -151,6 +151,27 @@
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(844, 512);
             this.mainPanel.TabIndex = 9;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.label8.Location = new System.Drawing.Point(369, 435);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(463, 13);
+            this.label8.TabIndex = 42;
+            this.label8.Text = "** Billets are saved after the Billet Editor screen is closed. Right click to ope" +
+    "n context menu options";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.label14.Location = new System.Drawing.Point(16, 435);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(292, 13);
+            this.label14.TabIndex = 41;
+            this.label14.Text = "* Click, hold and drag unit templates to add them as sub units";
             // 
             // applyButton
             // 
@@ -341,7 +362,7 @@
             this.toolStripSeparator2,
             this.viewModeToolStripMenuItem});
             this.billetsContextMenu.Name = "billetsContextMenu";
-            this.billetsContextMenu.Size = new System.Drawing.Size(201, 198);
+            this.billetsContextMenu.Size = new System.Drawing.Size(201, 220);
             this.billetsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.billetsContextMenu_Opening);
             // 
             // addBilletMenuItem
@@ -547,27 +568,6 @@
             this.label6.Size = new System.Drawing.Size(242, 37);
             this.label6.TabIndex = 0;
             this.label6.Text = "Unit Template Manager";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
-            this.label14.Location = new System.Drawing.Point(16, 435);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(292, 13);
-            this.label14.TabIndex = 41;
-            this.label14.Text = "* Click, hold and drag unit templates to add them as sub units";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
-            this.label8.Location = new System.Drawing.Point(369, 435);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(463, 13);
-            this.label8.TabIndex = 42;
-            this.label8.Text = "** Billets are saved after the Billet Editor screen is closed. Right click to ope" +
-    "n context menu options";
             // 
             // UnitTypeManagerForm
             // 

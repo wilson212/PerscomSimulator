@@ -47,7 +47,7 @@ namespace Perscom
             CancellationToken token)
         {
             var wrapper = UnitTemplateWrapper.FetchCache(template);
-            return BuildUnit(db, wrapper, progress, token, null, 1);
+            return BuildUnit(db, wrapper, progress, token, null, 1, 1);
         }
 
         private static UnitWrapper BuildUnit(
@@ -56,13 +56,14 @@ namespace Perscom
             IProgress<TaskProgressUpdate> progress,
             CancellationToken token,
             UnitWrapper parent, 
-            int unitIndex)
+            int unitIndex,
+            int typeIndex)
         {
             // Stop if cancel was requested
             token.ThrowIfCancellationRequested();
 
             // Format unit name
-            string unitName = FormatUnitName(template.Template.UnitNameFormat, unitIndex);
+            string unitName = FormatUnitName(template.Template.UnitNameFormat, unitIndex, typeIndex);
 
             // Update TaskForm progress
             TaskProgressUpdate update = new TaskProgressUpdate();
@@ -72,7 +73,7 @@ namespace Perscom
             // Convert this template to a Unit
             Unit unit = new Unit();
             unit.Name = unitName;
-            unit.UnitCode = FormatUnitName(template.Template.UnitCodeFormat, unitIndex);
+            unit.UnitCode = FormatUnitName(template.Template.UnitCodeFormat, unitIndex, typeIndex);
             unit.UnitTemplateId = template.Template.Id;
             db.Units.Add(unit);
 
@@ -96,10 +97,18 @@ namespace Perscom
 
             // Get a list of sub templates, and convert to real Units
             int i = 0;
+            var unitTypeCounter = new Dictionary<int, int>();
             foreach (UnitTemplateWrapper attachment in template.SubUnits)
             {
+                // Add template type if not existing
+                if (!unitTypeCounter.ContainsKey(attachment.Template.Id))
+                {
+                    unitTypeCounter.Add(attachment.Template.Id, 1);
+                }
+
                 // Skip parent units
-                UnitWrapper wrapper = BuildUnit(db, attachment, progress, token, unitWrap, ++i);
+                int t = unitTypeCounter[attachment.Template.Id];
+                UnitWrapper wrapper = BuildUnit(db, attachment, progress, token, unitWrap, ++i, t);
                 unitWrap.Subunits.Add(wrapper);
 
                 // Create attachment
@@ -109,6 +118,9 @@ namespace Perscom
                     ChildId = wrapper.Unit.Id
                 };
                 db.UnitAttachments.Add(entry);
+
+                // Incrememnt
+                unitTypeCounter[attachment.Template.Id] += 1;
             }
 
             return unitWrap;
@@ -173,7 +185,14 @@ namespace Perscom
                 stats.AddTo(parent);
         }
 
-        private static string FormatUnitName(string name, int unitNumber)
+        /// <summary>
+        /// Formats the unit name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="unitNumber"></param>
+        /// <param name="typeNumber"></param>
+        /// <returns></returns>
+        private static string FormatUnitName(string name, int unitNumber, int typeNumber)
         {
             if (name.Contains('%'))
             {
@@ -185,8 +204,11 @@ namespace Perscom
                         case "n": return unitNumber.ToTitleCase();
                         case "i": return unitNumber.ToString();
                         case "c": return unitNumber.ToCharString(true);
+                        case "N": return typeNumber.ToTitleCase();
+                        case "I": return typeNumber.ToString();
+                        case "C": return typeNumber.ToCharString(true);
                     }
-                });
+                }, RegexOptions.IgnoreCase);
             }
 
             return name;

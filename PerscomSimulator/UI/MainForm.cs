@@ -83,9 +83,18 @@ namespace Perscom
             if (selected == null) return;
 
             // Reset pie chart always!
-            unitPersonelPieChart.Series[0].Points.Clear();
-            Series series = unitRankPieChart.Series[0];
-            series.Points.Clear();
+            foreach (var s in unitRankPieChart.Series)
+            {
+                s.Points.Clear();
+            }
+
+            foreach (var s in unitPersonelPieChart.Series)
+            {
+                s.Points.Clear();
+            }
+
+            // Disable the simulate button, as this can cause errors
+            generateButton.Enabled = false;
 
             // Load the unit, so the soldier counts can be fetched
             UnitStatistics stats = await Task.Run(() => UnitBuilder.GetUnitStatistics(selected));
@@ -94,6 +103,7 @@ namespace Perscom
             RankType type = (rankTypeBox.SelectedIndex == -1) ? RankType.Enlisted : (RankType)rankTypeBox.SelectedItem;
 
             // Setup the enlisted pie chart
+            Series series = unitRankPieChart.Series[0];
             foreach (var item in stats.SoldierCountsByRank[type].OrderByDescending(x => RankCache.RanksById[x.Key].Grade))
             {
                 if (item.Value > 0)
@@ -106,6 +116,7 @@ namespace Perscom
 
             // Switch pie charts
             series = unitPersonelPieChart.Series[0];
+            series.Points.Clear();
 
             // Setup the different soldier type counts
             foreach (RankType rType in Enum.GetValues(typeof(RankType)))
@@ -119,6 +130,10 @@ namespace Perscom
                 int i = series.Points.AddY(total);
                 series.Points[i].LegendText = Enum.GetName(typeof(RankType), rType) + ": " + total;
             }
+
+            // Re-enable the simulate button
+            if (!SimulationRan)
+                generateButton.Enabled = true;
         }
 
         #region Tab Controls Events
@@ -246,7 +261,6 @@ namespace Perscom
                     await Task.Run(() =>
                     {
                         UnitWrapper unit;
-
                         using (var trans = simDb.BeginTransaction())
                         {
                             // Load the Unit and Soldier xml files
@@ -255,6 +269,7 @@ namespace Perscom
                             trans.Commit();
                         }
 
+                        // Create settings
                         SimulatorSettings settings = new SimulatorSettings()
                         {
                             ProcessEnlisted = enlistedMenuItem.Checked,
@@ -262,6 +277,13 @@ namespace Perscom
                             ProcessWarrant = warrantMenuItem.Checked
                         };
 
+                        // Create an update
+                        TaskProgressUpdate update = new TaskProgressUpdate();
+                        update.HeaderText = "Preparing to Run Simulation...";
+                        update.MessageText = "Building simulator cache dictionaries...";
+                        TaskForm.Progress.Report(update);
+
+                        // Run the simulator, properly disposing afterwards to clear memory
                         using (var Simulation = new Simulator(simDb, unit, settings))
                         {
                             Simulation.Run((int)yearsOfSimulate.Value, (int)yearsToSkip.Value, TaskForm.Progress, CancelToken.Token);
@@ -389,9 +411,35 @@ namespace Perscom
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                    // Update charts
+                    // Grab selected template
+                    var selected = (UnitTemplate)unitSelect.SelectedItem;
+                    unitSelect.Items.Clear();
+                    bool set = false;
+
+                    // Clear unit stats
                     UnitBuilder.ClearUnitStats();
-                    FillTab0Report();
+
+                    // Redraw menu
+                    using (AppDatabase db = new AppDatabase())
+                    {
+                        foreach (var template in db.UnitTemplates.OrderByDescending(x => x.Echelon.HierarchyLevel))
+                        {
+                            // Add template
+                            unitSelect.Items.Add(template);
+
+                            // Was this template selected before?
+                            if (selected.Id == template.Id)
+                            {
+                                // This will trigger new Pie Charts on the first tab
+                                unitSelect.SelectedIndex = unitSelect.Items.Count - 1;
+                                set = true;
+                            }
+                        }
+                    }
+
+                    // Update charts
+                    if (!set)
+                        FillTab0Report();
                 }
             }
         }

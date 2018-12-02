@@ -209,7 +209,8 @@ namespace Perscom.Simulation
                 FromRankId = Soldier.RankId,
                 ToRankId = newRank.Id,
                 TimeInService = date.Id - Soldier.EntryIterationId,
-                PreviousTimeInGrade = date.Id - LastPromotionDate.Id
+                PreviousTimeInRank = date.Id - LastPromotionDate.Id,
+                TimeSinceLastGradeChange = date.Id - LastGradeChangeDate.Id
             });
 
             // Remove soldier before promoting!
@@ -265,6 +266,13 @@ namespace Perscom.Simulation
                 return true;
             }
 
+            // Check for demotion
+            if (Rank.Grade > Position.Billet.MaxRank.Grade)
+            {
+                status = PromotableStatus.Demotion;
+                return true;
+            }
+
             // Check if soldier is promotable based on TIG
             int months = currentDate.Id - LastGradeChangeDate.Id;
             bool promotable = (months >= Rank.PromotableAt);
@@ -274,19 +282,25 @@ namespace Perscom.Simulation
             {
                 if (Rank.AutoPromote)
                 {
+                    // Automatic rank promotion
                     status = PromotableStatus.Automatic;
                     return true;
                 }
                 else if (Rank.Grade < Position.Billet.Rank.Grade)
                 {
+                    // Normal billet based promotion
                     status = PromotableStatus.Position;
                     return true;
                 }
-                //
-                // TODO: Billet Rank Ranges! Maybe add a property to Billet? (Billet.AutoPromoteInRankRange)
-                //
+                else if (Position.Billet.AutoPromoteInRankRange && Rank.Grade < Position.Billet.MaxRank.Grade)
+                {
+                    // Automatic billet based promotion
+                    status = PromotableStatus.Position;
+                    return true;
+                }
                 else
                 {
+                    // Normally promotable
                     status = PromotableStatus.Normal;
                     return true;
                 }
@@ -585,6 +599,14 @@ namespace Perscom.Simulation
                     return Position.Billet.Id;
                 case PositionFunction.BilletStature:
                     return Position.Position.Billet.Stature;
+                case PositionFunction.IsNormalAssignment:
+                    return (Position.Billet.Billet.Flag == BilletFlag.NormalAssignment) ? 1 : 0;
+                case PositionFunction.IsCommandPosition:
+                    return (Position.Billet.Billet.Flag == BilletFlag.CommandPosition) ? 1 : 0;
+                case PositionFunction.IsSpecialAssignment:
+                    return (Position.Billet.Billet.Flag == BilletFlag.SpecialAssignment) ? 1 : 0;
+                case PositionFunction.IsStaffPosition:
+                    return (Position.Billet.Billet.Flag == BilletFlag.StaffPosition) ? 1 : 0;
             }
         }
 

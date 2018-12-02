@@ -105,20 +105,20 @@ namespace Perscom
         }
 
         public static IEnumerable<SoldierWrapper> GetPrimeSoldiers(
-            this IEnumerable<SoldierGroupResult> elements)
+            this IEnumerable<SoldierGroupResult> groups)
         {
-            foreach (var element in elements.OrderBy(x => x.Key))
+            foreach (var group in groups.OrderBy(x => x.Key))
             {
                 // Do we even have any elements?
-                if (element.Count > 0)
+                if (group.Count > 0)
                 {
-                    if (element.SubGroups != null && element.SubGroups.Count() > 0)
+                    if (group.SubGroups != null && group.SubGroups.Count() > 0)
                     {
-                        return element.SubGroups.GetPrimeSoldiers();
+                        return group.SubGroups.GetPrimeSoldiers();
                     }
                     else
                     {
-                        return element.Soldiers;
+                        return group.Soldiers;
                     }
                 }
             }

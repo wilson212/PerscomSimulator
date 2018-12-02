@@ -1089,6 +1089,9 @@ namespace Perscom
                     UnitTypeId = SelectedTemplate.Id,
                     ZIndex = billet.ZIndex,
                     Selection = billet.Selection,
+                    DemoteOverRanked = billet.DemoteOverRanked,
+                    AutoPromoteInRankRange = billet.AutoPromoteInRankRange,
+                    Flag = billet.Flag,
                     CanBePromotedEarly = billet.CanBePromotedEarly,
                     CanLateralEarly = billet.CanLateralEarly,
                     ExperienceLogic = billet.ExperienceLogic
@@ -1117,6 +1120,9 @@ namespace Perscom
                 intoBillet.UnitTypeId = SelectedTemplate.Id;
                 intoBillet.ZIndex = billet.ZIndex;
                 intoBillet.Selection = billet.Selection;
+                intoBillet.DemoteOverRanked = billet.DemoteOverRanked;
+                intoBillet.AutoPromoteInRankRange = billet.AutoPromoteInRankRange;
+                intoBillet.Flag = billet.Flag;
                 intoBillet.CanBePromotedEarly = billet.CanBePromotedEarly;
                 intoBillet.CanLateralEarly = billet.CanLateralEarly;
                 intoBillet.ExperienceLogic = billet.ExperienceLogic;

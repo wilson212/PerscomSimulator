@@ -11,7 +11,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(1, 0);
+        public static Version CurrentVersion { get; protected set; } = new Version(1, 2);
 
         /// <summary>
         /// Gets the current database tables version

@@ -46,6 +46,12 @@ namespace Perscom.Database
                     {
                         default:
                             throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
+                        case "1.0":
+                            MigrateTo_1_1();
+                            break;
+                        case "1.1":
+                            MigrateTo_1_2();
+                            break;
                     }
 
                     // Fetch version
@@ -54,6 +60,41 @@ namespace Perscom.Database
 
                 // Always perform a vacuum to optimize the database
                 Database.Execute("VACUUM;");
+            }
+        }
+
+        private void MigrateTo_1_2()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                Database.Execute("ALTER TABLE `Billet` ADD COLUMN `DemoteOverRanked` INTEGER NOT NULL DEFAULT 0;");
+                Database.Execute("ALTER TABLE `Billet` ADD COLUMN `AutoPromoteInRankRange` INTEGER NOT NULL DEFAULT 0;");
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.2"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
+            }
+        }
+
+        private void MigrateTo_1_1()
+        {
+            // Run the update in a transaction
+            using (var trans = Database.BeginTransaction())
+            {
+                // Create queries
+                Database.Execute("ALTER TABLE `Billet` ADD COLUMN `Flag` INTEGER NOT NULL DEFAULT 0;");
+
+                // Update database version
+                string sql = "INSERT INTO `DbVersion`(`Version`, `AppliedOn`) VALUES({0}, {1});";
+                Database.Execute(String.Format(sql, Version.Parse("1.1"), Epoch.Now));
+
+                // Commit
+                trans.Commit();
             }
         }
 

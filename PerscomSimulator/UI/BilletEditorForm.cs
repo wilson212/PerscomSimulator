@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using CrossLite.QueryBuilder;
 using Perscom.Database;
@@ -42,6 +43,9 @@ namespace Perscom
         {
             // Setup form controls
             InitializeComponent();
+            var symbol = new string(Encoding.Default.GetChars(new byte[] { 134 }));
+            groupBox9.Text += String.Concat(" ", symbol);
+            specialLabel.Text = String.Concat(symbol, " ", specialLabel.Text);
             inverseCheckBox.BackColor = Color.Transparent;
 
             // Set internal properties
@@ -54,6 +58,10 @@ namespace Perscom
             // Set form fields if this is an existing billet
             if (billet.Id > 0)
             {
+                // Update header text
+                labelHeader.Text = "Editing Billet #" + billet.Id;
+
+                // Update fields
                 billetNameBox.Text = billet.Name;
                 statureBox.Value = billet.Stature;
                 maxTigBox.Value = billet.MaxTourLength;
@@ -65,6 +73,7 @@ namespace Perscom
                 repeatCheckBox.Checked = billet.Waiverable;
                 zIndexBox.Value = billet.ZIndex;
                 soldierSpawnSelect.SelectedIndex = (int)billet.Selection;
+                demoteCheckBox.Checked = (billet.Selection == BilletSelection.CustomGenerator && billet.DemoteOverRanked);
                 orRadioButton.Checked = (billet.ExperienceLogic == LogicOperator.Or);
 
                 // Get rank index
@@ -362,6 +371,18 @@ namespace Perscom
                 // Experience
                 Experience = db.Experience.ToDictionary(x => x.Id, y => y);
             }
+
+            // Fill Enum selects
+            foreach (var val in Enum.GetValues(typeof(BilletFlag)).Cast<BilletFlag>())
+            {
+                billetFlagSelect.Items.Add(val);
+
+                // Is this what we are editing?
+                if (Billet.Flag == val)
+                {
+                    billetFlagSelect.SelectedIndex = billetFlagSelect.Items.Count - 1;
+                }
+            }
         }
 
         private bool CreatesNewSoldiers()
@@ -468,10 +489,14 @@ namespace Perscom
                     specialtyCheckBox.Checked = true;
 
                 spawnGenSelect.Enabled = true;
+                demoteCheckBox.Enabled = true;
+                demoteCheckBox.Checked = Billet.DemoteOverRanked;
             }
             else
             {
                 spawnGenSelect.Enabled = false;
+                demoteCheckBox.Checked = false;
+                demoteCheckBox.Enabled = false;
             }
         }
 
@@ -534,8 +559,10 @@ namespace Perscom
             Billet.UnitTypeId = Template.Id;
             Billet.BilletCatagoryId = ((BilletCatagory)billetCatSelect.SelectedItem).Id;
             Billet.PromotionPoolId = ((Echelon)promotionPoolSelect.SelectedItem).Id;
+            Billet.Flag = (BilletFlag)billetFlagSelect.SelectedItem;
             Billet.ZIndex = (int)zIndexBox.Value;
             Billet.Selection = (BilletSelection)soldierSpawnSelect.SelectedIndex;
+            Billet.DemoteOverRanked = demoteCheckBox.Checked;
             Billet.ExperienceLogic = (andRadioButton.Checked) ? LogicOperator.And : LogicOperator.Or;
 
             using (AppDatabase db = new AppDatabase())

@@ -179,6 +179,7 @@ namespace Perscom
             foreach (var generator in db.SoldierGenerators)
             {
                 generator.Initialize();
+                var pool = generator.SpawnPools.ToList();
                 SoldierGenerators.Add(generator.Id, generator);
             }
 
@@ -643,6 +644,15 @@ namespace Perscom
                             // Do not log promotion since this is lateral
                             soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
                         }
+                        else if (status == PromotableStatus.Demotion)
+                        {
+                            // Does the position demote over ranked?
+                            if (soldier.Position.Billet.Billet.DemoteOverRanked)
+                            {
+                                // Do not log promotion since this is lateral
+                                soldier.PromoteTo(CurrentIterationDate, position.Billet.MaxRank, Database);
+                            }
+                        }
                     }
                     else if (soldier.IsStandIn())
                     {
@@ -751,14 +761,14 @@ namespace Perscom
             //
             IEnumerable<SoldierGroupResult> groups = null;
 
-            // Do we have experience grouping as well?
+            // Do we have billet grouping as well?
             if (BilletGroups.ContainsKey(billetId))
             {
                 // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
-                var expGroups = BilletGroups[billetId];
+                var selectionGroups = BilletGroups[billetId];
                 groups = soldiers.GroupSoldiersBy(
                     x => GetLateralPromotionGroupId(x, position), 
-                    expGroups, 
+                    selectionGroups, 
                     CurrentIterationDate
                 );
             }
@@ -772,20 +782,24 @@ namespace Perscom
             // hitting Most if Not All grouping requirements
             soldiers = groups.GetPrimeSoldiers();
 
+            // Do we have any soldiers?
+            if (soldiers.Count() == 0)
+                throw new Exception("Group has no prime soldiers, but there was a soldier count");
+
             //
             // 3. Apply soldier ordering
             //
             if (BilletOrdering.ContainsKey(billetId))
             {
-                // Grab experience sorting
-                var experienceSorts = BilletOrdering[billetId];
+                // Grab sorting
+                var selectionSorts = BilletOrdering[billetId];
 
-                // Apply sorting using just experience
-                soldiers = soldiers.OrderSoldiersBy(experienceSorts, CurrentIterationDate);
+                // Apply sorting
+                soldiers = soldiers.OrderSoldiersBy(selectionSorts, CurrentIterationDate);
             }
             else
             {
-                // Apply sorting using just experience
+                // Apply sorting
                 soldiers = soldiers.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
             }
 
@@ -905,14 +919,14 @@ namespace Perscom
                 IEnumerable<SoldierGroupResult> groups = null;
                 if (isLateral)
                 {
-                    // Do we have experience grouping as well?
+                    // Do we have selection grouping as well?
                     if (BilletGroups.ContainsKey(billetId))
                     {
                         // Apply lateral desire grouping (Need, Want, Dont Want), Then By billet grouping
-                        var expGroups = BilletGroups[billetId];
+                        var selectionGroups = BilletGroups[billetId];
                         groups = primeSoldiers.GroupSoldiersBy(
                             x => GetLateralPromotionGroupId(x, position), 
-                            expGroups, 
+                            selectionGroups, 
                             CurrentIterationDate
                         );
                     }
@@ -927,27 +941,31 @@ namespace Perscom
                 else if (BilletGroups.ContainsKey(billetId))
                 {
                     // Apply groups
-                    var expGroups = BilletGroups[billetId];
-                    groups = primeSoldiers.GroupSoldiersBy(expGroups, CurrentIterationDate);
+                    var selectionGroups = BilletGroups[billetId];
+                    groups = primeSoldiers.GroupSoldiersBy(selectionGroups, CurrentIterationDate);
 
                     // Get topmost group with at least one soldier in it
                     primeSoldiers = groups.GetPrimeSoldiers();
                 }
+
+                // Do we have any soldiers?
+                if (primeSoldiers.Count() == 0)
+                    throw new Exception("Group has no prime soldiers, but there was a soldier count");
 
                 //
                 // 3. Apply soldier ordering
                 //
                 if (BilletOrdering.ContainsKey(billetId))
                 {
-                    // Grab experience sorting
-                    var experienceSorts = BilletOrdering[billetId];
+                    // Grab billet sorting
+                    var selectionSorts = BilletOrdering[billetId];
 
-                    // Apply sorting using just experience
-                    soldiers = primeSoldiers.OrderSoldiersBy(experienceSorts, CurrentIterationDate);
+                    // Apply sorting
+                    soldiers = primeSoldiers.OrderSoldiersBy(selectionSorts, CurrentIterationDate);
                 }
                 else
                 {
-                    // Apply sorting using just experience
+                    // Apply default sorting
                     soldiers = primeSoldiers.OrderByDescending(x => x.GetTimeInGrade(CurrentIterationDate));
                 }
 
@@ -1044,6 +1062,10 @@ namespace Perscom
             if (position.Billet.Id == soldier.Position.Billet.Id)
                 return false;
 
+            // Quit if this is a lateral only position
+            if (position.Billet.Selection == BilletSelection.LateralOnly && (position.Billet.Rank.Grade != soldier.Rank.Grade))
+                return false;
+
             // Is there a MOS requirement?
             if (position.Billet.RequiredSpecialties.Length > 0)
             {
@@ -1074,12 +1096,6 @@ namespace Perscom
                     if (!soldier.EvaluateFilter(filter, CurrentIterationDate))
                         return false;
                 }
-            }
-
-            // Quit if this is a lateral only position
-            if (position.Billet.Selection == BilletSelection.LateralOnly && (position.Billet.Rank.Grade != soldier.Rank.Grade))
-            {
-                return false;
             }
 
             // Check if we are under ranked, and if so, check for position lock
@@ -1300,8 +1316,8 @@ namespace Perscom
             //
             if (SoldierPoolFiltering.ContainsKey(setting.Pool.Id))
             {
-                var items = SoldierPoolFiltering[setting.Pool.Id];
-                candidates = candidates.FilterSoldierList(items, setting.Pool.FilterLogic, CurrentIterationDate);
+                var filters = SoldierPoolFiltering[setting.Pool.Id];
+                candidates = candidates.FilterSoldierList(filters, setting.Pool.FilterLogic, CurrentIterationDate);
             }
 
             // 
@@ -1337,6 +1353,10 @@ namespace Perscom
                     // hitting Most if Not All grouping requirements
                     candidates = result.GetPrimeSoldiers();
                 }
+
+                // Do we have any soldiers?
+                if (candidates.Count() == 0)
+                    throw new Exception("Group has no prime soldiers, but there was a soldier count");
 
                 //
                 // 4. Apply soldier ordering

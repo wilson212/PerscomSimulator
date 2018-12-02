@@ -49,6 +49,8 @@
             this.billetRankSelect = new System.Windows.Forms.ComboBox();
             this.rankPicture = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.billetFlagSelect = new System.Windows.Forms.ComboBox();
             this.earlyLatteralCheckBox = new System.Windows.Forms.CheckBox();
             this.earlyPromotionCheckBox = new System.Windows.Forms.CheckBox();
             this.repeatCheckBox = new System.Windows.Forms.CheckBox();
@@ -76,6 +78,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.spawnGenSelect = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.specialLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
@@ -124,7 +127,8 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.headerPanel = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.ShadowLabel();
+            this.labelHeader = new System.Windows.Forms.ShadowLabel();
+            this.demoteCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -159,7 +163,7 @@
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 75);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(1008, 586);
+            this.mainPanel.Size = new System.Drawing.Size(1008, 616);
             this.mainPanel.TabIndex = 8;
             // 
             // tabControl1
@@ -170,7 +174,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1008, 526);
+            this.tabControl1.Size = new System.Drawing.Size(1008, 556);
             this.tabControl1.TabIndex = 34;
             // 
             // tabPage1
@@ -183,7 +187,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1000, 500);
+            this.tabPage1.Size = new System.Drawing.Size(1000, 530);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Details";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -191,9 +195,9 @@
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.experienceListView);
-            this.groupBox7.Location = new System.Drawing.Point(512, 229);
+            this.groupBox7.Location = new System.Drawing.Point(512, 267);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(465, 242);
+            this.groupBox7.Size = new System.Drawing.Size(465, 240);
             this.groupBox7.TabIndex = 36;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Billet Gives the following Experience";
@@ -212,7 +216,7 @@
             this.experienceListView.Location = new System.Drawing.Point(3, 16);
             this.experienceListView.MultiSelect = false;
             this.experienceListView.Name = "experienceListView";
-            this.experienceListView.Size = new System.Drawing.Size(459, 223);
+            this.experienceListView.Size = new System.Drawing.Size(459, 221);
             this.experienceListView.TabIndex = 1;
             this.experienceListView.UseCompatibleStateImageBehavior = false;
             this.experienceListView.View = System.Windows.Forms.View.Details;
@@ -329,6 +333,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label15);
+            this.groupBox2.Controls.Add(this.billetFlagSelect);
             this.groupBox2.Controls.Add(this.earlyLatteralCheckBox);
             this.groupBox2.Controls.Add(this.earlyPromotionCheckBox);
             this.groupBox2.Controls.Add(this.repeatCheckBox);
@@ -349,15 +355,33 @@
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Location = new System.Drawing.Point(14, 136);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(475, 335);
+            this.groupBox2.Size = new System.Drawing.Size(475, 371);
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Details";
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(27, 143);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(81, 13);
+            this.label15.TabIndex = 38;
+            this.label15.Text = "Promotion Pool:";
+            // 
+            // billetFlagSelect
+            // 
+            this.billetFlagSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.billetFlagSelect.FormattingEnabled = true;
+            this.billetFlagSelect.Location = new System.Drawing.Point(211, 104);
+            this.billetFlagSelect.Name = "billetFlagSelect";
+            this.billetFlagSelect.Size = new System.Drawing.Size(202, 21);
+            this.billetFlagSelect.TabIndex = 37;
+            // 
             // earlyLatteralCheckBox
             // 
             this.earlyLatteralCheckBox.AutoSize = true;
-            this.earlyLatteralCheckBox.Location = new System.Drawing.Point(247, 297);
+            this.earlyLatteralCheckBox.Location = new System.Drawing.Point(247, 334);
             this.earlyLatteralCheckBox.Name = "earlyLatteralCheckBox";
             this.earlyLatteralCheckBox.Size = new System.Drawing.Size(177, 17);
             this.earlyLatteralCheckBox.TabIndex = 36;
@@ -371,7 +395,7 @@
             this.earlyPromotionCheckBox.AutoSize = true;
             this.earlyPromotionCheckBox.Checked = true;
             this.earlyPromotionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.earlyPromotionCheckBox.Location = new System.Drawing.Point(50, 297);
+            this.earlyPromotionCheckBox.Location = new System.Drawing.Point(50, 334);
             this.earlyPromotionCheckBox.Name = "earlyPromotionCheckBox";
             this.earlyPromotionCheckBox.Size = new System.Drawing.Size(176, 17);
             this.earlyPromotionCheckBox.TabIndex = 35;
@@ -385,7 +409,7 @@
             this.repeatCheckBox.AutoSize = true;
             this.repeatCheckBox.Checked = true;
             this.repeatCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.repeatCheckBox.Location = new System.Drawing.Point(336, 218);
+            this.repeatCheckBox.Location = new System.Drawing.Point(336, 255);
             this.repeatCheckBox.Name = "repeatCheckBox";
             this.repeatCheckBox.Size = new System.Drawing.Size(80, 17);
             this.repeatCheckBox.TabIndex = 32;
@@ -400,15 +424,15 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(27, 107);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(81, 13);
+            this.label11.Size = new System.Drawing.Size(55, 13);
             this.label11.TabIndex = 31;
-            this.label11.Text = "Promotion Pool:";
+            this.label11.Text = "Billet Flag:";
             // 
             // promotionPoolSelect
             // 
             this.promotionPoolSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.promotionPoolSelect.FormattingEnabled = true;
-            this.promotionPoolSelect.Location = new System.Drawing.Point(211, 104);
+            this.promotionPoolSelect.Location = new System.Drawing.Point(211, 140);
             this.promotionPoolSelect.Name = "promotionPoolSelect";
             this.promotionPoolSelect.Size = new System.Drawing.Size(202, 21);
             this.promotionPoolSelect.TabIndex = 30;
@@ -433,7 +457,7 @@
             // 
             // zIndexBox
             // 
-            this.zIndexBox.Location = new System.Drawing.Point(211, 254);
+            this.zIndexBox.Location = new System.Drawing.Point(211, 291);
             this.zIndexBox.Name = "zIndexBox";
             this.zIndexBox.Size = new System.Drawing.Size(95, 20);
             this.zIndexBox.TabIndex = 11;
@@ -443,7 +467,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(27, 256);
+            this.label5.Location = new System.Drawing.Point(27, 293);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(46, 13);
             this.label5.TabIndex = 27;
@@ -453,7 +477,7 @@
             // 
             // statureBox
             // 
-            this.statureBox.Location = new System.Drawing.Point(211, 142);
+            this.statureBox.Location = new System.Drawing.Point(211, 179);
             this.statureBox.Minimum = new decimal(new int[] {
             1,
             0,
@@ -471,7 +495,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(27, 144);
+            this.label4.Location = new System.Drawing.Point(27, 181);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(103, 13);
             this.label4.TabIndex = 25;
@@ -482,7 +506,7 @@
             this.earlyRetireCheckBox.AutoSize = true;
             this.earlyRetireCheckBox.Checked = true;
             this.earlyRetireCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.earlyRetireCheckBox.Location = new System.Drawing.Point(336, 180);
+            this.earlyRetireCheckBox.Location = new System.Drawing.Point(336, 217);
             this.earlyRetireCheckBox.Name = "earlyRetireCheckBox";
             this.earlyRetireCheckBox.Size = new System.Drawing.Size(102, 17);
             this.earlyRetireCheckBox.TabIndex = 9;
@@ -500,7 +524,7 @@
             // 
             // maxTigBox
             // 
-            this.maxTigBox.Location = new System.Drawing.Point(211, 217);
+            this.maxTigBox.Location = new System.Drawing.Point(211, 254);
             this.maxTigBox.Name = "maxTigBox";
             this.maxTigBox.Size = new System.Drawing.Size(95, 20);
             this.maxTigBox.TabIndex = 10;
@@ -508,7 +532,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(27, 219);
+            this.label3.Location = new System.Drawing.Point(27, 256);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(115, 13);
             this.label3.TabIndex = 21;
@@ -516,7 +540,7 @@
             // 
             // minTigBox
             // 
-            this.minTigBox.Location = new System.Drawing.Point(211, 179);
+            this.minTigBox.Location = new System.Drawing.Point(211, 216);
             this.minTigBox.Name = "minTigBox";
             this.minTigBox.Size = new System.Drawing.Size(95, 20);
             this.minTigBox.TabIndex = 8;
@@ -529,7 +553,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(27, 181);
+            this.label2.Location = new System.Drawing.Point(27, 218);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(112, 13);
             this.label2.TabIndex = 19;
@@ -548,7 +572,7 @@
             // 
             this.groupBox4.Controls.Add(this.specialtySelect);
             this.groupBox4.Controls.Add(this.specialtyCheckBox);
-            this.groupBox4.Location = new System.Drawing.Point(512, 136);
+            this.groupBox4.Location = new System.Drawing.Point(512, 168);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(466, 87);
             this.groupBox4.TabIndex = 32;
@@ -578,13 +602,14 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.demoteCheckBox);
             this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Controls.Add(this.soldierSpawnSelect);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.spawnGenSelect);
             this.groupBox3.Location = new System.Drawing.Point(512, 21);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(466, 109);
+            this.groupBox3.Size = new System.Drawing.Size(466, 132);
             this.groupBox3.TabIndex = 31;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Soldier Selection Settings";
@@ -630,6 +655,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.specialLabel);
             this.tabPage2.Controls.Add(this.label14);
             this.tabPage2.Controls.Add(this.label13);
             this.tabPage2.Controls.Add(this.groupBox9);
@@ -639,16 +665,26 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1000, 500);
+            this.tabPage2.Size = new System.Drawing.Size(1000, 530);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Filtering & Sorting";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // specialLabel
+            // 
+            this.specialLabel.AutoSize = true;
+            this.specialLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
+            this.specialLabel.Location = new System.Drawing.Point(216, 475);
+            this.specialLabel.Name = "specialLabel";
+            this.specialLabel.Size = new System.Drawing.Size(222, 13);
+            this.specialLabel.TabIndex = 41;
+            this.specialLabel.Text = "Grouped by true values first, than false values";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F);
-            this.label14.Location = new System.Drawing.Point(15, 468);
+            this.label14.Location = new System.Drawing.Point(15, 475);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(184, 13);
             this.label14.TabIndex = 40;
@@ -666,7 +702,7 @@
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.groupingListView);
-            this.groupBox9.Location = new System.Drawing.Point(18, 275);
+            this.groupBox9.Location = new System.Drawing.Point(18, 282);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(465, 190);
             this.groupBox9.TabIndex = 38;
@@ -760,7 +796,7 @@
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.sortingListView);
-            this.groupBox8.Location = new System.Drawing.Point(511, 275);
+            this.groupBox8.Location = new System.Drawing.Point(511, 282);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(465, 190);
             this.groupBox8.TabIndex = 37;
@@ -848,7 +884,7 @@
             // 
             this.groupBox5.Controls.Add(this.inverseCheckBox);
             this.groupBox5.Controls.Add(this.listView1);
-            this.groupBox5.Location = new System.Drawing.Point(18, 65);
+            this.groupBox5.Location = new System.Drawing.Point(18, 72);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(465, 190);
             this.groupBox5.TabIndex = 36;
@@ -914,7 +950,7 @@
             this.groupBox6.Controls.Add(this.orRadioButton);
             this.groupBox6.Controls.Add(this.label12);
             this.groupBox6.Controls.Add(this.filterListView);
-            this.groupBox6.Location = new System.Drawing.Point(511, 65);
+            this.groupBox6.Location = new System.Drawing.Point(511, 72);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(465, 190);
             this.groupBox6.TabIndex = 34;
@@ -1038,7 +1074,7 @@
             this.bottomPanel.BackColor = System.Drawing.SystemColors.ControlLight;
             this.bottomPanel.Controls.Add(this.saveButton);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Location = new System.Drawing.Point(0, 526);
+            this.bottomPanel.Location = new System.Drawing.Point(0, 556);
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(1008, 60);
             this.bottomPanel.TabIndex = 18;
@@ -1058,7 +1094,7 @@
             // 
             this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.headerPanel.Controls.Add(this.label6);
+            this.headerPanel.Controls.Add(this.labelHeader);
             this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.headerPanel.Location = new System.Drawing.Point(0, 0);
             this.headerPanel.Name = "headerPanel";
@@ -1066,26 +1102,36 @@
             this.headerPanel.TabIndex = 3;
             this.headerPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.headerPanel_Paint);
             // 
-            // label6
+            // labelHeader
             // 
-            this.label6.BackColor = System.Drawing.Color.Transparent;
-            this.label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.ForeColor = System.Drawing.SystemColors.Control;
-            this.label6.Location = new System.Drawing.Point(26, 22);
-            this.label6.Name = "label6";
-            this.label6.ShadowDirection = 90;
-            this.label6.ShadowOpacity = 225;
-            this.label6.ShadowSoftness = 3F;
-            this.label6.Size = new System.Drawing.Size(242, 37);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Billet Manager";
+            this.labelHeader.BackColor = System.Drawing.Color.Transparent;
+            this.labelHeader.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelHeader.ForeColor = System.Drawing.SystemColors.Control;
+            this.labelHeader.Location = new System.Drawing.Point(26, 22);
+            this.labelHeader.Name = "labelHeader";
+            this.labelHeader.ShadowDirection = 90;
+            this.labelHeader.ShadowOpacity = 225;
+            this.labelHeader.ShadowSoftness = 3F;
+            this.labelHeader.Size = new System.Drawing.Size(653, 37);
+            this.labelHeader.TabIndex = 0;
+            this.labelHeader.Text = "Add New Billet";
+            // 
+            // demoteCheckBox
+            // 
+            this.demoteCheckBox.AutoSize = true;
+            this.demoteCheckBox.Location = new System.Drawing.Point(130, 101);
+            this.demoteCheckBox.Name = "demoteCheckBox";
+            this.demoteCheckBox.Size = new System.Drawing.Size(206, 17);
+            this.demoteCheckBox.TabIndex = 35;
+            this.demoteCheckBox.Text = "Demote incoming over-ranked soldiers";
+            this.demoteCheckBox.UseVisualStyleBackColor = true;
             // 
             // BilletEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(1008, 661);
+            this.ClientSize = new System.Drawing.Size(1008, 691);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.headerPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -1134,7 +1180,7 @@
         #endregion
 
         private System.Windows.Forms.Panel headerPanel;
-        private System.Windows.Forms.ShadowLabel label6;
+        private System.Windows.Forms.ShadowLabel labelHeader;
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.NumericUpDown statureBox;
@@ -1228,5 +1274,9 @@
         private System.Windows.Forms.ColumnHeader columnHeader14;
         private System.Windows.Forms.ColumnHeader columnHeader15;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.ComboBox billetFlagSelect;
+        private System.Windows.Forms.Label specialLabel;
+        private System.Windows.Forms.CheckBox demoteCheckBox;
     }
 }

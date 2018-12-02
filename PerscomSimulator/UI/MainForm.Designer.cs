@@ -54,6 +54,7 @@
             this.manageGensMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.manageSpecialsMenuItem = new System.Windows.Forms.MenuItem();
+            this.manageExpMenuItem = new System.Windows.Forms.MenuItem();
             this.manageRanksMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.manageTemplatesMenuItem = new System.Windows.Forms.MenuItem();
@@ -78,7 +79,6 @@
             this.unitRankPieChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
-            this.manageExpMenuItem = new System.Windows.Forms.MenuItem();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).BeginInit();
@@ -204,6 +204,12 @@
             this.manageSpecialsMenuItem.Index = 5;
             this.manageSpecialsMenuItem.Text = "Manage Specialties";
             this.manageSpecialsMenuItem.Click += new System.EventHandler(this.manageSpecialsMenuItem_Click);
+            // 
+            // manageExpMenuItem
+            // 
+            this.manageExpMenuItem.Index = 6;
+            this.manageExpMenuItem.Text = "Manage Experience";
+            this.manageExpMenuItem.Click += new System.EventHandler(this.manageExpMenuItem_Click);
             // 
             // manageRanksMenuItem
             // 
@@ -506,12 +512,6 @@
             this.nameLabel.Size = new System.Drawing.Size(335, 34);
             this.nameLabel.TabIndex = 1;
             this.nameLabel.Text = "Perscom Movement Simulator";
-            // 
-            // manageExpMenuItem
-            // 
-            this.manageExpMenuItem.Index = 6;
-            this.manageExpMenuItem.Text = "Manage Experience";
-            this.manageExpMenuItem.Click += new System.EventHandler(this.manageExpMenuItem_Click);
             // 
             // MainForm
             // 
