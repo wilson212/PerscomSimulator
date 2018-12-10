@@ -28,6 +28,12 @@ namespace Perscom.Database
         [Column, Required]
         public DateTime Date { get; set; }
 
+        /// <summary>
+        /// Gets or sets wether stats were logged for this iteration
+        /// </summary>
+        [Column, Required]
+        public bool Logged { get; set; }
+
         public int MonthsDifference(IterationDate date)
         {
             return Math.Abs(this.Id - date.Id);

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CrossLite.QueryBuilder;
+using Perscom.Database;
+using Perscom.Simulation;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,13 +9,9 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using CrossLite.QueryBuilder;
-using Perscom.Database;
-using Perscom.Simulation;
 
 namespace Perscom
 {
@@ -26,7 +25,10 @@ namespace Perscom
 
         protected SimDatabase Database { get; set; }
 
-        protected double TotalYearsRan { get; set; }
+        /// <summary>
+        /// Gets the total months of stats that were logged in the database
+        /// </summary>
+        protected double TotalMonthsLogged { get; set; }
 
         /// <summary>
         /// Gets the current Simulation date
@@ -102,9 +104,10 @@ namespace Perscom
             // Load data from database
             Database = db;
             CurrentIterationDate = db.Query<IterationDate>("SELECT * FROM IterationDate ORDER BY Id DESC LIMIT 1").FirstOrDefault();
-            TotalYearsRan = Math.Round(db.IterationDates.Count / (double)12, 3);
-            labelYearsRan.Text = TotalYearsRan + " years";
+            TotalMonthsLogged = db.ExecuteScalar<int>("SELECT COUNT(*) FROM IterationDate WHERE Logged=1");
+            labelYearsRan.Text = (TotalMonthsLogged / 12) + " years";
 
+            // Create dictionaries
             CreateDictionaries();
 
             // Load Unit Types
@@ -354,7 +357,7 @@ namespace Perscom
             // Load the unit, so the soldier counts can be fetched
             UnitStatistics stats = UnitBuilder.GetUnitStatistics(template);
             int positions = stats.SoldierCountsByGrade[rank.Type][rank.Grade];
-            double cumulative = positions * (TotalYearsRan * 12);
+            double cumulative = positions * TotalMonthsLogged;
 
             // Total number of soldiers who DID make this rank/grade
             int totalDeficit = RankStatistics[template.Id][rank.Type][rank.Grade].Deficit;
@@ -652,7 +655,7 @@ namespace Perscom
             // Get selected item
             Series series = promotionPieChart.Series[0];
             RankType type = (RankType)rankTypeBox5.SelectedItem;
-            double totalYears = (int)TotalYearsRan;
+            double totalYears = (yearlyRadioButton.Checked) ? TotalMonthsLogged / 12 : 1;
 
             // Check for Specialty. If we have one, switch the rank type to match
             if (specialty != null && specialty.Type != type)
@@ -1194,6 +1197,11 @@ namespace Perscom
                     ExceptionHandler.ShowException(ex);
                 }
             });
+        }
+
+        private void yearlyRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            FillTab5Report();
         }
 
         /// <summary>

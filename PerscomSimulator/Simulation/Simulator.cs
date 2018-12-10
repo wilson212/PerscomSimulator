@@ -267,7 +267,7 @@ namespace Perscom
 
             // Set initial dates
             EndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            StartDate = EndDate.AddYears(-totalYears).AddMonths(1);
+            StartDate = EndDate.AddYears(-totalYears);
             CurrentDate = StartDate;
 
             // Wrap in an exception block
@@ -338,6 +338,7 @@ namespace Perscom
                     // Quit if cancelled
                     token.ThrowIfCancellationRequested();
 
+                    // Wrap in a transaction to vastly speed up database interations this month!
                     using (var trans = Database.BeginTransaction())
                     {
                         // Update the date
@@ -346,7 +347,7 @@ namespace Perscom
                             CurrentDate = CurrentDate.AddMonths(1);
 
                             // Create Iteration Date
-                            CurrentIterationDate = new IterationDate() { Date = CurrentDate };
+                            CurrentIterationDate = new IterationDate() { Date = CurrentDate, Logged = (SkipYears == 0) };
                             Database.IterationDates.Add(CurrentIterationDate);
                         }
 

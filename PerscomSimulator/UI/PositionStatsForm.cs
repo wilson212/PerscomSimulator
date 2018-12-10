@@ -10,7 +10,7 @@ namespace Perscom
     {
         protected IterationDate Date { get; set; }
 
-        protected double TotalYears { get; set; }
+        protected double TotalMonthsLogged { get; set; }
 
         protected Billet Billet { get; set; }
 
@@ -49,10 +49,12 @@ namespace Perscom
             string query = "SELECT u.Name FROM Billet AS b JOIN UnitTemplate AS u ON b.UnitTypeId = u.Id WHERE b.Id=@P0";
             string unitName = db.ExecuteScalar<string>(query, billetId);
 
+            // Grab total years logged
+            TotalMonthsLogged = db.ExecuteScalar<int>("SELECT COUNT(*) FROM IterationDate WHERE Logged=1");
+
             // Fill vars
             pieChart.Titles[1].Text = $"{Billet.Name} ({unitName})";
             Date = date;
-            TotalYears = Date.Id / 12;
 
             // Fill initial chart data
             FillPieChart();
@@ -142,11 +144,11 @@ namespace Perscom
 
         private double GetAverageDeficit(int totalDeficit)
         {
-            double totalMonthsRan = (TotalYears * 12);
+            // Position count is "1" if we are in global mode
             int positions = (positionRadioButton.Checked) ? 1 : PositionCount;
-            double cumulative = positions * totalMonthsRan;
+            double cumulative = positions * TotalMonthsLogged;
 
-            return Math.Round((totalDeficit / cumulative) * 100, 2);
+            return (cumulative == 0) ? 0 : Math.Round((totalDeficit / cumulative) * 100, 2);
         }
 
         private void positionRadioButton_CheckedChanged(object sender, EventArgs e)

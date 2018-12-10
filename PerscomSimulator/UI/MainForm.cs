@@ -309,6 +309,12 @@ namespace Perscom
                     }
                 }
             }
+            catch (OperationCanceledException ex)
+            {
+                TaskForm.Cancelled -= TaskForm_Cancelled;
+                TaskForm.CloseForm();
+                MessageBox.Show(ex.Message, "Operation Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             catch (Exception ex)
             {
                 TaskForm.Cancelled -= TaskForm_Cancelled;
