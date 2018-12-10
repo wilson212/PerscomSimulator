@@ -1460,7 +1460,7 @@ namespace Perscom
                 // Determine what happened here, and log accordingly
                 bool isRankTypeChange = (fromRank.Type != toRank.Type);
                 bool isLateral = (fromRank.Grade == toRank.Grade);
-                bool isGradePromotion = (!isRankTypeChange && !isLateral && fromRank.Grade < toRank.Grade);
+                bool isGradePromotion = (fromRank.Grade < toRank.Grade);
 
                 // Grab soldier vars
                 var soldier = e.Soldier;
@@ -1538,16 +1538,15 @@ namespace Perscom
                     while (fromParentUnit != null)
                     {
                         var templateId = fromParentUnit.Unit.UnitTemplateId;
-                        int grade = fromRank.Grade;
                         var type = fromRank.Type;
 
                         // Track Promotion
-                        RankStatistics[templateId][type][grade].TrackPromotionToNextGrade(e, CurrentDate);
-                        SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionToNextGrade(e, CurrentDate);
+                        RankStatistics[templateId][type][fromRank.Grade].TrackPromotionToNextGrade(e, CurrentDate);
+                        SpecialtyStatistics[templateId][type][fromRank.Grade][specId].TrackPromotionToNextGrade(e, CurrentDate);
 
                         // Add soldier to incoming on Next grade
-                        RankStatistics[templateId][type][grade + 1].TrackPromotionIntoGrade(soldier);
-                        SpecialtyStatistics[templateId][type][grade + 1][specId].TrackPromotionIntoGrade(soldier);
+                        RankStatistics[templateId][type][toRank.Grade].TrackPromotionIntoGrade(soldier);
+                        SpecialtyStatistics[templateId][type][toRank.Grade][specId].TrackPromotionIntoGrade(soldier);
 
                         // Move up
                         fromParentUnit = fromParentUnit.Parent;
@@ -1588,18 +1587,28 @@ namespace Perscom
                 int tig = e.Soldier.GetTimeInGrade(CurrentIterationDate);
                 int tis = e.Soldier.GetTimeInService(CurrentIterationDate);
 
-                // Into
+                // Grab into position
                 var pos = PositionStatistics[e.ToPosition.Position.Id];
                 pos.TotalSoldiersIncoming += 1;
-                pos.TotalSoldiersLateralIn += 1;
                 pos.TotalMonthsInGradeIncoming += tig;
                 pos.TotalMonthsInServiceIncoming += tis;
 
                 var bill = BilletStatistics[e.ToPosition.Position.BilletId];
                 bill.TotalSoldiersIncoming += 1;
-                bill.TotalSoldiersLateralIn += 1;
                 bill.TotalMonthsInGradeIncoming += tig;
                 bill.TotalMonthsInServiceIncoming += tis;
+
+                // Is this technically a promotion?
+                if (e.FromPosition.Billet.Rank.Grade < e.ToPosition.Billet.Rank.Grade)
+                {
+                    pos.TotalSoldiersPromotedIn += 1;
+                    bill.TotalSoldiersPromotedIn += 1;
+                }
+                else
+                {
+                    pos.TotalSoldiersLateralIn += 1;
+                    bill.TotalSoldiersLateralIn += 1;
+                }
 
                 // New soldiers!
                 if (e.FromPosition != null)
@@ -1607,13 +1616,23 @@ namespace Perscom
                     // Out Of
                     pos = PositionStatistics[e.FromPosition.Position.Id];
                     pos.TotalSoldiersOutgoing += 1;
-                    pos.TotalSoldiersLateralOut += 1;
                     pos.TotalMonthsInPosition += e.FromPositionTimeInBillet;
 
                     bill = BilletStatistics[e.FromPosition.Position.BilletId];
                     bill.TotalSoldiersOutgoing += 1;
-                    bill.TotalSoldiersLateralOut += 1;
                     bill.TotalMonthsInPosition += e.FromPositionTimeInBillet;
+
+                    // Is this technically a promotion?
+                    if (e.FromPosition.Billet.Rank.Grade < e.ToPosition.Billet.Rank.Grade)
+                    {
+                        pos.TotalSoldiersPromotedOut += 1;
+                        bill.TotalSoldiersPromotedOut += 1;
+                    }
+                    else
+                    {
+                        pos.TotalSoldiersLateralOut += 1;
+                        bill.TotalSoldiersLateralOut += 1;
+                    }
                 }
             }
         }

@@ -526,7 +526,7 @@ namespace Perscom.Simulation
             Assignment.SoldierId = Soldier.Id;
 
             // Did we promote?
-            if (DoPromotionIfEligable(date, db, false, out Promotion promo))
+            if (DoPromotionIfEligable(date, db, false, out Promotion promo) && promo != null)
             {
                 return new PositionAndRankChangeEventArgs()
                 {
