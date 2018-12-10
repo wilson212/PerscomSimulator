@@ -45,7 +45,7 @@ namespace Perscom.Simulation
 
         public int[] RequiredSpecialties { get; set; }
 
-        public bool UsesCustomGenerator => (Billet.Selection == BilletSelection.CustomGenerator);
+        public bool UsesCustomGenerator => (Billet.Selection == BilletSelection.RandomSoldierGenerator);
 
         public BilletSelection Selection => Billet.Selection;
 

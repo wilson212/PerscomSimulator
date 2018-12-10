@@ -360,11 +360,11 @@ namespace Perscom.Database
         /// </summary>
         /// <param name="soldier">The soldier being promoted from this grade to the next</param>
         /// <param name="currentDate">The current simulation date</param>
-        public void TrackPromotionToNextGrade(SoldierWrapper soldier, DateTime currentDate)
+        public void TrackPromotionToNextGrade(RankChangeEventArgs args, DateTime currentDate)
         {
             // Get time in service and grade in months
-            int tis = soldier.EntryServiceDate.Date.MonthDifference(currentDate);
-            int tig = soldier.LastGradeChangeDate.Date.MonthDifference(currentDate);
+            int tis = args.Soldier.EntryServiceDate.Date.MonthDifference(currentDate);
+            int tig = args.Promotion.TimeSinceLastGradeChange;
 
             // Increment total values
             TotalSoldiersOutgoing += 1;
@@ -377,11 +377,49 @@ namespace Perscom.Database
             PromotedTotalMonthsInService += tis;
         }
 
-        public void TrackRankTransferFrom(SoldierWrapper soldier, IterationDate currentDate)
+        /// <summary>
+        /// Adds a soldier's statistical data as a promotion to the next grade
+        /// </summary>
+        /// <param name="soldier">The soldier being promoted from this grade to the next</param>
+        /// <param name="currentDate">The current simulation date</param>
+        public void TrackPromotionToNextGrade(PositionAndRankChangeEventArgs args, DateTime currentDate)
         {
             // Get time in service and grade in months
-            int tis = soldier.EntryServiceDate.Date.MonthDifference(currentDate.Date);
-            int tig = soldier.LastGradeChangeDate.Date.MonthDifference(currentDate.Date);
+            int tis = args.Soldier.EntryServiceDate.Date.MonthDifference(currentDate);
+            int tig = args.Promotion.TimeSinceLastGradeChange;
+
+            // Increment total values
+            TotalSoldiersOutgoing += 1;
+            TotalMonthsInGrade += tig;
+            TotalMonthsInService += tis;
+
+            // Increment promotion values
+            PromotionsToNextGrade += 1;
+            PromotedTotalMonthsInGrade += tig;
+            PromotedTotalMonthsInService += tis;
+        }
+
+        public void TrackRankTransferFrom(RankChangeEventArgs args, IterationDate currentDate)
+        {
+            // Get time in service and grade in months
+            int tis = args.Soldier.EntryServiceDate.Date.MonthDifference(currentDate.Date);
+            int tig = args.Promotion.TimeSinceLastGradeChange;
+
+            // Increment total values
+            TotalSoldiersOutgoing += 1;
+            TotalMonthsInGrade += tig;
+            TotalMonthsInService += tis;
+
+            TransfersFrom += 1;
+            TransfersFromTotalMonthsInGrade += tig;
+            TransfersFromTotalMonthsInService += tis;
+        }
+
+        public void TrackRankTransferFrom(PositionAndRankChangeEventArgs args, IterationDate currentDate)
+        {
+            // Get time in service and grade in months
+            int tis = args.Soldier.EntryServiceDate.Date.MonthDifference(currentDate.Date);
+            int tig = args.Promotion.TimeSinceLastGradeChange;
 
             // Increment total values
             TotalSoldiersOutgoing += 1;

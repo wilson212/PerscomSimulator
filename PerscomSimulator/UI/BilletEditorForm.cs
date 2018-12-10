@@ -73,7 +73,7 @@ namespace Perscom
                 repeatCheckBox.Checked = billet.Waiverable;
                 zIndexBox.Value = billet.ZIndex;
                 soldierSpawnSelect.SelectedIndex = (int)billet.Selection;
-                demoteCheckBox.Checked = (billet.Selection == BilletSelection.CustomGenerator && billet.DemoteOverRanked);
+                demoteCheckBox.Checked = (billet.Selection == BilletSelection.RandomSoldierGenerator && billet.DemoteOverRanked);
                 orRadioButton.Checked = (billet.ExperienceLogic == LogicOperator.Or);
 
                 // Get rank index
@@ -388,7 +388,7 @@ namespace Perscom
         private bool CreatesNewSoldiers()
         {
             var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
-            if (selected == BilletSelection.CustomGenerator)
+            if (selected == BilletSelection.RandomSoldierGenerator)
             {
                 // Fetch spawn Generator
                 SoldierGenerator gen = (SoldierGenerator)spawnGenSelect.SelectedItem;
@@ -401,7 +401,7 @@ namespace Perscom
         private bool UsesCustomSpawnGenerator()
         {
             var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
-            return (selected == BilletSelection.CustomGenerator);
+            return (selected == BilletSelection.RandomSoldierGenerator);
         }
 
         private void billetRankSelect_SelectedIndexChanged(object sender, EventArgs e)

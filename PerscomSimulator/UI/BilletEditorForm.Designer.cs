@@ -73,6 +73,7 @@
             this.specialtySelect = new System.Windows.Forms.ComboBox();
             this.specialtyCheckBox = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.demoteCheckBox = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
             this.soldierSpawnSelect = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -128,7 +129,6 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.headerPanel = new System.Windows.Forms.Panel();
             this.labelHeader = new System.Windows.Forms.ShadowLabel();
-            this.demoteCheckBox = new System.Windows.Forms.CheckBox();
             this.mainPanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -614,14 +614,24 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Soldier Selection Settings";
             // 
+            // demoteCheckBox
+            // 
+            this.demoteCheckBox.AutoSize = true;
+            this.demoteCheckBox.Location = new System.Drawing.Point(130, 101);
+            this.demoteCheckBox.Name = "demoteCheckBox";
+            this.demoteCheckBox.Size = new System.Drawing.Size(206, 17);
+            this.demoteCheckBox.TabIndex = 35;
+            this.demoteCheckBox.Text = "Demote incoming over-ranked soldiers";
+            this.demoteCheckBox.UseVisualStyleBackColor = true;
+            // 
             // label10
             // 
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(32, 34);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(125, 13);
+            this.label10.Size = new System.Drawing.Size(141, 13);
             this.label10.TabIndex = 34;
-            this.label10.Text = "Soldier Selection Setting:";
+            this.label10.Text = "Soldier Selection Procedure:";
             // 
             // soldierSpawnSelect
             // 
@@ -638,9 +648,9 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(32, 70);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(131, 13);
+            this.label9.Size = new System.Drawing.Size(144, 13);
             this.label9.TabIndex = 32;
-            this.label9.Text = "Custom Spawn Generator:";
+            this.label9.Text = "Custom Procedure Selection:";
             // 
             // spawnGenSelect
             // 
@@ -1115,16 +1125,6 @@
             this.labelHeader.Size = new System.Drawing.Size(653, 37);
             this.labelHeader.TabIndex = 0;
             this.labelHeader.Text = "Add New Billet";
-            // 
-            // demoteCheckBox
-            // 
-            this.demoteCheckBox.AutoSize = true;
-            this.demoteCheckBox.Location = new System.Drawing.Point(130, 101);
-            this.demoteCheckBox.Name = "demoteCheckBox";
-            this.demoteCheckBox.Size = new System.Drawing.Size(206, 17);
-            this.demoteCheckBox.TabIndex = 35;
-            this.demoteCheckBox.Text = "Demote incoming over-ranked soldiers";
-            this.demoteCheckBox.UseVisualStyleBackColor = true;
             // 
             // BilletEditorForm
             // 

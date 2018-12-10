@@ -237,6 +237,13 @@ namespace Perscom
                     BilletOrdering.Add(item.Id, sorting);
                 }
             }
+
+            // Attach Events
+            SoldierWrapper.OnLateralPositionExchange += SoldierWrapper_OnLateralPositionExchange;
+            SoldierWrapper.OnPositionChange += SoldierWrapper_OnPositionChange;
+            SoldierWrapper.OnPositionAndRankChange += SoldierWrapper_OnPositionAndRankChange;
+            SoldierWrapper.OnRankGradeChange += SoldierWrapper_OnRankGradeChange;
+            SoldierWrapper.OnRetire += SoldierWrapper_OnRetire;
         }
 
         /// <summary>
@@ -497,7 +504,6 @@ namespace Perscom
                 bool expGiven = false;
                 SoldierWrapper soldier = position.Holder;
                 RankType type = position.Billet.Rank.Type;
-                PromotableStatus status;
 
                 // Label to return to if a soldier retired from this position this month
                 DoPositionCheck:
@@ -521,12 +527,20 @@ namespace Perscom
                                     expGiven = true;
                                 }
 
-                                // Assign position
-                                AssignPositionToSoldier(soldier, position, false);
-
                                 // Create entry into statistics
                                 if (setting.Type == SpawnSoldierType.CreateNew)
+                                {
+                                    // Assign position, do NOT fire event!
+                                    soldier.AssignPosition(position, CurrentIterationDate, Database, false);
+
+                                    // Custom entry log
                                     LogSoldierEntry(soldier);
+                                }
+                                else
+                                {
+                                    // Assign position, and allow Event to fire
+                                    soldier.AssignPosition(position, CurrentIterationDate, Database);
+                                }
                             }
                         }
                         else
@@ -540,7 +554,7 @@ namespace Perscom
                                 expGiven = true;
 
                                 // Assign new position
-                                AssignPositionToSoldier(soldier, position, true);
+                                soldier.AssignPosition(position, CurrentIterationDate, Database);
                             }
                         }
                     }
@@ -571,16 +585,9 @@ namespace Perscom
                         continue;
                     }
 
-                    // Define soldier vars
-                    int grade = soldier.Rank.Grade;
-                    int specId = soldier.Soldier.SpecialtyId;
-
                     // Check for retirement (forced by MaxTourLength, MaxTiG, or freewill)
                     if (soldier.IsRetiring(CurrentIterationDate))
                     {
-                        // Log retirement data for current rank/grade
-                        LogRetiree(soldier);
-
                         // Remove the retired soldier from the roster
                         ActiveDutySoldiers.Remove(soldier.Soldier.Id);
 
@@ -598,101 +605,15 @@ namespace Perscom
                         goto DoPositionCheck;
                     }
 
-                    // Check for auto promotion and under-staff promotion
-                    else if (soldier.IsPromotable(CurrentIterationDate, out status))
-                    {
-                        if (status == PromotableStatus.Automatic || status == PromotableStatus.Position)
-                        {
-                            // Dont log promotion data if switching rank types!
-                            if (soldier.Rank.Type != position.Billet.Rank.Type)
-                            {
-                                // Log transfer data for current rank/grade
-                                LogRankTypeChange(soldier, position);
+                    // Check for auto promotion and under-staff promotions. Signal true for event firing
+                    soldier.DoPromotionIfEligable(CurrentIterationDate, Database, true, out Promotion p);
 
-                                // Promote Soldier
-                                soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
-                            }
-                            else
-                            {
-                                // Get the expected soldier rank/grade to promote from
-                                var expectedGrade = position.Billet.Rank.Grade - 1;
-
-                                // Promote soldier. Do not skip rank grades!
-                                if (soldier.Rank.Grade == expectedGrade)
-                                {
-                                    // Log promotion data for current rank/grade
-                                    LogPromotion(soldier);
-
-                                    // Billet grade is 1 level higher or of a different Type!
-                                    soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
-                                }
-                                else
-                                {
-                                    // Log promotion data for current rank/grade
-                                    LogPromotion(soldier);
-
-                                    // Billet grade is multiple levels higher, SO we must promote one grade at
-                                    // a time!
-                                    Rank toRank = RankCache.GetNextGradeRanks(soldier.Rank).FirstOrDefault();
-                                    if (toRank != null)
-                                        soldier.PromoteTo(CurrentIterationDate, toRank, Database);
-                                }
-                            }
-                        }
-                        else if (status == PromotableStatus.Lateral)
-                        {
-                            // Do not log promotion since this is lateral
-                            soldier.PromoteTo(CurrentIterationDate, position.Billet.Rank, Database);
-                        }
-                        else if (status == PromotableStatus.Demotion)
-                        {
-                            // Does the position demote over ranked?
-                            if (soldier.Position.Billet.Billet.DemoteOverRanked)
-                            {
-                                // Do not log promotion since this is lateral
-                                soldier.PromoteTo(CurrentIterationDate, position.Billet.MaxRank, Database);
-                            }
-                        }
-                    }
-                    else if (soldier.IsStandIn())
+                    // Log deficit if soldier is stand in
+                    if (soldier.IsStandIn())
                     {
                         LogDeficit(position);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Assigns a soldier to a position, and logs the position exchange information
-        /// </summary>
-        /// <param name="soldier"></param>
-        /// <param name="position"></param>
-        private void AssignPositionToSoldier(SoldierWrapper soldier, PositionWrapper position, bool log)
-        {
-            // Determine if this is a promotion or not
-            bool isPromotion = (soldier.Rank.Type != position.Billet.Rank.Type
-                || soldier.Rank.Grade < position.Billet.Rank.Grade
-            );
-
-            // Log outgoing
-            if (log && soldier.Position != null)
-            {
-                if (isPromotion)
-                    LogPositionPromotedOut(soldier.Position, soldier);
-                else
-                    LogPositionLateralOut(soldier.Position, soldier);
-            }
-
-            // Assign the position
-            soldier.AssignPosition(position, CurrentIterationDate, Database);
-
-            // Log incoming
-            if (log)
-            {
-                if (isPromotion)
-                    LogPositionPromotedInto(position, soldier);
-                else
-                    LogPositionLateralInto(position, soldier);
             }
         }
 
@@ -734,7 +655,7 @@ namespace Perscom
             RankType type = position.Billet.Rank.Type;
             int grade = position.Billet.Rank.Grade;
             int billetId = position.Billet.Id;
-            BilletSelection[] illegalSelections = { BilletSelection.CustomGenerator, BilletSelection.PromotionOnly };
+            BilletSelection[] illegalSelections = { BilletSelection.RandomSoldierGenerator, BilletSelection.PromotionOnly };
 
             // Grab soldiers
             IEnumerable<SoldierWrapper> soldiers = topUnit.SoldiersByGrade[type][grade].Values;
@@ -823,21 +744,8 @@ namespace Perscom
                         continue;
                 }
 
-                // Log!
-                LogPositionLateralOut(position, soldier);
-                LogPositionLateralOut(pos, otherSoldier);
-
-                // Remove positions first!
-                otherSoldier.RemoveFromPosition(CurrentIterationDate, Database);
-                soldier.RemoveFromPosition(CurrentIterationDate, Database);
-
-                // Assign new positions
-                soldier.AssignPosition(pos, CurrentIterationDate, Database);
-                otherSoldier.AssignPosition(position, CurrentIterationDate, Database);
-
-                // Log!
-                LogPositionLateralInto(pos, soldier);
-                LogPositionLateralInto(position, otherSoldier);
+                // Preform position exchange
+                soldier.ExchangePositionsWith(otherSoldier, CurrentIterationDate, Database);
 
                 // Return success
                 return true;
@@ -1200,7 +1108,7 @@ namespace Perscom
                 if (pos.Billet.UsesCustomGenerator && Settings.ProcessRankType(pos.Billet.Rank.Type))
                 {
                     var soldier = CreateSoldier(s, pos, out SpawnedSoldier spawned);
-                    soldier.AssignPosition(pos, CurrentIterationDate, Database);
+                    soldier.AssignPosition(pos, CurrentIterationDate, Database, false);
                 }
 
                 // Create data
@@ -1259,7 +1167,7 @@ namespace Perscom
                 Database.Soldiers.Add(soldier);
 
                 // Create soldier wrapper
-                wrapper = new SoldierWrapper(soldier, position.Billet.Rank, CurrentIterationDate, Database);
+                wrapper = new SoldierWrapper(soldier, position.Billet.Rank, position.Billet.Specialty, CurrentIterationDate, Database);
                 ActiveDutySoldiers.Add(soldier.Id, wrapper);
             }
             else
@@ -1434,70 +1342,7 @@ namespace Perscom
             return null;
         }
 
-        private void LogRankTypeChange(SoldierWrapper soldier, PositionWrapper position)
-        {
-            // Log promotion data for current rank/grade
-            if (SkipYears == 0)
-            {
-                int fromGrade = soldier.Rank.Grade;
-                var fromType = soldier.Rank.Type;
-                int fromSpecId = soldier.Soldier.SpecialtyId;
-                int toGrade = position.Billet.Rank.Grade;
-                var toType = position.Billet.Rank.Type;
-                int toSpecId = position.Billet.Specialty.Id;
-                UnitWrapper parentUnit = soldier.Position.ParentUnit;
-
-                while (parentUnit != null)
-                {
-                    var templateId = parentUnit.Unit.UnitTemplateId;
-
-                    // Outgoing
-                    RankStatistics[templateId][fromType][fromGrade].TrackRankTransferFrom(soldier, CurrentIterationDate);
-                    SpecialtyStatistics[templateId][fromType][fromGrade][fromSpecId].TrackRankTransferFrom(soldier, CurrentIterationDate);
-
-                    // Incoming
-                    RankStatistics[templateId][toType][toGrade].TrackRankTransferInto(soldier);
-                    SpecialtyStatistics[templateId][toType][toGrade][toSpecId].TrackRankTransferInto(soldier);
-
-                    // Move up
-                    parentUnit = parentUnit.Parent;
-                }
-            }
-        }
-
-        private void LogRetiree(SoldierWrapper soldier)
-        {
-            // Log promotion data for current rank/grade
-            if (SkipYears == 0)
-            {
-                int grade = soldier.Rank.Grade;
-                var type = soldier.Rank.Type;
-                int specId = soldier.Soldier.SpecialtyId;
-
-                // Update position statistics
-                var pos = PositionStatistics[soldier.Position.Position.Id];
-                pos.TotalSoldiersOutgoing += 1;
-                pos.TotalSoldiersRetireOut += 1;
-                pos.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
-
-                var bill = BilletStatistics[soldier.Position.Position.BilletId];
-                bill.TotalSoldiersOutgoing += 1;
-                bill.TotalSoldiersRetireOut += 1;
-                bill.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
-
-                // Log rank stats
-                UnitWrapper parentUnit = soldier.Position.ParentUnit;
-                while (parentUnit != null)
-                {
-                    var templateId = parentUnit.Unit.UnitTemplateId;
-                    RankStatistics[templateId][type][grade].TrackRetiree(soldier, CurrentIterationDate);
-                    SpecialtyStatistics[templateId][type][grade][specId].TrackRetiree(soldier, CurrentIterationDate);
-
-                    // Move up
-                    parentUnit = parentUnit.Parent;
-                }
-            }
-        }
+        #region Events and Logging
 
         private void LogSoldierEntry(SoldierWrapper soldier)
         {
@@ -1526,34 +1371,6 @@ namespace Perscom
 
                 var bill = BilletStatistics[soldier.Position.Position.BilletId];
                 bill.TotalSoldiersIncoming += 1;
-            }
-        }
-
-        private void LogPromotion(SoldierWrapper soldier)
-        {
-            // Log promotion data for current rank/grade
-            if (SkipYears == 0)
-            {
-                int grade = soldier.Rank.Grade;
-                var type = soldier.Rank.Type;
-                int specId = soldier.Soldier.SpecialtyId;
-                UnitWrapper parentUnit = soldier.Position.ParentUnit;
-
-                while (parentUnit != null)
-                {
-                    var templateId = parentUnit.Unit.UnitTemplateId;
-
-                    // Track Promotion
-                    RankStatistics[templateId][type][grade].TrackPromotionToNextGrade(soldier, CurrentDate);
-                    SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionToNextGrade(soldier, CurrentDate);
-
-                    // Add soldier to incoming on Next grade
-                    RankStatistics[templateId][type][grade + 1].TrackPromotionIntoGrade(soldier);
-                    SpecialtyStatistics[templateId][type][grade + 1][specId].TrackPromotionIntoGrade(soldier);
-
-                    // Move up
-                    parentUnit = parentUnit.Parent;
-                }
             }
         }
 
@@ -1599,87 +1416,287 @@ namespace Perscom
             }
         }
 
-        private void LogPositionPromotedInto(PositionWrapper position, SoldierWrapper soldier)
+        private void SoldierWrapper_OnLateralPositionExchange(object sender, LateralPositionExchangeEventArgs e)
         {
-            // Log promotion data for current rank/grade
             if (SkipYears == 0)
             {
-                bool isGettingPromo = (
-                    soldier.IsPromotable(CurrentIterationDate, out PromotableStatus status) 
-                    && status == PromotableStatus.Position
-                );
-                int tig = soldier.GetTimeInGrade(CurrentIterationDate);
-                int tis = soldier.GetTimeInService(CurrentIterationDate);
+                // Soldier 1
+                if (e.Soldier1EventArgs is PositionAndRankChangeEventArgs)
+                {
+                    SoldierWrapper_OnPositionAndRankChange(
+                        e.Soldier1EventArgs.Soldier,
+                        e.Soldier1EventArgs as PositionAndRankChangeEventArgs
+                    );
+                }
+                else
+                {
+                    SoldierWrapper_OnPositionChange(e.Soldier1EventArgs.Soldier, e.Soldier1EventArgs);
+                }
 
-                var pos = PositionStatistics[position.Position.Id];
-                pos.TotalSoldiersIncoming += 1;
-                pos.TotalSoldiersPromotedIn += 1;
-                pos.TotalMonthsInGradeIncoming += (isGettingPromo) ? 0 : tig;
-                pos.TotalMonthsInServiceIncoming += tis;
-
-                var bill = BilletStatistics[position.Position.BilletId];
-                bill.TotalSoldiersIncoming += 1;
-                bill.TotalSoldiersPromotedIn += 1;
-                bill.TotalMonthsInGradeIncoming += (isGettingPromo) ? 0 : tig;
-                bill.TotalMonthsInServiceIncoming += tis;
+                // Soldier 2
+                if (e.Soldier2EventArgs is PositionAndRankChangeEventArgs)
+                {
+                    SoldierWrapper_OnPositionAndRankChange(
+                        e.Soldier2EventArgs.Soldier,
+                        e.Soldier2EventArgs as PositionAndRankChangeEventArgs
+                    );
+                }
+                else
+                {
+                    SoldierWrapper_OnPositionChange(e.Soldier2EventArgs.Soldier, e.Soldier2EventArgs);
+                }
             }
         }
 
-        private void LogPositionPromotedOut(PositionWrapper position, SoldierWrapper soldier)
+        private void SoldierWrapper_OnPositionAndRankChange(object sender, PositionAndRankChangeEventArgs e)
         {
             // Log promotion data for current rank/grade
             if (SkipYears == 0)
             {
-                var pos = PositionStatistics[position.Position.Id];
-                pos.TotalSoldiersOutgoing += 1;
-                pos.TotalSoldiersPromotedOut += 1;
-                pos.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
+                // Grab ranks. Remember Foriegn keys are disabled
+                Rank fromRank = RankCache.RanksById[e.Promotion.FromRankId];
+                Rank toRank = RankCache.RanksById[e.Promotion.ToRankId];
 
-                var bill = BilletStatistics[position.Position.BilletId];
-                bill.TotalSoldiersOutgoing += 1;
-                bill.TotalSoldiersPromotedOut += 1;
-                bill.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
+                // Determine what happened here, and log accordingly
+                bool isRankTypeChange = (fromRank.Type != toRank.Type);
+                bool isLateral = (fromRank.Grade == toRank.Grade);
+                bool isGradePromotion = (!isRankTypeChange && !isLateral && fromRank.Grade < toRank.Grade);
+
+                // Grab soldier vars
+                var soldier = e.Soldier;
+                int specId = e.FromSpecialty.Id;
+                UnitWrapper fromParentUnit = e.FromPosition.ParentUnit;
+                UnitWrapper toParentUnit = e.ToPosition.ParentUnit;
+
+                // Log
+                if (isRankTypeChange)
+                {
+                    int fromGrade = fromRank.Grade;
+                    var fromType = fromRank.Type;
+                    int toGrade = toRank.Grade;
+                    var toType = toRank.Type;
+                    int toSpecId = e.ToPosition.Billet.Specialty.Id;
+
+                    // Transfer out statistics
+                    while (fromParentUnit != null)
+                    {
+                        var templateId = fromParentUnit.Unit.UnitTemplateId;
+
+                        // Outgoing
+                        RankStatistics[templateId][fromType][fromGrade].TrackRankTransferFrom(e, CurrentIterationDate);
+                        SpecialtyStatistics[templateId][fromType][fromGrade][specId].TrackRankTransferFrom(e, CurrentIterationDate);
+
+                        // Move up
+                        fromParentUnit = fromParentUnit.Parent;
+                    }
+
+                    // Transfer into statistics
+                    while (toParentUnit != null)
+                    {
+                        var templateId = toParentUnit.Unit.UnitTemplateId;
+
+                        // Incoming
+                        RankStatistics[templateId][toType][toGrade].TrackRankTransferInto(soldier);
+                        SpecialtyStatistics[templateId][toType][toGrade][toSpecId].TrackRankTransferInto(soldier);
+
+                        // Move up
+                        toParentUnit = toParentUnit.Parent;
+                    }
+
+                    // In Position
+                    var pos = PositionStatistics[e.ToPosition.Position.Id];
+                    pos.TotalSoldiersIncoming += 1;
+                    pos.TotalSoldiersTransferredIn += 1;
+                    pos.TotalMonthsInGradeIncoming += 0;
+                    pos.TotalMonthsInServiceIncoming += soldier.GetTimeInService(CurrentIterationDate);
+
+                    var bill = BilletStatistics[e.ToPosition.Position.BilletId];
+                    bill.TotalSoldiersIncoming += 1;
+                    bill.TotalSoldiersTransferredIn += 1;
+                    bill.TotalMonthsInGradeIncoming += 0;
+                    bill.TotalMonthsInServiceIncoming += soldier.GetTimeInService(CurrentIterationDate);
+
+                    // Out Position
+                    pos = PositionStatistics[e.FromPosition.Position.Id];
+                    pos.TotalSoldiersOutgoing += 1;
+                    pos.TotalSoldiersTransferredOut += 1;
+                    pos.TotalMonthsInPosition += e.FromPositionTimeInBillet;
+
+                    bill = BilletStatistics[e.FromPosition.Position.BilletId];
+                    bill.TotalSoldiersOutgoing += 1;
+                    bill.TotalSoldiersTransferredOut += 1;
+                    bill.TotalMonthsInPosition += e.FromPositionTimeInBillet;
+                }
+                else if (isLateral)
+                {
+                    // Just fire off the OnPositionChange Event
+                    SoldierWrapper_OnPositionChange(sender, e);
+                }
+                else if (isGradePromotion)
+                {
+                    // Log grade promotion for Rank and Specialty Data
+                    while (fromParentUnit != null)
+                    {
+                        var templateId = fromParentUnit.Unit.UnitTemplateId;
+                        int grade = fromRank.Grade;
+                        var type = fromRank.Type;
+
+                        // Track Promotion
+                        RankStatistics[templateId][type][grade].TrackPromotionToNextGrade(e, CurrentDate);
+                        SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionToNextGrade(e, CurrentDate);
+
+                        // Add soldier to incoming on Next grade
+                        RankStatistics[templateId][type][grade + 1].TrackPromotionIntoGrade(soldier);
+                        SpecialtyStatistics[templateId][type][grade + 1][specId].TrackPromotionIntoGrade(soldier);
+
+                        // Move up
+                        fromParentUnit = fromParentUnit.Parent;
+                    }
+
+                    // In Position
+                    var pos = PositionStatistics[e.ToPosition.Position.Id];
+                    pos.TotalSoldiersIncoming += 1;
+                    pos.TotalSoldiersPromotedIn += 1;
+                    pos.TotalMonthsInGradeIncoming += 0;
+                    pos.TotalMonthsInServiceIncoming += soldier.GetTimeInService(CurrentIterationDate);
+
+                    var bill = BilletStatistics[e.ToPosition.Position.BilletId];
+                    bill.TotalSoldiersIncoming += 1;
+                    bill.TotalSoldiersPromotedIn += 1;
+                    bill.TotalMonthsInGradeIncoming += 0;
+                    bill.TotalMonthsInServiceIncoming += soldier.GetTimeInService(CurrentIterationDate);
+
+                    // Out Position
+                    pos = PositionStatistics[e.FromPosition.Position.Id];
+                    pos.TotalSoldiersOutgoing += 1;
+                    pos.TotalSoldiersPromotedOut += 1;
+                    pos.TotalMonthsInPosition += e.FromPositionTimeInBillet;
+
+                    bill = BilletStatistics[e.FromPosition.Position.BilletId];
+                    bill.TotalSoldiersOutgoing += 1;
+                    bill.TotalSoldiersPromotedOut += 1;
+                    bill.TotalMonthsInPosition += e.FromPositionTimeInBillet;
+                }
             }
         }
 
-        private void LogPositionLateralInto(PositionWrapper position, SoldierWrapper soldier)
+        private void SoldierWrapper_OnPositionChange(object sender, PositionChangeEventArgs e)
         {
-            // Log promotion data for current rank/grade
             if (SkipYears == 0)
             {
-                int tig = soldier.GetTimeInGrade(CurrentIterationDate);
-                int tis = soldier.GetTimeInService(CurrentIterationDate);
+                // Log promotion data for current rank/grade
+                int tig = e.Soldier.GetTimeInGrade(CurrentIterationDate);
+                int tis = e.Soldier.GetTimeInService(CurrentIterationDate);
 
-                var pos = PositionStatistics[position.Position.Id];
+                // Into
+                var pos = PositionStatistics[e.ToPosition.Position.Id];
                 pos.TotalSoldiersIncoming += 1;
                 pos.TotalSoldiersLateralIn += 1;
                 pos.TotalMonthsInGradeIncoming += tig;
                 pos.TotalMonthsInServiceIncoming += tis;
 
-                var bill = BilletStatistics[position.Position.BilletId];
+                var bill = BilletStatistics[e.ToPosition.Position.BilletId];
                 bill.TotalSoldiersIncoming += 1;
                 bill.TotalSoldiersLateralIn += 1;
                 bill.TotalMonthsInGradeIncoming += tig;
                 bill.TotalMonthsInServiceIncoming += tis;
+
+                // New soldiers!
+                if (e.FromPosition != null)
+                {
+                    // Out Of
+                    pos = PositionStatistics[e.FromPosition.Position.Id];
+                    pos.TotalSoldiersOutgoing += 1;
+                    pos.TotalSoldiersLateralOut += 1;
+                    pos.TotalMonthsInPosition += e.FromPositionTimeInBillet;
+
+                    bill = BilletStatistics[e.FromPosition.Position.BilletId];
+                    bill.TotalSoldiersOutgoing += 1;
+                    bill.TotalSoldiersLateralOut += 1;
+                    bill.TotalMonthsInPosition += e.FromPositionTimeInBillet;
+                }
             }
         }
 
-        private void LogPositionLateralOut(PositionWrapper position, SoldierWrapper soldier)
+        private void SoldierWrapper_OnRetire(object sender, SoldierWrapper soldier)
         {
             // Log promotion data for current rank/grade
             if (SkipYears == 0)
             {
-                var pos = PositionStatistics[position.Position.Id];
+                int grade = soldier.Rank.Grade;
+                var type = soldier.Rank.Type;
+                int specId = soldier.Soldier.SpecialtyId;
+
+                // Update position statistics
+                var pos = PositionStatistics[soldier.Position.Position.Id];
                 pos.TotalSoldiersOutgoing += 1;
-                pos.TotalSoldiersLateralOut += 1;
+                pos.TotalSoldiersRetireOut += 1;
                 pos.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
 
-                var bill = BilletStatistics[position.Position.BilletId];
+                var bill = BilletStatistics[soldier.Position.Position.BilletId];
                 bill.TotalSoldiersOutgoing += 1;
-                bill.TotalSoldiersLateralOut += 1;
+                bill.TotalSoldiersRetireOut += 1;
                 bill.TotalMonthsInPosition += soldier.GetTimeInBillet(CurrentIterationDate);
+
+                // Log rank stats
+                UnitWrapper parentUnit = soldier.Position.ParentUnit;
+                while (parentUnit != null)
+                {
+                    var templateId = parentUnit.Unit.UnitTemplateId;
+                    RankStatistics[templateId][type][grade].TrackRetiree(soldier, CurrentIterationDate);
+                    SpecialtyStatistics[templateId][type][grade][specId].TrackRetiree(soldier, CurrentIterationDate);
+
+                    // Move up
+                    parentUnit = parentUnit.Parent;
+                }
             }
         }
+
+        private void SoldierWrapper_OnRankGradeChange(object sender, RankChangeEventArgs e)
+        {
+            // Log promotion data for current rank/grade
+            if (SkipYears == 0)
+            {
+                // Grab ranks. Remember Foriegn keys are disabled
+                Rank fromRank = RankCache.RanksById[e.Promotion.FromRankId];
+                Rank toRank = RankCache.RanksById[e.Promotion.ToRankId];
+
+                // Determine what happened here, and log accordinly
+                bool isGradePromotion = (fromRank.Grade < toRank.Grade);
+
+                // Grab soldier vars
+                int specId = e.Soldier.Soldier.SpecialtyId;
+                UnitWrapper parentUnit = e.Soldier.Position.ParentUnit;
+
+                // Log
+                if (isGradePromotion)
+                {
+                    while (parentUnit != null)
+                    {
+                        var templateId = parentUnit.Unit.UnitTemplateId;
+                        int grade = fromRank.Grade;
+                        var type = fromRank.Type;
+
+                        // Track Promotion
+                        RankStatistics[templateId][type][grade].TrackPromotionToNextGrade(e, CurrentDate);
+                        SpecialtyStatistics[templateId][type][grade][specId].TrackPromotionToNextGrade(e, CurrentDate);
+
+                        // Add soldier to incoming on Next grade
+                        RankStatistics[templateId][type][grade + 1].TrackPromotionIntoGrade(e.Soldier);
+                        SpecialtyStatistics[templateId][type][grade + 1][specId].TrackPromotionIntoGrade(e.Soldier);
+
+                        // Move up
+                        parentUnit = parentUnit.Parent;
+                    }
+                }
+                else // Is demotion
+                {
+
+                }
+            }
+        }
+
+        #endregion Events and Logging
 
         public void Dispose()
         {

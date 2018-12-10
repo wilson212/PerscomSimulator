@@ -1,10 +1,28 @@
 ﻿ - Track specialty transitions for statistics
  - Add UnitTemplate statistics
- - Add a traits system?
- - Billet Rank Ranges! Maybe add a property to Billet? (Billet.AutoPromoteInRankRange)
+ - Billet Rank Ranges!
+ - Establish Rank Grades seperate from Ranks in the RankEditorForm
  - Add billet selection procedures
- - Establish Rank Grades seperate from Ranks
 
--> SelectionProcedure (Id, Name)
---> BilletProcedure (ProcedureId, BilletId, )
----> 
+-> SelectionProcedure (Id, Name, RankId, CreatesNewSoldiers, CareerGeneratorId, Probability)
+--> ProcedurePool (
+		Id, 
+		SelectionProcedureId, 
+		Precedence, 
+		RankId, 
+		UseRankGrade, 
+		NewCareerLength, 
+		CareerGeneratorId
+		SpawnChance [0-100], 
+		Selection [First, Random],
+		GroupByDesire : bool, 
+		InverseSpecialtyRequirements : bool,
+		NotLockedInBillet : bool,
+		MustBePromotable : bool,
+		FilterLogic
+	)
+---> ProcedurePoolFilter (ProcedurePoolId) : AbstractFilter
+---> ProcedurePoolGroup (ProcedurePoolId) : AbstractFilter
+---> ProcedurePoolSorting (ProcedurePoolId) : AbstractSort
+---> ProcedurePoolSpecialtyRequirement (ProcedurePoolId, SpecialtyId)
+-> BilletProcedure (BilletId, SelectionProcedureId)

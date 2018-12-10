@@ -134,7 +134,7 @@ namespace Perscom.Database
         /// Indicates whether the soldier holding this <see cref="Billet"/> will be
         /// demoted in <see cref="Database.Rank.Grade"/> if their current grade
         /// is higher than the <see cref="MaxRank.Grade"/>. This option is only
-        /// used if the <see cref="Selection"/> equals <see cref="BilletSelection.CustomGenerator"/>
+        /// used if the <see cref="Selection"/> equals <see cref="BilletSelection.RandomSoldierGenerator"/>
         /// </summary>
         [Column, Required, Default(0)]
         public bool DemoteOverRanked { get; set; } = false;

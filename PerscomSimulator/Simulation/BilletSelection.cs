@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Perscom.Simulation
+﻿namespace Perscom.Simulation
 {
     /// <summary>
     /// Represents an array of Spawn options the <see cref="Simulator"/>
@@ -33,6 +27,6 @@ namespace Perscom.Simulation
         /// <summary>
         /// The custom soldier generator will be used only
         /// </summary>
-        CustomGenerator = 3
+        RandomSoldierGenerator = 3
     }
 }

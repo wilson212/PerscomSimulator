@@ -250,7 +250,7 @@
             // 
             this.specialtySelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.specialtySelect.FormattingEnabled = true;
-            this.specialtySelect.Location = new System.Drawing.Point(487, 10);
+            this.specialtySelect.Location = new System.Drawing.Point(482, 10);
             this.specialtySelect.Name = "specialtySelect";
             this.specialtySelect.Size = new System.Drawing.Size(215, 21);
             this.specialtySelect.TabIndex = 15;
@@ -262,7 +262,7 @@
             this.labelYearsRan.BackColor = System.Drawing.Color.Transparent;
             this.labelYearsRan.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelYearsRan.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.labelYearsRan.Location = new System.Drawing.Point(845, 11);
+            this.labelYearsRan.Location = new System.Drawing.Point(840, 11);
             this.labelYearsRan.Name = "labelYearsRan";
             this.labelYearsRan.Size = new System.Drawing.Size(69, 15);
             this.labelYearsRan.TabIndex = 14;
@@ -272,7 +272,7 @@
             // 
             this.unitSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.unitSelect.FormattingEnabled = true;
-            this.unitSelect.Location = new System.Drawing.Point(184, 10);
+            this.unitSelect.Location = new System.Drawing.Point(179, 10);
             this.unitSelect.Name = "unitSelect";
             this.unitSelect.Size = new System.Drawing.Size(175, 21);
             this.unitSelect.TabIndex = 0;
@@ -284,7 +284,7 @@
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label4.Location = new System.Drawing.Point(712, 11);
+            this.label4.Location = new System.Drawing.Point(707, 11);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(135, 15);
             this.label4.TabIndex = 13;
@@ -296,7 +296,7 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label1.Location = new System.Drawing.Point(70, 11);
+            this.label1.Location = new System.Drawing.Point(65, 11);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(108, 15);
             this.label1.TabIndex = 1;
@@ -308,7 +308,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label2.Location = new System.Drawing.Point(375, 11);
+            this.label2.Location = new System.Drawing.Point(370, 11);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(106, 15);
             this.label2.TabIndex = 3;

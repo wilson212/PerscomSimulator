@@ -35,10 +35,25 @@
             System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PositionStatsForm));
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.outgoingRadioButton = new System.Windows.Forms.RadioButton();
+            this.incomingRadioButton = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.billetRadioButton = new System.Windows.Forms.RadioButton();
             this.positionRadioButton = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.labelTransffersOut = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.labelTransffersIn = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.labelRetirements = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.labelLateralsOut = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.labelPromotionsOut = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.labelTotalOutgoing = new System.Windows.Forms.Label();
             this.labelLateralsIn = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.labelPromotionsIn = new System.Windows.Forms.Label();
@@ -61,24 +76,13 @@
             this.closeButton = new System.Windows.Forms.Button();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.labelLateralsOut = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.labelPromotionsOut = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.labelTotalOutgoing = new System.Windows.Forms.Label();
-            this.labelRetirements = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.outgoingRadioButton = new System.Windows.Forms.RadioButton();
-            this.incomingRadioButton = new System.Windows.Forms.RadioButton();
             this.mainPanel.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pieChart)).BeginInit();
             this.bottomPanel.SuspendLayout();
             this.headerPanel.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainPanel
@@ -92,6 +96,39 @@
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(786, 499);
             this.mainPanel.TabIndex = 14;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.outgoingRadioButton);
+            this.groupBox3.Controls.Add(this.incomingRadioButton);
+            this.groupBox3.Location = new System.Drawing.Point(15, 432);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(451, 43);
+            this.groupBox3.TabIndex = 6;
+            this.groupBox3.TabStop = false;
+            // 
+            // outgoingRadioButton
+            // 
+            this.outgoingRadioButton.AutoSize = true;
+            this.outgoingRadioButton.Location = new System.Drawing.Point(240, 16);
+            this.outgoingRadioButton.Name = "outgoingRadioButton";
+            this.outgoingRadioButton.Size = new System.Drawing.Size(68, 17);
+            this.outgoingRadioButton.TabIndex = 1;
+            this.outgoingRadioButton.Text = "Outgoing";
+            this.outgoingRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // incomingRadioButton
+            // 
+            this.incomingRadioButton.AutoSize = true;
+            this.incomingRadioButton.Checked = true;
+            this.incomingRadioButton.Location = new System.Drawing.Point(142, 16);
+            this.incomingRadioButton.Name = "incomingRadioButton";
+            this.incomingRadioButton.Size = new System.Drawing.Size(68, 17);
+            this.incomingRadioButton.TabIndex = 0;
+            this.incomingRadioButton.TabStop = true;
+            this.incomingRadioButton.Text = "Incoming";
+            this.incomingRadioButton.UseVisualStyleBackColor = true;
+            this.incomingRadioButton.CheckedChanged += new System.EventHandler(this.incomingRadioButton_CheckedChanged);
             // 
             // groupBox1
             // 
@@ -128,6 +165,10 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.labelTransffersOut);
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.labelTransffersIn);
+            this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.labelRetirements);
             this.groupBox2.Controls.Add(this.label23);
             this.groupBox2.Controls.Add(this.labelLateralsOut);
@@ -155,15 +196,124 @@
             this.groupBox2.Controls.Add(this.labelTotalIncoming);
             this.groupBox2.Location = new System.Drawing.Point(480, 81);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(280, 382);
+            this.groupBox2.Size = new System.Drawing.Size(280, 394);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Billet Statistical Data";
             // 
+            // labelTransffersOut
+            // 
+            this.labelTransffersOut.AutoSize = true;
+            this.labelTransffersOut.Location = new System.Drawing.Point(173, 344);
+            this.labelTransffersOut.Name = "labelTransffersOut";
+            this.labelTransffersOut.Size = new System.Drawing.Size(13, 13);
+            this.labelTransffersOut.TabIndex = 73;
+            this.labelTransffersOut.Text = "0";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(25, 344);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(135, 13);
+            this.label5.TabIndex = 72;
+            this.label5.Text = "Transffered Branches Out: ";
+            // 
+            // labelTransffersIn
+            // 
+            this.labelTransffersIn.AutoSize = true;
+            this.labelTransffersIn.Location = new System.Drawing.Point(173, 199);
+            this.labelTransffersIn.Name = "labelTransffersIn";
+            this.labelTransffersIn.Size = new System.Drawing.Size(13, 13);
+            this.labelTransffersIn.TabIndex = 71;
+            this.labelTransffersIn.Text = "0";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(24, 199);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(127, 13);
+            this.label3.TabIndex = 70;
+            this.label3.Text = "Transffered Branches In: ";
+            // 
+            // labelRetirements
+            // 
+            this.labelRetirements.AutoSize = true;
+            this.labelRetirements.Location = new System.Drawing.Point(173, 367);
+            this.labelRetirements.Name = "labelRetirements";
+            this.labelRetirements.Size = new System.Drawing.Size(13, 13);
+            this.labelRetirements.TabIndex = 69;
+            this.labelRetirements.Text = "0";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(25, 367);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(69, 13);
+            this.label23.TabIndex = 68;
+            this.label23.Text = "Retirements: ";
+            // 
+            // labelLateralsOut
+            // 
+            this.labelLateralsOut.AutoSize = true;
+            this.labelLateralsOut.Location = new System.Drawing.Point(173, 321);
+            this.labelLateralsOut.Name = "labelLateralsOut";
+            this.labelLateralsOut.Size = new System.Drawing.Size(13, 13);
+            this.labelLateralsOut.TabIndex = 67;
+            this.labelLateralsOut.Text = "0";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(25, 321);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(120, 13);
+            this.label19.TabIndex = 66;
+            this.label19.Text = "Lateral Promotions Out: ";
+            // 
+            // labelPromotionsOut
+            // 
+            this.labelPromotionsOut.AutoSize = true;
+            this.labelPromotionsOut.Location = new System.Drawing.Point(173, 298);
+            this.labelPromotionsOut.Name = "labelPromotionsOut";
+            this.labelPromotionsOut.Size = new System.Drawing.Size(13, 13);
+            this.labelPromotionsOut.TabIndex = 65;
+            this.labelPromotionsOut.Text = "0";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(25, 298);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(85, 13);
+            this.label21.TabIndex = 64;
+            this.label21.Text = "Promotions Out: ";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label26.Location = new System.Drawing.Point(23, 275);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(99, 13);
+            this.label26.TabIndex = 59;
+            this.label26.Text = "Total Outgoing: ";
+            // 
+            // labelTotalOutgoing
+            // 
+            this.labelTotalOutgoing.AutoSize = true;
+            this.labelTotalOutgoing.Location = new System.Drawing.Point(173, 275);
+            this.labelTotalOutgoing.Name = "labelTotalOutgoing";
+            this.labelTotalOutgoing.Size = new System.Drawing.Size(13, 13);
+            this.labelTotalOutgoing.TabIndex = 58;
+            this.labelTotalOutgoing.Text = "0";
+            // 
             // labelLateralsIn
             // 
             this.labelLateralsIn.AutoSize = true;
-            this.labelLateralsIn.Location = new System.Drawing.Point(173, 179);
+            this.labelLateralsIn.Location = new System.Drawing.Point(173, 177);
             this.labelLateralsIn.Name = "labelLateralsIn";
             this.labelLateralsIn.Size = new System.Drawing.Size(13, 13);
             this.labelLateralsIn.TabIndex = 57;
@@ -172,7 +322,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(25, 179);
+            this.label2.Location = new System.Drawing.Point(25, 177);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(112, 13);
             this.label2.TabIndex = 56;
@@ -181,7 +331,7 @@
             // labelPromotionsIn
             // 
             this.labelPromotionsIn.AutoSize = true;
-            this.labelPromotionsIn.Location = new System.Drawing.Point(173, 157);
+            this.labelPromotionsIn.Location = new System.Drawing.Point(173, 155);
             this.labelPromotionsIn.Name = "labelPromotionsIn";
             this.labelPromotionsIn.Size = new System.Drawing.Size(13, 13);
             this.labelPromotionsIn.TabIndex = 55;
@@ -190,7 +340,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(25, 157);
+            this.label11.Location = new System.Drawing.Point(25, 155);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(102, 13);
             this.label11.TabIndex = 54;
@@ -199,7 +349,7 @@
             // labelAverageTimeInPosition
             // 
             this.labelAverageTimeInPosition.AutoSize = true;
-            this.labelAverageTimeInPosition.Location = new System.Drawing.Point(173, 101);
+            this.labelAverageTimeInPosition.Location = new System.Drawing.Point(173, 99);
             this.labelAverageTimeInPosition.Name = "labelAverageTimeInPosition";
             this.labelAverageTimeInPosition.Size = new System.Drawing.Size(51, 13);
             this.labelAverageTimeInPosition.TabIndex = 53;
@@ -208,7 +358,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(25, 101);
+            this.label4.Location = new System.Drawing.Point(25, 99);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(130, 13);
             this.label4.TabIndex = 52;
@@ -217,7 +367,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(25, 57);
+            this.label12.Location = new System.Drawing.Point(25, 55);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(128, 13);
             this.label12.TabIndex = 51;
@@ -226,7 +376,7 @@
             // labelAverageDeficitRateE
             // 
             this.labelAverageDeficitRateE.AutoSize = true;
-            this.labelAverageDeficitRateE.Location = new System.Drawing.Point(172, 57);
+            this.labelAverageDeficitRateE.Location = new System.Drawing.Point(172, 55);
             this.labelAverageDeficitRateE.Name = "labelAverageDeficitRateE";
             this.labelAverageDeficitRateE.Size = new System.Drawing.Size(21, 13);
             this.labelAverageDeficitRateE.TabIndex = 50;
@@ -235,7 +385,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(25, 79);
+            this.label16.Location = new System.Drawing.Point(25, 77);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(131, 13);
             this.label16.TabIndex = 49;
@@ -244,7 +394,7 @@
             // labelAverageDeficitRateSI
             // 
             this.labelAverageDeficitRateSI.AutoSize = true;
-            this.labelAverageDeficitRateSI.Location = new System.Drawing.Point(172, 79);
+            this.labelAverageDeficitRateSI.Location = new System.Drawing.Point(172, 77);
             this.labelAverageDeficitRateSI.Name = "labelAverageDeficitRateSI";
             this.labelAverageDeficitRateSI.Size = new System.Drawing.Size(21, 13);
             this.labelAverageDeficitRateSI.TabIndex = 48;
@@ -254,7 +404,7 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(24, 35);
+            this.label18.Location = new System.Drawing.Point(24, 33);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(91, 13);
             this.label18.TabIndex = 47;
@@ -263,7 +413,7 @@
             // labelAverageTiS
             // 
             this.labelAverageTiS.AutoSize = true;
-            this.labelAverageTiS.Location = new System.Drawing.Point(173, 224);
+            this.labelAverageTiS.Location = new System.Drawing.Point(173, 244);
             this.labelAverageTiS.Name = "labelAverageTiS";
             this.labelAverageTiS.Size = new System.Drawing.Size(51, 13);
             this.labelAverageTiS.TabIndex = 45;
@@ -272,7 +422,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(25, 223);
+            this.label9.Location = new System.Drawing.Point(25, 243);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(129, 13);
             this.label9.TabIndex = 44;
@@ -281,7 +431,7 @@
             // labelAverageTIG
             // 
             this.labelAverageTIG.AutoSize = true;
-            this.labelAverageTIG.Location = new System.Drawing.Point(173, 202);
+            this.labelAverageTIG.Location = new System.Drawing.Point(173, 221);
             this.labelAverageTIG.Name = "labelAverageTIG";
             this.labelAverageTIG.Size = new System.Drawing.Size(51, 13);
             this.labelAverageTIG.TabIndex = 43;
@@ -290,7 +440,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(25, 201);
+            this.label7.Location = new System.Drawing.Point(25, 221);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(122, 13);
             this.label7.TabIndex = 42;
@@ -300,7 +450,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(23, 135);
+            this.label13.Location = new System.Drawing.Point(23, 133);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(99, 13);
             this.label13.TabIndex = 15;
@@ -309,7 +459,7 @@
             // labelTotalIncoming
             // 
             this.labelTotalIncoming.AutoSize = true;
-            this.labelTotalIncoming.Location = new System.Drawing.Point(172, 135);
+            this.labelTotalIncoming.Location = new System.Drawing.Point(172, 133);
             this.labelTotalIncoming.Name = "labelTotalIncoming";
             this.labelTotalIncoming.Size = new System.Drawing.Size(13, 13);
             this.labelTotalIncoming.TabIndex = 14;
@@ -325,13 +475,21 @@
             this.pieChart.Legends.Add(legend1);
             this.pieChart.Location = new System.Drawing.Point(15, 81);
             this.pieChart.Name = "pieChart";
+            this.pieChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
+            this.pieChart.PaletteCustomColors = new System.Drawing.Color[] {
+        System.Drawing.Color.FromArgb(((int)(((byte)(65)))), ((int)(((byte)(140)))), ((int)(((byte)(240))))),
+        System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(180)))), ((int)(((byte)(65))))),
+        System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(64)))), ((int)(((byte)(10))))),
+        System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(59)))), ((int)(((byte)(105))))),
+        System.Drawing.Color.FromArgb(((int)(((byte)(191)))), ((int)(((byte)(191)))), ((int)(((byte)(191))))),
+        System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(107)))), ((int)(((byte)(75)))))};
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             series1.YValuesPerPoint = 4;
             this.pieChart.Series.Add(series1);
-            this.pieChart.Size = new System.Drawing.Size(433, 338);
+            this.pieChart.Size = new System.Drawing.Size(451, 345);
             this.pieChart.TabIndex = 3;
             this.pieChart.Text = "chart3";
             title1.Name = "Title1";
@@ -387,112 +545,6 @@
             this.label6.TabIndex = 0;
             this.label6.Text = "Position Statistics";
             // 
-            // labelLateralsOut
-            // 
-            this.labelLateralsOut.AutoSize = true;
-            this.labelLateralsOut.Location = new System.Drawing.Point(173, 302);
-            this.labelLateralsOut.Name = "labelLateralsOut";
-            this.labelLateralsOut.Size = new System.Drawing.Size(13, 13);
-            this.labelLateralsOut.TabIndex = 67;
-            this.labelLateralsOut.Text = "0";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(25, 302);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(120, 13);
-            this.label19.TabIndex = 66;
-            this.label19.Text = "Lateral Promotions Out: ";
-            // 
-            // labelPromotionsOut
-            // 
-            this.labelPromotionsOut.AutoSize = true;
-            this.labelPromotionsOut.Location = new System.Drawing.Point(173, 279);
-            this.labelPromotionsOut.Name = "labelPromotionsOut";
-            this.labelPromotionsOut.Size = new System.Drawing.Size(13, 13);
-            this.labelPromotionsOut.TabIndex = 65;
-            this.labelPromotionsOut.Text = "0";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(25, 279);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(85, 13);
-            this.label21.TabIndex = 64;
-            this.label21.Text = "Promotions Out: ";
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(23, 256);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(99, 13);
-            this.label26.TabIndex = 59;
-            this.label26.Text = "Total Outgoing: ";
-            // 
-            // labelTotalOutgoing
-            // 
-            this.labelTotalOutgoing.AutoSize = true;
-            this.labelTotalOutgoing.Location = new System.Drawing.Point(173, 256);
-            this.labelTotalOutgoing.Name = "labelTotalOutgoing";
-            this.labelTotalOutgoing.Size = new System.Drawing.Size(13, 13);
-            this.labelTotalOutgoing.TabIndex = 58;
-            this.labelTotalOutgoing.Text = "0";
-            // 
-            // labelRetirements
-            // 
-            this.labelRetirements.AutoSize = true;
-            this.labelRetirements.Location = new System.Drawing.Point(173, 325);
-            this.labelRetirements.Name = "labelRetirements";
-            this.labelRetirements.Size = new System.Drawing.Size(13, 13);
-            this.labelRetirements.TabIndex = 69;
-            this.labelRetirements.Text = "0";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(25, 325);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(69, 13);
-            this.label23.TabIndex = 68;
-            this.label23.Text = "Retirements: ";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.outgoingRadioButton);
-            this.groupBox3.Controls.Add(this.incomingRadioButton);
-            this.groupBox3.Location = new System.Drawing.Point(15, 420);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(451, 43);
-            this.groupBox3.TabIndex = 6;
-            this.groupBox3.TabStop = false;
-            // 
-            // outgoingRadioButton
-            // 
-            this.outgoingRadioButton.AutoSize = true;
-            this.outgoingRadioButton.Location = new System.Drawing.Point(240, 16);
-            this.outgoingRadioButton.Name = "outgoingRadioButton";
-            this.outgoingRadioButton.Size = new System.Drawing.Size(68, 17);
-            this.outgoingRadioButton.TabIndex = 1;
-            this.outgoingRadioButton.Text = "Outgoing";
-            this.outgoingRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // incomingRadioButton
-            // 
-            this.incomingRadioButton.AutoSize = true;
-            this.incomingRadioButton.Checked = true;
-            this.incomingRadioButton.Location = new System.Drawing.Point(142, 16);
-            this.incomingRadioButton.Name = "incomingRadioButton";
-            this.incomingRadioButton.Size = new System.Drawing.Size(68, 17);
-            this.incomingRadioButton.TabIndex = 0;
-            this.incomingRadioButton.TabStop = true;
-            this.incomingRadioButton.Text = "Incoming";
-            this.incomingRadioButton.UseVisualStyleBackColor = true;
-            this.incomingRadioButton.CheckedChanged += new System.EventHandler(this.incomingRadioButton_CheckedChanged);
-            // 
             // PositionStatsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -510,6 +562,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Position Statistics";
             this.mainPanel.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -517,8 +571,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pieChart)).EndInit();
             this.bottomPanel.ResumeLayout(false);
             this.headerPanel.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -563,5 +615,9 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RadioButton outgoingRadioButton;
         private System.Windows.Forms.RadioButton incomingRadioButton;
+        private System.Windows.Forms.Label labelTransffersOut;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label labelTransffersIn;
+        private System.Windows.Forms.Label label3;
     }
 }

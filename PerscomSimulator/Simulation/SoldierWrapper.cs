@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Perscom.Database;
 
 namespace Perscom.Simulation
@@ -51,7 +52,7 @@ namespace Perscom.Simulation
         /// <summary>
         /// Gets the soldiers current <see cref="Database.Specialty"/>
         /// </summary>
-        public Specialty Specialty => Soldier.Specialty;
+        public Specialty Specialty { get; protected set; }
 
         /// <summary>
         /// Gets a list of billets this soldier has held
@@ -81,12 +82,55 @@ namespace Perscom.Simulation
         /// </summary>
         public bool Disposed { get; private set; }
 
+        #region Events
+
+        /// <summary>
+        /// Event fired after <see cref="AssignPosition(PositionWrapper, IterationDate, SimDatabase, bool)"/> is called,
+        /// and there is NO rank change preformed
+        /// </summary>
+        public static event EventHandler<PositionChangeEventArgs> OnPositionChange;
+
+        /// <summary>
+        /// Event fired after <see cref="AssignPosition(PositionWrapper, IterationDate, SimDatabase, bool)"/> is called,
+        /// and there is a rank change preformed
+        /// </summary>
+        public static event EventHandler<PositionAndRankChangeEventArgs> OnPositionAndRankChange;
+
+        /// <summary>
+        /// Event fired after <see cref="ExchangePositionsWith(SoldierWrapper)"/> is preformed
+        /// </summary>
+        public static event EventHandler<LateralPositionExchangeEventArgs> OnLateralPositionExchange;
+
+        /// <summary>
+        /// Event fired after <see cref="PromoteTo(IterationDate, Rank, SimDatabase, bool)"/> is preformed,
+        /// and the Rank Grade was changed
+        /// </summary>
+        public static event EventHandler<RankChangeEventArgs> OnRankGradeChange;
+
+        /// <summary>
+        /// Event fired after <see cref="PromoteTo(IterationDate, Rank, SimDatabase, bool)"/> is preformed,
+        /// and the Rank Type was changed
+        /// </summary>
+        public static event EventHandler<RankChangeEventArgs> OnRankTypeChange;
+
+        /// <summary>
+        /// Event occurs BEFORE the specialty changes
+        /// </summary>
+        public static event EventHandler<SpecialtyChangeEventArgs> OnSpecialtyChange;
+
+        /// <summary>
+        /// Event occurs AFTER the soldier is retired
+        /// </summary>
+        public static event EventHandler<SoldierWrapper> OnRetire;
+
+        #endregion Events
+
         /// <summary>
         /// Creates a new instance of <see cref="SoldierWrapper"/>
         /// </summary>
         /// <param name="soldier"></param>
         /// <param name="rank"></param>
-        public SoldierWrapper(Soldier soldier, Rank rank, IterationDate date, SimDatabase db)
+        public SoldierWrapper(Soldier soldier, Rank rank, Specialty specialty, IterationDate date, SimDatabase db)
         {
             Soldier = soldier;
             soldier.RankId = rank.Id;
@@ -95,7 +139,7 @@ namespace Perscom.Simulation
             LastPromotionDate = date;
             LastGradeChangeDate = date;
 
-            AssignSpecialty(soldier.SpecialtyId, date, db);
+            AssignSpecialty(specialty, date, db, false);
         }
 
         /// <summary>
@@ -104,18 +148,29 @@ namespace Perscom.Simulation
         /// <param name="spec"></param>
         /// <param name="currentDate"></param>
         /// <param name="db"></param>
-        public void AssignSpecialty(int specId, IterationDate currentDate, SimDatabase db)
+        public void AssignSpecialty(Specialty specialty, IterationDate currentDate, SimDatabase db, bool fireEvent = true)
         {
+            // Fire event?
+            if (fireEvent)
+            {
+                OnSpecialtyChange?.Invoke(this, new SpecialtyChangeEventArgs()
+                {
+                    To = specialty,
+                    From = Specialty
+                });
+            }
+
             // Create promotion record
             db.SpecialtyAssignments.Add(new SpecialtyAssignment()
             {
                 AssignedIteration = currentDate.Id,
                 SoldierId = Soldier.Id,
-                SpecialtyId = specId
+                SpecialtyId = specialty.Id
             });
 
             // Set spec
-            Soldier.SpecialtyId = specId;
+            Specialty = specialty;
+            Soldier.SpecialtyId = specialty.Id;
         }
 
         /// <summary>
@@ -123,6 +178,10 @@ namespace Perscom.Simulation
         /// </summary>
         public void Retire(IterationDate currentDate, SimDatabase db)
         {
+            // Fire Event
+            OnRetire?.Invoke(this, this);
+
+            // Remove soldier from current position
             if (Position != null)
             {
                 // Remove ourselves from the position
@@ -196,13 +255,13 @@ namespace Perscom.Simulation
         /// </summary>
         /// <param name="date"></param>
         /// <param name="newRank"></param>
-        public void PromoteTo(IterationDate date, Rank newRank, SimDatabase db)
+        public Promotion PromoteTo(IterationDate date, Rank newRank, SimDatabase db, bool fireEvent = true)
         {
             // Ensure we arent being promoted to the same rank we are already
-            if (newRank.Id == Soldier.RankId) return;
+            if (newRank.Id == Soldier.RankId) return null;
 
             // Create promotion record
-            Promotions.Add(new Promotion()
+            var promo = new Promotion()
             {
                 IterationId = date.Id,
                 SoldierId = Soldier.Id,
@@ -211,19 +270,21 @@ namespace Perscom.Simulation
                 TimeInService = date.Id - Soldier.EntryIterationId,
                 PreviousTimeInRank = date.Id - LastPromotionDate.Id,
                 TimeSinceLastGradeChange = date.Id - LastGradeChangeDate.Id
-            });
+            };
+            Promotions.Add(promo);
 
             // Remove soldier before promoting!
             RemoveSoldierRecursively(Position.ParentUnit);
 
             // Log grade increase
-            if (newRank.Grade > Rank.Grade || newRank.Type != Rank.Type)
+            if (newRank.Grade != Rank.Grade || newRank.Type != Rank.Type)
             {
                 LastGradeChangeDate = date;
                 Soldier.LastGradeChangeDate = date;
             }
 
             // Set new rank
+            var oldRank = Rank;
             Rank = newRank;
             LastPromotionDate = date;
             Soldier.RankId = newRank.Id;
@@ -231,6 +292,99 @@ namespace Perscom.Simulation
 
             // Move soldier in unit roster
             AddSoldierRecursively(Position.ParentUnit);
+
+            // Fire even ONLY if rank type did not change!
+            if (fireEvent)
+            {
+                if (newRank.Type == oldRank.Type)
+                {
+                    OnRankGradeChange?.Invoke(this, new RankChangeEventArgs()
+                    {
+                        Promotion = promo,
+                        Soldier = this
+                    });
+                }
+                else
+                {
+                    OnRankTypeChange?.Invoke(this, new RankChangeEventArgs()
+                    {
+                        Promotion = promo,
+                        Soldier = this
+                    });
+                }
+            }
+
+            // Return
+            return promo;
+        }
+
+        /// <summary>
+        /// If the soldier is promotable by position, this method will preform the promotion
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="db"></param>
+        /// <param name="promotion"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        public bool DoPromotionIfEligable(IterationDate date, SimDatabase db, bool fireEvent, out Promotion promotion)
+        {
+            // Do we promote?
+            if (IsPromotable(date, out PromotableStatus status))
+            {
+                if (status == PromotableStatus.Automatic || status == PromotableStatus.Position)
+                {
+                    // Dont log promotion data if switching rank types!
+                    if (Rank.Type != Position.Billet.Rank.Type)
+                    {
+                        // Promote Soldier
+                        promotion = PromoteTo(date, Position.Billet.Rank, db, fireEvent);
+                        return true;
+                    }
+                    else
+                    {
+                        // Get the expected soldier rank/grade to promote from
+                        var expectedGrade = Position.Billet.Rank.Grade - 1;
+
+                        // Promote soldier. Do not skip rank grades!
+                        if (Rank.Grade == expectedGrade)
+                        {
+                            // Billet grade is 1 level higher or of a different Type!
+                            promotion = PromoteTo(date, Position.Billet.Rank, db, fireEvent);
+                            return true;
+                        }
+                        else
+                        {
+                            // Billet grade is multiple levels higher, SO we must promote one grade at
+                            // a time!
+                            Rank toRank = RankCache.GetNextGradeRanks(Rank).FirstOrDefault();
+                            if (toRank != null)
+                            {
+                                promotion = PromoteTo(date, toRank, db, fireEvent);
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else if (status == PromotableStatus.Lateral)
+                {
+                    // Do not log promotion since this is lateral
+                    promotion = PromoteTo(date, Position.Billet.Rank, db, fireEvent);
+                    return true;
+                }
+                else if (status == PromotableStatus.Demotion)
+                {
+                    // Does the position demote over ranked?
+                    if (Position.Billet.Billet.DemoteOverRanked)
+                    {
+                        promotion = PromoteTo(date, Position.Billet.MaxRank, db, fireEvent);
+                        return true;
+                    }
+                }
+            }
+            
+            // Not promotable
+            promotion = null;
+            return false;
         }
 
         /// <summary>
@@ -333,13 +487,19 @@ namespace Perscom.Simulation
         }
 
         /// <summary>
-        /// Assigns this <see cref="Soldier"/> to the specified <see cref="Position"/>
+        /// Assigns the provided position to this soldier, and promotes as neccessary
         /// </summary>
         /// <param name="newPosition"></param>
         /// <param name="date"></param>
         /// <param name="db"></param>
-        public void AssignPosition(PositionWrapper newPosition, IterationDate date, SimDatabase db)
+        /// <returns></returns>
+        protected PositionChangeEventArgs DoAssignPosition(PositionWrapper newPosition, IterationDate date, SimDatabase db)
         {
+            // Vars for event
+            var oldPosition = Position;
+            var oldSpecialty = Specialty;
+            int tib = GetTimeInBillet(date);
+
             // Remove soldier from old unit, and place in new
             RemoveFromPosition(date, db);
 
@@ -351,10 +511,10 @@ namespace Perscom.Simulation
             var specialty = newPosition.Billet.Specialty;
             if (specialty != null && specialty.Id != Soldier.SpecialtyId)
             {
-                AssignSpecialty(specialty.Id, date, db);
+                AssignSpecialty(specialty, date, db, false);
             }
 
-            // Add billet to list
+            // Add billet to list 
             if (!BilletsHeld.ContainsKey(newPosition.Billet.Id))
             {
                 BilletsHeld.Add(newPosition.Billet.Id, newPosition.Billet);
@@ -364,6 +524,109 @@ namespace Perscom.Simulation
             Assignment.AssignedIteration = date.Id;
             Assignment.PositionId = newPosition.Position.Id;
             Assignment.SoldierId = Soldier.Id;
+
+            // Did we promote?
+            if (DoPromotionIfEligable(date, db, false, out Promotion promo))
+            {
+                return new PositionAndRankChangeEventArgs()
+                {
+                    FromPosition = oldPosition,
+                    ToPosition = Position,
+                    FromSpecialty = oldSpecialty,
+                    ToSpecialty = Specialty,
+                    Promotion = promo,
+                    FromPositionTimeInBillet = tib,
+                    Soldier = this
+                };
+            }
+            else
+            {
+                return new PositionChangeEventArgs()
+                {
+                    FromPosition = oldPosition,
+                    ToPosition = Position,
+                    FromSpecialty = oldSpecialty,
+                    ToSpecialty = Specialty,
+                    FromPositionTimeInBillet = tib,
+                    Soldier = this
+                };
+            }
+        }
+
+        /// <summary>
+        /// Assigns this <see cref="Soldier"/> to the specified <see cref="Position"/>
+        /// </summary>
+        /// <param name="newPosition"></param>
+        /// <param name="date"></param>
+        /// <param name="db"></param>
+        /// <param name="fireEvent">Indicates whether to fire the <see cref="OnPositionChange"/> event</param>
+        public void AssignPosition(PositionWrapper newPosition, IterationDate date, SimDatabase db, bool fireEvent = true)
+        {
+            // Preform the position assignment
+            PositionChangeEventArgs args = DoAssignPosition(newPosition, date, db);
+
+            // Fire event?
+            if (fireEvent)
+            {
+                if (args is PositionAndRankChangeEventArgs)
+                {
+                    OnPositionAndRankChange?.Invoke(this, args as PositionAndRankChangeEventArgs);
+                }
+                else
+                {
+                    OnPositionChange?.Invoke(this, args);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Swaps the givens soldier position with this one
+        /// </summary>
+        /// <param name="soldier">The <see cref="Database.Soldier"/> we are exchanging positions with</param>
+        /// <param name="date">The current simulation <see cref="IterationDate"/></param>
+        /// <param name="db"></param>
+        /// <param name="fireEvent">Indicates whether to fire the <see cref="OnLateralPositionExchange"/> event</param>
+        public void ExchangePositionsWith(SoldierWrapper soldier, IterationDate date, SimDatabase db, bool fireEvent = true)
+        {
+            // Do some checks
+            if (Position.Billet.Rank.Type != soldier.Position.Billet.Rank.Type)
+            {
+                throw new ArgumentException("Lateral position exchange failed! Rank type mis-matched");
+            }
+
+            // Create vars
+            var s1_pos = Position;
+            var s1_tib = GetTimeInBillet(date);
+            var s2_pos = soldier.Position;
+            var s2_tib = soldier.GetTimeInBillet(date);
+
+            // Remove both soldiers from thier current position
+            RemoveFromPosition(date, db);
+            soldier.RemoveFromPosition(date, db);
+
+            // Assign new positions
+            var s1_args = DoAssignPosition(s2_pos, date, db);
+            var s2_args = soldier.DoAssignPosition(s1_pos, date, db);
+
+            // Fire event
+            if (fireEvent)
+            {
+                // Adjust arguments
+                s1_args.FromPosition = s1_pos;
+                s1_args.FromPositionTimeInBillet = s1_tib;
+                s2_args.FromPosition = s2_pos;
+                s2_args.FromPositionTimeInBillet = s2_tib;
+
+                // Create event args
+                var args = new LateralPositionExchangeEventArgs()
+                {
+                    Soldier1EventArgs = s1_args,
+                    Soldier2EventArgs = s2_args
+                };
+
+                // Fire event
+                OnLateralPositionExchange?.Invoke(this, args);
+            }
         }
 
         /// <summary>

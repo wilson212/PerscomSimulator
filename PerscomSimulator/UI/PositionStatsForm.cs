@@ -81,6 +81,13 @@ namespace Perscom
                 i = series.Points.AddY(stats.TotalSoldiersRetireOut);
                 series.Points[i].LegendText = "Retired";
 
+                // Plot soldiers transferred out
+                if (stats.TotalSoldiersTransferredOut > 0)
+                {
+                    i = series.Points.AddY(stats.TotalSoldiersTransferredOut);
+                    series.Points[i].LegendText = "Transferred Branches";
+                }
+
                 // Plos transfered soldiers
                 i = series.Points.AddY(stats.TotalSoldiersLateralOut);
                 series.Points[i].LegendText = "Laterally Transfered";
@@ -95,8 +102,15 @@ namespace Perscom
                 series.Points[i].LegendText = "Promoted";
 
                 // Plos transfered soldiers
-                i = series.Points.AddY(stats.TotalSoldiersLateralIn);
-                series.Points[i].LegendText = "Laterally Transfered";
+                if (stats.TotalSoldiersLateralIn > 0)
+                {
+                    i = series.Points.AddY(stats.TotalSoldiersLateralIn);
+                    series.Points[i].LegendText = "Laterally Transfered";
+                }
+
+                // Plot soldiers transferred out
+                i = series.Points.AddY(stats.TotalSoldiersTransferredIn);
+                series.Points[i].LegendText = "Transferred Branches";
             }
         }
 
@@ -108,12 +122,14 @@ namespace Perscom
             labelTotalIncoming.Text = String.Format("{0:N0}", stats.TotalSoldiersIncoming);
             labelPromotionsIn.Text = String.Format("{0:N0}", stats.TotalSoldiersPromotedIn);
             labelLateralsIn.Text = String.Format("{0:N0}", stats.TotalSoldiersLateralIn);
+            labelTransffersIn.Text = String.Format("{0:N0}", stats.TotalSoldiersTransferredIn);
             labelAverageTIG.Text = String.Format("{0} months", Math.Round(stats.AverageTimeInGradeIncoming));
             labelAverageTiS.Text = String.Format("{0} years", Math.Round(stats.AverageTimeInServiceIncoming / 12, 1));
 
             labelTotalOutgoing.Text = String.Format("{0:N0}", stats.TotalSoldiersOutgoing);
             labelPromotionsOut.Text = String.Format("{0:N0}", stats.TotalSoldiersPromotedOut);
             labelLateralsOut.Text = String.Format("{0:N0}", stats.TotalSoldiersLateralOut);
+            labelTransffersOut.Text = String.Format("{0:N0}", stats.TotalSoldiersTransferredOut);
             labelRetirements.Text = String.Format("{0:N0}", stats.TotalSoldiersRetireOut);
 
             // Get defecit data

@@ -20,6 +20,18 @@ namespace Perscom.Database
         public int TotalSoldiersOutgoing { get; set; } = 0;
 
         /// <summary>
+        /// Gets or sets the total number of soldiers who transferred rank branches into this position
+        /// </summary>
+        [Column, Required]
+        public int TotalSoldiersTransferredIn { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the total number of soldiers who transferred rank branches out of this position
+        /// </summary>
+        [Column, Required]
+        public int TotalSoldiersTransferredOut { get; set; } = 0;
+
+        /// <summary>
         /// Gets or sets the total number of soldiers who were promoted into this position
         /// </summary>
         [Column, Required]
