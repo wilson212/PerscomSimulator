@@ -61,7 +61,7 @@ namespace Perscom.Database
         #region Virtual Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="SoldierGenerator"/> entity that this entity references.
+        /// Gets the <see cref="RandomizedProcedure"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
         [ForeignKey("GeneratorId",

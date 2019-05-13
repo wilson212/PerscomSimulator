@@ -311,26 +311,34 @@ namespace Perscom
             UnitTemplate template = unitSelect.SelectedItem as UnitTemplate;
             if (template == null) return 0;
 
+            // Grab selected specialty filtering
+            Specialty specialty = specialtySelect.SelectedItem as Specialty;
+
+            // Grab filtered soldier list
+            var stats = (specialty == null)
+                ? RankStatistics[template.Id][rank.Type]
+                : SpecialtyStatistics[template.Id][rank.Type][specialty.Id];
+
             // Make sure the rank exists in the simulation
-            if (!RankStatistics[template.Id][rank.Type].ContainsKey(rank.Grade))
+            if (!stats.ContainsKey(rank.Grade))
                 return 0;
 
             // Total number of soldiers who did NOT make this rank/grade
             int totalPriorGradeRetirements = 0;
 
             // Total number of soldiers who DID make this rank/grade
-            int totalAtThisRank = RankStatistics[template.Id][rank.Type][rank.Grade].TotalSoldiersOutgoing;
+            int totalAtThisRank = stats[rank.Grade].TotalSoldiersOutgoing;
 
             // Add up the total number of soldiers who did NOT make this
             // grade in the specified rank type
             foreach (Rank r in RankCache.GetPrevousGrades(rank.Type, rank.Grade))
             {
                 // If no soldiers ever made this rank/grade, skip
-                if (!RankStatistics[template.Id][rank.Type].ContainsKey(r.Grade))
+                if (!stats.ContainsKey(r.Grade))
                     continue;
 
                 // Add total retirements at this grade to the total cumulative retirements
-                var info = RankStatistics[template.Id][rank.Type][r.Grade];
+                var info = stats[r.Grade];
                 totalPriorGradeRetirements +=  info.TotalRetirements;
             }
 
@@ -354,13 +362,25 @@ namespace Perscom
             UnitTemplate template = unitSelect.SelectedItem as UnitTemplate;
             if (template == null) return 0;
 
+            // Grab selected specialty filtering
+            Specialty specialty = specialtySelect.SelectedItem as Specialty;
+
+            // Grab filtered soldier list
+            var stats = (specialty == null)
+                ? RankStatistics[template.Id][rank.Type]
+                : SpecialtyStatistics[template.Id][rank.Type][specialty.Id];
+
+            // Make sure the rank exists in the simulation
+            if (!stats.ContainsKey(rank.Grade))
+                return 0;
+
             // Load the unit, so the soldier counts can be fetched
-            UnitStatistics stats = UnitBuilder.GetUnitStatistics(template);
-            int positions = stats.SoldierCountsByGrade[rank.Type][rank.Grade];
+            UnitStatistics unitStats = UnitBuilder.GetUnitStatistics(template);
+            int positions = unitStats.SoldierCountsByGrade[rank.Type][rank.Grade];
             double cumulative = positions * TotalMonthsLogged;
 
             // Total number of soldiers who DID make this rank/grade
-            int totalDeficit = RankStatistics[template.Id][rank.Type][rank.Grade].Deficit;
+            int totalDeficit = stats[rank.Grade].Deficit;
 
             return (cumulative == 0 || totalDeficit == 0)
                 ? 0
@@ -466,8 +486,8 @@ namespace Perscom
 
             // Grab filtered soldier list
             var soldierData = (specialty == null) 
-            ? RankStatistics[selected.Id][type]
-            : SpecialtyStatistics[selected.Id][type][specialty.Id];
+                ? RankStatistics[selected.Id][type]
+                : SpecialtyStatistics[selected.Id][type][specialty.Id];
 
             // Plot the average time in grade for each grade
             foreach (var rank in soldierData.OrderBy(x => x.Key).Take(soldierData.Count - 1))

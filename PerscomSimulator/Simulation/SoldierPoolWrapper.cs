@@ -13,7 +13,7 @@ namespace Perscom.Simulation
     /// Represents a an array spawnable soldier settings that is used by the Simulator
     /// to fill empty positions.
     /// </summary>
-    public class SpawnedSoldier : ISpawnable, IEquatable<SpawnedSoldier>
+    public class SoldierPoolWrapper<T> : ISpawnable, IEquatable<SoldierPoolWrapper<T>>
     {
         /// <summary>
         /// Gets or sets whether the simulator is to create a new soldier, or take
@@ -45,7 +45,7 @@ namespace Perscom.Simulation
         /// <summary>
         /// 
         /// </summary>
-        public SoldierGeneratorPool Pool { get; set; }
+        public T Pool { get; set; }
 
         /// <summary>
         /// Compares a <see cref="SpawnedSoldier"/> with this one, and returns whether
@@ -53,14 +53,14 @@ namespace Perscom.Simulation
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool IsDuplicateOf(SpawnedSoldier other)
+        public bool IsDuplicateOf(SoldierPoolWrapper<T> other)
         {
             return (Rank.Id == other.Rank.Id && Type == other.Type);
         }
 
-        public bool Equals(SpawnedSoldier other) => IsDuplicateOf(other);
+        public bool Equals(SoldierPoolWrapper<T> other) => IsDuplicateOf(other);
 
-        public override bool Equals(object obj) => Equals(obj as SpawnedSoldier);
+        public override bool Equals(object obj) => Equals(obj as SoldierPoolWrapper<T>);
 
         public override int GetHashCode() => Rank.Id;
     }

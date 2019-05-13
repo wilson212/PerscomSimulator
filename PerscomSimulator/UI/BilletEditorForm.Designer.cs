@@ -76,14 +76,14 @@
             this.demoteCheckBox = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
             this.soldierSpawnSelect = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
+            this.procedureLabel = new System.Windows.Forms.Label();
             this.spawnGenSelect = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.specialLabel = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.groupingListView = new System.Windows.Forms.ListViewWithReordering();
+            this.groupingListView = new System.ListViewWithReordering();
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -94,7 +94,7 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.removeItemToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.sortingListView = new System.Windows.Forms.ListViewWithReordering();
+            this.sortingListView = new System.ListViewWithReordering();
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -129,6 +129,9 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.headerPanel = new System.Windows.Forms.Panel();
             this.labelHeader = new System.Windows.Forms.ShadowLabel();
+            this.specialtyAllRadioButton = new System.Windows.Forms.RadioButton();
+            this.specialtyNewRadioButton = new System.Windows.Forms.RadioButton();
+            this.label6 = new System.Windows.Forms.Label();
             this.mainPanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -195,9 +198,9 @@
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.experienceListView);
-            this.groupBox7.Location = new System.Drawing.Point(512, 267);
+            this.groupBox7.Location = new System.Drawing.Point(512, 290);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(465, 240);
+            this.groupBox7.Size = new System.Drawing.Size(465, 217);
             this.groupBox7.TabIndex = 36;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Billet Gives the following Experience";
@@ -216,7 +219,7 @@
             this.experienceListView.Location = new System.Drawing.Point(3, 16);
             this.experienceListView.MultiSelect = false;
             this.experienceListView.Name = "experienceListView";
-            this.experienceListView.Size = new System.Drawing.Size(459, 221);
+            this.experienceListView.Size = new System.Drawing.Size(459, 198);
             this.experienceListView.TabIndex = 1;
             this.experienceListView.UseCompatibleStateImageBehavior = false;
             this.experienceListView.View = System.Windows.Forms.View.Details;
@@ -570,11 +573,14 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.specialtyAllRadioButton);
+            this.groupBox4.Controls.Add(this.specialtyNewRadioButton);
+            this.groupBox4.Controls.Add(this.label6);
             this.groupBox4.Controls.Add(this.specialtySelect);
             this.groupBox4.Controls.Add(this.specialtyCheckBox);
             this.groupBox4.Location = new System.Drawing.Point(512, 168);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(466, 87);
+            this.groupBox4.Size = new System.Drawing.Size(466, 110);
             this.groupBox4.TabIndex = 32;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Specialty Changes";
@@ -605,7 +611,7 @@
             this.groupBox3.Controls.Add(this.demoteCheckBox);
             this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Controls.Add(this.soldierSpawnSelect);
-            this.groupBox3.Controls.Add(this.label9);
+            this.groupBox3.Controls.Add(this.procedureLabel);
             this.groupBox3.Controls.Add(this.spawnGenSelect);
             this.groupBox3.Location = new System.Drawing.Point(512, 21);
             this.groupBox3.Name = "groupBox3";
@@ -643,14 +649,14 @@
             this.soldierSpawnSelect.TabIndex = 33;
             this.soldierSpawnSelect.SelectedIndexChanged += new System.EventHandler(this.soldierSpawnSelect_SelectedIndexChanged);
             // 
-            // label9
+            // procedureLabel
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(32, 70);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(144, 13);
-            this.label9.TabIndex = 32;
-            this.label9.Text = "Custom Procedure Selection:";
+            this.procedureLabel.AutoSize = true;
+            this.procedureLabel.Location = new System.Drawing.Point(32, 70);
+            this.procedureLabel.Name = "procedureLabel";
+            this.procedureLabel.Size = new System.Drawing.Size(144, 13);
+            this.procedureLabel.TabIndex = 32;
+            this.procedureLabel.Text = "Custom Procedure Selection:";
             // 
             // spawnGenSelect
             // 
@@ -1126,6 +1132,37 @@
             this.labelHeader.TabIndex = 0;
             this.labelHeader.Text = "Add New Billet";
             // 
+            // specialtyAllRadioButton
+            // 
+            this.specialtyAllRadioButton.AutoSize = true;
+            this.specialtyAllRadioButton.Checked = true;
+            this.specialtyAllRadioButton.Location = new System.Drawing.Point(216, 78);
+            this.specialtyAllRadioButton.Name = "specialtyAllRadioButton";
+            this.specialtyAllRadioButton.Size = new System.Drawing.Size(76, 17);
+            this.specialtyAllRadioButton.TabIndex = 54;
+            this.specialtyAllRadioButton.TabStop = true;
+            this.specialtyAllRadioButton.Text = "All Soldiers";
+            this.specialtyAllRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // specialtyNewRadioButton
+            // 
+            this.specialtyNewRadioButton.AutoSize = true;
+            this.specialtyNewRadioButton.Location = new System.Drawing.Point(293, 78);
+            this.specialtyNewRadioButton.Name = "specialtyNewRadioButton";
+            this.specialtyNewRadioButton.Size = new System.Drawing.Size(111, 17);
+            this.specialtyNewRadioButton.TabIndex = 53;
+            this.specialtyNewRadioButton.Text = "New Soldiers Only";
+            this.specialtyNewRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(82, 80);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(105, 13);
+            this.label6.TabIndex = 52;
+            this.label6.Text = "Change Specialty of:";
+            // 
             // BilletEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1205,7 +1242,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox billetCatSelect;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label procedureLabel;
         private System.Windows.Forms.ComboBox spawnGenSelect;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.ComboBox specialtySelect;
@@ -1241,7 +1278,7 @@
         private System.Windows.Forms.RadioButton andRadioButton;
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.ListViewWithReordering sortingListView;
+        private System.ListViewWithReordering sortingListView;
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.ColumnHeader columnHeader10;
         private System.Windows.Forms.ColumnHeader columnHeader11;
@@ -1260,7 +1297,7 @@
         private System.Windows.Forms.ToolStripMenuItem removeItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addNewToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem editItemToolStripMenuItem1;
-        private System.Windows.Forms.ListViewWithReordering groupingListView;
+        private System.ListViewWithReordering groupingListView;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader12;
         private System.Windows.Forms.ColumnHeader columnHeader13;
@@ -1278,5 +1315,8 @@
         private System.Windows.Forms.ComboBox billetFlagSelect;
         private System.Windows.Forms.Label specialLabel;
         private System.Windows.Forms.CheckBox demoteCheckBox;
+        private System.Windows.Forms.RadioButton specialtyAllRadioButton;
+        private System.Windows.Forms.RadioButton specialtyNewRadioButton;
+        private System.Windows.Forms.Label label6;
     }
 }

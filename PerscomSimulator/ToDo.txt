@@ -1,8 +1,7 @@
 ﻿ - Track specialty transitions for statistics
  - Add UnitTemplate statistics
- - Billet Rank Ranges!
+ - Add better support for Billet Rank Ranges! (maybe a collective lateral selection?)
  - Establish Rank Grades seperate from Ranks in the RankEditorForm
- - Add billet selection procedures
 
 -> SelectionProcedure (Id, Name, RankId, CreatesNewSoldiers, CareerGeneratorId, Probability)
 --> ProcedurePool (
@@ -26,3 +25,17 @@
 ---> ProcedurePoolSorting (ProcedurePoolId) : AbstractSort
 ---> ProcedurePoolSpecialtyRequirement (ProcedurePoolId, SpecialtyId)
 -> BilletProcedure (BilletId, SelectionProcedureId)
+
+----- Procedure's
+
+-> Ordered (Priority) Procedure:	Goes through each pool in order, and rolls until a candidate is found
+-> Randomized Procedure:	Selects from one random pool only, and checks for a candidate
+-> Collective Procedure		Selects from all pools and combines all soldiers, then chooses one
+
+-> Attributes
+---> Leadership
+---> Marksmanship
+---> Reliability
+---> Adaptability
+---> Fitness
+---> Proficiency

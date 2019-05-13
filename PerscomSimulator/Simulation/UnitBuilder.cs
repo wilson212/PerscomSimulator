@@ -91,7 +91,7 @@ namespace Perscom
                 db.Positions.Add(pos);
 
                 // Convert to wrapper
-                var wrapper = new PositionWrapper(pos, billet, unitWrap);
+                var wrapper = new PositionWrapper(pos, billet, unitWrap, db);
                 unitWrap.Positions.Add(wrapper);
             }
 

@@ -128,13 +128,14 @@ namespace Perscom.Database
         /// will use to fill this position when it is empty
         /// </summary>
         [Column, Required, Default(0)]
-        public BilletSelection Selection { get; set; } = BilletSelection.PromotionOrLateral;
+        public SelectionProcedure Selection { get; set; } = SelectionProcedure.PromotionOrLateral;
 
         /// <summary>
         /// Indicates whether the soldier holding this <see cref="Billet"/> will be
         /// demoted in <see cref="Database.Rank.Grade"/> if their current grade
         /// is higher than the <see cref="MaxRank.Grade"/>. This option is only
-        /// used if the <see cref="Selection"/> equals <see cref="BilletSelection.RandomSoldierGenerator"/>
+        /// used if the <see cref="Selection"/> equals <see cref="SelectionProcedure.RandomizedProcedure"/>
+        /// or <see cref="SelectionProcedure.OrderedProcedure"/>
         /// </summary>
         [Column, Required, Default(0)]
         public bool DemoteOverRanked { get; set; } = false;
@@ -153,7 +154,7 @@ namespace Perscom.Database
         /// to be considered for this billet
         /// </summary>
         [Column, Required, Default(0)]
-        public bool InverseRequirements { get; set; }
+        public bool InverseSpecialtyRequirements { get; set; }
 
         /// <summary>
         /// Gets or sets the experience logic when applying filters
@@ -331,13 +332,22 @@ namespace Perscom.Database
         public virtual IEnumerable<BilletSpecialtyRequirement> Requirements { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="BilletSpawnSetting"/> entity that reference this 
+        /// Gets the <see cref="BilletRandomizedProcedure"/> entity that reference this 
         /// <see cref="Billet"/>, if any
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<BilletSpawnSetting> SpawnSettings { get; set; }
+        public virtual IEnumerable<BilletRandomizedProcedure> RandomizedProcedures { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="BilletOrderedProcedure"/> entity that reference this 
+        /// <see cref="Billet"/>, if any
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<BilletOrderedProcedure> OrderedProcedures { get; set; }
 
         /// <summary>
         /// Gets the <see cref="BilletSpecialty"/> entity that reference this 

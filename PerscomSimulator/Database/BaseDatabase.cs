@@ -11,7 +11,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(1, 2);
+        public static Version CurrentVersion { get; protected set; } = new Version(2, 0);
 
         /// <summary>
         /// Gets the current database tables version
@@ -28,6 +28,11 @@ namespace Perscom.Database
         public DbSet<Billet> Billets { get; set; }
 
         /// <summary>
+        /// Gets a set of <see cref="BilletCareer"/> entites stored in the database
+        /// </summary>
+        public DbSet<BilletCareer> BilletCareers { get; set; }
+
+        /// <summary>
         /// Gets a set of <see cref="BilletCatagory"/> entites stored in the database
         /// </summary>
         public DbSet<BilletCatagory> BilletCatagories { get; set; }
@@ -36,6 +41,16 @@ namespace Perscom.Database
         /// Gets a set of <see cref="Database.BilletExperience"/> entites stored in the database
         /// </summary>
         public DbSet<BilletExperience> BilletExperience { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="BilletOrderedProcedure"/> entites stored in the database
+        /// </summary>
+        public DbSet<BilletOrderedProcedure> BilletOrderedProcedures { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="BilletCustomProcedure"/> entites stored in the database
+        /// </summary>
+        public DbSet<BilletRandomizedProcedure> BilletRandomProcedures { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Database.BilletSelectionFilter"/> entites stored in the database
@@ -56,11 +71,6 @@ namespace Perscom.Database
         /// Gets a set of <see cref="BilletSpecialtyRequirement"/> entites stored in the database
         /// </summary>
         public DbSet<BilletSpecialtyRequirement> BilletSpecialtyRequirements { get; set; }
-
-        /// <summary>
-        /// Gets a set of <see cref="BilletSpawnSetting"/> entites stored in the database
-        /// </summary>
-        public DbSet<BilletSpawnSetting> BilletSpawnSettings { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="BilletSpecialty"/> entites stored in the database
@@ -93,34 +103,74 @@ namespace Perscom.Database
         public DbSet<Rank> Ranks { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="SoldierCareerAdjustment"/> entites stored in the database
+        /// Gets a set of <see cref="OrderedProcedure"/> entites stored in the database
         /// </summary>
-        public DbSet<SoldierCareerAdjustment> SoldierCareerAdjustments { get; set; }
+        public DbSet<OrderedProcedure> OrderedProcedures { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="SoldierGenerator"/> entites stored in the database
+        /// Gets a set of <see cref="OrderedPoolCareer"/> entites stored in the database
         /// </summary>
-        public DbSet<SoldierGenerator> SoldierGenerators { get; set; }
+        public DbSet<OrderedProcedureCareer> OrderedProcedureCareers { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="SoldierGeneratorCareer"/> entites stored in the database
+        /// Gets a set of <see cref="OrderedPool"/> entites stored in the database
         /// </summary>
-        public DbSet<SoldierGeneratorCareer> SoldierGeneratorCareers { get; set; }
+        public DbSet<OrderedPool> OrderedPools { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="SoldierGeneratorPool"/> entites stored in the database
+        /// Gets a set of <see cref="OrderedPoolCareer"/> entites stored in the database
         /// </summary>
-        public DbSet<SoldierGeneratorPool> SoldierGeneratorPools { get; set; }
+        public DbSet<OrderedPoolCareer> OrderedPoolCareers { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="SoldierGeneratorPool"/> entites stored in the database
+        /// Gets a set of <see cref="OrderedPoolFilter"/> entites stored in the database
         /// </summary>
-        public DbSet<SoldierPoolFilter> SoldierPoolFiltering { get; set; }
+        public DbSet<OrderedPoolFilter> OrderedPoolFilters { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="SoldierGeneratorPool"/> entites stored in the database
+        /// Gets a set of <see cref="OrderedPoolGroup"/> entites stored in the database
         /// </summary>
-        public DbSet<SoldierPoolSorting> SoldierPoolSorting { get; set; }
+        public DbSet<OrderedPoolGroup> OrderedPoolGroups { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="Database.OrderedPoolSorting"/> entites stored in the database
+        /// </summary>
+        public DbSet<OrderedPoolSorting> OrderedPoolSorting { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="OrderedPoolSpecialty"/> entites stored in the database
+        /// </summary>
+        public DbSet<OrderedPoolSpecialty> OrderedPoolSpecialties { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="RandomizedProcedure"/> entites stored in the database
+        /// </summary>
+        public DbSet<RandomizedProcedure> RandomizedProcedures { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="RandomizedProcedureCareer"/> entites stored in the database
+        /// </summary>
+        public DbSet<RandomizedProcedureCareer> RandomizedProcedureCareers { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="RandomizedPool"/> entites stored in the database
+        /// </summary>
+        public DbSet<RandomizedPool> RandomizedPools { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="RandomizedPoolCareer"/> entites stored in the database
+        /// </summary>
+        public DbSet<RandomizedPoolCareer> RandomizedPoolCareers { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="RandomizedPoolFilter"/> entites stored in the database
+        /// </summary>
+        public DbSet<RandomizedPoolFilter> RandomizedPoolFilters { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="RandomizedPool"/> entites stored in the database
+        /// </summary>
+        public DbSet<RandomizedPoolSorting> RandomizedPoolSorting { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Specialty"/> entites stored in the database
@@ -168,25 +218,35 @@ namespace Perscom.Database
             // Create Database Sets
             DbVersions = new DbSet<DbVersion>(this);
             Billets = new DbSet<Billet>(this);
+            BilletCareers = new DbSet<BilletCareer>(this);
             BilletCatagories = new DbSet<BilletCatagory>(this);
             BilletExperience = new DbSet<BilletExperience>(this);
+            BilletRandomProcedures = new DbSet<BilletRandomizedProcedure>(this);
+            BilletOrderedProcedures = new DbSet<BilletOrderedProcedure>(this);
             BilletSelectionFilters = new DbSet<BilletSelectionFilter>(this);
             BilletSelectionGroups = new DbSet<BilletSelectionGroup>(this);
             BilletSelectionSorting = new DbSet<BilletSelectionSorting>(this);
             BilletSpecialtyRequirements = new DbSet<BilletSpecialtyRequirement>(this);
-            BilletSpawnSettings = new DbSet<BilletSpawnSetting>(this);
             BilletSpecialties = new DbSet<BilletSpecialty>(this);
             CareerGenerators = new DbSet<CareerGenerator>(this);
             CareerLengthRange = new DbSet<CareerLengthRange>(this);
             Echelons = new DbSet<Echelon>(this);
             Experience = new DbSet<Experience>(this);
+            OrderedProcedures = new DbSet<OrderedProcedure>(this);
+            OrderedProcedureCareers = new DbSet<OrderedProcedureCareer>(this);
+            OrderedPools = new DbSet<OrderedPool>(this);
+            OrderedPoolCareers = new DbSet<OrderedPoolCareer>(this);
+            OrderedPoolFilters = new DbSet<OrderedPoolFilter>(this);
+            OrderedPoolGroups = new DbSet<OrderedPoolGroup>(this);
+            OrderedPoolSorting = new DbSet<OrderedPoolSorting>(this);
+            OrderedPoolSpecialties = new DbSet<OrderedPoolSpecialty>(this);
+            RandomizedProcedures = new DbSet<RandomizedProcedure>(this);
+            RandomizedPools = new DbSet<RandomizedPool>(this);
+            RandomizedPoolFilters = new DbSet<RandomizedPoolFilter>(this);
+            RandomizedPoolSorting = new DbSet<RandomizedPoolSorting>(this);
+            RandomizedPoolCareers = new DbSet<RandomizedPoolCareer>(this);
+            RandomizedProcedureCareers = new DbSet<RandomizedProcedureCareer>(this);
             Ranks = new DbSet<Rank>(this);
-            SoldierGenerators = new DbSet<SoldierGenerator>(this);
-            SoldierGeneratorPools = new DbSet<SoldierGeneratorPool>(this);
-            SoldierPoolFiltering = new DbSet<SoldierPoolFilter>(this);
-            SoldierPoolSorting = new DbSet<SoldierPoolSorting>(this);
-            SoldierCareerAdjustments = new DbSet<SoldierCareerAdjustment>(this);
-            SoldierGeneratorCareers = new DbSet<SoldierGeneratorCareer>(this);
             Specialties = new DbSet<Specialty>(this);
             UnitTemplates = new DbSet<UnitTemplate>(this);
             UnitTypeAttachments = new DbSet<UnitTemplateAttachment>(this);
@@ -224,21 +284,30 @@ namespace Perscom.Database
             {
                 // Delete old table rementants
                 CodeFirstSQLite.DropTable<BilletSpecialtyRequirement>(this);
-                CodeFirstSQLite.DropTable<BilletSpawnSetting>(this);
+                CodeFirstSQLite.DropTable<BilletCustomProcedure>(this);
                 CodeFirstSQLite.DropTable<BilletSpecialty>(this);
                 CodeFirstSQLite.DropTable<BilletSelectionFilter>(this);
                 CodeFirstSQLite.DropTable<BilletSelectionGroup>(this);
                 CodeFirstSQLite.DropTable<BilletSelectionSorting>(this);
                 CodeFirstSQLite.DropTable<BilletExperience>(this);
+                CodeFirstSQLite.DropTable<BilletCareer>(this);
                 CodeFirstSQLite.DropTable<Billet>(this);
                 CodeFirstSQLite.DropTable<BilletCatagory>(this);
                 CodeFirstSQLite.DropTable<Specialty>(this);
-                CodeFirstSQLite.DropTable<SoldierCareerAdjustment>(this);
-                CodeFirstSQLite.DropTable<SoldierGeneratorCareer>(this);
-                CodeFirstSQLite.DropTable<SoldierPoolFilter>(this);
-                CodeFirstSQLite.DropTable<SoldierPoolSorting>(this);
-                CodeFirstSQLite.DropTable<SoldierGeneratorPool>(this);
-                CodeFirstSQLite.DropTable<SoldierGenerator>(this);
+                CodeFirstSQLite.DropTable<RandomizedPoolCareer>(this);
+                CodeFirstSQLite.DropTable<RandomizedProcedureCareer>(this);
+                CodeFirstSQLite.DropTable<RandomizedPoolFilter>(this);
+                CodeFirstSQLite.DropTable<RandomizedPoolSorting>(this);
+                CodeFirstSQLite.DropTable<RandomizedPool>(this);
+                CodeFirstSQLite.DropTable<RandomizedProcedure>(this);
+                CodeFirstSQLite.DropTable<OrderedPoolSpecialty>(this);
+                CodeFirstSQLite.DropTable<OrderedPoolCareer>(this);
+                CodeFirstSQLite.DropTable<OrderedPoolGroup>(this);
+                CodeFirstSQLite.DropTable<OrderedPoolFilter>(this);
+                CodeFirstSQLite.DropTable<OrderedPoolSorting>(this);
+                CodeFirstSQLite.DropTable<OrderedPool>(this);
+                CodeFirstSQLite.DropTable<OrderedProcedureCareer>(this);
+                CodeFirstSQLite.DropTable<OrderedProcedure>(this);
                 CodeFirstSQLite.DropTable<CareerLengthRange>(this);
                 CodeFirstSQLite.DropTable<CareerGenerator>(this);
                 CodeFirstSQLite.DropTable<UnitTemplateAttachment>(this);
@@ -257,21 +326,34 @@ namespace Perscom.Database
                 CodeFirstSQLite.CreateTable<UnitTemplateAttachment>(this);
                 CodeFirstSQLite.CreateTable<CareerGenerator>(this);
                 CodeFirstSQLite.CreateTable<CareerLengthRange>(this);
-                CodeFirstSQLite.CreateTable<SoldierGenerator>(this);
-                CodeFirstSQLite.CreateTable<SoldierGeneratorPool>(this);
-                CodeFirstSQLite.CreateTable<SoldierPoolFilter>(this);
-                CodeFirstSQLite.CreateTable<SoldierPoolSorting>(this);
-                CodeFirstSQLite.CreateTable<SoldierGeneratorCareer>(this);
-                CodeFirstSQLite.CreateTable<SoldierCareerAdjustment>(this);
+
+                CodeFirstSQLite.CreateTable<OrderedProcedure>(this);
+                CodeFirstSQLite.CreateTable<OrderedProcedureCareer>(this);
+                CodeFirstSQLite.CreateTable<OrderedPool>(this);
+                CodeFirstSQLite.CreateTable<OrderedPoolFilter>(this);
+                CodeFirstSQLite.CreateTable<OrderedPoolGroup>(this);
+                CodeFirstSQLite.CreateTable<OrderedPoolSorting>(this);
+                CodeFirstSQLite.CreateTable<OrderedPoolCareer>(this);
+                CodeFirstSQLite.CreateTable<OrderedPoolSpecialty>(this);
+
+                CodeFirstSQLite.CreateTable<RandomizedProcedure>(this);
+                CodeFirstSQLite.CreateTable<RandomizedPool>(this);
+                CodeFirstSQLite.CreateTable<RandomizedPoolFilter>(this);
+                CodeFirstSQLite.CreateTable<RandomizedPoolSorting>(this);
+                CodeFirstSQLite.CreateTable<RandomizedProcedureCareer>(this);
+                CodeFirstSQLite.CreateTable<RandomizedPoolCareer>(this);
+
                 CodeFirstSQLite.CreateTable<Specialty>(this);
                 CodeFirstSQLite.CreateTable<BilletCatagory>(this);
                 CodeFirstSQLite.CreateTable<Billet>(this);
+                CodeFirstSQLite.CreateTable<BilletCareer>(this);
                 CodeFirstSQLite.CreateTable<BilletExperience>(this);
                 CodeFirstSQLite.CreateTable<BilletSelectionFilter>(this);
                 CodeFirstSQLite.CreateTable<BilletSelectionGroup>(this);
                 CodeFirstSQLite.CreateTable<BilletSelectionSorting>(this);
                 CodeFirstSQLite.CreateTable<BilletSpecialty>(this);
-                CodeFirstSQLite.CreateTable<BilletSpawnSetting>(this);
+                CodeFirstSQLite.CreateTable<BilletOrderedProcedure>(this);
+                CodeFirstSQLite.CreateTable<BilletRandomizedProcedure>(this);
                 CodeFirstSQLite.CreateTable<BilletSpecialtyRequirement>(this);
 
                 // Add Echelons
@@ -309,8 +391,8 @@ namespace Perscom.Database
                 }
 
                 // Create default Soldier Generator
-                SoldierGenerators = new DbSet<SoldierGenerator>(this);
-                SoldierGenerators.Add(new SoldierGenerator()
+                RandomizedProcedures = new DbSet<RandomizedProcedure>(this);
+                RandomizedProcedures.Add(new RandomizedProcedure()
                 {
                     Name = "Default",
                     CreatesNewSoldiers = true,

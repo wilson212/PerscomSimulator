@@ -79,6 +79,7 @@
             this.unitRankPieChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.nameLabel = new System.Windows.Forms.ShadowLabel();
+            this.manageOrderedMenuItem = new System.Windows.Forms.MenuItem();
             this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yearsToSkip)).BeginInit();
@@ -139,6 +140,7 @@
             this.menuItem4,
             this.soldierConfigMenuItem,
             this.manageGensMenuItem,
+            this.manageOrderedMenuItem,
             this.menuItem6,
             this.manageSpecialsMenuItem,
             this.manageExpMenuItem,
@@ -191,40 +193,40 @@
             // manageGensMenuItem
             // 
             this.manageGensMenuItem.Index = 3;
-            this.manageGensMenuItem.Text = "Manage Soldier Generators";
+            this.manageGensMenuItem.Text = "Manage Random Procedures";
             this.manageGensMenuItem.Click += new System.EventHandler(this.manageGensMenuItem_Click);
             // 
             // menuItem6
             // 
-            this.menuItem6.Index = 4;
+            this.menuItem6.Index = 5;
             this.menuItem6.Text = "-";
             // 
             // manageSpecialsMenuItem
             // 
-            this.manageSpecialsMenuItem.Index = 5;
+            this.manageSpecialsMenuItem.Index = 6;
             this.manageSpecialsMenuItem.Text = "Manage Specialties";
             this.manageSpecialsMenuItem.Click += new System.EventHandler(this.manageSpecialsMenuItem_Click);
             // 
             // manageExpMenuItem
             // 
-            this.manageExpMenuItem.Index = 6;
+            this.manageExpMenuItem.Index = 7;
             this.manageExpMenuItem.Text = "Manage Experience";
             this.manageExpMenuItem.Click += new System.EventHandler(this.manageExpMenuItem_Click);
             // 
             // manageRanksMenuItem
             // 
-            this.manageRanksMenuItem.Index = 7;
+            this.manageRanksMenuItem.Index = 8;
             this.manageRanksMenuItem.Text = "Manage Ranks";
             this.manageRanksMenuItem.Click += new System.EventHandler(this.manageRanksMenuItem_Click);
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 8;
+            this.menuItem7.Index = 9;
             this.menuItem7.Text = "-";
             // 
             // manageTemplatesMenuItem
             // 
-            this.manageTemplatesMenuItem.Index = 9;
+            this.manageTemplatesMenuItem.Index = 10;
             this.manageTemplatesMenuItem.Text = "Manage Unit Templates";
             this.manageTemplatesMenuItem.Click += new System.EventHandler(this.manageTemplatesMenuItem_Click);
             // 
@@ -513,6 +515,12 @@
             this.nameLabel.TabIndex = 1;
             this.nameLabel.Text = "Perscom Movement Simulator";
             // 
+            // manageOrderedMenuItem
+            // 
+            this.manageOrderedMenuItem.Index = 4;
+            this.manageOrderedMenuItem.Text = "Manage Ordered Procedures";
+            this.manageOrderedMenuItem.Click += new System.EventHandler(this.manageOrderedMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -591,6 +599,7 @@
         private System.Windows.Forms.MenuItem openReportMenuItem;
         private System.Windows.Forms.MenuItem menuItem5;
         private System.Windows.Forms.MenuItem manageExpMenuItem;
+        private System.Windows.Forms.MenuItem manageOrderedMenuItem;
     }
 }
 

@@ -4,14 +4,14 @@ using CrossLite.CodeFirst;
 namespace Perscom.Database
 {
     /// <summary>
-    /// Represents a (1:1 or 1:0) relationship between a <see cref="Database.SoldierGeneratorPool"/>
+    /// Represents a (1:1 or 1:0) relationship between a <see cref="Database.RandomizedPool"/>
     /// and a <see cref="Database.CareerGenerator"/>
     /// </summary>
     /// <remarks>
-    /// Used if there is a career length adjustment with the parent <see cref="Database.SoldierGeneratorPool"/>
+    /// Used if there is a career length adjustment with the parent <see cref="Database.RandomizedPool"/>
     /// </remarks>
     [Table]
-    public class SoldierCareerAdjustment
+    public class RandomizedPoolCareer
     {
         #region Columns
 
@@ -19,7 +19,7 @@ namespace Perscom.Database
         /// The Unique Soldier Generator ID
         /// </summary>
         [Column, PrimaryKey]
-        public int SoldierGeneratorPoolId { get; protected set; }
+        public int RandomizedPoolId { get; protected set; }
 
         /// <summary>
         /// The Unique Career Generator ID
@@ -32,14 +32,14 @@ namespace Perscom.Database
         #region Virtual Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="SoldierGeneratorPool"/> entity that this entity references.
+        /// Gets the <see cref="Database.RandomizedPool"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
-        [ForeignKey("SoldierGeneratorPoolId",
+        [ForeignKey("RandomizedPoolId",
             OnDelete = ReferentialIntegrity.Cascade,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        protected virtual ForeignKey<SoldierGeneratorPool> FK_Pool { get; set; }
+        protected virtual ForeignKey<RandomizedPool> FK_Pool { get; set; }
 
         /// <summary>
         /// Gets the <see cref="CareerGenerator"/> entity that this entity references.
@@ -56,10 +56,10 @@ namespace Perscom.Database
         #region Foreign Key Properties
 
         /// <summary>
-        /// Gets or sets the <see cref="Database.SoldierGeneratorPool"/> that 
+        /// Gets or sets the <see cref="Database.RandomizedPool"/> that 
         /// this entity references.
         /// </summary>
-        public SoldierGeneratorPool SoldierGeneratorPool
+        public RandomizedPool RandomizedPool
         {
             get
             {
@@ -67,7 +67,7 @@ namespace Perscom.Database
             }
             set
             {
-                SoldierGeneratorPoolId = value.Id;
+                RandomizedPoolId = value.Id;
                 FK_Pool?.Refresh();
             }
         }

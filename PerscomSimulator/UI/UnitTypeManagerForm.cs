@@ -227,7 +227,7 @@ namespace Perscom
         {
             // Update table cache
             EntityCache.GetTableMap(typeof(BilletSpecialtyRequirement)).BuildInstanceForeignKeys = enabled;
-            EntityCache.GetTableMap(typeof(BilletSpawnSetting)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(BilletCustomProcedure)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(BilletSpecialty)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(BilletExperience)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(BilletSelectionFilter)).BuildInstanceForeignKeys = enabled;
@@ -1077,7 +1077,7 @@ namespace Perscom
                 {
                     BilletCatagoryId = billet.BilletCatagoryId,
                     CanRetireEarly = billet.CanRetireEarly,
-                    InverseRequirements = billet.InverseRequirements,
+                    InverseSpecialtyRequirements = billet.InverseSpecialtyRequirements,
                     MaxRankId = billet.MaxRankId,
                     MaxTourLength = billet.MaxTourLength,
                     MinTourLength = billet.MinTourLength,
@@ -1108,7 +1108,7 @@ namespace Perscom
                 // Create new copy of billet
                 intoBillet.BilletCatagoryId = billet.BilletCatagoryId;
                 intoBillet.CanRetireEarly = billet.CanRetireEarly;
-                intoBillet.InverseRequirements = billet.InverseRequirements;
+                intoBillet.InverseSpecialtyRequirements = billet.InverseSpecialtyRequirements;
                 intoBillet.MaxRankId = billet.MaxRankId;
                 intoBillet.MaxTourLength = billet.MaxTourLength;
                 intoBillet.MinTourLength = billet.MinTourLength;
@@ -1133,7 +1133,7 @@ namespace Perscom
                 // Clear old data
                 db.BilletSpecialtyRequirements.RemoveRange(intoBillet.Requirements);
                 db.BilletSpecialties.RemoveRange(intoBillet.Specialties);
-                db.BilletSpawnSettings.RemoveRange(intoBillet.SpawnSettings);
+                db.BilletRandomProcedures.RemoveRange(intoBillet.RandomizedProcedures);
                 db.BilletExperience.RemoveRange(intoBillet.Experience);
                 db.BilletSelectionFilters.RemoveRange(intoBillet.Filters);
                 db.BilletSelectionGroups.RemoveRange(intoBillet.Grouping);
@@ -1152,15 +1152,24 @@ namespace Perscom
             }
 
             // Add billet spawn settings
-            foreach (var item in billet.SpawnSettings)
+            foreach (var item in billet.RandomizedProcedures)
             {
-                var req = new BilletSpawnSetting()
+                var req = new BilletRandomizedProcedure()
                 {
                     Billet = intoBillet,
-                    GeneratorId = item.GeneratorId,
-                    SpecialtyId = item.SpecialtyId
+                    RandomizedProcedureId = item.RandomizedProcedureId
                 };
-                db.BilletSpawnSettings.Add(req);
+                db.BilletRandomProcedures.Add(req);
+            }
+
+            foreach (var item in billet.OrderedProcedures)
+            {
+                var req = new BilletOrderedProcedure()
+                {
+                    Billet = intoBillet,
+                    OrderedProcedureId = item.OrderedProcedureId
+                };
+                db.BilletOrderedProcedures.Add(req);
             }
 
             // Add billet specialties

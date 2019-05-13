@@ -260,6 +260,10 @@ namespace Perscom
                     // Run the simulation
                     await Task.Run(() =>
                     {
+                        // Fill cache
+                        SimulationCache.Load(simDb);
+
+                        // Buil units
                         UnitWrapper unit;
                         using (var trans = simDb.BeginTransaction())
                         {
@@ -290,6 +294,7 @@ namespace Perscom
                         }
 
                         // Clear up memory
+                        SimulationCache.Clear();
                         unit = null;
                     });
 
@@ -345,6 +350,13 @@ namespace Perscom
 
         private async void openReportMenuItem_Click(object sender, EventArgs e)
         {
+            // Check for an existing report!
+            if (!File.Exists(Path.Combine(Program.RootPath, "Data", "SimulationResult.db")))
+            {
+                MessageBox.Show("No simulation result database found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             // Show Task Form!
             TaskForm.Show(this, "Loading", "Opening existing simulation report... Please Wait", false);
 
@@ -380,7 +392,15 @@ namespace Perscom
 
         private void manageGensMenuItem_Click(object sender, EventArgs e)
         {
-            using (SoldierGeneratorEditorForm form = new SoldierGeneratorEditorForm())
+            using (var form = new RandomizedProcedureForm())
+            {
+                form.ShowDialog();
+            }
+        }
+
+        private void manageOrderedMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var form = new OrderedProcedureForm())
             {
                 form.ShowDialog();
             }
@@ -388,7 +408,7 @@ namespace Perscom
 
         private void manageSpecialsMenuItem_Click(object sender, EventArgs e)
         {
-            using (SpecialtyEditorForm form = new SpecialtyEditorForm())
+            using (var form = new SpecialtyEditorForm())
             {
                 form.ShowDialog();
             }
@@ -396,7 +416,7 @@ namespace Perscom
 
         private void manageExpMenuItem_Click(object sender, EventArgs e)
         {
-            using (ExperienceForm form = new ExperienceForm())
+            using (var form = new ExperienceForm())
             {
                 form.ShowDialog();
             }
@@ -404,7 +424,7 @@ namespace Perscom
 
         private void manageRanksMenuItem_Click(object sender, EventArgs e)
         {
-            using (RankEditorForm form = new RankEditorForm())
+            using (var form = new RankEditorForm())
             {
                 form.ShowDialog();
             }
@@ -412,7 +432,7 @@ namespace Perscom
 
         private void manageTemplatesMenuItem_Click(object sender, EventArgs e)
         {
-            using (UnitTypeManagerForm form = new UnitTypeManagerForm())
+            using (var form = new UnitTypeManagerForm())
             {
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)

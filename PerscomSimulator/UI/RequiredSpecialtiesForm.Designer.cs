@@ -1,6 +1,6 @@
 ﻿namespace Perscom
 {
-    partial class BilletSpecialtiesForm
+    partial class RequiredSpecialtiesForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BilletSpecialtiesForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RequiredSpecialtiesForm));
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.saveButton = new System.Windows.Forms.Button();
             this.mainPanel = new System.Windows.Forms.Panel();
@@ -143,7 +143,7 @@
             this.label6.ShadowSoftness = 3F;
             this.label6.Size = new System.Drawing.Size(295, 37);
             this.label6.TabIndex = 0;
-            this.label6.Text = "Billet Required Specialties";
+            this.label6.Text = "Required Specialties";
             // 
             // BilletSpecialtiesForm
             // 
@@ -159,7 +159,7 @@
             this.MinimizeBox = false;
             this.Name = "BilletSpecialtiesForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Billet Specialties Requirements";
+            this.Text = "Specialty Requirements";
             this.bottomPanel.ResumeLayout(false);
             this.mainPanel.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);

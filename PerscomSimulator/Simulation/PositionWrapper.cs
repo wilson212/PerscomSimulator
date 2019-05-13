@@ -55,12 +55,12 @@ namespace Perscom.Simulation
         /// <param name="position">The position this instance is wrapping around</param>
         /// <param name="billet">The billet template for this position</param>
         /// <param name="parent">The <see cref="UnitWrapper"/> this position is attached to</param>
-        public PositionWrapper(Position position, Billet billet, UnitWrapper parent)
+        public PositionWrapper(Position position, Billet billet, UnitWrapper parent, SimDatabase db)
         {
             // Set properties
             Position = position;
-            Billet = BilletWrapper.FetchCache(billet);
             ParentUnit = parent;
+            Billet = SimulationCache.FetchBillet(billet, db);
 
             // Get our soldier promotion pool
             Echelon promotionP = Billet.PromotionPool;

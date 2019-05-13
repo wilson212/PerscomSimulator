@@ -102,6 +102,7 @@
             // 
             // codeTextBox
             // 
+            this.codeTextBox.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.codeTextBox.Location = new System.Drawing.Point(168, 128);
             this.codeTextBox.Name = "codeTextBox";
             this.codeTextBox.Size = new System.Drawing.Size(202, 20);

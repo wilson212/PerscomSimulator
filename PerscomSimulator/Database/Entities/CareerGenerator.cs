@@ -40,22 +40,22 @@ namespace Perscom.Database
         public virtual IEnumerable<CareerLengthRange> CareerLengths { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="SoldierGeneratorCareer"/> entities that reference this 
+        /// Gets a list of <see cref="RandomizedProcedureCareer"/> entities that reference this 
         /// <see cref="CareerGenerator"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<SoldierGeneratorCareer> GeneratorCareers { get; set; }
+        public virtual IEnumerable<RandomizedProcedureCareer> GeneratorCareers { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="SoldierCareerAdjustment"/> entities that reference this 
+        /// Gets a list of <see cref="RandomizedPoolCareer"/> entities that reference this 
         /// <see cref="CareerGenerator"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<SoldierCareerAdjustment> CareerAdjustments { get; set; }
+        public virtual IEnumerable<RandomizedPoolCareer> CareerAdjustments { get; set; }
 
         #endregion
 

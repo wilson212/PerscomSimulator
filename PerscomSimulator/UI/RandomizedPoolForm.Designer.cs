@@ -1,6 +1,6 @@
 ﻿namespace Perscom
 {
-    partial class SoldierGeneratorPoolForm
+    partial class RandomizedPoolForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SoldierGeneratorPoolForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RandomizedPoolForm));
             this.mainPanel = new System.Windows.Forms.Panel();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -39,7 +39,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.orRadioButton = new System.Windows.Forms.RadioButton();
             this.andRadioButton = new System.Windows.Forms.RadioButton();
-            this.filterListView = new System.Windows.Forms.ListViewWithReordering();
+            this.filterListView = new System.ListViewWithReordering();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -50,7 +50,7 @@
             this.removeFilterItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.sortCheckBox = new System.Windows.Forms.CheckBox();
-            this.sortingListView = new System.Windows.Forms.ListViewWithReordering();
+            this.sortingListView = new System.ListViewWithReordering();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -592,7 +592,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TrackBar existTrackBar;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ListViewWithReordering sortingListView;
+        private System.ListViewWithReordering sortingListView;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
@@ -602,7 +602,7 @@
         private System.Windows.Forms.ToolStripMenuItem removeItemToolStripMenuItem;
         private System.Windows.Forms.CheckBox useRankGradeCheckBox;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.ListViewWithReordering filterListView;
+        private System.ListViewWithReordering filterListView;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ColumnHeader columnHeader6;

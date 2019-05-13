@@ -5,39 +5,39 @@ using System;
 namespace Perscom.Database
 {
     [Table]
-    public class SoldierPoolFilter : AbstractFilter, IEquatable<SoldierPoolFilter>
+    public class OrderedPoolGroup : AbstractFilter, IEquatable<OrderedPoolGroup>
     {
         #region Columns
 
         /// <summary>
-        /// Gets or Sets the <see cref="SoldierGeneratorPool.Id"/> that this entity references
+        /// Gets or Sets the <see cref="Database.OrderedPool.Id"/> that this entity references
         /// </summary>
         [Column, PrimaryKey]
-        public int SoldierGeneratorPoolId { get; protected set; }
+        public int OrderedPoolId { get; protected set; }
 
         #endregion
 
         #region Virtual Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="SoldierGenerator"/> entity that this entity references.
+        /// Gets the <see cref="Database.OrderedPool"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
-        [ForeignKey("SoldierGeneratorPoolId",
+        [ForeignKey("OrderedPoolId",
             OnDelete = ReferentialIntegrity.Cascade,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        protected virtual ForeignKey<SoldierGeneratorPool> FK_Pool { get; set; }
+        protected virtual ForeignKey<OrderedPool> FK_Pool { get; set; }
 
         #endregion
 
         #region Foreign Key Properties
 
         /// <summary>
-        /// Gets or Sets the <see cref="Perscom.Database.SoldierGenerator"/> that 
+        /// Gets or Sets the <see cref="Database.OrderedPool"/> that 
         /// this entity references.
         /// </summary>
-        public SoldierGeneratorPool SoldierPool
+        public OrderedPool OrderedPool
         {
             get
             {
@@ -45,7 +45,7 @@ namespace Perscom.Database
             }
             set
             {
-                SoldierGeneratorPoolId = value.Id;
+                OrderedPoolId = value.Id;
                 FK_Pool?.Refresh();
             }
         }
@@ -53,12 +53,12 @@ namespace Perscom.Database
         #endregion
 
         /// <summary>
-        /// Compares a <see cref="SoldierPoolFilter"/> with this one, and returns whether
+        /// Compares a <see cref="OrderedPoolGroup"/> with this one, and returns whether
         /// the identifying properties match
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool IsDuplicateOf(SoldierPoolFilter other)
+        public bool IsDuplicateOf(OrderedPoolGroup other)
         {
             return (Selector == other.Selector
                 && SelectorId == other.SelectorId
@@ -67,7 +67,7 @@ namespace Perscom.Database
             );
         }
 
-        public bool Equals(SoldierPoolFilter other)
+        public bool Equals(OrderedPoolGroup other)
         {
             if (other == null) return false;
             return (this.IsDuplicateOf(other));

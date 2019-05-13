@@ -1,21 +1,15 @@
-﻿using System;
+﻿using Perscom.Database;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Perscom.Database;
 
 namespace Perscom
 {
-    public partial class BilletSpecialtiesForm : Form
+    public partial class RequiredSpecialtiesForm : Form
     {
         public List<Specialty> SelectedItems { get; set; }
 
-        public BilletSpecialtiesForm(List<Specialty> currentItems)
+        public RequiredSpecialtiesForm(List<Specialty> currentItems)
         {
             // Setup form controls
             InitializeComponent();

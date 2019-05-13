@@ -69,19 +69,45 @@
     <Compile Include="Database\Entities\Abstract\AbstractSort.cs" />
     <Compile Include="Database\Entities\Abstract\AbstractBilletStatistics.cs" />
     <Compile Include="Database\Entities\Abstract\AbstractFilter.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\BilletRandomizedProcedure.cs" />
+    <Compile Include="Database\Entities\BilletCareer.cs" />
     <Compile Include="Database\Entities\BilletSelectionGroup.cs" />
     <Compile Include="Database\Entities\BilletStatistics.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\BilletOrderedProcedure.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\OrderedPool.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolCareer.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolFilter.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolGroup.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolSorting.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolSpecialty.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\OrderedProcedure.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\OrderedProcedureCareer.cs" />
     <Compile Include="Database\Entities\PositionStatistics.cs" />
-    <Compile Include="Database\Entities\RankGrade.cs" />
     <Compile Include="Database\Enums.cs" />
     <Compile Include="Extensions\ChartColorPallets.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\StopWatchExtensions.cs" />
-    <Compile Include="UI\SelectionProcedureForm.cs">
+    <Compile Include="Simulation\OrderedProcedureWrapper.cs" />
+    <Compile Include="Simulation\Procedures\AbstractSelectionProcedure.cs" />
+    <Compile Include="Simulation\Procedures\SoldierEntryProcedure.cs" />
+    <Compile Include="Simulation\Procedures\LateralOnlyProcedure.cs" />
+    <Compile Include="Simulation\Procedures\OrderedSelectionProcedure.cs" />
+    <Compile Include="Simulation\Procedures\PromotionOnlyProcedure.cs" />
+    <Compile Include="Simulation\Procedures\PromotionOrLateralProcedure.cs" />
+    <Compile Include="Simulation\Procedures\RandomizedSelectionProcedure.cs" />
+    <Compile Include="Simulation\RandomizedProcedureWrapper.cs" />
+    <Compile Include="Simulation\SimulationCache.cs" />
+    <Compile Include="UI\OrderedPoolForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\SelectionProcedureForm.Designer.cs">
-      <DependentUpon>SelectionProcedureForm.cs</DependentUpon>
+    <Compile Include="UI\OrderedPoolForm.Designer.cs">
+      <DependentUpon>OrderedPoolForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\OrderedProcedureForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\OrderedProcedureForm.Designer.cs">
+      <DependentUpon>OrderedProcedureForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Simulation\Events\RankChangeEventArgs.cs" />
     <Compile Include="Simulation\Events\SpecialtyChangeEventArgs.cs" />
@@ -116,8 +142,8 @@
     <Compile Include="Database\Entities\BilletSelectionFilter.cs" />
     <Compile Include="Database\Entities\BilletSelectionSorting.cs" />
     <Compile Include="Database\Entities\SoldierExperience.cs" />
-    <Compile Include="Database\Entities\SoldierPoolSorting.cs" />
-    <Compile Include="Database\Entities\SoldierPoolFilter .cs" />
+    <Compile Include="Database\Entities\Billet Procedures\RandomizedPoolSorting.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\RandomizedPoolFilter .cs" />
     <Compile Include="Database\Entities\Experience.cs" />
     <Compile Include="UI\ExperienceSelectForm.cs">
       <SubType>Form</SubType>
@@ -131,9 +157,9 @@
     <Compile Include="UI\ExperienceForm.Designer.cs">
       <DependentUpon>ExperienceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Simulation\BilletSelection.cs" />
-    <Compile Include="Simulation\SpawnedSoldier.cs" />
-    <Compile Include="Database\Entities\SoldierGeneratorCareer.cs" />
+    <Compile Include="Simulation\SelectionProcedure.cs" />
+    <Compile Include="Simulation\SoldierPoolWrapper.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\RandomizedProcedureCareer.cs" />
     <Compile Include="Controls\ListViewWithReordering.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -158,13 +184,13 @@
     <Compile Include="Controls\MyCheckBox.Designer.cs">
       <DependentUpon>MyCheckBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Database\Entities\SoldierCareerAdjustment.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\RandomizedPoolCareer.cs" />
     <Compile Include="Simulation\SoldierWrapper2.cs" />
-    <Compile Include="UI\SoldierGeneratorPoolForm.cs">
+    <Compile Include="UI\RandomizedPoolForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\SoldierGeneratorPoolForm.Designer.cs">
-      <DependentUpon>SoldierGeneratorPoolForm.cs</DependentUpon>
+    <Compile Include="UI\RandomizedPoolForm.Designer.cs">
+      <DependentUpon>RandomizedPoolForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\SimResultViewForm.cs">
       <SubType>Form</SubType>
@@ -180,25 +206,25 @@
     <Compile Include="Simulation\UnitBuilder.cs" />
     <Compile Include="Simulation\UnitStatistics.cs" />
     <Compile Include="Simulation\UnitTemplateWrapper.cs" />
-    <Compile Include="UI\BilletSpecialtiesForm.cs">
+    <Compile Include="UI\RequiredSpecialtiesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\BilletSpecialtiesForm.Designer.cs">
-      <DependentUpon>BilletSpecialtiesForm.cs</DependentUpon>
+    <Compile Include="UI\RequiredSpecialtiesForm.Designer.cs">
+      <DependentUpon>RequiredSpecialtiesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Database\Entities\BilletSpawnSetting.cs" />
+    <Compile Include="Database\Entities\Abstract\BilletCustomProcedure.cs" />
     <Compile Include="Database\Entities\BilletSpecialty.cs" />
     <Compile Include="Database\Entities\BilletSpecialtyRequirement.cs" />
     <Compile Include="Database\Entities\BilletCatagory.cs" />
     <Compile Include="Database\Entities\CareerLengthRange.cs" />
     <Compile Include="Database\Entities\Specialty.cs" />
-    <Compile Include="Database\Entities\SoldierGenerator.cs" />
-    <Compile Include="Database\Entities\SoldierGeneratorPool.cs" />
-    <Compile Include="UI\SoldierGeneratorEditorForm.cs">
+    <Compile Include="Database\Entities\Billet Procedures\RandomizedProcedure.cs" />
+    <Compile Include="Database\Entities\Billet Procedures\RandomizedPool.cs" />
+    <Compile Include="UI\RandomizedProcedureForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\SoldierGeneratorEditorForm.Designer.cs">
-      <DependentUpon>SoldierGeneratorEditorForm.cs</DependentUpon>
+    <Compile Include="UI\RandomizedProcedureForm.Designer.cs">
+      <DependentUpon>RandomizedProcedureForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\SpecialtyEditorForm.cs">
       <SubType>Form</SubType>
@@ -305,8 +331,11 @@
     <Compile Include="UI\UnitTypeManagerForm.Designer.cs">
       <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UI\SelectionProcedureForm.resx">
-      <DependentUpon>SelectionProcedureForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\OrderedPoolForm.resx">
+      <DependentUpon>OrderedPoolForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\OrderedProcedureForm.resx">
+      <DependentUpon>OrderedProcedureForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\PositionStatsForm.resx">
       <DependentUpon>PositionStatsForm.cs</DependentUpon>
@@ -329,17 +358,17 @@
     <EmbeddedResource Include="UI\ExperienceForm.resx">
       <DependentUpon>ExperienceForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\SoldierGeneratorPoolForm.resx">
-      <DependentUpon>SoldierGeneratorPoolForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\RandomizedPoolForm.resx">
+      <DependentUpon>RandomizedPoolForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SimResultViewForm.resx">
       <DependentUpon>SimResultViewForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\BilletSpecialtiesForm.resx">
-      <DependentUpon>BilletSpecialtiesForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\RequiredSpecialtiesForm.resx">
+      <DependentUpon>RequiredSpecialtiesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\SoldierGeneratorEditorForm.resx">
-      <DependentUpon>SoldierGeneratorEditorForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\RandomizedProcedureForm.resx">
+      <DependentUpon>RandomizedProcedureForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SpecialtyEditorForm.resx">
       <DependentUpon>SpecialtyEditorForm.cs</DependentUpon>
@@ -565,9 +594,7 @@
       <Name>CrossLite</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Database\Entities\New\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

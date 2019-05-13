@@ -68,7 +68,7 @@ namespace Perscom
         public static IEnumerable<SoldierGroupResult> GroupSoldiersBy(
             this IEnumerable<SoldierWrapper> elements,
             Func<SoldierWrapper, int> selector,
-            IEnumerable<BilletSelectionGroup> groupings,
+            IEnumerable<AbstractFilter> groupings,
             IterationDate date)
         {
             if (groupings.Count() > 0)

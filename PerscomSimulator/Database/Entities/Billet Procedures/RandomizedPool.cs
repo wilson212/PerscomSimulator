@@ -9,8 +9,8 @@ using Perscom.Simulation;
 namespace Perscom.Database
 {
     [Table]
-    [CompositeUnique(nameof(GeneratorId), nameof(RankId))]
-    public class SoldierGeneratorPool : ISpawnable, IEquatable<SoldierGeneratorPool>
+    [CompositeUnique(nameof(RandomizedProcedureId), nameof(RankId))]
+    public class RandomizedPool : ISpawnable, IEquatable<RandomizedPool>
     {
         #region Columns
 
@@ -21,10 +21,10 @@ namespace Perscom.Database
         public int Id { get; protected set; }
 
         /// <summary>
-        /// Gets or Sets the <see cref="SoldierGenerator.Id"/> that this entity references
+        /// Gets or Sets the <see cref="RandomizedProcedure.Id"/> that this entity references
         /// </summary>
         [Column, Required]
-        public int GeneratorId { get; set; }
+        public int RandomizedProcedureId { get; set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="Rank.Id"/> the <see cref="Soldier"/>
@@ -49,7 +49,7 @@ namespace Perscom.Database
 
         /// <summary>
         /// Indicates whether the soldier being selected is to recieve
-        /// a <see cref="SoldierCareerAdjustment"/> for their new <see cref="Database.Rank"/>
+        /// a <see cref="RandomizedPoolCareer"/> for their new <see cref="Database.Rank"/>
         /// </summary>
         [Column, Required, Default(0)]
         public bool NewCareerLength { get; set; }
@@ -86,14 +86,14 @@ namespace Perscom.Database
         #region Virtual Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="SoldierGenerator"/> entity that this entity references.
+        /// Gets the <see cref="Database.RandomizedProcedure"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
-        [ForeignKey("GeneratorId",
+        [ForeignKey("RandomizedProcedureId",
             OnDelete = ReferentialIntegrity.Cascade,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
-        protected virtual ForeignKey<SoldierGenerator> FK_Generator { get; set; }
+        protected virtual ForeignKey<RandomizedProcedure> FK_Generator { get; set; }
 
         /// <summary>
         /// Gets the <see cref="Rank"/> entity that this entity references.
@@ -110,10 +110,10 @@ namespace Perscom.Database
         #region Foreign Key Properties
 
         /// <summary>
-        /// Gets or Sets the <see cref="Perscom.Database.SoldierGenerator"/> that 
+        /// Gets or Sets the <see cref="Perscom.Database.RandomizedProcedure"/> that 
         /// this entity references.
         /// </summary>
-        public SoldierGenerator Generator
+        public RandomizedProcedure RandomizedProcedure
         {
             get
             {
@@ -121,7 +121,7 @@ namespace Perscom.Database
             }
             set
             {
-                GeneratorId = value.Id;
+                RandomizedProcedureId = value.Id;
                 FK_Generator?.Refresh();
             }
         }
@@ -148,24 +148,24 @@ namespace Perscom.Database
         #region Child Database Sets
 
         /// <summary>
-        /// Gets a list of <see cref="SoldierCareerAdjustment"/> entities that reference this 
-        /// <see cref="SoldierGeneratorPool"/>
+        /// Gets a list of <see cref="RandomizedPoolCareer"/> entities that reference this 
+        /// <see cref="RandomizedPool"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<SoldierCareerAdjustment> CareerSettings { get; set; }
+        public virtual IEnumerable<RandomizedPoolCareer> CareerSettings { get; set; }
 
         /// <summary>
         /// Returns the <see cref="Database.CareerGenerator"/> linked to this 
-        /// <see cref="SoldierGeneratorPool"/> if any.
+        /// <see cref="RandomizedPool"/> if any.
         /// </summary>
         public CareerGenerator CareerGenerator
         {
             get
             {
                 var item = CareerSettings?.FirstOrDefault();
-                if (item == null || item == default(SoldierCareerAdjustment))
+                if (item == null || item == default(RandomizedPoolCareer))
                     return null;
 
                 return item.CareerGenerator;
@@ -173,28 +173,28 @@ namespace Perscom.Database
         }
 
         /// <summary>
-        /// Gets a list of <see cref="SoldierPoolFilter"/> entities that reference this 
-        /// <see cref="SoldierGeneratorPool"/>
+        /// Gets a list of <see cref="RandomizedPoolFilter"/> entities that reference this 
+        /// <see cref="RandomizedPool"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<SoldierPoolFilter> SoldierFiltering { get; set; }
+        public virtual IEnumerable<RandomizedPoolFilter> SoldierFiltering { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="SoldierPoolSorting"/> entities that reference this 
-        /// <see cref="SoldierGeneratorPool"/>
+        /// Gets a list of <see cref="RandomizedPoolSorting"/> entities that reference this 
+        /// <see cref="RandomizedPool"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<SoldierPoolSorting> SoldierSorting { get; set; }
+        public virtual IEnumerable<RandomizedPoolSorting> SoldierSorting { get; set; }
 
         #endregion
 
         /// <summary>
-        /// Indicates  whether this <see cref="SoldierGeneratorPool"/> was modified 
-        /// in the <see cref="SoldierGeneratorPoolForm"/> since it was last loaded
+        /// Indicates  whether this <see cref="RandomizedPool"/> was modified 
+        /// in the <see cref="RandomizedPoolForm"/> since it was last loaded
         /// from the database
         /// </summary>
         public bool EditedInEditorForm { get; set; } = false;
@@ -206,30 +206,30 @@ namespace Perscom.Database
         public CareerGenerator TemporaryCareer { get; set; }
 
         /// <summary>
-        /// Indicates a modified set of <see cref="SoldierPoolSorting"/> selections
+        /// Indicates a modified set of <see cref="RandomizedPoolSorting"/> selections
         /// from the database version of this instance
         /// </summary>
-        public List<SoldierPoolSorting> TemporarySoldierSorting { get; set; }
+        public List<RandomizedPoolSorting> TemporarySoldierSorting { get; set; }
 
         /// <summary>
-        /// Indicates a modified set of <see cref="SoldierPoolFilter"/> selections
+        /// Indicates a modified set of <see cref="RandomizedPoolFilter"/> selections
         /// from the database version of this instance
         /// </summary>
-        public List<SoldierPoolFilter> TemporarySoldierFiltering { get; set; }
+        public List<RandomizedPoolFilter> TemporarySoldierFiltering { get; set; }
 
         /// <summary>
-        /// Compares a <see cref="SoldierGeneratorPool"/> with this one, and returns whether
+        /// Compares a <see cref="RandomizedPool"/> with this one, and returns whether
         /// or not the RankId and GeneratorId's match
         /// </summary>
-        /// <remarks>Used in the <see cref="SoldierGeneratorEditorForm"/></remarks>
+        /// <remarks>Used in the <see cref="RandomizedProcedureForm"/></remarks>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool IsDuplicateOf(SoldierGeneratorPool other)
+        public bool IsDuplicateOf(RandomizedPool other)
         {
-            return (RankId == other.RankId && GeneratorId == other.GeneratorId);
+            return (RankId == other.RankId && RandomizedProcedureId == other.RandomizedProcedureId);
         }
 
-        public bool Equals(SoldierGeneratorPool other)
+        public bool Equals(RandomizedPool other)
         {
             if (other == null) return false;
             return (Id == other.Id);
@@ -237,7 +237,7 @@ namespace Perscom.Database
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as SoldierGeneratorPool);
+            return this.Equals(obj as RandomizedPool);
         }
 
         public override int GetHashCode() => Id;

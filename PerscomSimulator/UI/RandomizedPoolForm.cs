@@ -6,20 +6,19 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Perscom
 {
-    public partial class SoldierGeneratorPoolForm : Form
+    public partial class RandomizedPoolForm : Form
     {
-        protected SoldierGeneratorPool Selected { get; set; }
+        protected RandomizedPool Selected { get; set; }
 
         protected Dictionary<int, Experience> Experience { get; set; }
 
-        protected List<SoldierPoolSorting> SelectionSorting { get; set; } = new List<SoldierPoolSorting>();
+        protected List<RandomizedPoolSorting> SelectionSorting { get; set; } = new List<RandomizedPoolSorting>();
 
-        protected List<SoldierPoolFilter> SelectionFilters { get; set; } = new List<SoldierPoolFilter>();
+        protected List<RandomizedPoolFilter> SelectionFilters { get; set; } = new List<RandomizedPoolFilter>();
 
         private CareerGenerator SelectedNewCareer { get; set; }
 
@@ -27,7 +26,7 @@ namespace Perscom
 
         private Dictionary<int, Rank> Ranks { get; set; }
 
-        public SoldierGeneratorPoolForm(SoldierGeneratorPool setting)
+        public RandomizedPoolForm(RandomizedPool setting)
         {
             // Setup form controls
             InitializeComponent();
@@ -95,7 +94,7 @@ namespace Perscom
                 }
 
                 // Add sorting options
-                IEnumerable<SoldierPoolSorting> sorting = null;
+                IEnumerable<RandomizedPoolSorting> sorting = null;
                 if (setting.TemporarySoldierSorting != null && setting.TemporarySoldierSorting.Count > 0)
                 {
                     sorting = setting.TemporarySoldierSorting;
@@ -117,7 +116,7 @@ namespace Perscom
                 }
 
                 // Add filtering options
-                IEnumerable<SoldierPoolFilter> filtering = null;
+                IEnumerable<RandomizedPoolFilter> filtering = null;
                 if (setting.TemporarySoldierFiltering != null && setting.TemporarySoldierFiltering.Count > 0)
                 {
                     filtering = setting.TemporarySoldierFiltering;
@@ -314,12 +313,12 @@ namespace Perscom
             // Re-apply sorting
             if (sortingListView.Items.Count > 0)
             {
-                SelectionSorting = new List<SoldierPoolSorting>();
+                SelectionSorting = new List<RandomizedPoolSorting>();
 
                 int i = 1;
                 foreach (ListViewItem item in sortingListView.Items)
                 {
-                    var newItem = (SoldierPoolSorting)item.Tag;
+                    var newItem = (RandomizedPoolSorting)item.Tag;
                     newItem.Precedence = i++;
                     SelectionSorting.Add(newItem);
                 }
@@ -330,12 +329,12 @@ namespace Perscom
             // Re-apply filtering
             if (filterListView.Items.Count > 0)
             {
-                SelectionFilters = new List<SoldierPoolFilter>();
+                SelectionFilters = new List<RandomizedPoolFilter>();
 
                 int i = 1;
                 foreach (ListViewItem item in filterListView.Items)
                 {
-                    var newItem = (SoldierPoolFilter)item.Tag;
+                    var newItem = (RandomizedPoolFilter)item.Tag;
                     newItem.Precedence = i++;
                     SelectionFilters.Add(newItem);
                 }
@@ -392,7 +391,7 @@ namespace Perscom
 
         private void addNewSortingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var sort = new SoldierPoolSorting();
+            var sort = new RandomizedPoolSorting();
             using (var form = new SoldierSortingForm(sort))
             {
                 var result = form.ShowDialog(this);
@@ -419,7 +418,7 @@ namespace Perscom
             if (item == null) return;
 
             // Get item index
-            var sortOption = (SoldierPoolSorting)item.Tag;
+            var sortOption = (RandomizedPoolSorting)item.Tag;
             int index = SelectionSorting.FindIndex(x => x.IsDuplicateOf(sortOption));
             if (index < 0) return;
 
@@ -461,7 +460,7 @@ namespace Perscom
         private void addNewFilterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Create new filter
-            var filter = new SoldierPoolFilter();
+            var filter = new RandomizedPoolFilter();
 
             using (var form = new SoldierFilterForm(filter, false))
             {
@@ -489,7 +488,7 @@ namespace Perscom
             if (item == null) return;
 
             // Get item index
-            var option = (SoldierPoolFilter)item.Tag;
+            var option = (RandomizedPoolFilter)item.Tag;
             int index = SelectionFilters.FindIndex(x => x.IsDuplicateOf(option));
             if (index < 0) return;
 
@@ -506,7 +505,7 @@ namespace Perscom
             ListViewItem item = filterListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
             if (item == null) return;
 
-            AbstractFilter filter = (SoldierPoolFilter)item.Tag;
+            AbstractFilter filter = (RandomizedPoolFilter)item.Tag;
             using (var form = new SoldierFilterForm(filter, false))
             {
                 var result = form.ShowDialog(this);
@@ -524,7 +523,7 @@ namespace Perscom
             ListViewItem item = sortingListView.SelectedItems.OfType<ListViewItem>().FirstOrDefault();
             if (item == null) return;
 
-            AbstractSort filter = (SoldierPoolSorting)item.Tag;
+            AbstractSort filter = (RandomizedPoolSorting)item.Tag;
             using (var form = new SoldierSortingForm(filter))
             {
                 var result = form.ShowDialog(this);

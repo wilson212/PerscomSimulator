@@ -212,7 +212,7 @@ namespace Perscom
         private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             // Ignore parent nodes
-            if (e.Node == null || e.Node.Nodes.Count > 0) return;
+            if (e.Node == null || e.Node.Parent == null || e.Node.Nodes.Count > 0) return;
 
             // Disable treeView and input fields
             treeView1.Enabled = false;

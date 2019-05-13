@@ -19,6 +19,10 @@ namespace Perscom
 
         protected Billet Billet { get; set; }
 
+        protected BilletCareer OriginalCareer { get; set; }
+        
+        protected BilletCustomProcedure OriginalCustomProcedure { get; set; }
+
         protected List<Specialty> Requirements { get; set; } = new List<Specialty>();
 
         protected List<BilletExperience> ExperienceGiven { get; set; } = new List<BilletExperience>();
@@ -28,6 +32,12 @@ namespace Perscom
         protected List<BilletSelectionSorting> SelectionSorting { get; set; } = new List<BilletSelectionSorting>();
 
         protected List<BilletSelectionFilter> SelectionFilters { get; set; } = new List<BilletSelectionFilter>();
+
+        protected List<CareerGenerator> CareerGenerators { get; set; }
+
+        protected List<OrderedProcedure> OrderedProcedures { get; set; }
+
+        protected List<RandomizedProcedure> RandomizedProcedures { get; set; }
 
         protected Dictionary<int, Experience> Experience { get; set; }
 
@@ -69,11 +79,11 @@ namespace Perscom
                 earlyRetireCheckBox.Checked = billet.CanRetireEarly;
                 earlyPromotionCheckBox.Checked = billet.CanBePromotedEarly;
                 earlyLatteralCheckBox.Checked = billet.CanLateralEarly;
-                inverseCheckBox.Checked = billet.InverseRequirements;
+                inverseCheckBox.Checked = billet.InverseSpecialtyRequirements;
                 repeatCheckBox.Checked = billet.Waiverable;
                 zIndexBox.Value = billet.ZIndex;
                 soldierSpawnSelect.SelectedIndex = (int)billet.Selection;
-                demoteCheckBox.Checked = (billet.Selection == BilletSelection.RandomSoldierGenerator && billet.DemoteOverRanked);
+                demoteCheckBox.Checked = (billet.Selection == SelectionProcedure.RandomizedProcedure && billet.DemoteOverRanked);
                 orRadioButton.Checked = (billet.ExperienceLogic == LogicOperator.Or);
 
                 // Get rank index
@@ -113,11 +123,32 @@ namespace Perscom
                 FillSpecialtyListView();
 
                 // Spawn Settings
-                var spawn = billet.SpawnSettings.FirstOrDefault();
-                if (spawn != null)
+                var spawnR = billet.RandomizedProcedures.FirstOrDefault();
+                if (spawnR != null)
                 {
+                    // Set var
+                    OriginalCustomProcedure = spawnR;
+                    specialtyAllRadioButton.Checked = spawnR.ChangesSpecialtyForAll;
+                    specialtyNewRadioButton.Checked = !spawnR.ChangesSpecialtyForAll;
+
                     // Set index
-                    index = spawnGenSelect.Items.IndexOf(spawn.Generator);
+                    index = spawnGenSelect.Items.IndexOf(spawnR.Procedure);
+                    if (index >= 0)
+                    {
+                        spawnGenSelect.SelectedIndex = index;
+                    }
+                }
+
+                var spawnO = billet.OrderedProcedures.FirstOrDefault();
+                if (spawnO != null)
+                {
+                    // Set var
+                    OriginalCustomProcedure = spawnO;
+                    specialtyAllRadioButton.Checked = spawnO.ChangesSpecialtyForAll;
+                    specialtyNewRadioButton.Checked = !spawnO.ChangesSpecialtyForAll;
+
+                    // Set index
+                    index = spawnGenSelect.Items.IndexOf(spawnO.Procedure);
                     if (index >= 0)
                     {
                         spawnGenSelect.SelectedIndex = index;
@@ -324,6 +355,13 @@ namespace Perscom
             // Fill rank types box
             using (AppDatabase db = new AppDatabase())
             {
+                // Get Career Generators
+                CareerGenerators = db.CareerGenerators.ToList();
+
+                // Grab procedures
+                OrderedProcedures = db.OrderedProcedures.ToList();
+                RandomizedProcedures = db.RandomizedProcedures.ToList();
+
                 // Add ranks to combo select box
                 var ranks = db.Ranks.OrderBy(x => x.Type).ThenBy(x => x.Grade);
                 foreach (var rank in ranks)
@@ -351,22 +389,13 @@ namespace Perscom
 
                 // Next, get spawn instruction
                 // Finally, Get soldier generators
-                foreach (BilletSelection gen in Enum.GetValues(typeof(BilletSelection)))
+                foreach (SelectionProcedure gen in Enum.GetValues(typeof(SelectionProcedure)))
                 {
                     soldierSpawnSelect.Items.Add(gen);
                 }
 
                 // Set default index
                 soldierSpawnSelect.SelectedIndex = 0;
-
-                // Finally, Get soldier generators
-                foreach (var gen in db.SoldierGenerators)
-                {
-                    spawnGenSelect.Items.Add(gen);
-                }
-
-                if (spawnGenSelect.Items.Count > 0)
-                    spawnGenSelect.SelectedIndex = 0;
 
                 // Experience
                 Experience = db.Experience.ToDictionary(x => x.Id, y => y);
@@ -387,12 +416,22 @@ namespace Perscom
 
         private bool CreatesNewSoldiers()
         {
-            var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
-            if (selected == BilletSelection.RandomSoldierGenerator)
+            var selected = (SelectionProcedure)soldierSpawnSelect.SelectedIndex;
+            if (selected == SelectionProcedure.RandomizedProcedure)
             {
                 // Fetch spawn Generator
-                SoldierGenerator gen = (SoldierGenerator)spawnGenSelect.SelectedItem;
+                RandomizedProcedure gen = (RandomizedProcedure)spawnGenSelect.SelectedItem;
+                return gen?.CreatesNewSoldiers ?? false;
+            }
+            else if (selected == SelectionProcedure.OrderedProcedure)
+            {
+                // Fetch spawn Generator
+                OrderedProcedure gen = (OrderedProcedure)spawnGenSelect.SelectedItem;
                 return gen.CreatesNewSoldiers;
+            }
+            else if (selected == SelectionProcedure.CreateNewSoldier)
+            {
+                return true;
             }
 
             return false;
@@ -400,8 +439,11 @@ namespace Perscom
 
         private bool UsesCustomSpawnGenerator()
         {
-            var selected = (BilletSelection)soldierSpawnSelect.SelectedIndex;
-            return (selected == BilletSelection.RandomSoldierGenerator);
+            var selected = (SelectionProcedure)soldierSpawnSelect.SelectedIndex;
+            return (
+                selected == SelectionProcedure.RandomizedProcedure
+                || selected == SelectionProcedure.OrderedProcedure
+            );
         }
 
         private void billetRankSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -482,21 +524,124 @@ namespace Perscom
 
         private void soldierSpawnSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (UsesCustomSpawnGenerator())
+            var selected = (SelectionProcedure)soldierSpawnSelect.SelectedIndex;
+            if (selected == SelectionProcedure.OrderedProcedure || selected == SelectionProcedure.RandomizedProcedure)
             {
-                // Billet must change MOS if its an entry level billet
-                if (!specialtyCheckBox.Checked && CreatesNewSoldiers())
-                    specialtyCheckBox.Checked = true;
+                // Hide Tab 2
+                if (tabControl1.TabCount > 1 && selected == SelectionProcedure.OrderedProcedure)
+                {
+                    tabControl1.TabPages.Remove(tabPage2);
+                }
+                else if (tabControl1.TabCount < 2 && selected == SelectionProcedure.RandomizedProcedure)
+                {
+                    tabControl1.TabPages.Add(tabPage2);
+                }
 
+                // Enable selection boxes
                 spawnGenSelect.Enabled = true;
                 demoteCheckBox.Enabled = true;
                 demoteCheckBox.Checked = Billet.DemoteOverRanked;
+                specialtyAllRadioButton.Enabled = true;
+                specialtyNewRadioButton.Enabled = true;
+
+                // Check for original setting
+                if (OriginalCustomProcedure != null && !OriginalCustomProcedure.ChangesSpecialtyForAll)
+                {
+                    specialtyNewRadioButton.Checked = true;
+                }
+                else
+                {
+                    specialtyAllRadioButton.Checked = true;
+                }
+
+                // Update label
+                spawnGenSelect.Enabled = true;
+                procedureLabel.Text = "Custom Procedure Selection:";
+
+                // Fill the spawn select with Career Generators
+                spawnGenSelect.Items.Clear();
+
+                // Extract original procedure ID
+                int id = (OriginalCustomProcedure != null) ? OriginalCustomProcedure.GetProcedureId() : 0;
+                bool isOrdered = (id > 0 && OriginalCustomProcedure is BilletOrderedProcedure);
+
+                // Add procedures of selected type
+                if (selected == SelectionProcedure.OrderedProcedure)
+                {
+                    foreach (var proc in OrderedProcedures)
+                    {
+                        spawnGenSelect.Items.Add(proc);
+                        if (isOrdered && proc.Id == id)
+                            spawnGenSelect.SelectedIndex = spawnGenSelect.Items.Count - 1;
+                    }
+                }
+                else
+                {
+                    foreach (var proc in RandomizedProcedures)
+                    {
+                        spawnGenSelect.Items.Add(proc);
+                        if (!isOrdered && proc.Id == id)
+                            spawnGenSelect.SelectedIndex = spawnGenSelect.Items.Count - 1;
+                    }
+                }
+
+                // Ensure something is selected...
+                if (spawnGenSelect.Items.Count > 0 && spawnGenSelect.SelectedIndex == -1)
+                    spawnGenSelect.SelectedIndex = 0;
+
+                // Billet must change MOS if its an entry level billet
+                if (!specialtyCheckBox.Checked && CreatesNewSoldiers())
+                    specialtyCheckBox.Checked = true;
+            }
+            else if (selected == SelectionProcedure.CreateNewSoldier)
+            {
+                // Hide Tab 2
+                if (tabControl1.TabCount > 1)
+                {
+                    tabControl1.TabPages.Remove(tabPage2);
+                }
+
+                // Disable irrelevant checkbox
+                demoteCheckBox.Checked = false;
+                demoteCheckBox.Enabled = false;
+
+                // Check all, and disable checkboxes
+                specialtyCheckBox.Checked = true;
+                specialtyAllRadioButton.Enabled = true;
+                specialtyAllRadioButton.Checked = true;
+                specialtyNewRadioButton.Enabled = false;
+
+                // Update label
+                spawnGenSelect.Enabled = true;
+                procedureLabel.Text = "Career Generator:";
+
+                // Fill the spawn select with Career Generators
+                spawnGenSelect.Items.Clear();
+                foreach (var career in CareerGenerators)
+                {
+                    spawnGenSelect.Items.Add(career);
+                }
+
+                // Select default career
+                if (spawnGenSelect.Items.Count > 0)
+                    spawnGenSelect.SelectedIndex = 0;
             }
             else
             {
+                // Show Tab 2
+                if (tabControl1.TabCount < 2)
+                {
+                    tabControl1.TabPages.Add(tabPage2);
+                }
+
+                // Disable irrelevant checkbox's
+                spawnGenSelect.Items.Clear();
                 spawnGenSelect.Enabled = false;
                 demoteCheckBox.Checked = false;
                 demoteCheckBox.Enabled = false;
+                specialtyAllRadioButton.Enabled = true;
+                specialtyAllRadioButton.Checked = true;
+                specialtyNewRadioButton.Enabled = false;
             }
         }
 
@@ -513,6 +658,7 @@ namespace Perscom
         private void saveButton_Click(object sender, EventArgs e)
         {
             bool createsNewSoldiers = CreatesNewSoldiers();
+            bool usesGenerator = UsesCustomSpawnGenerator();
 
             // Check for validation errors
             if (billetRankSelect.SelectedIndex < 0)
@@ -527,7 +673,7 @@ namespace Perscom
             }
             else if (createsNewSoldiers && spawnGenSelect.SelectedIndex < 0)
             {
-                ShowErrorMessage("No soldier spawn generator was selected!");
+                ShowErrorMessage("No career length generator was selected!");
                 return;
             }
             else if (maxTigBox.Value > 0 && minTigBox.Value > maxTigBox.Value)
@@ -539,6 +685,22 @@ namespace Perscom
             {
                 ShowErrorMessage("Invalid billet name entered!");
                 return;
+            }
+            else if (usesGenerator)
+            {
+                if (spawnGenSelect.SelectedIndex < 0)
+                {
+                    ShowErrorMessage("No custom procedure is selected!");
+                    return;
+                }
+            }
+            else if (specialtyCheckBox.Checked)
+            {
+                if (specialtySelect.SelectedIndex < 0)
+                {
+                    ShowErrorMessage("No specialty is selected!");
+                    return;
+                }
             }
 
             // Disable button
@@ -555,13 +717,13 @@ namespace Perscom
             Billet.CanBePromotedEarly = earlyPromotionCheckBox.Checked;
             Billet.CanLateralEarly = earlyLatteralCheckBox.Checked;
             Billet.Waiverable = repeatCheckBox.Checked;
-            Billet.InverseRequirements = inverseCheckBox.Checked;
+            Billet.InverseSpecialtyRequirements = inverseCheckBox.Checked;
             Billet.UnitTypeId = Template.Id;
             Billet.BilletCatagoryId = ((BilletCatagory)billetCatSelect.SelectedItem).Id;
             Billet.PromotionPoolId = ((Echelon)promotionPoolSelect.SelectedItem).Id;
             Billet.Flag = (BilletFlag)billetFlagSelect.SelectedItem;
             Billet.ZIndex = (int)zIndexBox.Value;
-            Billet.Selection = (BilletSelection)soldierSpawnSelect.SelectedIndex;
+            Billet.Selection = (SelectionProcedure)soldierSpawnSelect.SelectedIndex;
             Billet.DemoteOverRanked = demoteCheckBox.Checked;
             Billet.ExperienceLogic = (andRadioButton.Checked) ? LogicOperator.And : LogicOperator.Or;
 
@@ -602,27 +764,62 @@ namespace Perscom
                         db.BilletSpecialties.RemoveRange(Billet.Specialties);
                     }
 
-                    // Apply Spawn Settings
-                    if (UsesCustomSpawnGenerator())
+                    // Remove old custom procedure
+                    if (OriginalCustomProcedure != null)
                     {
-                        // Fill spawn settings values
-                        var current = Billet.SpawnSettings?.FirstOrDefault() ?? new BilletSpawnSetting();
-                        current.Billet = Billet;
-                        current.GeneratorId = ((SoldierGenerator)spawnGenSelect.SelectedItem).Id;
-                        current.SpecialtyId = ((Specialty)specialtySelect.SelectedItem).Id;
-
-                        // Add or Update record
-                        db.BilletSpawnSettings.AddOrUpdate(current);
+                        if (OriginalCustomProcedure is BilletOrderedProcedure)
+                            db.BilletOrderedProcedures.RemoveRange(Billet.OrderedProcedures);
+                        else
+                            db.BilletRandomProcedures.RemoveRange(Billet.RandomizedProcedures);
                     }
-                    else
+
+                    // Apply Spawn Settings
+                    if (usesGenerator)
                     {
-                        db.BilletSpawnSettings.RemoveRange(Billet.SpawnSettings);
+                        if (OriginalCustomProcedure is BilletOrderedProcedure)
+                        {
+                            // Fill spawn settings values
+                            var current = new BilletOrderedProcedure();
+                            current.Billet = Billet;
+                            current.OrderedProcedureId = ((OrderedProcedure)spawnGenSelect.SelectedItem).Id;
+                            current.ChangesSpecialtyForAll = specialtyAllRadioButton.Checked;
+
+                            // Add or Update record
+                            db.BilletOrderedProcedures.Add(current);
+                        }
+                        else
+                        {
+                            // Fill spawn settings values
+                            var current = new BilletRandomizedProcedure();
+                            current.Billet = Billet;
+                            current.RandomizedProcedureId = ((RandomizedProcedure)spawnGenSelect.SelectedItem).Id;
+                            current.ChangesSpecialtyForAll = specialtyAllRadioButton.Checked;
+
+                            // Add or Update record
+                            db.BilletRandomProcedures.Add(current);
+                        }
+                    }
+
+                    // Remove old Career Generator
+                    DeleteQueryBuilder query = new DeleteQueryBuilder(db);
+                    query.From(nameof(BilletCareer)).Where("BilletId", Comparison.Equals, Billet.Id);
+                    query.Execute();
+
+                    // Creates new soldiers
+                    if (Billet.Selection == SelectionProcedure.CreateNewSoldier)
+                    {
+                        var career = (CareerGenerator)spawnGenSelect.SelectedItem;
+                        var bc = new BilletCareer()
+                        {
+                            Billet = Billet,
+                            CareerGenerator = career
+                        };
+                        db.BilletCareers.Add(bc);
                     }
 
                     // ***************************************************************************
                     // Apply required specialties
                     // ***************************************************************************
-                    DeleteQueryBuilder query;
                     IEnumerable<int> currentItems = Billet.Requirements.Select(x => x.SpecialtyId);
                     IEnumerable<int> selectedItems = Requirements.Select(x => x.Id).ToList();
 
@@ -734,6 +931,9 @@ namespace Perscom
                         }
                     }
 
+                    // Refresh billet object
+                    db.Billets.Refresh(Billet);
+
                     // Save
                     trans.Commit();
                 }
@@ -784,7 +984,7 @@ namespace Perscom
 
         private void editRequiredSpecialtiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (BilletSpecialtiesForm form = new BilletSpecialtiesForm(Requirements))
+            using (RequiredSpecialtiesForm form = new RequiredSpecialtiesForm(Requirements))
             {
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)

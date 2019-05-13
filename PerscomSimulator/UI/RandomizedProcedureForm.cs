@@ -12,13 +12,13 @@ using Perscom.Database;
 
 namespace Perscom
 {
-    public partial class SoldierGeneratorEditorForm : Form
+    public partial class RandomizedProcedureForm : Form
     {
-        private SoldierGenerator SelectedGenerator { get; set; }
+        private RandomizedProcedure SelectedProcedure { get; set; }
 
-        private SoldierGeneratorCareer SelectedNewCareer { get; set; }
+        private RandomizedProcedureCareer SelectedNewCareer { get; set; }
 
-        private List<SoldierGeneratorPool> SpawnPools { get; set; } = new List<SoldierGeneratorPool>();
+        private List<RandomizedPool> SpawnPools { get; set; } = new List<RandomizedPool>();
 
         private Dictionary<int, Rank> Ranks { get; set; }
 
@@ -26,7 +26,7 @@ namespace Perscom
 
         private int CurrentProbability { get; set; } = 0;
 
-        public SoldierGeneratorEditorForm()
+        public RandomizedProcedureForm()
         {
             // Setup form controls
             InitializeComponent();
@@ -83,10 +83,10 @@ namespace Perscom
             treeView1.Nodes.Clear();
 
             // Load all ranks
-            List<SoldierGenerator> generators;
+            List<RandomizedProcedure> generators;
             using (AppDatabase db = new AppDatabase())
             {
-                generators = db.SoldierGenerators.ToList();
+                generators = db.RandomizedProcedures.ToList();
             }
 
             // Load and fill the rank trees
@@ -123,7 +123,7 @@ namespace Perscom
                 Rank rank = RankCache.RanksById[setting.RankId];
                 if (setting.UseRankGrade)
                 {
-                    var ranks = RankCache.RanksByGrade[setting.Rank.Type][setting.Rank.Grade];
+                    var ranks = RankCache.RanksByGrade[rank.Type][rank.Grade];
                     foreach (var r in ranks)
                     {
                         if (builder.Length > 0)
@@ -255,26 +255,26 @@ namespace Perscom
             // Context menu
             // Get selected node and rank
             var selected = e.Node;
-            SelectedGenerator = (SoldierGenerator)selected.Tag;
+            SelectedProcedure = (RandomizedProcedure)selected.Tag;
 
             // Fill Fields
-            nameBox.Text = SelectedGenerator.Name;
-            newSoldiersCheckBox.Checked = SelectedGenerator.CreatesNewSoldiers;
-            newSoldierProbability.Value = SelectedGenerator.NewSoldierProbability;
+            nameBox.Text = SelectedProcedure.Name;
+            newSoldiersCheckBox.Checked = SelectedProcedure.CreatesNewSoldiers;
+            newSoldierProbability.Value = SelectedProcedure.NewSoldierProbability;
 
             // Add generator settings
             SpawnPools.Clear();
-            SpawnPools.AddRange(SelectedGenerator.SpawnPools);
+            SpawnPools.AddRange(SelectedProcedure.SpawnPools);
 
             // Fill The ListView
             FillListView();
 
             // New soldier generator?
-            if (SelectedGenerator.CreatesNewSoldiers)
+            if (SelectedProcedure.CreatesNewSoldiers)
             {
                 // Find generator
-                var item = SelectedGenerator.NewSoldierCareer?.FirstOrDefault();
-                if (item != null && item != default(SoldierGeneratorCareer))
+                var item = SelectedProcedure.NewSoldierCareer?.FirstOrDefault();
+                if (item != null && item != default(RandomizedProcedureCareer))
                 {
                     var careerId = item.CareerGeneratorId;
                     var index = CareerGens.FindIndex(x => x.Id == careerId);
@@ -296,7 +296,7 @@ namespace Perscom
         private void newButton_Click(object sender, EventArgs e)
         {
             // Create a new instance
-            SelectedGenerator = new SoldierGenerator();
+            SelectedProcedure = new RandomizedProcedure();
             SpawnPools.Clear();
 
             // Reset field values
@@ -317,13 +317,13 @@ namespace Perscom
 
             // Get selected node and rank
             var selected = treeView1.SelectedNode;
-            SelectedGenerator = selected.Tag as SoldierGenerator;
+            SelectedProcedure = selected.Tag as RandomizedProcedure;
 
             // Ignore if null
-            if (SelectedGenerator == null) return;
+            if (SelectedProcedure == null) return;
 
             // TODO
-            var spawns = SelectedGenerator.BilletSpawns;
+            var spawns = SelectedProcedure.BilletSpawns;
             if (spawns != null)
             {
                 int count = spawns.Count();
@@ -334,10 +334,15 @@ namespace Perscom
                 }
             }
 
+            // Confirm
+            string message = $"Are you sure you want to delete procedure \"{SelectedProcedure.Name}\"";
+            var result = MessageBox.Show(message, "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes) return;
+
             // Delete generator
             using (AppDatabase db = new AppDatabase())
             {
-                db.SoldierGenerators.Remove(SelectedGenerator);
+                db.RandomizedProcedures.Remove(SelectedProcedure);
             }
 
             // Remove node
@@ -383,9 +388,9 @@ namespace Perscom
             }
 
             // Update entity
-            SelectedGenerator.Name = nameBox.Text;
-            SelectedGenerator.CreatesNewSoldiers = newSoldiersCheckBox.Checked;
-            SelectedGenerator.NewSoldierProbability = newSoldierProbability.Value;
+            SelectedProcedure.Name = nameBox.Text;
+            SelectedProcedure.CreatesNewSoldiers = newSoldiersCheckBox.Checked;
+            SelectedProcedure.NewSoldierProbability = newSoldierProbability.Value;
 
             // Updated entity in database
             using (AppDatabase db = new AppDatabase())
@@ -394,36 +399,36 @@ namespace Perscom
                 try
                 {
                     // Add or update record
-                    if (SelectedGenerator.Id == 0)
-                        db.SoldierGenerators.Add(SelectedGenerator);
+                    if (SelectedProcedure.Id == 0)
+                        db.RandomizedProcedures.Add(SelectedProcedure);
                     else
-                        db.SoldierGenerators.Update(SelectedGenerator);
+                        db.RandomizedProcedures.Update(SelectedProcedure);
 
                     // Add, update and remove spawn pools
-                    var existing = SelectedGenerator.SpawnPools.ToList();
+                    var existing = SelectedProcedure.SpawnPools.ToList();
 
                     // Remove spawn pools
                     foreach (var item in existing.Except(SpawnPools))
                     {
-                        item.GeneratorId = SelectedGenerator.Id;
-                        db.SoldierGeneratorPools.Remove(item);
+                        item.RandomizedProcedureId = SelectedProcedure.Id;
+                        db.RandomizedPools.Remove(item);
                     }
 
                     // Add spawn pools
                     foreach (var item in SpawnPools.Except(existing))
                     {
-                        item.GeneratorId = SelectedGenerator.Id;
-                        db.SoldierGeneratorPools.Add(item);
+                        item.RandomizedProcedureId = SelectedProcedure.Id;
+                        db.RandomizedPools.Add(item);
 
                         // Do we need to add a new Career Adjustment?
                         if (item.TemporaryCareer != null && item.TemporaryCareer.Id > 0)
                         {
-                            var temp = new SoldierCareerAdjustment()
+                            var temp = new RandomizedPoolCareer()
                             {
-                                SoldierGeneratorPool = item,
+                                RandomizedPool = item,
                                 CareerGenerator = item.TemporaryCareer
                             };
-                            db.SoldierCareerAdjustments.Add(temp);
+                            db.RandomizedPoolCareers.Add(temp);
                         }
 
                         // Do we need to add sorting?
@@ -431,8 +436,8 @@ namespace Perscom
                         {
                             foreach (var sort in item.TemporarySoldierSorting)
                             {
-                                sort.SoldierPool = item;
-                                db.SoldierPoolSorting.Add(sort);
+                                sort.RandomizedPool = item;
+                                db.RandomizedPoolSorting.Add(sort);
                             }
                         }
 
@@ -441,8 +446,8 @@ namespace Perscom
                         {
                             foreach (var filter in item.TemporarySoldierFiltering)
                             {
-                                filter.SoldierPool = item;
-                                db.SoldierPoolFiltering.Add(filter);
+                                filter.RandomizedPool = item;
+                                db.RandomizedPoolFilters.Add(filter);
                             }
                         }
                     }
@@ -450,36 +455,36 @@ namespace Perscom
                     // Update spawn pools
                     foreach (var item in SpawnPools.Intersect(existing))
                     {
-                        item.GeneratorId = SelectedGenerator.Id;
-                        db.SoldierGeneratorPools.Update(item);
+                        item.RandomizedProcedureId = SelectedProcedure.Id;
+                        db.RandomizedPools.Update(item);
 
                         // Do we need to add a new Career Adjustment?
                         if (item.TemporaryCareer != null && item.TemporaryCareer.Id > 0)
                         {
-                            var temp = new SoldierCareerAdjustment()
+                            var temp = new RandomizedPoolCareer()
                             {
-                                SoldierGeneratorPool = item,
+                                RandomizedPool = item,
                                 CareerGenerator = item.TemporaryCareer
                             };
-                            db.SoldierCareerAdjustments.AddOrUpdate(temp);
+                            db.RandomizedPoolCareers.AddOrUpdate(temp);
                         }
                         else if (item.TemporaryCareer == null && item.EditedInEditorForm)
                         {
                             // Delete just to be safe
-                            db.Execute($"DELETE FROM `SoldierCareerAdjustment` WHERE `SoldierGeneratorPoolId`={item.Id}");
+                            db.Execute($"DELETE FROM `RandomizedPoolCareer` WHERE `RandomizedPoolId`={item.Id}");
                         }
 
                         // Do we need to add sorting?
                         if (item.TemporarySoldierSorting != null)
                         {
                             // Remove all old ones!
-                            db.Execute($"DELETE FROM `SoldierPoolSorting` WHERE `SoldierGeneratorPoolId`={item.Id}");
+                            db.Execute($"DELETE FROM `RandomizedPoolSorting` WHERE `RandomizedPoolId`={item.Id}");
 
                             // Add new
                             foreach (var sort in item.TemporarySoldierSorting)
                             {
-                                sort.SoldierPool = item;
-                                db.SoldierPoolSorting.Add(sort);
+                                sort.RandomizedPool = item;
+                                db.RandomizedPoolSorting.Add(sort);
                             }
                         }
 
@@ -487,43 +492,43 @@ namespace Perscom
                         if (item.TemporarySoldierFiltering != null)
                         {
                             // Remove all old ones!
-                            db.Execute($"DELETE FROM `SoldierPoolFilter` WHERE `SoldierGeneratorPoolId`={item.Id}");
+                            db.Execute($"DELETE FROM `RandomizedPoolFilter` WHERE `RandomizedPoolId`={item.Id}");
 
                             // Add new
                             foreach (var filter in item.TemporarySoldierFiltering)
                             {
-                                filter.SoldierPool = item;
-                                db.SoldierPoolFiltering.Add(filter);
+                                filter.RandomizedPool = item;
+                                db.RandomizedPoolFilters.Add(filter);
                             }
                         }
                     }
 
                     // Change new soldier Career?
-                    if (SelectedGenerator.CreatesNewSoldiers)
+                    if (SelectedProcedure.CreatesNewSoldiers)
                     {
                         var career = CareerGens[careerGeneratorBox.SelectedIndex];
                         if (SelectedNewCareer == null)
                         {
                             // Add!
-                            SelectedNewCareer = new SoldierGeneratorCareer
+                            SelectedNewCareer = new RandomizedProcedureCareer
                             {
-                                SoldierGenerator = SelectedGenerator,
+                                RandomizedProcedure = SelectedProcedure,
                                 CareerGenerator = career
                             };
 
-                            db.SoldierGeneratorCareers.Add(SelectedNewCareer);
+                            db.RandomizedProcedureCareers.Add(SelectedNewCareer);
                         }
                         else if (career.Id != SelectedNewCareer.CareerGeneratorId)
                         {
                             // Update!
                             SelectedNewCareer.CareerGenerator = career;
-                            db.SoldierGeneratorCareers.Update(SelectedNewCareer);
+                            db.RandomizedProcedureCareers.Update(SelectedNewCareer);
                         }
                     }
                     else if (SelectedNewCareer != null)
                     {
                         // Remove
-                        db.SoldierGeneratorCareers.Remove(SelectedNewCareer);
+                        db.RandomizedProcedureCareers.Remove(SelectedNewCareer);
                         SelectedNewCareer = null;
                     }
 
@@ -566,8 +571,8 @@ namespace Perscom
 
         private void addSoldierPoolToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var setting = new SoldierGeneratorPool();
-            using (var form = new SoldierGeneratorPoolForm(setting))
+            var setting = new RandomizedPool();
+            using (var form = new RandomizedPoolForm(setting))
             {
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)
@@ -594,7 +599,7 @@ namespace Perscom
         private void removeItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Grab Billet from selected item tag
-            var setting = listView1.SelectedItems[0].Tag as SoldierGeneratorPool;
+            var setting = listView1.SelectedItems[0].Tag as RandomizedPool;
             if (setting == null) return;
 
             // Now we must remove the matching Settings...
@@ -602,7 +607,7 @@ namespace Perscom
             // the Equals method for comparing database Row ID's
             for (int i = SpawnPools.Count - 1; i >= 0; i--)
             {
-                SoldierGeneratorPool current = SpawnPools[i];
+                RandomizedPool current = SpawnPools[i];
                 if (current.IsDuplicateOf(setting))
                     SpawnPools.RemoveAt(i);
             }
@@ -621,10 +626,10 @@ namespace Perscom
                 return;
 
             // Grab Billet from selected item tag
-            var setting = listView1.SelectedItems[0].Tag as SoldierGeneratorPool;
+            var setting = listView1.SelectedItems[0].Tag as RandomizedPool;
             if (setting == null) return;
 
-            using (var form = new SoldierGeneratorPoolForm(setting))
+            using (var form = new RandomizedPoolForm(setting))
             {
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)

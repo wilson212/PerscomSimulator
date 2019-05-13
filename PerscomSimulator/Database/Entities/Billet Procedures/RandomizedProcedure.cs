@@ -8,7 +8,7 @@ using Perscom.Simulation;
 namespace Perscom.Database
 {
     [Table]
-    public class SoldierGenerator : IEquatable<SoldierGenerator>
+    public class RandomizedProcedure : IEquatable<RandomizedProcedure>
     {
         #region Columns
 
@@ -41,38 +41,38 @@ namespace Perscom.Database
         #region Child Database Sets
 
         /// <summary>
-        /// Gets a list of <see cref="SoldierGeneratorPool"/> entities that reference this 
-        /// <see cref="SoldierGenerator"/>
+        /// Gets a list of <see cref="RandomizedPool"/> entities that reference this 
+        /// <see cref="RandomizedProcedure"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<SoldierGeneratorPool> SpawnPools { get; set; }
+        public virtual IEnumerable<RandomizedPool> SpawnPools { get; set; }
 
         // <summary>
-        /// Gets a list of <see cref="SoldierGeneratorCareer"/> entities that reference this 
-        /// <see cref="SoldierGenerator"/>
+        /// Gets a list of <see cref="RandomizedProcedureCareer"/> entities that reference this 
+        /// <see cref="RandomizedProcedure"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<SoldierGeneratorCareer> NewSoldierCareer { get; set; }
+        public virtual IEnumerable<RandomizedProcedureCareer> NewSoldierCareer { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="BilletSpawnSetting"/> entities that reference this 
-        /// <see cref="SoldierGenerator"/>
+        /// Gets a list of <see cref="BilletCustomProcedure"/> entities that reference this 
+        /// <see cref="RandomizedProcedure"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<BilletSpawnSetting> BilletSpawns { get; set; }
+        public virtual IEnumerable<BilletCustomProcedure> BilletSpawns { get; set; }
 
         #endregion
 
         /// <summary>
         /// Gets or sets the <see cref="SpawnedSoldier"/> <see cref="SpawnGenerator{T}"/>
         /// </summary>
-        protected SpawnGenerator<SpawnedSoldier> Generator { get; set; }
+        protected SpawnGenerator<SoldierPoolWrapper<RandomizedPool>> Generator { get; set; }
 
         /// <summary>
         /// Indicates whether this generator has been initialized
@@ -80,23 +80,23 @@ namespace Perscom.Database
         public bool IsInitialized => (Generator != null);
 
         /// <summary>
-        /// Initializes this <see cref="SoldierGenerator"/>. This method must be called
+        /// Initializes this <see cref="RandomizedProcedure"/>. This method must be called
         /// before an <see cref="SpawnedSoldier"/>'s can be spawned
         /// </summary>
         public void Initialize()
         {
             // Create generator instance
-            Generator = new SpawnGenerator<SpawnedSoldier>();
+            Generator = new SpawnGenerator<SoldierPoolWrapper<RandomizedPool>>();
 
             // Add the new soldier spawnable entity
             if (CreatesNewSoldiers)
             {
                 // Grab generator
                 var item = NewSoldierCareer.FirstOrDefault();
-                if (item != null && item != default(SoldierGeneratorCareer))
+                if (item != null && item != default(RandomizedProcedureCareer))
                 {
                     // Add spawn setting to list!
-                    Generator.Add(new SpawnedSoldier()
+                    Generator.Add(new SoldierPoolWrapper<RandomizedPool>()
                     {
                         Type = SpawnSoldierType.CreateNew,
                         Probability = NewSoldierProbability,
@@ -111,7 +111,7 @@ namespace Perscom.Database
                 foreach (var item in SpawnPools)
                 {
                     // Add spawn setting to list!
-                    Generator.Add(new SpawnedSoldier()
+                    Generator.Add(new SoldierPoolWrapper<RandomizedPool>()
                     {
                         Type = SpawnSoldierType.TakeFromExistingPool,
                         Probability = item.Probability,
@@ -127,7 +127,7 @@ namespace Perscom.Database
         /// Spawns a random <see cref="SpawnedSoldier"/> based
         /// on the set probability
         /// </summary>
-        public SpawnedSoldier Spawn()
+        public SoldierPoolWrapper<RandomizedPool> Spawn()
         {
             if (Generator == null)
                 Initialize();
@@ -135,7 +135,7 @@ namespace Perscom.Database
             return Generator.Spawn();
         }
 
-        public bool Equals(SoldierGenerator other)
+        public bool Equals(RandomizedProcedure other)
         {
             if (other == null) return false;
             return (Id == other.Id);
@@ -143,7 +143,7 @@ namespace Perscom.Database
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as SoldierGenerator);
+            return this.Equals(obj as RandomizedProcedure);
         }
 
         public override int GetHashCode() => Id;

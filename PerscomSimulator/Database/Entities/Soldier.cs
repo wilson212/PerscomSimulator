@@ -75,10 +75,10 @@ namespace Perscom.Database
         public bool Retired { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="CareerGenerator.Id"/>
+        /// Gets or sets the <see cref="CareerLengthRange.Id"/>
         /// </summary>
         [Column, Required]
-        public int SpawnRateId { get; set; }
+        public int CareerLengthId { get; set; }
 
         #endregion
 
@@ -136,10 +136,10 @@ namespace Perscom.Database
 
 
         /// <summary>
-        /// Gets the <see cref="CareerSpawnRate"/> entity that this entity references.
+        /// Gets the <see cref="Database.CareerLengthRange"/> entity that this entity references.
         /// </summary>
         [InverseKey("Id")]
-        [ForeignKey("SpawnRateId",
+        [ForeignKey("CareerLengthId",
             OnDelete = ReferentialIntegrity.Restrict,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
@@ -238,7 +238,7 @@ namespace Perscom.Database
         /// Gets or sets the <see cref="CareerSpawnRate"/> that 
         /// this soldier is created with
         /// </summary>
-        public CareerLengthRange SpawnRate
+        public CareerLengthRange CareerLengthRange
         {
             get
             {
@@ -246,7 +246,7 @@ namespace Perscom.Database
             }
             set
             {
-                SpawnRateId = value.Id;
+                CareerLengthId = value.Id;
                 FK_SpawnRate?.Refresh();
             }
         }

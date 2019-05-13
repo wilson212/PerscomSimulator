@@ -66,6 +66,6 @@ namespace Perscom.Database
 
         public override int GetHashCode() => Id;
 
-        public override string ToString() => $"{Name} ({Code})";
+        public override string ToString() => $"{Code} - {Name}";
     }
 }

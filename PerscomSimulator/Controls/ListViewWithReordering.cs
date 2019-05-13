@@ -1,7 +1,9 @@
-﻿using System.Drawing;
+﻿using System.Collections;
+using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
-namespace System.Windows.Forms // May need to set to something else
+namespace System
 {
     /// <summary>
     /// A ListView with DragDrop reordering.
@@ -9,75 +11,341 @@ namespace System.Windows.Forms // May need to set to something else
     /// </summary>
     public class ListViewWithReordering : ListView
     {
-        protected override void OnItemDrag(ItemDragEventArgs e)
-        {
-            base.OnItemDrag(e);
-            //Begins a drag-and-drop operation in the ListView control.
-            this.DoDragDrop(this.SelectedItems, DragDropEffects.Move);
-        }
+        #region Private Members
 
-        protected override void OnDragEnter(DragEventArgs drgevent)
-        {
-            base.OnDragEnter(drgevent);
-            int len = drgevent.Data.GetFormats().Length - 1;
-            int i;
-            for (i = 0; i <= len; i++)
-            {
-                if (drgevent.Data.GetFormats()[i].Equals("System.Windows.Forms.ListView+SelectedListViewItemCollection"))
-                {
-                    //The data from the drag source is moved to the target.	
-                    drgevent.Effect = DragDropEffects.Move;
-                }
-            }
+        private ListViewItem m_previousItem;
 
+        #endregion
+
+        #region Public Properties
+
+        [Category("Behavior")]
+        public bool AllowReorder { get; set; }
+
+        [Category("Appearance")]
+        public Color LineColor { get; set; }
+
+        #endregion
+
+        #region Protected and Public Methods
+
+        public ListViewWithReordering() : base()
+        {
+            AllowReorder = true;
+            LineColor = Color.Gray;
         }
 
         protected override void OnDragDrop(DragEventArgs drgevent)
         {
-            //Return if the items are not selected in the ListView control.
-            if (this.SelectedItems.Count == 0)
+            if (!AllowReorder)
             {
                 base.OnDragDrop(drgevent);
                 return;
             }
 
-            //Returns the location of the mouse pointer in the ListView control.
-            Drawing.Point cp = this.PointToClient(new Drawing.Point(drgevent.X, drgevent.Y));
-            //Obtain the item that is located at the specified location of the mouse pointer.
-            ListViewItem dragToItem = this.GetItemAt(cp.X, cp.Y);
-            if (dragToItem == null)
-            {
+            // get the currently hovered row that the items will be dragged to
+            Point clientPoint = base.PointToClient(new Point(drgevent.X, drgevent.Y));
+            ListViewItem hoverItem = base.GetItemAt(clientPoint.X, clientPoint.Y);
+
+            if (!drgevent.Data.GetDataPresent(typeof(DragItemData).ToString()) || ((DragItemData)drgevent.Data.GetData(typeof(DragItemData).ToString())).ListView == null || ((DragItemData)drgevent.Data.GetData(typeof(DragItemData).ToString())).DragItems.Count == 0)
                 return;
-            }
-            //Obtain the index of the item at the mouse pointer.
-            int dragIndex = dragToItem.Index;
-            ListViewItem[] sel = new ListViewItem[this.SelectedItems.Count];
-            for (int i = 0; i <= this.SelectedItems.Count - 1; i++)
+
+            // retrieve the drag item data
+            DragItemData data = (DragItemData)drgevent.Data.GetData(typeof(DragItemData).ToString());
+
+            if (hoverItem == null)
             {
-                sel[i] = this.SelectedItems[i];
-            }
-            for (int i = 0; i < sel.GetLength(0); i++)
-            {
-                //Obtain the ListViewItem to be dragged to the target location.
-                ListViewItem dragItem = sel[i];
-                int itemIndex = dragIndex;
-                if (itemIndex == dragItem.Index)
+                // the user does not wish to re-order the items, just append to the end
+                for (int i = 0; i < data.DragItems.Count; i++)
                 {
-                    return;
+                    ListViewItem newItem = (ListViewItem)data.DragItems[i];
+                    base.Items.Add(newItem);
                 }
-                if (dragItem.Index < itemIndex)
-                    itemIndex++;
-                else
-                    itemIndex = dragIndex + i;
-                //Insert the item at the mouse pointer.
-                ListViewItem insertItem = (ListViewItem)dragItem.Clone();
-                this.Items.Insert(itemIndex, insertItem);
-                //Removes the item from the initial location while 
-                //the item is moved to the new location.
-                this.Items.Remove(dragItem);
+            }
+            else
+            {
+                // the user wishes to re-order the items
+
+                // get the index of the hover item
+                int hoverIndex = hoverItem.Index;
+
+                // determine if the items to be dropped are from
+                // this list view. If they are, perform a hack
+                // to increment the hover index so that the items
+                // get moved properly.
+                if (this == data.ListView)
+                {
+                    if (hoverIndex > base.SelectedItems[0].Index)
+                        hoverIndex++;
+                }
+
+                // insert the new items into the list view
+                // by inserting the items reversely from the array list
+                for (int i = data.DragItems.Count - 1; i >= 0; i--)
+                {
+                    ListViewItem newItem = (ListViewItem)data.DragItems[i];
+                    base.Items.Insert(hoverIndex, newItem);
+                }
             }
 
+            // remove all the selected items from the previous list view
+            // if the list view was found
+            if (data.ListView != null)
+            {
+                foreach (ListViewItem itemToRemove in data.ListView.SelectedItems)
+                {
+                    data.ListView.Items.Remove(itemToRemove);
+                }
+            }
+
+            // set the back color of the previous item, then nullify it
+            if (m_previousItem != null)
+            {
+                m_previousItem = null;
+            }
+
+            this.Invalidate();
+
+            // call the base on drag drop to raise the event
             base.OnDragDrop(drgevent);
         }
+
+        protected override void OnDragOver(DragEventArgs drgevent)
+        {
+            if (!AllowReorder)
+            {
+                base.OnDragOver(drgevent);
+                return;
+            }
+
+            if (!drgevent.Data.GetDataPresent(typeof(DragItemData).ToString()))
+            {
+                // the item(s) being dragged do not have any data associated
+                drgevent.Effect = DragDropEffects.None;
+                return;
+            }
+
+            if (base.Items.Count > 0)
+            {
+                // get the currently hovered row that the items will be dragged to
+                Point clientPoint = base.PointToClient(new Point(drgevent.X, drgevent.Y));
+                ListViewItem hoverItem = base.GetItemAt(clientPoint.X, clientPoint.Y);
+
+                Graphics g = this.CreateGraphics();
+
+                if (hoverItem == null)
+                {
+                    //MessageBox.Show(base.GetChildAtPoint(new Point(clientPoint.X, clientPoint.Y)).GetType().ToString());
+
+                    // no item was found, so no drop should take place
+                    drgevent.Effect = DragDropEffects.Move;
+
+                    if (m_previousItem != null)
+                    {
+                        m_previousItem = null;
+                        Invalidate();
+                    }
+
+                    hoverItem = base.Items[base.Items.Count - 1];
+
+                    if (this.View == View.Details || this.View == View.List)
+                    {
+                        g.DrawLine(new Pen(LineColor, 2), new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y + hoverItem.Bounds.Height), new Point(hoverItem.Bounds.X + this.Bounds.Width, hoverItem.Bounds.Y + hoverItem.Bounds.Height));
+                        g.FillPolygon(new SolidBrush(LineColor), new Point[] { new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y + hoverItem.Bounds.Height - 5), new Point(hoverItem.Bounds.X + 5, hoverItem.Bounds.Y + hoverItem.Bounds.Height), new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y + hoverItem.Bounds.Height + 5) });
+                        g.FillPolygon(new SolidBrush(LineColor), new Point[] { new Point(this.Bounds.Width - 4, hoverItem.Bounds.Y + hoverItem.Bounds.Height - 5), new Point(this.Bounds.Width - 9, hoverItem.Bounds.Y + hoverItem.Bounds.Height), new Point(this.Bounds.Width - 4, hoverItem.Bounds.Y + hoverItem.Bounds.Height + 5) });
+                    }
+                    else
+                    {
+                        g.DrawLine(new Pen(LineColor, 2), new Point(hoverItem.Bounds.X + hoverItem.Bounds.Width, hoverItem.Bounds.Y), new Point(hoverItem.Bounds.X + hoverItem.Bounds.Width, hoverItem.Bounds.Y + hoverItem.Bounds.Height));
+                        g.FillPolygon(new SolidBrush(LineColor), new Point[] { new Point(hoverItem.Bounds.X + hoverItem.Bounds.Width - 5, hoverItem.Bounds.Y), new Point(hoverItem.Bounds.X + hoverItem.Bounds.Width + 5, hoverItem.Bounds.Y), new Point(hoverItem.Bounds.X + hoverItem.Bounds.Width, hoverItem.Bounds.Y + 5) });
+                        g.FillPolygon(new SolidBrush(LineColor), new Point[] { new Point(hoverItem.Bounds.X + hoverItem.Bounds.Width - 5, hoverItem.Bounds.Y + hoverItem.Bounds.Height), new Point(hoverItem.Bounds.X + hoverItem.Bounds.Width + 5, hoverItem.Bounds.Y + hoverItem.Bounds.Height), new Point(hoverItem.Bounds.X + hoverItem.Bounds.Width, hoverItem.Bounds.Y + hoverItem.Bounds.Height - 5) });
+                    }
+
+                    // call the base OnDragOver event
+                    base.OnDragOver(drgevent);
+
+                    return;
+                }
+
+                // determine if the user is currently hovering over a new
+                // item. If so, set the previous item's back color back
+                // to the default color.
+                if ((m_previousItem != null && m_previousItem != hoverItem) || m_previousItem == null)
+                {
+                    this.Invalidate();
+                }
+
+                // set the background color of the item being hovered
+                // and assign the previous item to the item being hovered
+                //hoverItem.BackColor = Color.Beige;
+                m_previousItem = hoverItem;
+
+                if (this.View == View.Details || this.View == View.List)
+                {
+                    g.DrawLine(new Pen(LineColor, 2), new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y), new Point(hoverItem.Bounds.X + this.Bounds.Width, hoverItem.Bounds.Y));
+                    g.FillPolygon(new SolidBrush(LineColor), new Point[] { new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y - 5), new Point(hoverItem.Bounds.X + 5, hoverItem.Bounds.Y), new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y + 5) });
+                    g.FillPolygon(new SolidBrush(LineColor), new Point[] { new Point(this.Bounds.Width - 4, hoverItem.Bounds.Y - 5), new Point(this.Bounds.Width - 9, hoverItem.Bounds.Y), new Point(this.Bounds.Width - 4, hoverItem.Bounds.Y + 5) });
+                }
+                else
+                {
+                    g.DrawLine(new Pen(LineColor, 2), new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y), new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y + hoverItem.Bounds.Height));
+                    g.FillPolygon(new SolidBrush(LineColor), new Point[] { new Point(hoverItem.Bounds.X - 5, hoverItem.Bounds.Y), new Point(hoverItem.Bounds.X + 5, hoverItem.Bounds.Y), new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y + 5) });
+                    g.FillPolygon(new SolidBrush(LineColor), new Point[] { new Point(hoverItem.Bounds.X - 5, hoverItem.Bounds.Y + hoverItem.Bounds.Height), new Point(hoverItem.Bounds.X + 5, hoverItem.Bounds.Y + hoverItem.Bounds.Height), new Point(hoverItem.Bounds.X, hoverItem.Bounds.Y + hoverItem.Bounds.Height - 5) });
+                }
+
+                // go through each of the selected items, and if any of the
+                // selected items have the same index as the item being
+                // hovered, disable dropping.
+                foreach (ListViewItem itemToMove in base.SelectedItems)
+                {
+                    if (itemToMove.Index == hoverItem.Index)
+                    {
+                        drgevent.Effect = DragDropEffects.None;
+                        hoverItem.EnsureVisible();
+                        return;
+                    }
+                }
+
+                // ensure that the hover item is visible
+                hoverItem.EnsureVisible();
+            }
+
+            // everything is fine, allow the user to move the items
+            drgevent.Effect = DragDropEffects.Move;
+
+            // call the base OnDragOver event
+            base.OnDragOver(drgevent);
+        }
+
+        protected override void OnDragEnter(DragEventArgs drgevent)
+        {
+            if (!AllowReorder)
+            {
+                base.OnDragEnter(drgevent);
+                return;
+            }
+
+            if (!drgevent.Data.GetDataPresent(typeof(DragItemData).ToString()))
+            {
+                // the item(s) being dragged do not have any data associated
+                drgevent.Effect = DragDropEffects.None;
+                return;
+            }
+
+            // everything is fine, allow the user to move the items
+            drgevent.Effect = DragDropEffects.Move;
+
+            // call the base OnDragEnter event
+            base.OnDragEnter(drgevent);
+        }
+
+        protected override void OnItemDrag(ItemDragEventArgs e)
+        {
+            if (!AllowReorder)
+            {
+                base.OnItemDrag(e);
+                return;
+            }
+
+            // call the DoDragDrop method
+            base.DoDragDrop(GetDataForDragDrop(), DragDropEffects.Move);
+
+            // call the base OnItemDrag event
+            base.OnItemDrag(e);
+        }
+
+        protected override void OnLostFocus(EventArgs e)
+        {
+            // reset the selected items background and remove the previous item
+            ResetOutOfRange();
+
+            Invalidate();
+
+            // call the OnLostFocus event
+            base.OnLostFocus(e);
+        }
+
+        protected override void OnDragLeave(EventArgs e)
+        {
+            // reset the selected items background and remove the previous item
+            ResetOutOfRange();
+
+            Invalidate();
+
+            // call the base OnDragLeave event
+            base.OnDragLeave(e);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private DragItemData GetDataForDragDrop()
+        {
+            // create a drag item data object that will be used to pass along with the drag and drop
+            DragItemData data = new DragItemData(this);
+
+            // go through each of the selected items and 
+            // add them to the drag items collection
+            // by creating a clone of the list item
+            foreach (ListViewItem item in this.SelectedItems)
+            {
+                data.DragItems.Add(item.Clone());
+            }
+
+            return data;
+        }
+
+        private void ResetOutOfRange()
+        {
+            // determine if the previous item exists,
+            // if it does, reset the background and release 
+            // the previous item
+            if (m_previousItem != null)
+            {
+                m_previousItem = null;
+            }
+
+        }
+
+        #endregion
+
+        #region DragItemData Class
+
+        private class DragItemData
+        {
+            #region Private Members
+
+            private ListViewWithReordering m_listView;
+            private ArrayList m_dragItems;
+
+            #endregion
+
+            #region Public Properties
+
+            public ListViewWithReordering ListView
+            {
+                get { return m_listView; }
+            }
+
+            public ArrayList DragItems
+            {
+                get { return m_dragItems; }
+            }
+
+            #endregion
+
+            #region Public Methods and Implementation
+
+            public DragItemData(ListViewWithReordering listView)
+            {
+                m_listView = listView;
+                m_dragItems = new ArrayList();
+            }
+
+            #endregion
+        }
+
+        #endregion
     }
 }

@@ -1,10 +1,10 @@
 ﻿namespace Perscom.Simulation
 {
     /// <summary>
-    /// Represents an array of Spawn options the <see cref="Simulator"/>
-    /// can use to spawn soldiers to fill empty <see cref="Database.Billet"/>s
+    /// Represents an array of Soldier selection procedures the <see cref="Simulator"/>
+    /// will use to spawn soldiers to fill empty <see cref="Database.Billet"/>s
     /// </summary>
-    public enum BilletSelection
+    public enum SelectionProcedure
     {
         /// <summary>
         /// Soldiers will either be promoted into the billet, or chosen
@@ -25,8 +25,18 @@
         LateralOnly = 2,
 
         /// <summary>
-        /// The custom soldier generator will be used only
+        /// Position will be filled by a brand new soldier
         /// </summary>
-        RandomSoldierGenerator = 3
+        CreateNewSoldier = 3,
+
+        /// <summary>
+        /// Soldiers will be selected using an <see cref="Database.OrderedProcedure"/>
+        /// </summary>
+        OrderedProcedure = 4,
+
+        /// <summary>
+        /// Soldiers will be selected using an <see cref="Database.RandomizedProcedure"/>
+        /// </summary>
+        RandomizedProcedure = 5
     }
 }

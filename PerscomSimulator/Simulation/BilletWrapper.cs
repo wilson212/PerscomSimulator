@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Perscom.Database;
+using Perscom.Simulation.Procedures;
 
 namespace Perscom.Simulation
 {
@@ -41,47 +42,51 @@ namespace Perscom.Simulation
 
         public Echelon PromotionPool { get; set; }
 
-        public BilletSpawnSetting SpawnSetting { get; set; }
-
         public int[] RequiredSpecialties { get; set; }
 
-        public bool UsesCustomGenerator => (Billet.Selection == BilletSelection.RandomSoldierGenerator);
+        public bool CreatesNewSoldiers => Selection == SelectionProcedure.CreateNewSoldier;
 
-        public BilletSelection Selection => Billet.Selection;
+        public SelectionProcedure Selection => Billet.Selection;
 
         public bool AutoPromoteInRankRange => Billet.AutoPromoteInRankRange;
 
         public bool DemoteOverRanked => Billet.DemoteOverRanked;
 
-        protected static Dictionary<int, BilletWrapper> Cache { get; set; }
+        /// <summary>
+        /// Gets the soldier selection procedure
+        /// </summary>
+        public AbstractSelectionProcedure Procedure { get; protected set; }
 
-        static BilletWrapper()
-        {
-            Cache = new Dictionary<int, BilletWrapper>();
-        }
-
-        private BilletWrapper(Billet billet)
+        public BilletWrapper(Billet billet, SimDatabase db)
         {
             Billet = billet;
             Rank = billet.Rank;
             MaxRank = billet.MaxRank;
             Specialty = billet.Specialties.FirstOrDefault()?.Specialty;
-            SpawnSetting = billet.SpawnSettings.FirstOrDefault();
             PromotionPool = billet.PromotionPool;
             RequiredSpecialties = billet.Requirements.Select(x => x.SpecialtyId).ToArray();
-        }
 
-        public static BilletWrapper FetchCache(Billet billet)
-        {
-            if (!Cache.ContainsKey(billet.Id))
-                Cache.Add(billet.Id, new BilletWrapper(billet));
-
-            return Cache[billet.Id];
-        }
-
-        public static void ClearCache()
-        {
-            Cache.Clear();
+            switch (Selection)
+            {
+                case SelectionProcedure.CreateNewSoldier:
+                    Procedure = new SoldierEntryProcedure(db, billet);
+                    break;
+                case SelectionProcedure.LateralOnly:
+                    Procedure = new LateralOnlyProcedure(db, billet);
+                    break;
+                case SelectionProcedure.PromotionOnly:
+                    Procedure = new PromotionOnlyProcedure(db, billet);
+                    break;
+                case SelectionProcedure.PromotionOrLateral:
+                    Procedure = new PromotionOrLateralProcedure(db, billet);
+                    break;
+                case SelectionProcedure.OrderedProcedure:
+                    Procedure = new OrderedSelectionProcedure(db, billet);
+                    break;
+                case SelectionProcedure.RandomizedProcedure:
+                    Procedure = new RandomizedSelectionProcedure(db, billet);
+                    break;
+            }
         }
     }
 }
