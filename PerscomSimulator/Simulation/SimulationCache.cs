@@ -1,10 +1,5 @@
 ﻿using Perscom.Database;
-using Perscom.Simulation.Procedures;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Perscom.Simulation
 {
@@ -16,10 +11,20 @@ namespace Perscom.Simulation
         /// </summary>
         public static RandomNameGenerator NameGenerator { get; private set; }
 
+        /// <summary>
+        /// Gets a list of Cached BilletWrappers by ID
+        /// </summary>
         private static Dictionary<int, BilletWrapper> Billets { get; set; }
 
+        /// <summary>
+        /// Gets a list of Cached CareerGenerator's by ID
+        /// </summary>
         public static Dictionary<int, CareerGenerator> CareerGenerators { get; private set; }
 
+        /// <summary>
+        /// Loads data into the Cache
+        /// </summary>
+        /// <param name="db"></param>
         public static void Load(SimDatabase db)
         {
             // Create name generator
@@ -39,9 +44,16 @@ namespace Perscom.Simulation
 
         }
 
+        /// <summary>
+        /// Clears all data from the Cache
+        /// </summary>
         public static void Clear()
         {
+            Billets?.Clear();
+            Billets = null;
 
+            CareerGenerators?.Clear();
+            CareerGenerators = null;
         }
 
         public static BilletWrapper FetchBillet(Billet billet, SimDatabase db)

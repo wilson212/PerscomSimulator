@@ -13,9 +13,9 @@ namespace Perscom
 {
     public partial class SoldierViewForm : Form
     {
-        protected SoldierWrapper2 Soldier { get; set; }
+        protected SoldierFormWrapper Soldier { get; set; }
 
-        public SoldierViewForm(SoldierWrapper2 soldier, DateTime currentDate)
+        public SoldierViewForm(SoldierFormWrapper soldier, DateTime currentDate)
         {
             InitializeComponent();
             this.Soldier = soldier;
@@ -36,71 +36,103 @@ namespace Perscom
 
             // Extract data
             var position = soldier.Position;
-            var unit = position.Unit;
-            var assignment = soldier.Soldier.Assignments.First();
             var spec = soldier.Soldier.Specialty;
+            var unit = position?.Unit;
+            var assignment = soldier.Soldier.Assignments?.FirstOrDefault();
+            var isRetired = (assignment == null);
 
             // Begin filling label text values
-            nameLabel.Text = soldier.Name;
+            nameLabel.Text = (isRetired) ? soldier.Name + ", Retired" : soldier.Name;
             rankLabel.Text = soldier.Soldier.Rank.Name;
-            pictureBox1.Image = soldier.RankImage;
+            pictureBox1.Image = soldier.CurrentRankImage;
             entryLabel.Text = soldier.Soldier.EntryServiceDate.Date.ToShortDateString();
             specLabel.Text = $"{spec.Code} - {spec.Name}";
 
             // Build current Unit name
             var unitNameBuilder = new StringBuilder();
             var unitCodeBuilder = new StringBuilder();
-            while (unit != null)
+            if (!isRetired)
             {
-                unitNameBuilder.Append(unit.Name);
-                unitCodeBuilder.Append(unit.UnitCode);
-                unit = unit.Attachments.Where(x => x.ChildId == unit.Id).Select(x => x.ParentUnit).FirstOrDefault();
-                if (unit != null)
-                    unitNameBuilder.Append(", ");
+                while (unit != null)
+                {
+                    unitNameBuilder.Append(unit.Name);
+                    unitCodeBuilder.Append(unit.UnitCode);
+                    unit = unit.Attachments.Where(x => x.ChildId == unit.Id).Select(x => x.ParentUnit).FirstOrDefault();
+                    if (unit != null)
+                        unitNameBuilder.Append(", ");
+                }
+            }
+            else
+            {
+                unitNameBuilder.Append("Retired");
+                unitCodeBuilder.Append("Retired");
             }
             unitLabel.Text = unitNameBuilder.ToString();
+
 
             // Time in Service
             LocalDate startDate = new LocalDate(
                 soldier.EntryServiceDate.Year,
-                soldier.EntryServiceDate.Month, 
+                soldier.EntryServiceDate.Month,
                 1
             );
-            LocalDate endDate = startDate.PlusYears(currentDate.Year - startDate.Year).PlusMonths(currentDate.Month - startDate.Month);
+            LocalDate endDate = (!isRetired) 
+                ? startDate.PlusYears(currentDate.Year - startDate.Year).PlusMonths(currentDate.Month - startDate.Month)
+                : startDate.PlusYears(soldier.ExitServiceDate.Year - startDate.Year)
+                    .PlusMonths(soldier.ExitServiceDate.Month - startDate.Month);
             Period timeFrame = Period.Between(startDate, endDate);
             tisLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
-            labelPosition.Text = soldier.Position?.ToString() ?? "";
+            labelPosition.Text = soldier.Position?.ToString() ?? "Retired";
 
-            // AddCurrent Assignment to the Assignment history
+            // Create rows
             DataGridViewRow row = new DataGridViewRow();
             row.CreateCells(dataGridView2);
-            row.SetValues(new object[]
+
+            // AddCurrent Assignment to the Assignment history
+            if (!isRetired)
             {
-                assignment.AssignedOn.Date.ToShortDateString(),
-                position.Name,
-                unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
-                "--"
-            });
-            dataGridView2.Rows.Add(row);
+                row.SetValues(new object[]
+                {
+                    assignment.AssignedOn.Date.ToShortDateString(),
+                    position.Name,
+                    unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
+                    "--"
+                });
+                dataGridView2.Rows.Add(row);
+            }
 
             // Time to retire label
-            startDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
-            endDate = new LocalDate(soldier.ExitServiceDate.Date.Year, soldier.ExitServiceDate.Date.Month, 1);
-            timeFrame = Period.Between(startDate, endDate);
-            if (timeFrame.Years != 0)
-                ttrLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
+            if (!isRetired)
+            {
+                startDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
+                endDate = new LocalDate(soldier.ExitServiceDate.Date.Year, soldier.ExitServiceDate.Date.Month, 1);
+                timeFrame = Period.Between(startDate, endDate);
+                if (timeFrame.Years != 0)
+                    ttrLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
+                else
+                    ttrLabel.Text = $"{timeFrame.Months} month(s)";
+            }
             else
-                ttrLabel.Text = $"{timeFrame.Months} month(s)";
+            {
+                ttrLabel.Text = soldier.ExitServiceDate.Date.ToShortDateString();
+            }
 
             // Time in Billet label
-            var ad = assignment.AssignedOn;
-            startDate = new LocalDate(ad.Date.Year, ad.Date.Month, 1);
-            endDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
-            timeFrame = Period.Between(startDate, endDate);
-            if (timeFrame.Years != 0)
-                labelTIB.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
+            if (!isRetired)
+            {
+                var ad = assignment.AssignedOn;
+                startDate = new LocalDate(ad.Date.Year, ad.Date.Month, 1);
+                endDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
+                timeFrame = Period.Between(startDate, endDate);
+                if (timeFrame.Years != 0)
+                    labelTIB.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
+                else
+                    labelTIB.Text = $"{timeFrame.Months} month(s)";
+            }
             else
-                labelTIB.Text = $"{timeFrame.Months} month(s)";
+            {
+                labelTIB.Text = "Retired";
+            }
 
             // Time in Grade
             DateTime lastPromo = soldier.EntryServiceDate;
@@ -161,7 +193,9 @@ namespace Perscom
 
             // Fill TIG label
             startDate = new LocalDate(lastPromo.Year, lastPromo.Month, 1);
-            endDate = new LocalDate(currentDate.Year, currentDate.Month, 1);
+            endDate = (!isRetired)
+                ? new LocalDate(currentDate.Year, currentDate.Month, 1)
+                : new LocalDate(soldier.ExitServiceDate.Year, soldier.ExitServiceDate.Month, 1);
             timeFrame = Period.Between(startDate, endDate);
             if (timeFrame.Years > 0)
                 tigLabel.Text = $"{timeFrame.Years} year(s) and {timeFrame.Months} month(s)";
@@ -171,7 +205,7 @@ namespace Perscom
             // Fill Past Assignments
             foreach (var pos in soldier.Soldier.PastAssignments.OrderByDescending(x => x.Id))
             {
-                int monthsHeld = pos.RemovedIteration - pos.StartIteration;
+                int monthsHeld = pos.ExitIterationId - pos.EntryIterationId;
                 unitCodeBuilder.Clear();
 
                 // build unitname
@@ -186,7 +220,7 @@ namespace Perscom
                 row.CreateCells(dataGridView2);
                 row.SetValues(new object[]
                 {
-                    pos.StartDate.Date.ToShortDateString(),
+                    pos.EntryDate.Date.ToShortDateString(),
                     pos.Position.Name,
                     unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
                     monthsHeld

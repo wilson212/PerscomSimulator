@@ -414,6 +414,10 @@ namespace Perscom
             }
         }
 
+        /// <summary>
+        /// Gets whether the selected Procedure creates new soldiers
+        /// </summary>
+        /// <returns></returns>
         private bool CreatesNewSoldiers()
         {
             var selected = (SelectionProcedure)soldierSpawnSelect.SelectedIndex;
@@ -421,13 +425,13 @@ namespace Perscom
             {
                 // Fetch spawn Generator
                 RandomizedProcedure gen = (RandomizedProcedure)spawnGenSelect.SelectedItem;
-                return gen?.CreatesNewSoldiers ?? false;
+                return gen?.CreatesNewSoldiers ?? true;
             }
             else if (selected == SelectionProcedure.OrderedProcedure)
             {
                 // Fetch spawn Generator
                 OrderedProcedure gen = (OrderedProcedure)spawnGenSelect.SelectedItem;
-                return gen.CreatesNewSoldiers;
+                return gen?.CreatesNewSoldiers ?? true;
             }
             else if (selected == SelectionProcedure.CreateNewSoldier)
             {

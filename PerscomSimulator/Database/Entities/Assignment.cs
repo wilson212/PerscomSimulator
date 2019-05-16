@@ -35,7 +35,14 @@ namespace Perscom.Database
         /// <see cref="Soldier"/>
         /// </summary>
         [Column, Required]
-        public int AssignedIteration { get; set; }
+        public int EntryIterationId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Rank.Id"/> this <see cref="Soldier"/>
+        /// was when moving into this position
+        /// </summary>
+        [Column, Required]
+        public int EntryRankId { get; set; }
 
         #endregion
 
@@ -56,11 +63,18 @@ namespace Perscom.Database
         protected virtual ForeignKey<Position> FK_Position { get; set; }
 
         [InverseKey("Id")]
-        [ForeignKey("AssignedIteration",
+        [ForeignKey("EntryIterationId",
             OnDelete = ReferentialIntegrity.Restrict,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
         protected virtual ForeignKey<IterationDate> FK_Iteration { get; set; }
+
+        [InverseKey("Id")]
+        [ForeignKey("EntryRankId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<Rank> FK_RankEntry { get; set; }
 
         #endregion
 
@@ -112,8 +126,25 @@ namespace Perscom.Database
             }
             set
             {
-                AssignedIteration = value.Id;
+                EntryIterationId = value.Id;
                 FK_Iteration?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Perscom.Database.Rank"/> that 
+        /// the soldier was when entering this position.
+        /// </summary>
+        public Rank EntryRank
+        {
+            get
+            {
+                return FK_RankEntry?.Fetch();
+            }
+            set
+            {
+                EntryRankId = value.Id;
+                FK_RankEntry?.Refresh();
             }
         }
 

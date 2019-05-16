@@ -9,8 +9,14 @@ namespace Perscom.Simulation.Procedures
     /// </summary>
     public class SoldierEntryProcedure : AbstractSelectionProcedure
     {
+        /// <summary>
+        /// The current Simulation Database connection
+        /// </summary>
         protected SimDatabase Database { get; set; }
 
+        /// <summary>
+        /// Gets the <see cref="CareerGenerator.Id"/>
+        /// </summary>
         public int CareerGeneratorId { get; protected set; }
 
         public SoldierEntryProcedure(SimDatabase db, Billet billet) : base(db, billet)

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Perscom.Database;
+﻿using Perscom.Database;
 using Perscom.Simulation.Procedures;
+using System.Linq;
 
 namespace Perscom.Simulation
 {

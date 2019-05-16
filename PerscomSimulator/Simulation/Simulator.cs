@@ -388,6 +388,7 @@ namespace Perscom
             EntityCache.GetTableMap(typeof(RankGradeStatistics)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(SpecialtyGradeStatistics)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(PastAssignment)).BuildInstanceForeignKeys = enabled;
+            EntityCache.GetTableMap(typeof(Assignment)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(SpecialtyAssignment)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(Soldier)).BuildInstanceForeignKeys = enabled;
             EntityCache.GetTableMap(typeof(Promotion)).BuildInstanceForeignKeys = enabled;

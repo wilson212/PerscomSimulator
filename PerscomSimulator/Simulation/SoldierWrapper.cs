@@ -238,7 +238,7 @@ namespace Perscom.Simulation
                 // Check for locked in by billet (Time In Grade
                 if (!Position.Billet.Billet.CanRetireEarly)
                 {
-                    int difference = currentDate.Id - Assignment.AssignedIteration;
+                    int difference = currentDate.Id - Assignment.EntryIterationId;
                     if (Position.Billet.MinTourLength > difference)
                         return false;
                 }
@@ -521,9 +521,10 @@ namespace Perscom.Simulation
             }
 
             // Create assignment
-            Assignment.AssignedIteration = date.Id;
+            Assignment.EntryIterationId = date.Id;
             Assignment.PositionId = newPosition.Position.Id;
             Assignment.SoldierId = Soldier.Id;
+            Assignment.EntryRankId = Rank.Id;
 
             // Did we promote?
             if (DoPromotionIfEligable(date, db, false, out Promotion promo) && promo != null)
@@ -656,7 +657,7 @@ namespace Perscom.Simulation
         /// <returns></returns>
         public int GetTimeInBillet(IterationDate currentDate)
         {
-            return currentDate.Id - Assignment.AssignedIteration;
+            return currentDate.Id - Assignment.EntryIterationId;
         }
 
         /// <summary>
@@ -739,7 +740,7 @@ namespace Perscom.Simulation
         {
             if (Position == null) return false;
 
-            int timePassed = currentDate.Id - Assignment.AssignedIteration;
+            int timePassed = currentDate.Id - Assignment.EntryIterationId;
             return Position.Billet.MinTourLength > timePassed;
         }
 
@@ -948,10 +949,13 @@ namespace Perscom.Simulation
             // Store past assignment
             PastAssignments.Add(new PastAssignment()
             {
-                PositionId = Position.Position.Id,
                 SoldierId = Soldier.Id,
-                RemovedIteration = date.Id,
-                StartIteration = Assignment.AssignedIteration
+                PositionId = Position.Position.Id,
+                EntryIterationId = Assignment.EntryIterationId,
+                EntryRankId = Assignment.EntryRankId,
+                ExitIterationId = date.Id,
+                ExitRankId = Rank.Id,
+                LastGradeChangeIterationId = LastGradeChangeDate.Id
             });
         }
 

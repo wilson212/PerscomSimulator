@@ -730,7 +730,7 @@
             this.nameLabel.ShadowDirection = 90;
             this.nameLabel.ShadowOpacity = 225;
             this.nameLabel.ShadowSoftness = 3F;
-            this.nameLabel.Size = new System.Drawing.Size(242, 34);
+            this.nameLabel.Size = new System.Drawing.Size(426, 34);
             this.nameLabel.TabIndex = 0;
             this.nameLabel.Text = "Micheal Weston";
             // 

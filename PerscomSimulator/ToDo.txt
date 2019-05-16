@@ -1,30 +1,8 @@
 ﻿ - Track specialty transitions for statistics
  - Add UnitTemplate statistics
  - Add better support for Billet Rank Ranges! (maybe a collective lateral selection?)
+ --> Should we Auto promote a soldier if they are promotable?
  - Establish Rank Grades seperate from Ranks in the RankEditorForm
-
--> SelectionProcedure (Id, Name, RankId, CreatesNewSoldiers, CareerGeneratorId, Probability)
---> ProcedurePool (
-		Id, 
-		SelectionProcedureId, 
-		Precedence, 
-		RankId, 
-		UseRankGrade, 
-		NewCareerLength, 
-		CareerGeneratorId
-		SpawnChance [0-100], 
-		Selection [First, Random],
-		GroupByDesire : bool, 
-		InverseSpecialtyRequirements : bool,
-		NotLockedInBillet : bool,
-		MustBePromotable : bool,
-		FilterLogic
-	)
----> ProcedurePoolFilter (ProcedurePoolId) : AbstractFilter
----> ProcedurePoolGroup (ProcedurePoolId) : AbstractFilter
----> ProcedurePoolSorting (ProcedurePoolId) : AbstractSort
----> ProcedurePoolSpecialtyRequirement (ProcedurePoolId, SpecialtyId)
--> BilletProcedure (BilletId, SelectionProcedureId)
 
 ----- Procedure's
 
@@ -32,10 +10,29 @@
 -> Randomized Procedure:	Selects from one random pool only, and checks for a candidate
 -> Collective Procedure		Selects from all pools and combines all soldiers, then chooses one
 
--> Attributes
----> Leadership
----> Marksmanship
----> Reliability
----> Adaptability
----> Fitness
----> Proficiency
+----- Stats (Hard Coded)
+---> Leadership		: Nuff' said!
+---> Marksmanship	: Ability to shoot accurately
+---> Reliability	: How reliable are they? Are they consistant
+---> Adaptability	: Ability to change to staff to command and vise versa. Also includes field situations
+---> Fitness		: Fitness level
+---> Proficiency	: How good are they at thier MOS or staffing ability
+
+--- Maybe Stats
+---> Determination
+---> Consistancy
+---> Charisma
+---> Ambition
+
+----- Soldier Template
+-> SoldierTemplate (
+		Id, 
+		Name,
+		SpawnChance [0-100],
+	)
+--> SoldierTemplateStat (
+		SoldierTemplateId,
+		StatId,
+		MinSpawnValue,
+		MaxSpawnValue
+	)

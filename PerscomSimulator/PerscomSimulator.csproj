@@ -87,6 +87,12 @@
     <Compile Include="Extensions\ChartColorPallets.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\StopWatchExtensions.cs" />
+    <Compile Include="UI\PositionHistoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\PositionHistoryForm.Designer.cs">
+      <DependentUpon>PositionHistoryForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Simulation\OrderedProcedureWrapper.cs" />
     <Compile Include="Simulation\Procedures\AbstractSelectionProcedure.cs" />
     <Compile Include="Simulation\Procedures\SoldierEntryProcedure.cs" />
@@ -185,7 +191,7 @@
       <DependentUpon>MyCheckBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Database\Entities\Billet Procedures\RandomizedPoolCareer.cs" />
-    <Compile Include="Simulation\SoldierWrapper2.cs" />
+    <Compile Include="Simulation\SoldierFormWrapper.cs" />
     <Compile Include="UI\RandomizedPoolForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -336,6 +342,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\OrderedProcedureForm.resx">
       <DependentUpon>OrderedProcedureForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\PositionHistoryForm.resx">
+      <DependentUpon>PositionHistoryForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\PositionStatsForm.resx">
       <DependentUpon>PositionStatsForm.cs</DependentUpon>

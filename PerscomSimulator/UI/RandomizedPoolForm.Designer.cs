@@ -191,6 +191,7 @@
             // filterListView
             // 
             this.filterListView.AllowDrop = true;
+            this.filterListView.AllowReorder = true;
             this.filterListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.filterListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.filterListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -202,6 +203,7 @@
             this.filterListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filterListView.FullRowSelect = true;
             this.filterListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.filterListView.LineColor = System.Drawing.Color.Gray;
             this.filterListView.Location = new System.Drawing.Point(3, 16);
             this.filterListView.MultiSelect = false;
             this.filterListView.Name = "filterListView";
@@ -286,6 +288,7 @@
             // sortingListView
             // 
             this.sortingListView.AllowDrop = true;
+            this.sortingListView.AllowReorder = true;
             this.sortingListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.sortingListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.sortingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -296,6 +299,7 @@
             this.sortingListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sortingListView.FullRowSelect = true;
             this.sortingListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.sortingListView.LineColor = System.Drawing.Color.Gray;
             this.sortingListView.Location = new System.Drawing.Point(3, 16);
             this.sortingListView.MultiSelect = false;
             this.sortingListView.Name = "sortingListView";
@@ -533,9 +537,9 @@
             this.label6.ShadowSoftness = 3F;
             this.label6.Size = new System.Drawing.Size(466, 37);
             this.label6.TabIndex = 0;
-            this.label6.Text = "Select Soldier From Existing Soldier Pool";
+            this.label6.Text = "Random Selection Pool";
             // 
-            // SoldierGeneratorPoolForm
+            // RandomizedPoolForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -548,9 +552,9 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "SoldierGeneratorPoolForm";
+            this.Name = "RandomizedPoolForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Soldier Generator Pool";
+            this.Text = "Random Selection Pool";
             this.mainPanel.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();

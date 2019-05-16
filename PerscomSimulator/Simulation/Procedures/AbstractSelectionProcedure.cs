@@ -242,7 +242,7 @@ namespace Perscom.Simulation.Procedures
             // A soldier can only can move once per iteration!
             // Positions are ordered at the start of the simulation by
             // Grade and Stature anyways, so it works out
-            if (soldier.Assignment.AssignedIteration == date.Id)
+            if (soldier.Assignment.EntryIterationId == date.Id)
                 return false;
 
             // Make sure we are not retiring THIS round!

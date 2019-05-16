@@ -870,7 +870,7 @@ namespace Perscom
             if (dataGridView1.SelectedRows.Count == 0) return;
 
             var row = dataGridView1.SelectedRows[0];
-            var soldier = (SoldierWrapper2)row.Tag;
+            var soldier = (SoldierFormWrapper)row.Tag;
 
             // Show Task Form!
             TaskForm.Show(this, "Loading", "Loading soldier statistics... Please Wait", false);
@@ -892,7 +892,7 @@ namespace Perscom
                         int index = dataGridView1.SelectedRows[0].Index;
                         row.SetValues(new object[]
                         {
-                            soldier.RankIcon,
+                            soldier.CurrentRankIcon,
                             soldier.Name,
                             Math.Round((double)soldier.TimeInService / 12, 2).ToString(),
                             soldier.TimeInGrade
@@ -922,13 +922,13 @@ namespace Perscom
 
             foreach (Soldier s in soldiers)
             {
-                SoldierWrapper2 soldier = new SoldierWrapper2(s, CurrentDate);
+                SoldierFormWrapper soldier = new SoldierFormWrapper(s, CurrentDate);
                 DataGridViewRow row = new DataGridViewRow();
                 row.CreateCells(dataGridView1);
                 row.Tag = soldier;
                 row.SetValues(new object[]
                 {
-                    soldier.RankIcon ?? new Bitmap(1, 1),
+                    soldier.CurrentRankIcon ?? new Bitmap(1, 1),
                     soldier.Name,
                     Math.Round((double)soldier.TimeInService / 12, 2).ToString(),
                     soldier.TimeInGrade
@@ -1153,7 +1153,7 @@ namespace Perscom
                 }
 
                 // Create Wrapper
-                SoldierWrapper2 soldier = new SoldierWrapper2(s, CurrentDate);
+                SoldierFormWrapper soldier = new SoldierFormWrapper(s, CurrentDate);
                 using (SoldierViewForm form = new SoldierViewForm(soldier, CurrentDate))
                 {
                     TaskForm.CloseForm();
@@ -1204,6 +1204,41 @@ namespace Perscom
                 {
                     // Create Wrapper
                     using (var form = new PositionStatsForm(Database, pos.PositionId, CurrentIterationDate))
+                    {
+                        TaskForm.CloseForm();
+
+                        // Show soldier dialog
+                        form.ShowDialog();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TaskForm.CloseForm();
+                    ExceptionHandler.ShowException(ex);
+                }
+            });
+        }
+
+        private async void viewPositionHistoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Ensure we have a selected item
+            if (listView2.SelectedItems.Count == 0)
+                return;
+
+            // Grab Billet from selected item tag
+            if (listView2.SelectedItems[0].Tag == null) return;
+            var pos = (PositionResult)listView2.SelectedItems[0].Tag;
+            if (pos == null) return;
+
+            // Show Task Form!
+            TaskForm.Show(this, "Loading", "Loading position History... Please Wait", false);
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    // Create Wrapper
+                    using (var form = new PositionHistoryForm(Database, pos.PositionId, CurrentIterationDate))
                     {
                         TaskForm.CloseForm();
 

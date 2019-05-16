@@ -37,14 +37,34 @@ namespace Perscom.Database
         /// <see cref="Soldier"/>
         /// </summary>
         [Column, Required]
-        public int StartIteration { get; set; }
+        public int EntryIterationId { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="DateTime"/> this position was removed from the 
         /// <see cref="Soldier"/>
         /// </summary>
         [Column, Required]
-        public int RemovedIteration { get; set; }
+        public int ExitIterationId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Rank.Id"/> this <see cref="Soldier"/>
+        /// was when moving into this position
+        /// </summary>
+        [Column, Required]
+        public int EntryRankId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Rank.Id"/> this <see cref="Soldier"/>
+        /// was promoted from
+        /// </summary>
+        [Column, Required]
+        public int ExitRankId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last Rank Gade change date for this soldier
+        /// </summary>
+        [Column, Required]
+        public int LastGradeChangeIterationId { get; set; }
 
         #endregion
 
@@ -65,18 +85,48 @@ namespace Perscom.Database
         protected virtual ForeignKey<Position> FK_Position { get; set; }
 
         [InverseKey("Id")]
-        [ForeignKey("StartIteration",
+        [ForeignKey("EntryIterationId",
             OnDelete = ReferentialIntegrity.Restrict,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
         protected virtual ForeignKey<IterationDate> FK_Start { get; set; }
 
         [InverseKey("Id")]
-        [ForeignKey("RemovedIteration",
+        [ForeignKey("ExitIterationId",
             OnDelete = ReferentialIntegrity.Restrict,
             OnUpdate = ReferentialIntegrity.Cascade
         )]
         protected virtual ForeignKey<IterationDate> FK_End { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="Database.Rank"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("EntryRankId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<Rank> FK_RankEntry { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="Database.Rank"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("ExitRankId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<Rank> FK_RankExit { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref=IterationDate"/> entity that this entity references.
+        /// </summary>
+        [InverseKey("Id")]
+        [ForeignKey("LastGradeChangeIterationId",
+            OnDelete = ReferentialIntegrity.Restrict,
+            OnUpdate = ReferentialIntegrity.Cascade
+        )]
+        protected virtual ForeignKey<IterationDate> FK_Grade { get; set; }
 
         #endregion
 
@@ -116,7 +166,7 @@ namespace Perscom.Database
             }
         }
 
-        public IterationDate StartDate
+        public IterationDate EntryDate
         {
             get
             {
@@ -124,8 +174,72 @@ namespace Perscom.Database
             }
             set
             {
-                StartIteration = value.Id;
+                EntryIterationId = value.Id;
                 FK_Start?.Refresh();
+            }
+        }
+
+        public IterationDate ExitDate
+        {
+            get
+            {
+                return FK_End?.Fetch();
+            }
+            set
+            {
+                ExitIterationId = value.Id;
+                FK_End?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Perscom.Database.Rank"/> that 
+        /// the soldier was when entering this position.
+        /// </summary>
+        public Rank EntryRank
+        {
+            get
+            {
+                return FK_RankEntry?.Fetch();
+            }
+            set
+            {
+                EntryRankId = value.Id;
+                FK_RankEntry?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Perscom.Database.Rank"/> that 
+        /// the soldier had when he left this assignment (before promotion).
+        /// </summary>
+        public Rank ExitRank
+        {
+            get
+            {
+                return FK_RankExit?.Fetch();
+            }
+            set
+            {
+                ExitRankId = value.Id;
+                FK_RankExit?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IterationDate"/> that this <see cref="Soldier"/> 
+        /// earned his last <see cref="Promotion"/> that was a Grade change
+        /// </summary>
+        public IterationDate LastGradeChangeDate
+        {
+            get
+            {
+                return FK_Grade?.Fetch();
+            }
+            set
+            {
+                LastGradeChangeIterationId = value.Id;
+                FK_Grade?.Refresh();
             }
         }
 

@@ -208,6 +208,7 @@
             // groupingListView
             // 
             this.groupingListView.AllowDrop = true;
+            this.groupingListView.AllowReorder = true;
             this.groupingListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.groupingListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.groupingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -219,6 +220,7 @@
             this.groupingListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupingListView.FullRowSelect = true;
             this.groupingListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.groupingListView.LineColor = System.Drawing.Color.Gray;
             this.groupingListView.Location = new System.Drawing.Point(3, 16);
             this.groupingListView.MultiSelect = false;
             this.groupingListView.Name = "groupingListView";
@@ -303,6 +305,7 @@
             // sortingListView
             // 
             this.sortingListView.AllowDrop = true;
+            this.sortingListView.AllowReorder = true;
             this.sortingListView.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.sortingListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.sortingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -313,6 +316,7 @@
             this.sortingListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sortingListView.FullRowSelect = true;
             this.sortingListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.sortingListView.LineColor = System.Drawing.Color.Gray;
             this.sortingListView.Location = new System.Drawing.Point(3, 16);
             this.sortingListView.MultiSelect = false;
             this.sortingListView.Name = "sortingListView";
@@ -665,7 +669,7 @@
             this.label6.ShadowSoftness = 3F;
             this.label6.Size = new System.Drawing.Size(466, 37);
             this.label6.TabIndex = 0;
-            this.label6.Text = "Orderded Selection Pool";
+            this.label6.Text = "Orderded (Priority) Selection Pool";
             // 
             // OrderedPoolForm
             // 
