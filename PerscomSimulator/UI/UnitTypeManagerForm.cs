@@ -1131,6 +1131,7 @@ namespace Perscom
                 db.Billets.Update(intoBillet);
 
                 // Clear old data
+                db.BilletCareers.RemoveRange(intoBillet.Careers);
                 db.BilletSpecialtyRequirements.RemoveRange(intoBillet.Requirements);
                 db.BilletSpecialties.RemoveRange(intoBillet.Specialties);
                 db.BilletRandomProcedures.RemoveRange(intoBillet.RandomizedProcedures);
@@ -1138,6 +1139,17 @@ namespace Perscom
                 db.BilletSelectionFilters.RemoveRange(intoBillet.Filters);
                 db.BilletSelectionGroups.RemoveRange(intoBillet.Grouping);
                 db.BilletSelectionSorting.RemoveRange(intoBillet.Sorting);
+            }
+
+            // Add billet careers
+            foreach (var item in billet.Careers)
+            {
+                var req = new BilletCareer
+                {
+                    Billet = intoBillet,
+                    CareerGenerator = item.CareerGenerator
+                };
+                db.BilletCareers.Add(req);
             }
 
             // Add billet requirements
@@ -1157,7 +1169,8 @@ namespace Perscom
                 var req = new BilletRandomizedProcedure()
                 {
                     Billet = intoBillet,
-                    RandomizedProcedureId = item.RandomizedProcedureId
+                    RandomizedProcedureId = item.RandomizedProcedureId,
+                    ChangesSpecialtyForAll = item.ChangesSpecialtyForAll
                 };
                 db.BilletRandomProcedures.Add(req);
             }
@@ -1167,7 +1180,8 @@ namespace Perscom
                 var req = new BilletOrderedProcedure()
                 {
                     Billet = intoBillet,
-                    OrderedProcedureId = item.OrderedProcedureId
+                    OrderedProcedureId = item.OrderedProcedureId,
+                    ChangesSpecialtyForAll = item.ChangesSpecialtyForAll
                 };
                 db.BilletOrderedProcedures.Add(req);
             }
@@ -1178,7 +1192,7 @@ namespace Perscom
                 var spec = new BilletSpecialty()
                 {
                     Billet = intoBillet,
-                    SpecialtyId = item.SpecialtyId
+                    SpecialtyId = item.SpecialtyId,
                 };
                 db.BilletSpecialties.Add(spec);
             }

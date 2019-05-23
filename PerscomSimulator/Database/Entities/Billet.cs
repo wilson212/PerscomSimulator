@@ -314,6 +314,15 @@ namespace Perscom.Database
         #region Child Database Sets
 
         /// <summary>
+        /// Gets a list of <see cref="BilletCareer"/> entities that reference this 
+        /// <see cref="Billet"/>
+        /// </summary>
+        /// <remarks>
+        /// A lazy loaded enumeration
+        /// </remarks>
+        public virtual IEnumerable<BilletCareer> Careers { get; set; }
+
+        /// <summary>
         /// Gets a list of <see cref="Position"/> entities that reference this 
         /// <see cref="Billet"/>
         /// </summary>

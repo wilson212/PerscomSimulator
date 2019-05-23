@@ -4,6 +4,7 @@ using Perscom.Simulation;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -94,6 +95,7 @@ namespace Perscom
                 row.SetValues(new object[]
                 {
                     assignment.AssignedOn.Date.ToShortDateString(),
+                    ImageAccessor.GetImage(Path.Combine("Icons", assignment.EntryRank.Image)),
                     position.Name,
                     unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
                     "--"
@@ -221,6 +223,7 @@ namespace Perscom
                 row.SetValues(new object[]
                 {
                     pos.EntryDate.Date.ToShortDateString(),
+                    ImageAccessor.GetImage(Path.Combine("Icons", pos.EntryRank.Image)),
                     pos.Position.Name,
                     unitCodeBuilder.ToString().TrimStart(new[] { ',', ' ' }),
                     monthsHeld
@@ -228,7 +231,7 @@ namespace Perscom
                 dataGridView2.Rows.Add(row);
             }
 
-            // Fill Past Assignments
+            // Fill Past Specialty Assignments
             foreach (var pos in soldier.Soldier.SpecialtyAssignments.OrderByDescending(x => x.Id))
             {
                 spec = pos.Specialty;

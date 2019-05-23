@@ -10,29 +10,90 @@
 -> Randomized Procedure:	Selects from one random pool only, and checks for a candidate
 -> Collective Procedure		Selects from all pools and combines all soldiers, then chooses one
 
------ Stats (Hard Coded)
----> Leadership		: Nuff' said!
+----- Improvable Primary Stats (Hard Coded)
+---> Leadership		: Thier ability to lead soldiers
 ---> Marksmanship	: Ability to shoot accurately
----> Reliability	: How reliable are they? Are they consistant
+---> Reliability	: How reliable are they? Important for staff positions. Lower rating means more movement more often (fickle)
 ---> Adaptability	: Ability to change to staff to command and vise versa. Also includes field situations
 ---> Fitness		: Fitness level
 ---> Proficiency	: How good are they at thier MOS or staffing ability
 
+----- Randomly Set Secondary Stats
+---> Ambition		: Thier desire to achieve the greatest ranks
+---> Charisma		: How well they are liked and approved of by thier peers
+---> Improvability	: How much thier stats improve over thier career
+
 --- Maybe Stats
----> Determination
 ---> Consistancy
----> Charisma
----> Ambition
+
+----- Traits (Random)
+---> Blind (-marksmanship)
+---> Born Leader (+leadership, +charisma, +ambition)
+---> Chubby (-fitness)
+---> Content (-ambition, +reliability, +morale)
+---> Crazy (-marksmanship, -charisma)
+---> Dedicated (+all stats)
+---> Dumb (-adaptability, -proficiancy, -improvability, +morale)
+---> Erratic (-reliable)
+---> Fearless (+proficiancy, +adaptability)
+---> Fickle (-reliable, -morale) :
+---> Fitness Nut (+fitness)
+---> Hard Worker (+proficiency, +reliability, +improvability)
+---> Keep It Simple, Stupid (-adaptability)
+---> Lazy (-ambition, -improvability, -fitness)
+---> Lightning Reactions (+marksmanship)
+---> Mercenary (+marksmanship)
+---> Optimist (+morale, +leadership, +reliability, +charisma)
+---> Selfish (-leadership, -charisma)
+---> Selfless (+leadership)
+---> Skinny (+fitness)
+---> Slacker (-fitness, -leadership, -reliability)
+---> Smart (+adaptability, +proficiency, +improvability)
+---> Struggles Under Pressure (-all stats)
+---> Team Player (+leadership, +reliability)
 
 ----- Soldier Template
--> SoldierTemplate (
+-> SoldierTemplate : ISpawnable (
 		Id, 
 		Name,
-		SpawnChance [0-100],
+		Probability
 	)
 --> SoldierTemplateStat (
 		SoldierTemplateId,
 		StatId,
 		MinSpawnValue,
 		MaxSpawnValue
+	)
+--> SoldierTemplateCareer : ISpawnable (
+		SoldierTemplateId,
+		CareerGeneratorId,
+		Probability
+	)
+--> SoldierTemplateTrait : ISpawnable (
+		SoldierTemplateId,
+		SoldierTraitId,
+		Probability
+	)
+-> SoldierTrait (
+		Id,
+		Name
+	)
+--> SoldierTraitModifier (
+		SoldierTraitId,
+		StatId,
+		Modifier
+	)
+--> SoldierTraitAttachment (
+		SoldierId,
+		SoldierTraitId,
+	)
+-> BilletStatWeights (
+		BilletId,
+		StatId,
+		Value
+	)
+-> SoldierStat (
+		SoldierId,
+		StatId,
+		Value
 	)
