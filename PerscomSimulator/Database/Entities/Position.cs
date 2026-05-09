@@ -6,100 +6,63 @@ using CrossLite.CodeFirst;
 namespace Perscom.Database
 {
     /// <summary>
-    /// Represents a position within a <see cref="Unit"/> that a 
+    /// Represents a position within a <see cref="Database.Unit"/> that a 
     /// <see cref="Database.Soldier"/> will occupy.
     /// </summary>
     [Table]
-    public class Position : IEquatable<Position>
+    public class Position : EntityBase, IEquatable<Position>
     {
         #region Columns
 
         /// <summary>
-        /// The Unique Position ID
+        /// The IsUnique Position ID
         /// </summary>
         [Column, PrimaryKey]
-        public int Id { get; protected set; }
+        public virtual int Id { get; protected set; }
 
         /// <summary>
-        /// Gets or Sets the <see cref="Database.Billet"/> object
+        /// Gets or Sets the <see cref="Database.PositionBlueprint"/> object
         /// ID that this entity references
         /// </summary>
         [Column, Required]
-        public int BilletId { get; set; }
+        public virtual int BlueprintId { get; set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="Database.Unit"/> this position
         /// is attached to
         /// </summary>
         [Column, Required]
-        public int UnitId { get; set; }
+        public virtual int UnitId { get; set; }
 
         /// <summary>
         /// Gets or Sets the string name of this Unit
         /// </summary>
         [Column, Required]
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
         #endregion
 
         #region Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="Database.Billet"/> entity that this position references.
+        /// Gets the <see cref="Database.PositionBlueprint"/> entity that this position references.
         /// </summary>
-        [InverseKey("Id")]
-        [ForeignKey("BilletId",
-             OnDelete = ReferentialIntegrity.Cascade,
-             OnUpdate = ReferentialIntegrity.Cascade
+        [ForeignKey(nameof(BlueprintId))]
+        [References(nameof(Database.PositionBlueprint.Id),
+             OnDelete = ReferentialAction.Cascade,
+             OnUpdate = ReferentialAction.Cascade
          )]
-        protected virtual ForeignKey<Billet> FK_Billet { get; set; }
+        public virtual PositionBlueprint Blueprint { get; set; }
 
         /// <summary>
         /// Gets the <see cref="Database.Unit"/> entity that this position is attached to.
         /// </summary>
-        [InverseKey("Id")]
-        [ForeignKey("UnitId",
-             OnDelete = ReferentialIntegrity.Cascade,
-             OnUpdate = ReferentialIntegrity.Cascade
+        [ForeignKey(nameof(UnitId))]
+        [References(nameof(Database.Unit.Id),
+             OnDelete = ReferentialAction.Cascade,
+             OnUpdate = ReferentialAction.Cascade
          )]
-        protected virtual ForeignKey<Unit> FK_Unit { get; set; }
-
-        #endregion
-
-
-        #region Foreign Key Properties
-
-        /// <summary>
-        /// Gets the <see cref="Database.Billet"/> entity that this position references.
-        /// </summary>
-        public Billet Billet
-        {
-            get
-            {
-                return FK_Billet?.Fetch();
-            }
-            set
-            {
-                BilletId = value.Id;
-                FK_Billet?.Refresh();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="Database.Unit"/> entity that this position is attached to.
-        /// </summary>
-        public Unit Unit
-        {
-            get
-            {
-                return FK_Unit?.Fetch();
-            }
-            set
-            {
-                UnitId = value.Id;
-                FK_Unit?.Refresh();
-            }
-        }
+        public virtual Unit Unit { get; set; }
 
         #endregion
 
@@ -109,21 +72,13 @@ namespace Perscom.Database
         /// Gets a list of <see cref="Assignment"/> entities that reference this 
         /// <see cref="Position"/>
         /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration that fetches all Torque Ratios
-        /// that are bound by the foreign key and this Engine.Id.
-        /// </remarks>
-        public virtual IEnumerable<Assignment> Assignments { get; set; }
+        public virtual EntitySet<Assignment> Assignments { get; set; }
 
         /// <summary>
         /// Gets a list of <see cref="PastAssignment"/> entities that reference this 
         /// <see cref="Position"/>
         /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration that fetches all Torque Ratios
-        /// that are bound by the foreign key and this Engine.Id.
-        /// </remarks>
-        public virtual IEnumerable<PastAssignment> PastAssignments { get; set; }
+        public virtual EntitySet<PastAssignment> PastAssignments { get; set; }
 
         #endregion
 

@@ -1,0 +1,80 @@
+﻿using CrossLite;
+using CrossLite.CodeFirst;
+using System;
+
+namespace Perscom.Database
+{
+    /// <summary>
+    /// Represents a per-billet filtering rule applied to candidate soldiers
+    /// during the selection procedure pipeline.
+    /// </summary>
+    [Table(WithoutRowID = true)]
+    public class SelectionFilter : EntityBase, IEquatable<SelectionFilter>
+    {
+        #region Columns
+
+        /// <summary>
+        /// Gets or Sets the <see cref="PositionBlueprint.Id"/> that this entity references
+        /// </summary>
+        [Column, PrimaryKey]
+        public virtual int BlueprintId { get; set; }
+        
+        /// <summary>
+        /// Indicates the order or priority this condition is applied
+        /// </summary>
+        [Column, PrimaryKey]
+        public virtual int Precedence { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selector method for the LEFT value
+        /// </summary>
+        [Column, Required]
+        public virtual ClauseLeftSelector Selector { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Identifier value of the <see cref="ClauseLeftSelector"/>
+        /// to get the LEFT value from.
+        /// </summary>
+        [Column, Required]
+        public virtual  int SelectorId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the comparison operator
+        /// </summary>
+        [Column, Required]
+        public virtual ComparisonOperator Operator { get; set; }
+
+        /// <summary>
+        /// The condition value
+        /// </summary>
+        [Column, Required, Default(0)]
+        public virtual int RightValue { get; set; }
+
+        #endregion
+        
+        #region Foreign Key Navigation Properties
+        
+        [ForeignKey(nameof(BlueprintId))]
+        [References(nameof(PositionBlueprint.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade)]
+        public virtual PositionBlueprint Blueprint { get; set; }
+        
+        #endregion
+
+        public bool IsDuplicateOf(SelectionFilter other)
+        {
+            return (Selector == other.Selector
+                && SelectorId == other.SelectorId
+                && Operator == other.Operator
+                && RightValue == other.RightValue
+            );
+        }
+
+        public bool Equals(SelectionFilter other)
+        {
+            if (other == null) return false;
+            return (this.IsDuplicateOf(other));
+        }
+    }
+}

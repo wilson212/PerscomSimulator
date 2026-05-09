@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
+using System.Threading;
 using Perscom.Database;
 
 namespace Perscom.Simulation
@@ -9,7 +9,7 @@ namespace Perscom.Simulation
     /// Represents a Billit, as part of a unit, that a <see cref="Soldier"/>
     /// will occupy while active.
     /// </summary>
-    public class PositionWrapper
+    public class PositionWrapper : IEquatable<PositionWrapper>
     {
         /// <summary>
         /// Gets or Sets the name of this position
@@ -24,8 +24,7 @@ namespace Perscom.Simulation
         /// <summary>
         /// 
         /// </summary>
-        public BilletWrapper Billet { get; protected set; }
-
+        public PositionBlueprintWrapper BlueprintWrapper { get; protected set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="UniWrapper"/> That this position
@@ -50,20 +49,28 @@ namespace Perscom.Simulation
         public bool IsEmpty => Holder == null;
 
         /// <summary>
+        /// Indicates whether the position is marked as queued for vacancy processing.
+        /// A value of 0 represents not queued, and a value of 1 represents queued.
+        /// </summary>
+        private int _isVacantQueued;
+        
+        public PositionWrapper SupervisorPosition { get; set; }
+
+        /// <summary>
         /// Creates a new instance of <see cref="PositionWrapper"/>
         /// </summary>
         /// <param name="position">The position this instance is wrapping around</param>
-        /// <param name="billet">The billet template for this position</param>
+        /// <param name="blueprint">The billet template for this position</param>
         /// <param name="parent">The <see cref="UnitWrapper"/> this position is attached to</param>
-        public PositionWrapper(Position position, Billet billet, UnitWrapper parent, SimDatabase db)
+        public PositionWrapper(Position position, PositionBlueprint blueprint, UnitWrapper parent, SimDatabase db)
         {
             // Set properties
-            Position = position;
-            ParentUnit = parent;
-            Billet = SimulationCache.FetchBillet(billet, db);
+            Position = position ?? throw new ArgumentNullException("position");
+            ParentUnit = parent ?? throw new ArgumentNullException("parent");
+            BlueprintWrapper = SimulationCache.FetchBillet(blueprint, db);
 
             // Get our soldier promotion pool
-            Echelon promotionP = Billet.PromotionPool;
+            Echelon promotionP = BlueprintWrapper.PromotionPool;
             if (parent.Parent == null || promotionP.HierarchyLevel == 99)
             {
                 PromotionPoolUnit = parent.PromotionPoolUnit;
@@ -74,12 +81,7 @@ namespace Perscom.Simulation
                 UnitWrapper parentUnit = parent;
                 while (parentUnit != null)
                 {
-                    if (parentUnit.Echelon.HierarchyLevel >= promotionP.HierarchyLevel)
-                    {
-                        PromotionPoolUnit = parentUnit;
-                        break;
-                    }
-                    else if (parentUnit.Parent == null)
+                    if (parentUnit.Echelon.HierarchyLevel >= promotionP.HierarchyLevel || parentUnit.Parent == null)
                     {
                         PromotionPoolUnit = parentUnit;
                         break;
@@ -97,13 +99,69 @@ namespace Perscom.Simulation
         /// <param name="soldier"></param>
         public void AssignSoldier(SoldierWrapper soldier)
         {
-            // Remove old soldier from the position
+            // Mark spot vacant?
+            if (soldier is null)
+            {
+                Holder = null;
+                return;
+            }
+            
+            // Remove this soldier from the old position
             ParentUnit.RemoveSoldier(Holder);
 
-            // Set new position holder
+            // Set a new position holder to this local soldier
             ParentUnit.AddSoldier(soldier);
             Holder = soldier;
         }
+        
+        /// <summary>
+        /// Attempts to mark this position as vacant, and returns true if successful.
+        /// </summary>
+        /// <returns></returns>
+        public bool TryMarkVacantQueued()
+        {
+            return Interlocked.CompareExchange(ref _isVacantQueued, 1, 0) == 0;
+        }
+
+        /// <summary>
+        /// Resets the "vacant queued" state of this position to indicate that it is no longer marked as queued for vacancy processing.
+        /// </summary>
+        public void ClearVacantQueued()
+        {
+            Volatile.Write(ref _isVacantQueued, 0);
+        }
+        
+        #region Operator Overloads
+        
+        public static bool operator ==(PositionWrapper a, PositionWrapper b)
+        {
+            if (a is null && b is null) return true;
+            if (a is null || b is null) return false;
+            return a.Equals(b);
+        }
+        
+        public static bool operator !=(PositionWrapper a, PositionWrapper b)
+        {
+            return !(a == b);
+        }
+
+        public override int GetHashCode()
+        {
+            return Position.GetHashCode();
+        }
+        
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as PositionWrapper);
+        }
+
+        public bool Equals(PositionWrapper other)
+        {
+            if (other is null) return false;
+            return (Position.Id == other.Position.Id);
+        }
+        
+        #endregion
 
         public override string ToString()
         {

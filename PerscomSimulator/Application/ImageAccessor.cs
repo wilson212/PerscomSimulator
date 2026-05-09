@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using Telerik.WinControls;
+using Telerik.WinControls.Svg;
 
 namespace Perscom
 {
@@ -30,7 +32,7 @@ namespace Perscom
 
             if (!References.TryGetValue(filePath, out reference))
             {
-                image = GetFromDisk(filePath);
+                image = GetImageFromDisk(filePath);
                 reference = new WeakReference(image);
                 References[filePath] = reference;
             }
@@ -39,7 +41,7 @@ namespace Perscom
                 image = reference.Target as Bitmap;
                 if (image == null)
                 {
-                    image = GetFromDisk(filePath);
+                    image = GetImageFromDisk(filePath);
                     reference.Target = image;
                 }
             }
@@ -47,10 +49,40 @@ namespace Perscom
             return image;
         }
 
-        private static Bitmap GetFromDisk(string filePath)
+        public static RadSvgImage GetSvgImage(string filePath)
+        {
+            RadSvgImage image = null;
+            WeakReference reference = null;
+
+            if (!References.TryGetValue(filePath, out reference))
+            {
+                image = GetSvgImageFromDisk(filePath);
+                reference = new WeakReference(image);
+                References[filePath] = reference;
+            }
+            else
+            {
+                image = reference.Target as RadSvgImage;
+                if (image == null)
+                {
+                    image = GetSvgImageFromDisk(filePath);
+                    reference.Target = image;
+                }
+            }
+
+            return image;
+        }
+
+        private static Bitmap GetImageFromDisk(string filePath)
         {
             filePath = Path.Combine(Program.RootPath, "Images", filePath);
             return (File.Exists(filePath)) ? new Bitmap(filePath) : null;
+        }
+
+        private static RadSvgImage GetSvgImageFromDisk(string filePath)
+        {
+            filePath = Path.Combine(Program.RootPath, "Images", filePath);
+            return RadSvgImage.FromFile(filePath);
         }
     }
 }

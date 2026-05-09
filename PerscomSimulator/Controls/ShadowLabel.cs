@@ -1,3 +1,4 @@
+using Perscom.Controls;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -10,7 +11,8 @@ namespace System.Windows.Forms
     /// </summary>
     /// <seealso cref="https://blogs.msdn.microsoft.com/cjacks/2006/05/26/creating-text-labels-with-a-drop-shadow-effect-in-windows-forms/"/>
     [ToolboxItem(true)]
-	public class ShadowLabel : Label
+    [Designer(typeof(ShadowLabelDesigner))]
+    public class ShadowLabel : Label
     {
         private Color color;
         private int direction;
@@ -55,7 +57,7 @@ namespace System.Windows.Forms
             {
                 if (value < 0 || value > 255)
                 {
-                    throw new ArgumentOutOfRangeException("Opacity", "Opacity must be between 0 and 255");
+                    throw new ArgumentOutOfRangeException("Opacity", @"Opacity must be between 0 and 255");
                 }
                 opacity = value;
                 Invalidate();
@@ -75,7 +77,7 @@ namespace System.Windows.Forms
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentOutOfRangeException("Softness", "Softness must be greater than 0");
+                    throw new ArgumentOutOfRangeException("Softness", @"Softness must be greater than 0");
                 }
                 softness = value;
                 Invalidate();
@@ -95,7 +97,7 @@ namespace System.Windows.Forms
             {
                 if (value < 0 || value > 360)
                 {
-                    throw new ArgumentOutOfRangeException("Direction", "Direction must be between 0 and 360");
+                    throw new ArgumentOutOfRangeException("Direction", @"Direction must be between 0 and 360");
                 }
                 direction = value;
                 Invalidate();
@@ -116,7 +118,7 @@ namespace System.Windows.Forms
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("ShadowDepth", "ShadowDepth must be greater than 0");
+                    throw new ArgumentOutOfRangeException("ShadowDepth", @"ShadowDepth must be greater than 0");
                 }
                 shadowDepth = value;
                 Invalidate();

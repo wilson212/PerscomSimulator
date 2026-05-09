@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using CrossLite;
+﻿using CrossLite;
 using CrossLite.CodeFirst;
+using System;
 
 namespace Perscom.Database
 {
@@ -9,41 +8,41 @@ namespace Perscom.Database
     /// This entity represents an organizational level of <see cref="Soldier"/>s
     /// </summary>
     [Table]
-    public class Echelon : IEquatable<Echelon>
+    public class Echelon : EntityBase, IEquatable<Echelon>
     {
         #region Columns
 
         /// <summary>
-        /// The Unique Echelon ID
+        /// The IsUnique Echelon ID
         /// </summary>
         [Column, PrimaryKey]
-        public int Id { get; protected set; }
+        public virtual int Id { get; protected set; }
 
         /// <summary>
         /// Gets or Sets the string name of this Echelon
         /// </summary>
         [Column, Required]
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the hierarchy level of this Echelon. Higher value
-        /// means higher up the ladder.
+        /// means higher up the organization chart
         /// </summary>
         [Column, Required]
-        public int HierarchyLevel { get; set; }
+        public virtual int HierarchyLevel { get; set; }
 
         #endregion
 
         #region Child Database Sets
 
         /// <summary>
-        /// Gets a list of <see cref="UnitTemplate"/> entities that reference this 
+        /// Gets a list of <see cref="UnitBlueprint"/> entities that reference this 
         /// <see cref="Echelon"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<UnitTemplate> UnitTypes { get; set; }
+        public virtual EntitySet<UnitBlueprint> UnitBlueprints { get; set; }
 
         #endregion
 

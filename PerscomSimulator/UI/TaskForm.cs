@@ -245,7 +245,7 @@ namespace Perscom
 
         private void panelButton_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooter(panelButton, e);
+            FormStyling.StyleFormFooterGray(panelButton, e);
             base.OnPaint(e);
         }
     }

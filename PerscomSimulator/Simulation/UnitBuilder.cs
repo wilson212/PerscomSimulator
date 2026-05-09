@@ -9,7 +9,7 @@ using Perscom.Simulation;
 namespace Perscom
 {
     /// <summary>
-    /// An object used to 3 dimensionalize <see cref="UnitTemplate"/>s into
+    /// An object used to 3 dimensionalize <see cref="UnitBlueprint"/>s into
     /// an array of <see cref="Unit"/> and <see cref="Position"/> objects
     /// </summary>
     public static class UnitBuilder
@@ -32,7 +32,7 @@ namespace Perscom
         }
 
         /// <summary>
-        /// Converts a 2 dimensional <see cref="UnitTemplate"/> tree into a
+        /// Converts a 2 dimensional <see cref="UnitBlueprint"/> tree into a
         /// 3 dimensional tree of <see cref="Unit"/>s
         /// </summary>
         /// <param name="db">The <see cref="SimDatabase"/> context to run the simulation on</param>
@@ -42,7 +42,7 @@ namespace Perscom
         /// <returns></returns>
         public static UnitWrapper BuildUnit(
             SimDatabase db, 
-            UnitTemplate template, 
+            UnitBlueprint template, 
             IProgress<TaskProgressUpdate> progress,
             CancellationToken token)
         {
@@ -63,28 +63,30 @@ namespace Perscom
             token.ThrowIfCancellationRequested();
 
             // Format unit name
-            string unitName = FormatUnitName(template.Template.UnitNameFormat, unitIndex, typeIndex);
+            var unitName = FormatUnitName(template.Blueprint.UnitNameFormat, unitIndex, typeIndex);
 
             // Update TaskForm progress
-            TaskProgressUpdate update = new TaskProgressUpdate();
-            update.MessageText = $"Creating unit \"{unitName}\"";
-            progress.Report(update);
+            progress.Report(new TaskProgressUpdate
+            {
+                MessageText = $"Creating unit \"{unitName}\""
+            });
 
             // Convert this template to a Unit
             Unit unit = new Unit();
             unit.Name = unitName;
-            unit.UnitCode = FormatUnitName(template.Template.UnitCodeFormat, unitIndex, typeIndex);
-            unit.UnitTemplateId = template.Template.Id;
+            unit.UnitCode = FormatUnitName(template.Blueprint.UnitCodeFormat, unitIndex, typeIndex);
+            unit.UnitBlueprintId = template.Blueprint.Id;
+            unit.ParentUnitId = parent?.Unit.Id;
             db.Units.Add(unit);
 
             // Convert to wrapper
             var unitWrap = new UnitWrapper(unit, template, parent);
 
-            // Get a list of billets, and convert those to positions
-            foreach (Billet billet in template.Billets)
+            // Get a list of blueprints and convert those to positions
+            foreach (var billet in template.PositionBlueprints)
             {
                 Position pos = new Position();
-                pos.BilletId = billet.Id;
+                pos.BlueprintId = billet.Id;
                 pos.UnitId = unit.Id;
                 pos.Name = billet.Name;
 
@@ -98,29 +100,47 @@ namespace Perscom
             // Get a list of sub templates, and convert to real Units
             int i = 0;
             var unitTypeCounter = new Dictionary<int, int>();
-            foreach (UnitTemplateWrapper attachment in template.SubUnits)
+            foreach (var attachment in template.SubUnits)
             {
                 // Add template type if not existing
-                if (!unitTypeCounter.ContainsKey(attachment.Template.Id))
+                if (!unitTypeCounter.ContainsKey(attachment.Blueprint.Id))
                 {
-                    unitTypeCounter.Add(attachment.Template.Id, 1);
+                    unitTypeCounter.Add(attachment.Blueprint.Id, 1);
                 }
 
                 // Skip parent units
-                int t = unitTypeCounter[attachment.Template.Id];
+                int t = unitTypeCounter[attachment.Blueprint.Id];
                 UnitWrapper wrapper = BuildUnit(db, attachment, progress, token, unitWrap, ++i, t);
                 unitWrap.Subunits.Add(wrapper);
 
-                // Create attachment
-                var entry = new UnitAttachment()
-                {
-                    ParentId = unitWrap.Unit.Id,
-                    ChildId = wrapper.Unit.Id
-                };
-                db.UnitAttachments.Add(entry);
+                // Increment
+                unitTypeCounter[attachment.Blueprint.Id] += 1;
+            }
+            
+            // Assign supervisors
+            foreach (var pos in unitWrap.Positions)
+            {
+                int? supId = pos.BlueprintWrapper.Blueprint.SupervisorPositionBlueprintId;
+                if (!supId.HasValue) continue;
 
-                // Incrememnt
-                unitTypeCounter[attachment.Template.Id] += 1;
+                // Search current unit first, then walk up the chain
+                PositionWrapper found = null;
+                UnitWrapper searchUnit = unitWrap;
+    
+                while (searchUnit != null && found == null)
+                {
+                    foreach (var candidate in searchUnit.Positions)
+                    {
+                        if (candidate.BlueprintWrapper.Blueprint.Id == supId.Value)
+                        {
+                            found = candidate;
+                            break;
+                        }
+                    }
+                    searchUnit = searchUnit.Parent;
+                }
+
+                pos.SupervisorPosition = found;
             }
 
             return unitWrap;
@@ -131,7 +151,7 @@ namespace Perscom
         /// </summary>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static UnitStatistics GetUnitStatistics(UnitTemplate template)
+        public static UnitStatistics GetUnitStatistics(UnitBlueprint template)
         {
             if (!UnitStats.ContainsKey(template.Id))
             {
@@ -142,7 +162,7 @@ namespace Perscom
             return UnitStats[template.Id];
         }
 
-        private static void GetSoldierCounts(UnitTemplate template, UnitStatistics parent)
+        private static void GetSoldierCounts(UnitBlueprint template, UnitStatistics parent)
         {
             if (UnitStats.ContainsKey(template.Id))
             {
@@ -155,16 +175,16 @@ namespace Perscom
             UnitStats.Add(template.Id, stats);
 
             // Get a list of billets, and convert those to positions
-            var billets = template.Billets.ToList();
+            var billets = template.PositionBlueprints.ToList();
 
             // Get a list of sub templates, and convert to real Units
-            var subUnits = template.UnitTemplateAttachments.ToList();
+            var subUnits = template.Attachments.ToList();
 
-            foreach (Billet billet in billets)
+            foreach (PositionBlueprint billet in billets)
             {
-                Rank rank = billet.Rank;
+                Rank rank = billet.TargetRank;
                 stats.SoldierCountsByRank[rank.Type][rank.Id] += 1;
-                stats.SoldierCountsByGrade[rank.Type][rank.Grade] += 1;
+                stats.SoldierCountsByGrade[(rank.Type, rank.PayGrade)] += 1;
                 stats.TotalSoldiers++;
                 stats.PositionCount++;
             }
@@ -175,7 +195,7 @@ namespace Perscom
                 if (attachment.ChildId == template.Id)
                     continue;
 
-                UnitTemplate t = attachment.Child;
+                UnitBlueprint t = attachment.Child;
                 for (int i = 0; i < attachment.Count; i++)
                     GetSoldierCounts(t, stats);
             }

@@ -11,28 +11,28 @@ namespace Perscom.Database
     /// Since the simulator begins on a past date, sometimes hundreds of years
     /// proir to todays date, we cannot use Epoch timestamps for dates. 
     /// Add the fact that SQLite cannot compare dates very quickly, 
-    /// we use this object to map a iteration ID to a DateTime.
+    /// we use this object to map a iteration ID to a DateTime. Each iteration is 1 month
     /// </remarks>
     [Table]
-    public class IterationDate
+    public class IterationDate : EntityBase
     {
         /// <summary>
-        /// The Unique Simulation Iteration ID
+        /// The IsUnique Simulation Iteration ID
         /// </summary>
         [Column, PrimaryKey, AutoIncrement]
-        public int Id { get; protected set; }
+        public virtual int Id { get; protected set; }
 
         /// <summary>
         /// Gets or sets the <see cref="DateTime"/> for this Simulation Iteration
         /// </summary>
         [Column, Required]
-        public DateTime Date { get; set; }
+        public virtual DateTime Date { get; set; }
 
         /// <summary>
         /// Gets or sets wether stats were logged for this iteration
         /// </summary>
         [Column, Required]
-        public bool Logged { get; set; }
+        public virtual bool Logged { get; set; }
 
         public int MonthsDifference(IterationDate date)
         {

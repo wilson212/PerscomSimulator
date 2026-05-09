@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Windows.Forms;
 
 namespace Perscom
 {
     static class Program
     {
-        public static string RootPath { get; } = Application.StartupPath;
+        public static string RootPath { get; } = System.Windows.Forms.Application.StartupPath;
 
         /// <summary>
         /// The main entry point for the application.
@@ -14,15 +13,15 @@ namespace Perscom
         static void Main()
         {
             // Setup visual styles
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(true);
 
             // Set Exception Handler
-            Application.ThreadException += ExceptionHandler.OnThreadException;
+            System.Windows.Forms.Application.ThreadException += ExceptionHandler.OnThreadException;
             AppDomain.CurrentDomain.UnhandledException += ExceptionHandler.OnUnhandledException;
 
             // Run the main GUI
-            Application.Run(new MainForm());
+            System.Windows.Forms.Application.Run(new MainForm());
         }
     }
 }

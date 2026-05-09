@@ -5,24 +5,24 @@ using CrossLite.CodeFirst;
 namespace Perscom.Database
 {
     [Table]
-    public class DbVersion
+    public class DbVersion : EntityBase
     {
         /// <summary>
-        /// Gets the Unique update ID in the table
+        /// Gets the IsUnique update ID in the table
         /// </summary>
         [Column, PrimaryKey, AutoIncrement]
-        public int UpdateId { get; set; }
+        public virtual int UpdateId { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [Column("Version"), Required, Unique]
-        protected string VersionString { get; set; }
+        protected virtual string VersionString { get; set; }
 
         /// <summary>
         /// Gets or Sets the Version value for this update entry
         /// </summary>
-        public Version Version
+        public virtual Version Version
         {
             get { return Version.Parse(VersionString); }
             set { VersionString = value.ToString(); }
@@ -33,7 +33,7 @@ namespace Perscom.Database
         /// </summary>
         [Column("AppliedOn"), Required]
         [Default("(strftime('%s', 'now'))", Quote = false)]
-        protected int AppliedOnEpoch { get; set; }
+        protected virtual int AppliedOnEpoch { get; set; }
 
         public DateTimeOffset AppliedOn
         {

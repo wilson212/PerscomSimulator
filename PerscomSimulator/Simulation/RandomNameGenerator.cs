@@ -2,97 +2,158 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Perscom.Simulation
 {
     /// <summary>
-    /// This class is used to generate random first and last names 
+    /// This class is used to generate random first and last names,
+    /// filtered by gender and race.
     /// </summary>
-    public class RandomNameGenerator
+    public static class RandomNameGenerator
     {
         /// <summary>
-        /// A list of first names
+        /// Male first names keyed by Race
         /// </summary>
-        protected List<string> FirstNames { get; set; }
+        private static Dictionary<Race, ProbabilityGenerator<WeightedName>> MaleFirstNames { get; set; }
 
         /// <summary>
-        /// A list of last names
+        /// Female first names keyed by Race
         /// </summary>
-        protected List<string> LastNames { get; set; }
+        private static Dictionary<Race, ProbabilityGenerator<WeightedName>> FemaleFirstNames { get; set; }
 
         /// <summary>
-        /// The RNG class
+        /// Last names keyed by Race
         /// </summary>
-        protected CryptoRandom Rng { get; set; }
+        private static Dictionary<Race, ProbabilityGenerator<WeightedName>> LastNames { get; set; }
 
-        public RandomNameGenerator()
+        /// <summary>
+        /// A probability-based generator used to determine race distributions
+        /// during name generation.
+        /// </summary>
+        private static ProbabilityGenerator<Prospect<Race>> RaceGenerator { get; set; }
+
+        /// <summary>
+        /// All available races that have been loaded
+        /// </summary>
+        public static Race[] AvailableRaces { get; private set; }
+
+        /// <summary>
+        /// Static initializer — loads names on first access
+        /// </summary>
+        static RandomNameGenerator()
         {
-            Rng = new CryptoRandom();
-            FirstNames = new List<string>();
-            LastNames = new List<string>();
+            MaleFirstNames = new Dictionary<Race, ProbabilityGenerator<WeightedName>>();
+            FemaleFirstNames = new Dictionary<Race, ProbabilityGenerator<WeightedName>>();
+            LastNames = new Dictionary<Race, ProbabilityGenerator<WeightedName>>();
+            RaceGenerator = new ProbabilityGenerator<Prospect<Race>>();
 
             LoadNames();
+            AvailableRaces = MaleFirstNames.Keys.ToArray();
         }
 
         /// <summary>
-        /// Generates a random first and last name, and returns
-        /// them as a string
+        /// Generates a random first name for the given gender and race.
         /// </summary>
-        /// <returns></returns>
-        public string GenerateRandomFirstAndLastName()
+        public static string GetFirstName(bool isMale, Race race)
         {
-            return $"{GenerateRandomFirstName()} {GenerateRandomLastName()}";
+            var gen = isMale ? MaleFirstNames[race] : FemaleFirstNames[race];
+            return gen.Spawn().Name;
         }
 
         /// <summary>
-        /// Generates and returns a random first name
+        /// Generates a random last name for the given race.
         /// </summary>
-        /// <returns></returns>
-        public string GenerateRandomFirstName()
+        public static string GetLastName(Race race)
         {
-            int index = Rng.Next(0, FirstNames.Count - 1);
-            return FirstNames[index];
+            return LastNames[race].Spawn().Name;
         }
 
         /// <summary>
-        /// Generates and returns a random last name
+        /// Convenience overload: returns "FirstName LastName"
         /// </summary>
-        /// <returns></returns>
-        public string GenerateRandomLastName()
+        public static string GetFullName(bool isMale, Race race)
         {
-            int index = Rng.Next(0, LastNames.Count - 1);
-            return LastNames[index];
+            return $"{GetFirstName(isMale, race)} {GetLastName(race)}";
         }
 
         /// <summary>
-        /// Loads the first and last names into memory from the Config/Names.xml
+        /// Returns a random Race from the available loaded races.
         /// </summary>
-        private void LoadNames()
+        public static Race GetRandomRace()
         {
-            // Ensure the file exists
+            return RaceGenerator.Spawn().Value;
+        }
+
+        /// <summary>
+        /// Loads and initializes name data from an XML configuration file.
+        /// Names are categorized by race, gender, and type (first or last).
+        /// This method populates internal dictionaries used for random name generation.
+        /// </summary>
+        /// <exception cref="Exception">
+        /// Thrown if the required "Names.xml" configuration file is missing or cannot be loaded.
+        /// </exception>
+        private static void LoadNames()
+        {
             string filePath = Path.Combine(Program.RootPath, "Config", "Names.xml");
             if (!File.Exists(filePath))
-                throw new Exception($"Names.xml file is missing!");
+                throw new Exception("Names.xml file is missing!");
 
-            // Load the document
             XmlDocument document = new XmlDocument();
             document.Load(filePath);
             var root = document.DocumentElement;
 
-            // ======================================================================
-            // Load first names
-            XmlNodeList items = root.SelectNodes("first/name");
-            foreach (XmlElement element in items)
-                FirstNames.Add(element.InnerText);
+            foreach (XmlElement raceElement in root.SelectNodes("race"))
+            {
+                string raceName = raceElement.GetAttribute("name");
+                if (!Enum.TryParse<Race>(raceName, true, out var race))
+                    continue;
 
-            // ======================================================================
-            // Load last names
-            items = root.SelectNodes("last/name");
-            foreach (XmlElement element in items)
-                LastNames.Add(element.InnerText);
+                // Parse race weight (default 1)
+                int raceWeight = 1;
+                string raceWeightAttr = raceElement.GetAttribute("weight");
+                if (!string.IsNullOrEmpty(raceWeightAttr))
+                    int.TryParse(raceWeightAttr, out raceWeight);
+
+                // Add race to generator
+                RaceGenerator.Add(new Prospect<Race>(raceWeight, race));
+
+                // Add male first names
+                MaleFirstNames[race] = new ProbabilityGenerator<WeightedName>(
+                    LoadWeightedNames(raceElement, "first/male/name")
+                );
+
+                // Add female first names
+                FemaleFirstNames[race] = new ProbabilityGenerator<WeightedName>(
+                    LoadWeightedNames(raceElement, "first/female/name")
+                );
+
+                // Add last names
+                LastNames[race] = new ProbabilityGenerator<WeightedName>(
+                    LoadWeightedNames(raceElement, "last/name")
+                );
+            }
+        }
+
+        /// <summary>
+        /// Loads a list of weighted names from the specified XML parent element using the given XPath query.
+        /// </summary>
+        /// <param name="parent">The parent XML element from which the names will be extracted.</param>
+        /// <param name="xpath">The XPath query used to locate name elements within the parent XML element.</param>
+        /// <returns>A list of <see cref="WeightedName"/> objects extracted from the XML.</returns>
+        private static List<WeightedName> LoadWeightedNames(XmlElement parent, string xpath)
+        {
+            var list = new List<WeightedName>();
+            foreach (XmlElement el in parent.SelectNodes(xpath))
+            {
+                int weight = 1;
+                string weightAttr = el.GetAttribute("weight");
+                if (!string.IsNullOrEmpty(weightAttr))
+                    int.TryParse(weightAttr, out weight);
+
+                list.Add(new WeightedName(el.InnerText, weight));
+            }
+            return list;
         }
     }
 }

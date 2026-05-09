@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Perscom
 {
@@ -15,11 +11,6 @@ namespace Perscom
 
         /// <summary>Maximum value of the range.</summary>
         public T Maximum { get; set; }
-
-        public Range()
-        {
-
-        }
 
         public Range(T min, T max)
         {

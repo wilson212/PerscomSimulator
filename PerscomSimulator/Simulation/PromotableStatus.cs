@@ -17,13 +17,13 @@
         Normal,
 
         /// <summary>
-        /// Due for an Automatic Time In Grade Promotion
+        /// Due for an Automatic Time In PayGrade Promotion
         /// </summary>
         Automatic,
 
         /// <summary>
         /// Should be promoted because they are in a position greater
-        /// than their Rank/Grade
+        /// than their Rank/PayGrade
         /// </summary>
         Position,
 

@@ -6,20 +6,11 @@ namespace Perscom.Simulation
     public static class SimulationCache
     {
         /// <summary>
-        /// Gets or Sets the <see cref="RandomNameGenerator"/> used to assign
-        /// names to <see cref="Soldier"/>s when they spawn
-        /// </summary>
-        public static RandomNameGenerator NameGenerator { get; private set; }
-
-        /// <summary>
         /// Gets a list of Cached BilletWrappers by ID
         /// </summary>
-        private static Dictionary<int, BilletWrapper> Billets { get; set; }
-
-        /// <summary>
-        /// Gets a list of Cached CareerGenerator's by ID
-        /// </summary>
-        public static Dictionary<int, CareerGenerator> CareerGenerators { get; private set; }
+        private static Dictionary<int, PositionBlueprintWrapper> PosBlueprintWrappers { get; set; }
+        
+        private static ProbabilityGenerator<Persona> PersonaGenerator { get; set; }
 
         /// <summary>
         /// Loads data into the Cache
@@ -28,20 +19,13 @@ namespace Perscom.Simulation
         public static void Load(SimDatabase db)
         {
             // Create name generator
-            NameGenerator = new RandomNameGenerator();
-            Billets = new Dictionary<int, BilletWrapper>();
-            CareerGenerators = new Dictionary<int, CareerGenerator>();
+            PosBlueprintWrappers = new Dictionary<int, PositionBlueprintWrapper>();
+            PersonaGenerator = new ProbabilityGenerator<Persona>(db.Personas);
+        }
 
-            // Fetch career generators
-            foreach (var item in db.CareerGenerators)
-            {
-                // Initialize generator
-                item.Initialize();
-
-                // Add item
-                CareerGenerators.Add(item.Id, item);
-            }
-
+        public static Persona GetRandomPersona()
+        {
+            return PersonaGenerator.Spawn();
         }
 
         /// <summary>
@@ -49,19 +33,19 @@ namespace Perscom.Simulation
         /// </summary>
         public static void Clear()
         {
-            Billets?.Clear();
-            Billets = null;
+            PosBlueprintWrappers?.Clear();
+            PosBlueprintWrappers = null;
 
-            CareerGenerators?.Clear();
-            CareerGenerators = null;
+            PersonaGenerator?.Clear();
+           PersonaGenerator = null;
         }
 
-        public static BilletWrapper FetchBillet(Billet billet, SimDatabase db)
+        public static PositionBlueprintWrapper FetchBillet(PositionBlueprint billet, SimDatabase db)
         {
-            if (!Billets.ContainsKey(billet.Id))
-                Billets.Add(billet.Id, new BilletWrapper(billet, db));
+            if (!PosBlueprintWrappers.ContainsKey(billet.Id))
+                PosBlueprintWrappers.Add(billet.Id, new PositionBlueprintWrapper(billet, db));
 
-            return Billets[billet.Id];
+            return PosBlueprintWrappers[billet.Id];
         }
     }
 }

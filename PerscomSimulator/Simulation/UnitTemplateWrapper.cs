@@ -9,30 +9,30 @@ namespace Perscom.Simulation
 {
     public class UnitTemplateWrapper
     {
-        public UnitTemplate Template { get; set; }
+        public UnitBlueprint Blueprint { get; set; }
 
         public Echelon Echelon { get; set; }
 
         public Echelon PromotionPool { get; set; }
 
-        public List<Billet> Billets { get; set; }
+        public List<PositionBlueprint> PositionBlueprints { get; set; }
 
         public List<UnitTemplateWrapper> SubUnits { get; set; }
 
         private static Dictionary<int, UnitTemplateWrapper> Cache { get; set; }
 
-        public UnitTemplateWrapper(UnitTemplate template)
+        public UnitTemplateWrapper(UnitBlueprint blueprint)
         {
-            Template = template;
-            Billets = template.Billets.ToList();
-            Echelon = template.Echelon;
-            PromotionPool = template.PromotionPool;
+            Blueprint = blueprint;
+            PositionBlueprints = blueprint.PositionBlueprints.ToList();
+            Echelon = blueprint.Echelon;
+            PromotionPool = blueprint.PromotionEchelon;
 
             SubUnits = new List<UnitTemplateWrapper>();
-            foreach (UnitTemplateAttachment attachement in template.UnitTemplateAttachments)
+            foreach (UnitBlueprintAttachment attachement in blueprint.Attachments)
             {
                 // Skip attachments where this unit is the child
-                if (attachement.ParentId == template.Id)
+                if (attachement.ParentId == blueprint.Id)
                 {
                     for (int i = 0; i < attachement.Count; i++)
                         SubUnits.Add(FetchCache(attachement.Child));
@@ -45,7 +45,7 @@ namespace Perscom.Simulation
             Cache = new Dictionary<int, UnitTemplateWrapper>();
         }
 
-        public static UnitTemplateWrapper FetchCache(UnitTemplate template)
+        public static UnitTemplateWrapper FetchCache(UnitBlueprint template)
         {
             if (!Cache.ContainsKey(template.Id))
                 Cache.Add(template.Id, new UnitTemplateWrapper(template));

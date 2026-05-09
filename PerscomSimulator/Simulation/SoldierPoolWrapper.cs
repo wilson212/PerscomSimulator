@@ -13,7 +13,7 @@ namespace Perscom.Simulation
     /// Represents a an array spawnable soldier settings that is used by the Simulator
     /// to fill empty positions.
     /// </summary>
-    public class SoldierPoolWrapper<T> : ISpawnable, IEquatable<SoldierPoolWrapper<T>>
+    public class SoldierPoolWrapper<T> : IProbable, IEquatable<SoldierPoolWrapper<T>>
     {
         /// <summary>
         /// Gets or sets whether the simulator is to create a new soldier, or take
@@ -28,9 +28,9 @@ namespace Perscom.Simulation
         public Rank Rank { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="CareerGenerator"/> to use, if any
+        /// Gets or sets the <see cref="CareerLength"/> to use, if any
         /// </summary>
-        public CareerGenerator Career { get; set; }
+        public CareerLength Career { get; set; }
 
         /// <summary>
         /// Indicates the spawnable probability of this object
@@ -38,7 +38,7 @@ namespace Perscom.Simulation
         public int Probability { get; set; }
 
         /// <summary>
-        /// Indicates whether we use Rank.Id or Rank.Grade
+        /// Indicates whether we use Rank.Id or Rank.PayGrade
         /// </summary>
         public bool UseRankGrade { get; set; }
 

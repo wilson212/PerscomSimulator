@@ -14,9 +14,9 @@ namespace Perscom.Simulation
 
         public PositionWrapper ToPosition { get; set; }
 
-        public Specialty FromSpecialty { get; set; }
+        public Occupation FromSpecialty { get; set; }
 
-        public Specialty ToSpecialty { get; set; }
+        public Occupation ToSpecialty { get; set; }
 
         public int FromPositionTimeInBillet { get; set; }
     }

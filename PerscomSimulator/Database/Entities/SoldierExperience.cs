@@ -5,86 +5,53 @@ using System;
 namespace Perscom.Database
 {
     [Table]
-    public class SoldierExperience : IEquatable<SoldierExperience>
+    public class SoldierExperience : EntityBase, IEquatable<SoldierExperience>
     {
         #region Columns
 
+        /// <summary>
+        /// Gets or sets the <see cref="Soldier.Id"/>
+        /// </summary>
         [Column, PrimaryKey]
-        public int SoldierId { get; set; }
+        public virtual int SoldierId { get; set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="Experience.Id"/> that this entity references
         /// </summary>
         [Column, PrimaryKey]
-        public int ExperienceId { get; set; }
+        public virtual int ExperienceId { get; set; }
 
         /// <summary>
         /// The condition value
         /// </summary>
         [Column, Required, Default(0)]
-        public int Value { get; set; }
+        public virtual int Value { get; set; }
 
         #endregion Columns
 
-        #region Virtual Foreign Keys
-
-        /// <summary>
-        /// Gets the <see cref="Database.Soldier"/> entity that this entity references.
-        /// </summary>
-        [InverseKey("Id")]
-        [ForeignKey("SoldierId",
-            OnDelete = ReferentialIntegrity.Cascade,
-            OnUpdate = ReferentialIntegrity.Cascade
-        )]
-        protected virtual ForeignKey<Soldier> FK_Soldier { get; set; }
-
-        /// <summary>
-        /// Gets the <see cref="Database.Experience"/> entity that this entity references.
-        /// </summary>
-        [InverseKey("Id")]
-        [ForeignKey("ExperienceId",
-            OnDelete = ReferentialIntegrity.Cascade,
-            OnUpdate = ReferentialIntegrity.Cascade
-        )]
-        protected virtual ForeignKey<Experience> FK_Experience { get; set; }
-
-        #endregion Virtual Foreign Keys
-
-        #region Foreign Key Properties
+        #region Foreign Keys
 
         /// <summary>
         /// Gets or Sets the <see cref="Database.Soldier"/> that 
         /// this entity references.
         /// </summary>
-        public Soldier Soldier
-        {
-            get
-            {
-                return FK_Soldier?.Fetch();
-            }
-            set
-            {
-                SoldierId = value.Id;
-                FK_Soldier?.Refresh();
-            }
-        }
+        [ForeignKey(nameof(SoldierId))]
+        [References(nameof(Database.Soldier.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade
+        )]
+        public virtual Soldier Soldier { get; set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="Database.Experience"/> that 
         /// this entity references.
         /// </summary>
-        public Experience Experience
-        {
-            get
-            {
-                return FK_Experience?.Fetch();
-            }
-            set
-            {
-                ExperienceId = value.Id;
-                FK_Experience?.Refresh();
-            }
-        }
+        [ForeignKey(nameof(ExperienceId))]
+        [References(nameof(Database.Experience.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade
+        )]
+        public virtual Experience Experience { get; set; }
 
         #endregion
 
@@ -96,13 +63,26 @@ namespace Perscom.Database
         /// <returns></returns>
         public bool IsDuplicateOf(SoldierExperience other)
         {
+            if (other == null) return false;
             return (SoldierId == other.SoldierId && ExperienceId == other.ExperienceId);
         }
 
         public bool Equals(SoldierExperience other)
         {
-            if (other == null) return false;
-            return (this.IsDuplicateOf(other));
+            return IsDuplicateOf(other);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as SoldierExperience);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (SoldierId * 397) ^ ExperienceId;
+            }
         }
     }
 }

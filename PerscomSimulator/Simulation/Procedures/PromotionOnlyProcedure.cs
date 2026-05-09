@@ -2,16 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Perscom.Collections;
 
 namespace Perscom.Simulation.Procedures
 {
     /// <summary>
-    /// Represents a soldier selection procedure that only allows for forward
+    /// Represents a soldier selection procedure that only allows for forward grade
     /// promotions.
     /// </summary>
     public class PromotionOnlyProcedure : AbstractSelectionProcedure
     {
-        public PromotionOnlyProcedure(SimDatabase db, Billet billet) : base(db, billet)
+        public PromotionOnlyProcedure(SimDatabase db, PositionBlueprint blueprint) : base(db, blueprint)
         {
             // Nothing to do here...
         }
@@ -32,79 +33,40 @@ namespace Perscom.Simulation.Procedures
         /// </summary>
         public override SoldierWrapper SelectCandidate(PositionWrapper position, IterationDate date, out SpawnSoldierType type)
         {
-            // Set our out variable
             type = SpawnSoldierType.TakeFromExistingPool;
 
-            // Define position specific vars
-            IEnumerable<SoldierWrapper> primeSoldiers = null;
             UnitWrapper topUnit = position.PromotionPoolUnit;
-            RankType rType = position.Billet.Rank.Type;
-            int grade = position.Billet.Rank.Grade - 1;
+            Rank positionRank = position.BlueprintWrapper.Rank;
+            
+            // TODO 1. Grab the candidate list from the top unit and find the 
+            var key = (positionRank.Id, position.BlueprintWrapper.Occupation?.Id ?? -1);
+            var cand = topUnit.PromotableCandidates[key];
 
-            // Keep searching until we either find a soldier to
-            // fill the slot, or run out of rank/grades to pull from.
-            while (grade > 0)
+            // 2. Filter
+            var primeSoldiers = GetEligibleSoldierPool(topUnit, positionRank);
+            for (int i = primeSoldiers.Count; i >= 0; i--)
             {
-                // Grab soldier list
-                primeSoldiers = topUnit.SoldiersByGrade[rType][grade].Values;
-                IOrderedEnumerable<SoldierWrapper> soldiers;
-
-                //
-                // 1. Apply initial filter, ensuring canadiatcy
-                //
-                primeSoldiers = primeSoldiers.Where(x => IsCanidateForPosition(x, position, date));
-
-                // Do we have any soldiers?
-                if (primeSoldiers.Count() == 0)
-                {
-                    --grade;
-                    continue;
-                }
-
-                //
-                // 2. Apply Billet grouping
-                //
-                if (Grouping.Count > 0)
-                {
-                    // Apply groups
-                    var groups = primeSoldiers.GroupSoldiersBy(Grouping, date);
-
-                    // Get topmost group with at least one soldier in it
-                    primeSoldiers = groups.GetPrimeSoldiers();
-                }
-
-                // Do we have any soldiers?
-                if (primeSoldiers.Count() == 0)
-                    throw new Exception("Group has no prime soldiers, but there was a soldier count");
-
-                //
-                // 3. Apply soldier ordering
-                //
-                if (Sorting.Count > 0)
-                {
-                    // Apply sorting
-                    soldiers = primeSoldiers.OrderSoldiersBy(Sorting, date);
-                }
-                else
-                {
-                    // Apply default sorting
-                    soldiers = primeSoldiers.OrderByDescending(x => x.GetTimeInGrade(date));
-                }
-
-                // Check for an un-restricted soldier first
-                var wrapper = soldiers.FirstOrDefault();
-                if (wrapper != null)
-                {
-                    return wrapper;
-                }
-                else
-                {
-                    --grade;
-                    continue;
-                }
+                if (!IsCanidateForPosition(primeSoldiers[i], position, date))
+                    primeSoldiers.Remove(primeSoldiers[i]);
             }
 
-            return null;
+            if (primeSoldiers.Count == 0)
+                return null;
+
+            // 3. Grouping
+            if (Grouping.Count > 0)
+                primeSoldiers = SoldierSelectionHelper.GroupAndGetPrime(primeSoldiers, Grouping, date);
+
+            if (primeSoldiers.Count == 0)
+                throw new Exception("Group has no prime soldiers, but there was a soldier count");
+
+            // 4. Sorting
+            if (Sorting.Count > 0)
+                SoldierSelectionHelper.SortSoldiers(primeSoldiers, Sorting, date);
+            else
+                SoldierSelectionHelper.SortSoldiersDescending(primeSoldiers, x => x.GetLateralSelectionFactor(position, date));
+
+            return primeSoldiers.Count > 0 ? primeSoldiers[0] : null;
         }
     }
 }

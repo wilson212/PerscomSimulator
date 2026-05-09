@@ -9,37 +9,37 @@ namespace Perscom.Database
     /// Contains a list of 
     /// </summary>
     [Table]
-    public class RankGradeStatistics
+    public class RankGradeStatistics : EntityBase
     {
         /// <summary>
         /// 
         /// </summary>
         [Column, PrimaryKey]
-        public RankType RankType { get; set; }
+        public virtual RankType RankType { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [Column, PrimaryKey]
-        public int RankGrade { get; set; }
+        public virtual int RankGrade { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [Column, PrimaryKey]
-        public int UnitTemplateId { get; set; }
+        public virtual int UnitBlueprintId { get; set; }
 
-        #region Virtual Foreign Keys
+        #region Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="UnitTemplate"/> entity that this entity references.
+        /// Gets the <see cref="Database.UnitBlueprint"/> entity that this entity references.
         /// </summary>
-        [InverseKey("Id")]
-        [ForeignKey("UnitTemplateId",
-            OnDelete = ReferentialIntegrity.Cascade,
-            OnUpdate = ReferentialIntegrity.Cascade
+        [ForeignKey(nameof(UnitBlueprintId))]
+        [References(nameof(Database.UnitBlueprint.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade
         )]
-        protected virtual ForeignKey<UnitTemplate> FK_Parent { get; set; }
+        public virtual UnitBlueprint UnitBlueprint { get; set; }
 
         #endregion
 
@@ -49,7 +49,7 @@ namespace Perscom.Database
         /// Gets or Sets the total number of soldiers were promnoted into this grade
         /// </summary>
         [Column, Required]
-        public int TotalSoldiersIncoming { get; set; } = 0;
+        public virtual int TotalSoldiersIncoming { get; set; } = 0;
 
         /// <summary>
         /// Gets or Sets the total number of soldiers who held this grade, and were
@@ -60,7 +60,7 @@ namespace Perscom.Database
         /// This value will always be the sum of Promotions, Retirements, and TransfersFrom
         /// </remarks>
         [Column, Required]
-        public int TotalSoldiersOutgoing { get; set; } = 0;
+        public virtual int TotalSoldiersOutgoing { get; set; } = 0;
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in grade for all
@@ -68,7 +68,7 @@ namespace Perscom.Database
         /// or were transfered OUT of this Rank into a different <see cref="Simulation.RankType"/>
         /// </summary>
         [Column, Required]
-        public int TotalMonthsInGrade { get; set; } = 0;
+        public virtual int TotalMonthsInGrade { get; set; } = 0;
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in service for all
@@ -76,7 +76,7 @@ namespace Perscom.Database
         /// or were transfered OUT of this Rank into a different <see cref="Simulation.RankType"/>
         /// </summary>
         [Column, Required]
-        public int TotalMonthsInService { get; set; } = 0;
+        public virtual int TotalMonthsInService { get; set; } = 0;
 
         /// <summary>
         /// Gets the average time in grade (months) for this grade.
@@ -102,21 +102,21 @@ namespace Perscom.Database
         /// then promoted to the next grade.
         /// </summary>
         [Column, Required]
-        public int PromotionsToNextGrade { get; set; }
+        public virtual int PromotionsToNextGrade { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in grade for all
         /// soldiers who held this grade, just before being promoted
         /// </summary>
         [Column, Required]
-        public int PromotedTotalMonthsInGrade { get; set; }
+        public virtual int PromotedTotalMonthsInGrade { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in service for all
         /// soldiers who held this grade, just before being promoted
         /// </summary>
         [Column, Required]
-        public int PromotedTotalMonthsInService { get; set; }
+        public virtual int PromotedTotalMonthsInService { get; set; }
 
         /// <summary>
         /// Gets the average time in grade (months) for all soldiers 
@@ -147,28 +147,28 @@ namespace Perscom.Database
         /// Gets or Sets the total number of soldiers who retired as this rank/grade
         /// </summary>
         [Column, Required]
-        public int TotalRetirements { get; set; }
+        public virtual int TotalRetirements { get; set; }
 
         /// <summary>
         /// Gets or Sets the total number of retired personel who held this grade and
         /// met the requirements to be promotable to the next rank
         /// </summary>
         [Column, Required]
-        public int TotalPromotableRetirees { get; set; }
+        public virtual int TotalPromotableRetirees { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in grade for all
         /// soldiers who held this grade, just before retiring
         /// </summary>
         [Column, Required]
-        public int RetiredTotalMonthsInGrade { get; set; }
+        public virtual int RetiredTotalMonthsInGrade { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in service for all
         /// soldiers who held this grade, just before retiring
         /// </summary>
         [Column, Required]
-        public int RetiredTotalMonthsInService { get; set; }
+        public virtual int RetiredTotalMonthsInService { get; set; }
 
         /// <summary>
         /// Gets the average time in grade (months) for all soldiers 
@@ -197,24 +197,24 @@ namespace Perscom.Database
 
         /// <summary>
         /// Gets or Sets the total number of soldiers who held this grade, and were
-        /// then promoted to a different Rank Type.
+        /// then promoted to a different Rank PoolSelection.
         /// </summary>
         [Column, Required]
-        public int TransfersFrom { get; set; }
+        public virtual int TransfersFrom { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in grade for all
         /// soldiers who held this grade, just before being promoted
         /// </summary>
         [Column, Required]
-        public int TransfersFromTotalMonthsInGrade { get; set; }
+        public virtual int TransfersFromTotalMonthsInGrade { get; set; }
 
         /// <summary>
         /// Gets or Sets the total accumulative months time in service for all
         /// soldiers who held this grade, just before being promoted
         /// </summary>
         [Column, Required]
-        public int TransfersFromTotalMonthsInService { get; set; }
+        public virtual int TransfersFromTotalMonthsInService { get; set; }
 
         /// <summary>
         /// Gets the average time in grade (months) for all soldiers 
@@ -243,15 +243,15 @@ namespace Perscom.Database
 
         /// <summary>
         /// Gets or sets the total number of soldiers who were promoted into this 
-        /// rank from a different Rank Type.
+        /// rank from a different Rank PoolSelection.
         /// </summary>
         [Column, Required]
-        public int TransfersInto { get; set; }
+        public virtual int TransfersInto { get; set; }
 
         #endregion Transfer Into Statistics
 
         /// <summary>
-        /// Gets the percentage of soldiers who made Promotable Status to the next Rank Grade
+        /// Gets the percentage of soldiers who made Promotable Status to the next Rank PayGrade
         /// </summary>
         public decimal PromotablePercentage
         {
@@ -327,7 +327,7 @@ namespace Perscom.Database
         /// The total number of months that a position was filled by a stand in soldier or empty.
         /// </summary>
         [Column, Required]
-        public int Deficit { get; set; }
+        public virtual int Deficit { get; set; }
 
         /// <summary>
         /// Adds a soldier's statistical data as a retirement, holding this rank/grade

@@ -5,12 +5,12 @@
 // ==--==
 /*============================================================
 **
-** Class:  SyncProgress<T>
+** Class:  SyncProgress<TEntity>
 ** 
 ** Modifed to use SynchronizationContext.Send instead of SynchronizationContext.Post
 **
 **
-** Purpose: Event-based implementation of IProgress<T>.
+** Purpose: Event-based implementation of IProgress<TEntity>.
 **
 **
 ===========================================================*/
@@ -77,7 +77,7 @@ namespace System
             if (handler != null || changedEvent != null)
             {
                 // Post the processing to the [....] context.
-                // (If T is a value type, it will get boxed here.)
+                // (If TEntity is a value type, it will get boxed here.)
                 m_synchronizationContext.Send(m_invokeHandlers, value);
             }
         }
@@ -101,7 +101,7 @@ namespace System
     }
  
     /// <summary>Holds static values for <see cref="Progress{T}"/>.</summary>
-    /// <remarks>This avoids one static instance per type T.</remarks>
+    /// <remarks>This avoids one static instance per type TEntity.</remarks>
     internal static class ProgressStatics
     {
         /// <summary>A default synchronization context that targets the ThreadPool.</summary>

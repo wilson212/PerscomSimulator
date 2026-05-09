@@ -1,10 +1,20 @@
-﻿using System.Data.SQLite;
-using System.IO;
-using CrossLite;
+﻿using CrossLite;
 using CrossLite.CodeFirst;
+using Microsoft.Data.Sqlite;
+using System.IO;
 
 namespace Perscom.Database
 {
+    /// <summary>
+    /// Represents a specialized database for managing simulation-related data,  including entities such as assignments,
+    /// positions, soldiers, and statistics.
+    /// </summary>
+    /// <remarks>The <see cref="SimDatabase"/> class provides access to various entity sets through
+    /// properties of type <see cref="DbSet{T}"/>. These entity sets represent  collections of data stored in the
+    /// database, such as assignments, positions,  and soldiers. The class also includes methods for creating and
+    /// managing the  database schema, as well as static methods for creating or opening a simulation  database file.
+    /// <para> This class extends <see cref="BaseDatabase"/> and is designed to work with  SQLite as the underlying
+    /// database engine. </para></remarks>
     public class SimDatabase : BaseDatabase
     {
         #region Database Entity Sets
@@ -15,9 +25,9 @@ namespace Perscom.Database
         public DbSet<Assignment> Assignments { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="BilletStatistics"/> entites stored in the database
+        /// Gets a set of <see cref="PositionBlueprintStats"/> entites stored in the database
         /// </summary>
-        public DbSet<BilletStatistics> BilletStatistics { get; set; }
+        public DbSet<PositionBlueprintStats> PositionBlueprintStats { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="IterationDate"/> entites stored in the database
@@ -43,7 +53,11 @@ namespace Perscom.Database
         /// Gets a set of <see cref="Promotion"/> entites stored in the database
         /// </summary>
         public DbSet<Promotion> Promotions { get; set; }
-
+        
+        public DbSet<PromotionBoardResult> PromotionBoardResults { get; set; }
+        
+        public DbSet<PromotableCandidate> PromotableCandidates { get; set; }
+        
         /// <summary>
         /// Gets a set of <see cref="Database.RankGradeStatistics"/> entites stored in the database
         /// </summary>
@@ -55,14 +69,29 @@ namespace Perscom.Database
         public DbSet<Soldier> Soldiers { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="SpecialtyAssignment"/> entites stored in the database
+        /// Gets a set of <see cref="OccupationAssignment"/> entites stored in the database
         /// </summary>
-        public DbSet<SpecialtyAssignment> SpecialtyAssignments { get; set; }
+        public DbSet<OccupationAssignment> SpecialtyAssignments { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Database.SoldierExperience"/> entites stored in the database
         /// </summary>
         public DbSet<SoldierExperience> SoldierExperience { get; set; }
+        
+        /// <summary>
+        /// Gets a set of <see cref="Database.SoldierAttribute"/> entites stored in the database
+        /// </summary>
+        public DbSet<SoldierAttribute> SoldierAttributes { get; set; }
+
+        /// <summary>
+        /// Gets a set of <see cref="SoldierMonthlyRecord"/> entities stored in the database.
+        /// </summary>
+        public DbSet<SoldierMonthlyRecord> SoldierMonthlyRecords { get; set; }
+        
+        /// <summary>
+        /// Gets a set of <see cref="Database.SoldierTraitAttachment"/> entites stored in the database
+        /// </summary>
+        public DbSet<SoldierTraitAttachment> SoldierTraitAttachments { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Database.SpecialtyGradeStatistics"/> entites stored in the database
@@ -74,78 +103,109 @@ namespace Perscom.Database
         /// </summary>
         public DbSet<Unit> Units { get; set; }
 
-        /// <summary>
-        /// Gets a set of <see cref="UnitAttachment"/> entites stored in the database
-        /// </summary>
-        public DbSet<UnitAttachment> UnitAttachments { get; set; }
-
         #endregion
 
         /// <summary>
-        /// 
+        /// Represents a simulation-specific database that extends the base database functionality.
+        /// Provides mechanisms to manage and interact with simulation-related data sets.
         /// </summary>
-        /// <param name="builder"></param>
-        protected SimDatabase(SQLiteConnectionStringBuilder builder) : base(builder)
+        protected SimDatabase(SqliteConnectionStringBuilder builder) : base(builder)
         {
             // Create Database Sets
-            Assignments = new DbSet<Assignment>(this);
-            BilletStatistics = new DbSet<BilletStatistics>(this);
             IterationDates = new DbSet<IterationDate>(this);
-            PastAssignments = new DbSet<PastAssignment>(this);
-            Positions = new DbSet<Position>(this);
-            PositionStatistics = new DbSet<PositionStatistics>(this);
-            Promotions = new DbSet<Promotion>(this);
-            RankGradeStatistics = new DbSet<RankGradeStatistics>(this);
             Soldiers = new DbSet<Soldier>(this);
+            SoldierAttributes = new DbSet<SoldierAttribute>(this);
+            SoldierMonthlyRecords = new DbSet<SoldierMonthlyRecord>(this);
+            SoldierTraitAttachments = new DbSet<SoldierTraitAttachment>(this);
             SoldierExperience = new DbSet<SoldierExperience>(this);
-            SpecialtyAssignments = new DbSet<SpecialtyAssignment>(this);
-            SpecialtyGradeStatistics = new DbSet<SpecialtyGradeStatistics>(this);
             Units = new DbSet<Unit>(this);
-            UnitAttachments = new DbSet<UnitAttachment>(this);
+            Positions = new DbSet<Position>(this);
+            Assignments = new DbSet<Assignment>(this);
+            PastAssignments = new DbSet<PastAssignment>(this);
+            SpecialtyAssignments = new DbSet<OccupationAssignment>(this);
+            Promotions = new DbSet<Promotion>(this);
+            PromotableCandidates = new DbSet<PromotableCandidate>(this);
+            PromotionBoardResults = new DbSet<PromotionBoardResult>(this);
+            PositionBlueprintStats = new DbSet<PositionBlueprintStats>(this);
+            PositionStatistics = new DbSet<PositionStatistics>(this);
+            RankGradeStatistics = new DbSet<RankGradeStatistics>(this);
+            SpecialtyGradeStatistics = new DbSet<SpecialtyGradeStatistics>(this);
         }
 
         /// <summary>
-        /// Drops all tables from the database, and the creates new
-        /// tables.
+        /// Drops and recreates all simulation-only tables.
+        /// Tables are ordered to respect foreign key constraints:
+        /// - Drops go child-first (dependents before parents)
+        /// - Creates go parent-first (parents before dependents)
         /// </summary>
         private void CreateTables()
         {
-            // Wrap in a transaction
-            using (SQLiteTransaction tr = base.BeginTransaction())
+            using (var tr = base.BeginTransaction())
             {
-                // Delete old table rementants
-                CodeFirstSQLite.DropTable<PositionStatistics>(this);
-                CodeFirstSQLite.DropTable<BilletStatistics>(this);
-                CodeFirstSQLite.DropTable<SpecialtyGradeStatistics>(this);
-                CodeFirstSQLite.DropTable<RankGradeStatistics>(this);
-                CodeFirstSQLite.DropTable<SpecialtyAssignment>(this);
-                CodeFirstSQLite.DropTable<Assignment>(this);
-                CodeFirstSQLite.DropTable<PastAssignment>(this);
-                CodeFirstSQLite.DropTable<Position>(this);
-                CodeFirstSQLite.DropTable<UnitAttachment>(this);
-                CodeFirstSQLite.DropTable<Unit>(this);
-                CodeFirstSQLite.DropTable<Promotion>(this);
-                CodeFirstSQLite.DropTable<SoldierExperience>(this);
-                CodeFirstSQLite.DropTable<Soldier>(this);
-                CodeFirstSQLite.DropTable<IterationDate>(this);
+                // ============================================================
+                // DROP TABLES — child-first order (dependents before parents)
+                // ============================================================
 
-                // Create the needed database tables
-                CodeFirstSQLite.CreateTable<IterationDate>(this);
-                CodeFirstSQLite.CreateTable<Soldier>(this);
-                CodeFirstSQLite.CreateTable<SoldierExperience>(this);
-                CodeFirstSQLite.CreateTable<Promotion>(this);
-                CodeFirstSQLite.CreateTable<Unit>(this);
-                CodeFirstSQLite.CreateTable<UnitAttachment>(this);
-                CodeFirstSQLite.CreateTable<Position>(this);
-                CodeFirstSQLite.CreateTable<PastAssignment>(this);
-                CodeFirstSQLite.CreateTable<Assignment>(this);
-                CodeFirstSQLite.CreateTable<SpecialtyAssignment>(this);
-                CodeFirstSQLite.CreateTable<RankGradeStatistics>(this);
-                CodeFirstSQLite.CreateTable<SpecialtyGradeStatistics>(this);
-                CodeFirstSQLite.CreateTable<BilletStatistics>(this);
-                CodeFirstSQLite.CreateTable<PositionStatistics>(this);
+                // Tier 4: Statistics (leaf tables, depend on Tier 2/3)
+                this.DropTable<PositionStatistics>();     // -> Position
+                this.DropTable<PositionBlueprintStats>();       // -> PositionBlueprint
+                this.DropTable<SpecialtyGradeStatistics>(); // -> Occupation
+                this.DropTable<RankGradeStatistics>();    // -> UnitBlueprint
 
-                // Commit the transaction
+                // Tier 3: Assignment/promotion records (depend on Soldier, Position, etc.)
+                this.DropTable<Assignment>();             // -> Soldier, Position, IterationDate, Rank
+                this.DropTable<PastAssignment>();         // -> Soldier, Position, IterationDate, Rank
+                this.DropTable<OccupationAssignment>();   // -> Soldier, Occupation, IterationDate
+                this.DropTable<Promotion>();              // -> Soldier, Rank, IterationDate
+                this.DropTable<PromotableCandidate>();    // -> Soldier, PromotionBoard, IterationDate
+                this.DropTable<PromotionBoardResult>();   // -> Soldier, PromotionBoard, IterationDate
+
+                // Tier 2: Soldier-dependent tables & Position
+                this.DropTable<SoldierAttribute>();       // -> Soldier
+                this.DropTable<SoldierMonthlyRecord>();   // -> Soldier
+                this.DropTable<SoldierTraitAttachment>(); // -> Soldier, PersonalityTrait, IterationDate
+                this.DropTable<SoldierExperience>();      // -> Soldier, Experience
+                this.DropTable<Position>();               // -> PositionBlueprint, Unit
+
+                // Tier 1: Core simulation entities
+                this.DropTable<Soldier>();                // -> Persona, Rank, Occupation, IterationDate, CareerLength
+                this.DropTable<Unit>();                   // -> UnitBlueprint
+
+                // Tier 0: No sim-entity dependencies
+                this.DropTable<IterationDate>();
+
+                // ============================================================
+                // CREATE TABLES — parent-first order (parents before dependents)
+                // ============================================================
+
+                // Tier 0: Root sim tables
+                this.CreateTable<IterationDate>();
+
+                // Tier 1: Core simulation entities (reference base tables + IterationDate)
+                this.CreateTable<Unit>();                   // -> UnitBlueprint (base)
+                this.CreateTable<Soldier>();                // -> Persona, Rank, Occupation (base), IterationDate, CareerLength (base)
+
+                // Tier 2: Depend on Soldier and/or Unit
+                this.CreateTable<Position>();               // -> PositionBlueprint (base), Unit
+                this.CreateTable<SoldierExperience>();      // -> Soldier, Experience (base)
+                this.CreateTable<SoldierAttribute>();       // -> Soldier
+                this.CreateTable<SoldierMonthlyRecord>();   // -> Soldier
+                this.CreateTable<SoldierTraitAttachment>(); // -> Soldier, PersonalityTrait (base), IterationDate
+
+                // Tier 3: Depend on Soldier + Position/IterationDate/Rank
+                this.CreateTable<Assignment>();             // -> Soldier, Position, IterationDate, Rank (base)
+                this.CreateTable<PastAssignment>();         // -> Soldier, Position, IterationDate, Rank (base)
+                this.CreateTable<OccupationAssignment>();   // -> Soldier, Occupation (base), IterationDate
+                this.CreateTable<Promotion>();              // -> Soldier, Rank (base), IterationDate
+                this.CreateTable<PromotableCandidate>();    // -> Soldier, PromotionBoard (base), IterationDate
+                this.CreateTable<PromotionBoardResult>();   // -> Soldier, PromotionBoard (base), IterationDate
+
+                // Tier 4: Statistics (leaf tables)
+                this.CreateTable<RankGradeStatistics>();    // -> UnitBlueprint (base)
+                this.CreateTable<SpecialtyGradeStatistics>(); // -> Occupation (base)
+                this.CreateTable<PositionBlueprintStats>();       // -> PositionBlueprint (base)
+                this.CreateTable<PositionStatistics>();     // -> Position
+
                 tr.Commit();
             }
         }
@@ -171,17 +231,18 @@ namespace Perscom.Database
             }
 
             // Create connection builder
-            var builder = new SQLiteConnectionStringBuilder();
-            builder.DataSource = source;
-            builder.ForeignKeys = true;
-            builder.Pooling = true;
-            builder.JournalMode = SQLiteJournalModeEnum.Wal;
+            var builder = new SqliteConnectionStringBuilder
+            {
+                DataSource = source,
+                ForeignKeys = true,
+                Pooling = true
+            };
 
             // Copy contents from the AppData.db to this database
-            SimDatabase me = new SimDatabase(builder);
-            db.Connection.BackupDatabase(me.Connection, "main", "main", -1, null, 0);
+            db.CreateBackup(builder.ConnectionString);
 
             // Create Simulation Related Database Sets
+            SimDatabase me = new SimDatabase(builder);
             me.CreateTables();
 
             // Return fresh database
@@ -191,10 +252,11 @@ namespace Perscom.Database
         public static SimDatabase Open(string fileName)
         {
             // Create connection builder
-            var builder = new SQLiteConnectionStringBuilder();
-            builder.DataSource = Path.Combine(Program.RootPath, "Data", fileName);
-            builder.ForeignKeys = true;
-            builder.JournalMode = SQLiteJournalModeEnum.Wal;
+            var builder = new SqliteConnectionStringBuilder
+            {
+                DataSource = Path.Combine(Program.RootPath, "Data", fileName),
+                ForeignKeys = true
+            };
 
             // Copy contents from the AppData.db to this database
             return new SimDatabase(builder);

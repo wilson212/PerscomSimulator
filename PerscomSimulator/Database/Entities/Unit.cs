@@ -1,30 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using CrossLite;
 using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
     /// <summary>
-    /// Represents a structure that contains child <see cref="Unit"/>s and <see cref="Billet"/>s.
+    /// Represents a structure that contains child <see cref="Unit"/>s and <see cref="PositionBlueprint"/>s.
     /// </summary>
     [Table]
-    public class Unit : IEquatable<Unit>
+    public class Unit : EntityBase, IEquatable<Unit>
     {
         #region Columns
 
         /// <summary>
-        /// The Unique Unit ID
+        /// The IsUnique Unit ID
         /// </summary>
         [Column, PrimaryKey]
         public int Id { get; protected set; }
 
         /// <summary>
-        /// Gets or Sets the <see cref="UnitTemplate"/> object
+        /// Gets or Sets the <see cref="UnitBlueprint"/> object
         /// ID that this entity references
         /// </summary>
         [Column, Required]
-        public int UnitTemplateId { get; set; }
+        public int UnitBlueprintId { get; set; }
 
         /// <summary>
         /// Gets or Sets the string name of this Unit
@@ -38,34 +37,45 @@ namespace Perscom.Database
         [Column, Required, Default("")]
         public string UnitCode { get; set; }
 
+        /// <summary>
+        /// Gets or Sets the Parent Unit Id
+        /// </summary>
+        [Column, Default(null)]
+        public int? ParentUnitId { get; set; } = null;
+
         #endregion
 
         #region Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="UnitTemplate"/> entity that this entity references.
+        /// Gets the <see cref="UnitBlueprint"/> entity that this entity references.
         /// </summary>
-        /// <remarks>Eager loaded because it should never be changed!</remarks>
-        [InverseKey("Id")]
-        [ForeignKey("UnitTemplateId",
-            OnDelete = ReferentialIntegrity.Cascade,
-            OnUpdate = ReferentialIntegrity.Cascade
+        [ForeignKey(nameof(UnitBlueprintId))]
+        [References(nameof(Database.UnitBlueprint.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade
         )]
-        public virtual UnitTemplate Type { get; private set; }
+        public virtual UnitBlueprint Blueprint { get; set; }
+
+        /// <summary>
+        /// Gets the parent <see cref="Unit"/> entity that this entity references.
+        /// </summary>
+        [ForeignKey(nameof(ParentUnitId))]
+        [References(nameof(Id),
+            OnDelete = ReferentialAction.SetNull,
+            OnUpdate = ReferentialAction.Cascade
+        )]
+        public virtual Unit Parent { get; set; }
 
         #endregion
 
         #region Child Database Sets
 
         /// <summary>
-        /// Gets a list of <see cref="UnitAttachment"/> entities that reference this 
+        /// Gets a list of child <see cref="Unit"/> entities that reference this 
         /// <see cref="Unit"/>
         /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration that fetches all Torque Ratios
-        /// that are bound by the foreign key and this Unit.Id.
-        /// </remarks>
-        public virtual IEnumerable<UnitAttachment> Attachments { get; set; }
+        public virtual EntitySet<Unit> Children { get; set; }
 
         #endregion
 

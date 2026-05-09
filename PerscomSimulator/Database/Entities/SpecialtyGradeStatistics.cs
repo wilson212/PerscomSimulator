@@ -6,23 +6,27 @@ namespace Perscom.Database
     [Table]
     public class SpecialtyGradeStatistics : RankGradeStatistics
     {
+        #region Columns
+
         /// <summary>
-        /// The Unique Billet ID
+        /// Gets or sets the <see cref="Occupation.Id"/>
         /// </summary>
         [Column, PrimaryKey]
-        public int SpecialtyId { get; set; }
+        public virtual int SpecialtyId { get; set; }
 
-        #region Virtual Foreign Keys
+        #endregion
+
+        #region Foreign Keys
 
         /// <summary>
-        /// Gets the <see cref="Specialty"/> entity that this entity references.
+        /// Gets or sets the <see cref="Occupation"/> entity that this entity references.
         /// </summary>
-        [InverseKey("Id")]
-        [ForeignKey("SpecialtyId",
-            OnDelete = ReferentialIntegrity.Cascade,
-            OnUpdate = ReferentialIntegrity.Cascade
+        [ForeignKey(nameof(SpecialtyId))]
+        [References(nameof(Database.Occupation.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade
         )]
-        protected virtual ForeignKey<Specialty> FK_Specialty { get; set; }
+        public virtual Occupation Occupation { get; set; }
 
         #endregion
     }

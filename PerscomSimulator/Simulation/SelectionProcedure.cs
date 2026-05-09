@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// Represents an array of Soldier selection procedures the <see cref="Simulator"/>
-    /// will use to spawn soldiers to fill empty <see cref="Database.Billet"/>s
+    /// will use to spawn soldiers to fill empty <see cref="Database.PositionBlueprint"/>s
     /// </summary>
     public enum SelectionProcedure
     {
@@ -13,14 +13,14 @@
         PromotionOrLateral = 0,
 
         /// <summary>
-        /// Soldiers will only be selected that are of a lower Grade
+        /// Soldiers will only be selected that are of a lower PayGrade
         /// than the Billet
         /// </summary>
         PromotionOnly = 1,
 
         /// <summary>
         /// Soldiers will only be selected that are of the same
-        /// Grade as the Billet Grade
+        /// PayGrade as the Billet PayGrade
         /// </summary>
         LateralOnly = 2,
 
@@ -30,13 +30,9 @@
         CreateNewSoldier = 3,
 
         /// <summary>
-        /// Soldiers will be selected using an <see cref="Database.OrderedProcedure"/>
+        /// Soldiers will be selected using a fully user-configured
+        /// Filter/Group/Sort pipeline
         /// </summary>
-        OrderedProcedure = 4,
-
-        /// <summary>
-        /// Soldiers will be selected using an <see cref="Database.RandomizedProcedure"/>
-        /// </summary>
-        RandomizedProcedure = 5
+        EvaluationBoard = 4
     }
 }

@@ -95,7 +95,7 @@ namespace Perscom.Simulation
 
             var difference = soldier.ExitIterationId - soldier.EntryIterationId;
             EntryServiceDate = soldier.EntryServiceDate.Date;
-            ExitServiceDate = EntryServiceDate.AddMonths(difference);
+            ExitServiceDate = EntryServiceDate.AddMonths(difference.Value);
             //LastPromotionDate = soldier.LastPromotionDate.Date;
             LastGradeChangeDate = soldier.LastGradeChangeDate.Date;
 
@@ -121,7 +121,7 @@ namespace Perscom.Simulation
 
             var difference = soldier.ExitIterationId - soldier.EntryIterationId;
             EntryServiceDate = soldier.EntryServiceDate.Date;
-            ExitServiceDate = EntryServiceDate.AddMonths(difference);
+            ExitServiceDate = EntryServiceDate.AddMonths(difference.Value);
             //LastPromotionDate = soldier.LastPromotionDate.Date;
             LastGradeChangeDate = assignment.LastGradeChangeDate.Date;
 

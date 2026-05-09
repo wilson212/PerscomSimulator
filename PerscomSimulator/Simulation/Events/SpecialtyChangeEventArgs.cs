@@ -10,8 +10,8 @@ namespace Perscom.Simulation
     {
         public SoldierWrapper Soldier { get; set; }
 
-        public Specialty From { get; set; }
+        public Occupation From { get; set; }
 
-        public Specialty To { get; set; }
+        public Occupation To { get; set; }
     }
 }

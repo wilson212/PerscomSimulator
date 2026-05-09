@@ -2,98 +2,310 @@
  - Add UnitTemplate statistics
  - Add better support for Billet Rank Ranges! (maybe a collective lateral selection?)
  --> Should we Auto promote a soldier if they are promotable?
- - Establish Rank Grades seperate from Ranks in the RankEditorForm
+ - Add statistic tracking of (times passed over on promotion boards)
 
------ Procedure's
+ ---- Ranks:
+ - Establish Rank Grades seperate from Ranks in the RankEditorForm (ListView with drop down)
+  --> Previous rank requirements for selection
+  --> Special rank checkbox
+
+ ----- Selection Procedures:
+ - Used for lateral movements, warrant selection, green to gold and special assignments
+
+ ----- Promotion Boards:
+ - Used to move forward in Grade
+ - Implement generic promotion boards for ranks
+ - Each promotion board has a pool of soldiers marked Pomotable (PromotionPoolWrapper)
+ - Promotion board entities get selected by ranks to be used
+ --> Promotion board settings:
+ ---> Define attribute weights for selection, if any
+ ---> Months promotable after passing board
+ ---> Add abstract grouping and sorting for selection (if not by score)
+ --> Promotion board types:
+ ---> Ordered Merit List (sorts everytime someone is added)
+		-> You get your P status when SELECTED and added to a sequenced List awaiting a position opening
+ ---> Sequence Order (pass or fail required)
+		-> First in, first out kind of board.
+ ---> Custom Order (pass / fail required)
+		-> Points are added up, given P status immediately
+		-> given a certain amount of time to move up or lose P status
+
+
+ ----- Occupation's:
+ - Implement an override of Rank based promotion boards for more specialized grading
+
+----- Selection Board Procedure's:
 
 -> Ordered (Priority) Procedure:	Goes through each pool in order, and rolls until a candidate is found
 -> Randomized Procedure:	Selects from one random pool only, and checks for a candidate
 -> Collective Procedure		Selects from all pools and combines all soldiers, then chooses one
 
------ Improvable Primary Stats (Hard Coded)
----> Leadership		: Thier ability to lead soldiers
----> Marksmanship	: Ability to shoot accurately
----> Reliability	: How reliable are they? Important for staff positions. Lower rating means more movement more often (fickle)
----> Adaptability	: Ability to change to staff to command and vise versa. Also includes field situations
----> Fitness		: Fitness level
----> Proficiency	: How good are they at thier MOS or staffing ability
+Boost Soldier Selection Procedure's:
 
------ Randomly Set Secondary Stats
----> Ambition		: Thier desire to achieve the greatest ranks
----> Charisma		: How well they are liked and approved of by thier peers
----> Improvability	: How much thier stats improve over thier career
+	/// Gets a selection factor rating which is used to determine who is more/less
+	/// likely to get selected for a lateral position based off of many individual factors.
+	public SoldierWrapper.GetLateralSelectionFactor(Position) : int (0-100)
+	{
+		> Lateral Promotion (Higher Ambition soldier's more likely as Next.Position.Stature is higher):
+			-> Factor in Soldier.Ambition vs (Current.Position.Desirability and Next.Position.Desirability) (Prestiege) [30 points]
+				"A high ambition will want lower stature's less, and higher stature's more"
+				[This is a primary factor... does the soldier even want to move?]
+			-> Factor in weighted skills (will they do well?) [30 points]
+			---> Get "Form" rating (0.0 -> 9.9) for Current position vs Other position
+					"A rating indicating how well they will do in this position"
+			-> Factor in time until retirement [10 points]
+				"If close to retirement, they may not want another position change"
+			-> Factor in time in current position [20 points]
+				"Score caps at 10 points if locked in position"
+			-> Factor in time in grade (seniority, uses ambition) [10 points]
+				"A higher time in grade will warrant a promotion over a lateral position change"
+	}
 
---- Maybe Stats
----> Consistancy
+	public SoldierWrapper.WillAttemptSpecialAssignment(Position) : bool
+	{
+		> Special Assignment / Cross-corps selection (Higher Ambition soldier's more likely, regardless of stature):
+			-> Factor in Soldier.Ambition [60 points]
+				"A higher ambition will want the promotion more, regardless of the Next.Position.Desirability"
+				[This is a primary factor... does the soldier even want to move?]
+			-> Factor in weighted skills (will they do well?)
+			-> Factor in if School is required, and how much time they need to school compared to retirement date
+			-> Factor in Unit tier level
+			---> Get "Form" rating (0.0 -> 9.9)
+					"A rating indicating how well they will do in this position. Less important with higher ambition"
+			-> Factor in time until retirement [20 points]
+				"If close to retirement, they may not want another position change"
+	}
 
------ Traits (Random)
----> Blind (-marksmanship)
----> Born Leader (+leadership, +charisma, +ambition)
----> Chubby (-fitness)
----> Content (-ambition, +reliability, +morale)
----> Crazy (-marksmanship, -charisma)
----> Dedicated (+all stats)
----> Dumb (-adaptability, -proficiancy, -improvability, +morale)
----> Erratic (-reliable)
----> Fearless (+proficiancy, +adaptability)
----> Fickle (-reliable, -morale) :
----> Fitness Nut (+fitness)
----> Hard Worker (+proficiency, +reliability, +improvability)
----> Keep It Simple, Stupid (-adaptability)
----> Lazy (-ambition, -improvability, -fitness)
----> Lightning Reactions (+marksmanship)
----> Mercenary (+marksmanship)
+	public SoldierWrapper.WillAttemptGradeIncrease() : bool
+	{
+		> Forward Promotion:
+			-> int naturalFactor = (RankType.MaxGrades - CurrentGrade)
+			-> Factor in Soldier.Ambition: Math.Max(naturalFactor + (Ambition * 2)), 40) [40 points]
+				[This is a primary factor... does the soldier even want to move up?]
+			-> Factor in weighted skills (will they do well?) [10 points]
+			---> Get "Form" rating (0.0 -> 9.9) for Current position vs Other position
+					"A rating indicating how well they will do in this position"
+			-> Factor in time until retirement [20 points]
+				"If close to retirement, they may not want another position change"
+			-> Factor in time in grade (seniority, uses ambition) [30 points]
+				"A higher time in grade will warrant a promotion over a lateral position change"
+
+			double chances = (points / NumBoardsPerYear);
+			return (RNG.Next(1,100) <= chances);
+	}
+
+
+----- Permenant Traits (Random):
+
+Good															Bad
+---> Dedicated (+all stats)										---> Struggles Under Pressure (-all stats)
+---> Born Leader (+leadership, +charisma, +ambition)			
+---> Lightning Reactions (+marksmanship)						---> Blind (-marksmanship)
+---> Fitness Nut (+fitness)										---> Hates working out (-fitness)
+---> Fearless (+proficiancy, +adaptability)						---> Keep It Simple Stupid! (-adaptability)																
+---> Goal Oriented (+ambition)									---> Shiftless (-ambition)												
+---> Hard Worker (+fitness, +reliability, +improvability)		---> Slacker (-ambition, -improvability, -fitness) 										
+---> Motivated (+motivation, +reliability, +improvability)		---> Lazy (-motivation)
 ---> Optimist (+morale, +leadership, +reliability, +charisma)
----> Selfish (-leadership, -charisma)
----> Selfless (+leadership)
----> Skinny (+fitness)
----> Slacker (-fitness, -leadership, -reliability)
----> Smart (+adaptability, +proficiency, +improvability)
----> Struggles Under Pressure (-all stats)
+---> Selfless (+leadership, +charisma)							---> Selfish (-leadership, -charisma)
 ---> Team Player (+leadership, +reliability)
+---> Smart (+adaptability, +proficiency, +improvability)		---> Dumb (-adaptability, -proficiancy, -improvability, +morale)
+---> Skinny (+fitness)											---> Chubby (-fitness)
 
------ Soldier Template
--> SoldierTemplate : ISpawnable (
-		Id, 
-		Name,
-		Probability
-	)
---> SoldierTemplateStat (
-		SoldierTemplateId,
-		StatId,
-		MinSpawnValue,
-		MaxSpawnValue
-	)
---> SoldierTemplateCareer : ISpawnable (
-		SoldierTemplateId,
-		CareerGeneratorId,
-		Probability
-	)
---> SoldierTemplateTrait : ISpawnable (
-		SoldierTemplateId,
-		SoldierTraitId,
-		Probability
-	)
--> SoldierTrait (
-		Id,
-		Name
-	)
---> SoldierTraitModifier (
-		SoldierTraitId,
-		StatId,
-		Modifier
-	)
---> SoldierTraitAttachment (
-		SoldierId,
-		SoldierTraitId,
-	)
--> BilletStatWeights (
-		BilletId,
-		StatId,
-		Value
-	)
--> SoldierStat (
-		SoldierId,
-		StatId,
-		Value
-	)
+---> Calculated (+Marksmanship, +Mindfulness)					---> Crazy (-marksmanship, -charisma)
+---> Stable														---> Erratic ()-Composure, -Reliability, +Courage)
+																---> Fickle (-reliable, -morale) :
+
+																
+
+
+
+----- Obtainable Traits (Random):
+Good																		Bad
+---> Content [Permanent] (-ambition, +reliability, +morale)					
+---> Happy [Temporary] (+all Innate Personality Attributes)					---> Unepected Life Event [Temporary] (-all Innate Personality Attributes)
+---> 																		---> Sick [Temporary] (-fitness, -marksmanship, -reliability)]
+																			---> Traumatized [Permanent] (-all Innate Personality Attributes)
+																			---> Injured [Temporary/Permanent] (-fitness, -marksmanship, -reliability)
+
+
+Basic Skills (always improving over career)
+- Leadership (decision-making, problem-solving, and leading teams)
+- Marksmanship
+- Fitness
+- Teamwork
+- Composure (Mental strength, Self-confidence, calm under pressure)
+- Discipline (adherence to rules, regulations, and procedures)
+
+Innate Personality Attributes (Only changed through aquired Traits)
+ - Agreeableness (How easy or difficult this person is to work with)
+ - Ambition (desire to hold high level authoritive positions)
+ - Conscientiousness (work ethic, motivation, orginization and reliability)
+ - Extraversion (extravert vs introvert, charisma)
+ - Mindfulness (Situational Awareness)
+ - Courage (Willingness to take risks, face danger or adversity)
+
+Innate Mental Attributes (Never change)
+ - Adaptability (Affects form rating after position changes)
+ - Intellegence (Mental Capacity, skill cap)
+ - Imporvability (How quickly skills increase over time)
+
+
+*** Morale
+Soldiers will have a morale rating, that is based on a few factors such as:
+ - Ambition and current rank placement, relative to thier TIS
+ - Passing or failing an evaluation board
+ - Thier Form rating
+ - 
+
+*** Underlying Attributes
+ - Morale
+ - Ego
+ - FlightRisk (rename to Burnout)
+
+Personality
+
+---------------------------------------------------------------------------------
+-- New as of 6/15/2020
+---------------------------------------------------------------------------------
+
+*** Replace Billet procedures with SelectionProcedure class
+
+SelectionProcedures: Used for lateral movements, warrant selection, green to gold and special assignments
+Promotion Boards are used to move forward in Grade
+
+Forward Promotion:
+--> Must pass the RankGrade PromotionBoard for their Occupation or Generic (if not defined for Occupation)
+
+Lateral Promotion:
+--> Once a solider is no longer locked in to Position, They can be selected
+--> Everytime a position opens up, every available soldier gets called on "SoldierWrapper.GetLateralSelectionFactor()"
+--> Billet then selects the top ranking soldier based upon sorting, grouping and filtering
+
+Special Assignment / Cross-corps selection:
+--> Uses a procedure to fill up a list of candidates
+--> Everytime a position opens up, every soldier in pool gets called on "SoldierWrapper.WillAttemptSpecialAssignment(Position)"
+--> Soldiers who pass "SoldierWrapper.WillAttemptSpecialAssignment()", gets called on and scored by "EvaluationBoard.Evaluate(SoldierWrapper)"
+--> Billet then selects the top ranking soldier based upon sorting, grouping and filtering
+
+---------------------------------------------------------------------------------
+-- New as of 6/8/2024
+---------------------------------------------------------------------------------
+
+** Advanced Skills
+ - WeaponsProficiency: experience in the use of a wide range of weapons, including firearms, explosives, and other specialized equipment. They are trained to handle weapons safely and effectively in high-pressure situations.
+ - TacticalSkills: experience in advanced tactics and strategies for both offensive and defensive operations. They are skilled in reconnaissance, surveillance, and intelligence gathering.
+ - CombatSkills: experience in various combat techniques, including hand-to-hand combat, marksmanship, tactical shooting, close-quarters combat, and combat maneuvers.
+ - MedicalSkills: basic medical skills to provide first aid and emergency medical care in the field
+
+
+
+public Soldier SelectCandidate(this Position targetPosition, IEnumerable<Soldier> activeRoster, IterationDate currentDate)
+{
+    var targetRank = targetPosition.Billet.Rank;
+
+    // ---------------------------------------------------------
+    // STEP 1: LATERAL MOVE EVALUATION
+    // ---------------------------------------------------------
+    var lateralPool = activeRoster
+        .Where(s => s.Rank.Id == targetRank.Id) // Must be same rank
+        .Where(s => s.GetTimeInBillet(currentDate) > 6) // Minimum time before allowed to transfer
+        .ToList();
+
+    if (lateralPool.Any())
+    {
+        // Score every eligible soldier based on your 0-100 factor
+        var bestLateralCandidate = lateralPool
+            .Select(s => new 
+            { 
+                Soldier = s, 
+                Score = s.GetLateralSelectionFactor(targetPosition) 
+            })
+            .Where(x => x.Score > 50) // Minimum threshold to even consider moving
+            .OrderByDescending(x => x.Score)
+            .FirstOrDefault();
+
+        if (bestLateralCandidate != null)
+            return bestLateralCandidate.Soldier;
+    }
+
+    // ---------------------------------------------------------
+    // STEP 2: PROMOTION BOARD EVALUATION
+    // ---------------------------------------------------------
+    var eligibleForPromotion = activeRoster
+        .Where(s => s.Rank.PayGrade == targetRank.PayGrade - 1)
+        .Where(s => s.GetTimeInGrade(currentDate) >= targetRank.MinimumTIG)
+        .ToList();
+
+    // The gatekeeper: Do they even want the job?
+    var volunteers = eligibleForPromotion
+        .Where(s => s.WillAttemptGradeIncrease())
+        .ToList();
+
+    if (volunteers.Any())
+    {
+        // Run your stat weights and Form Rating to pick the winner
+        return RunEvaluationBoard(volunteers, targetPosition);
+    }
+
+    // ---------------------------------------------------------
+    // STEP 3: NO CANDIDATES
+    // ---------------------------------------------------------
+    return null; // Position remains empty
+}
+
+// For fast Lateral Moves:
+
+certifications
+navigation tags
+
+---- Burnout
+
+// 1. THE ATTENDANCE ROLL
+// E.g., 20 Conscientiousness = 95% chance to show up. 1 Conscientiousness = 30%.
+bool didAttend = _random.Next(1, 101) <= (25 + (soldier.Conscientiousness * 3.5));
+
+if (didAttend)
+{
+    // 2. CALCULATE RESISTANCE (Max: 10)
+    // Composure (handles immediate stress) + Adaptability (handles changing game scenarios)
+    double resistance = (soldier.Composure + soldier.Adaptability) / 4.0;
+
+    // 3. CALCULATE UNIT DRAMA (Max: +5 Stress)
+    // We blend the Leader's personality with their tactical coordination.
+    // 40 is max possible (20 Agreeableness + 20 Teamwork). 
+    double leaderFriction = (40.0 - (squadLeader.Agreeableness + squadLeader.Teamwork)) / 8.0;
+    
+    // A soldier with high Teamwork is a "team player" and absorbs some of that friction.
+    // A soldier with low Teamwork gets annoyed easily by bad leadership.
+    double personalDramaBuffer = soldier.Teamwork / 10.0; // Grants up to a 2.0 reduction
+    
+    double finalDramaPenalty = Math.Max(0, leaderFriction - personalDramaBuffer);
+
+    // 4. THE BURNOUT DELTA
+    // A stressful job plus a bad boss, minus their personal mental fortitude.
+    double burnoutGain = (currentPosition.StressLevel + finalDramaPenalty) - resistance;
+
+    // Minimum gain of 1.0 just so they don't play literally forever without *some* fatigue.
+    soldier.Burnout += Math.Max(1.0, burnoutGain); 
+}
+else
+{
+    // 5. THE RECOVERY
+    // They skipped the weekend op to hang out with their family. 
+    // They drop a flat chunk of Burnout.
+    soldier.Burnout -= 15.0; 
+}
+
+// 6. CLAMP IT
+soldier.Burnout = Math.Clamp(soldier.Burnout, 0.0, 100.0);
+
+
+
+---------------------------------------------------------------------------------
+-- New as of 4/26/2026
+---------------------------------------------------------------------------------
+
+Add Ammo statistics and usage
+Add Financial statistics
+Add Vehicles

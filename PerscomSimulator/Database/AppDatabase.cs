@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.SQLite;
-using CrossLite;
-using CrossLite.CodeFirst;
+﻿using Microsoft.Data.Sqlite;
 using System.IO;
 
 namespace Perscom.Database
 {
+    /// <summary>
+    /// Represents the application's user database, which is used to store and manage UnitBlueprint data, Persona's, and Rank data
+    /// </summary>
+    /// <remarks>This class initializes the database connection using a static connection string builder
+    /// configured for the application's SQLite database file, located in the "Data" directory under the application's
+    /// root path. The database is configured to use Write-Ahead Logging (WAL) mode and enforce foreign key
+    /// constraints.</remarks>
     public class AppDatabase : BaseDatabase
     {
         /// <summary>
         /// Contains the Connection string needed to create and connect
         /// to the application's SQLite database
         /// </summary>
-        protected static SQLiteConnectionStringBuilder Builder;
+        protected static SqliteConnectionStringBuilder Builder;
 
         /// <summary>
         /// Static Constructor
@@ -29,10 +29,10 @@ namespace Perscom.Database
                 Directory.CreateDirectory(source);
 
             // Create the connection builder
-            Builder = new SQLiteConnectionStringBuilder();
+            Builder = new SqliteConnectionStringBuilder();
             Builder.DataSource = Path.Combine(source, "AppData.db");
             Builder.ForeignKeys = true;
-            Builder.JournalMode = SQLiteJournalModeEnum.Wal;
+            Builder["Journal Mode"] = "Wal";
         }
 
         /// <summary>

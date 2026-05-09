@@ -29,6 +29,7 @@ namespace Perscom
             catch { }
 
             // Display the Exception Form
+            /*
             using (ExceptionForm EForm = new ExceptionForm(t, true))
             {
                 EForm.Message = "An unhandled exception was thrown while trying to preform the requested task.\r\n"
@@ -41,6 +42,7 @@ namespace Perscom
                 if (Result == DialogResult.Abort)
                     Application.Exit();
             }
+            */
         }
 
         /// <summary>
@@ -59,6 +61,7 @@ namespace Perscom
             }
             catch { }
 
+            /*
             // Display the Exception Form
             using (ExceptionForm EForm = new ExceptionForm(t.Exception, true))
             {
@@ -72,6 +75,7 @@ namespace Perscom
                 if (Result == DialogResult.Abort)
                     Application.Exit();
             }
+            */
         }
 
         /// <summary>
@@ -81,6 +85,7 @@ namespace Perscom
         /// <param name="e"></param>
         public static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            /*
             // Create Trace Log
             string FileName = GenerateFileName();
             Exception Ex = e.ExceptionObject as Exception;
@@ -111,6 +116,7 @@ namespace Perscom
                     Application.Exit();
                 }
             }
+            */
         }
 
         /// <summary>

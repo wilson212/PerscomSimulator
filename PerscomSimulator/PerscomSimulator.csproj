@@ -1,434 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D6D148AB-C86D-4536-AB95-4194953ABAB8}</ProjectGuid>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Perscom</RootNamespace>
-    <AssemblyName>PerscomSimulator</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>perscom_icon_sv6_icon.ico</ApplicationIcon>
+    <StartupObject>Perscom.Program</StartupObject>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
-      <HintPath>..\packages\NodaTime.1.3.2\lib\net35-Client\NodaTime.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\CrossLite\packages\System.Data.SQLite.Core.1.0.103\lib\net46\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms.DataVisualization" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="WindowsFormsIntegration" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Application\Epoch.cs" />
-    <Compile Include="Application\ExceptionHandler.cs" />
-    <Compile Include="Application\Condition.cs" />
-    <Compile Include="Database\Entities\Abstract\AbstractSort.cs" />
-    <Compile Include="Database\Entities\Abstract\AbstractBilletStatistics.cs" />
-    <Compile Include="Database\Entities\Abstract\AbstractFilter.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\BilletRandomizedProcedure.cs" />
-    <Compile Include="Database\Entities\BilletCareer.cs" />
-    <Compile Include="Database\Entities\BilletSelectionGroup.cs" />
-    <Compile Include="Database\Entities\BilletStatistics.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\BilletOrderedProcedure.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\OrderedPool.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolCareer.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolFilter.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolGroup.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolSorting.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\OrderedPoolSpecialty.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\OrderedProcedure.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\OrderedProcedureCareer.cs" />
-    <Compile Include="Database\Entities\PositionStatistics.cs" />
-    <Compile Include="Database\Enums.cs" />
-    <Compile Include="Extensions\ChartColorPallets.cs" />
-    <Compile Include="Extensions\IEnumerableExtensions.cs" />
-    <Compile Include="Extensions\StopWatchExtensions.cs" />
-    <Compile Include="UI\PositionHistoryForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\PositionHistoryForm.Designer.cs">
-      <DependentUpon>PositionHistoryForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Simulation\OrderedProcedureWrapper.cs" />
-    <Compile Include="Simulation\Procedures\AbstractSelectionProcedure.cs" />
-    <Compile Include="Simulation\Procedures\SoldierEntryProcedure.cs" />
-    <Compile Include="Simulation\Procedures\LateralOnlyProcedure.cs" />
-    <Compile Include="Simulation\Procedures\OrderedSelectionProcedure.cs" />
-    <Compile Include="Simulation\Procedures\PromotionOnlyProcedure.cs" />
-    <Compile Include="Simulation\Procedures\PromotionOrLateralProcedure.cs" />
-    <Compile Include="Simulation\Procedures\RandomizedSelectionProcedure.cs" />
-    <Compile Include="Simulation\RandomizedProcedureWrapper.cs" />
-    <Compile Include="Simulation\SimulationCache.cs" />
-    <Compile Include="UI\OrderedPoolForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\OrderedPoolForm.Designer.cs">
-      <DependentUpon>OrderedPoolForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\OrderedProcedureForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\OrderedProcedureForm.Designer.cs">
-      <DependentUpon>OrderedProcedureForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Simulation\Events\RankChangeEventArgs.cs" />
-    <Compile Include="Simulation\Events\SpecialtyChangeEventArgs.cs" />
-    <Compile Include="Simulation\Events\PositionChangeEventArgs.cs" />
-    <Compile Include="Simulation\Events\PositionAndRankChangeEventArgs.cs" />
-    <Compile Include="Simulation\Events\LateralPositionExchangeEventArgs.cs" />
-    <Compile Include="UI\PositionStatsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\PositionStatsForm.Designer.cs">
-      <DependentUpon>PositionStatsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ExperienceNameChangeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ExperienceNameChangeForm.Designer.cs">
-      <DependentUpon>ExperienceNameChangeForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\SoldierFilterForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SoldierFilterForm.Designer.cs">
-      <DependentUpon>SoldierFilterForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\SoldierSortingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SoldierSortingForm.Designer.cs">
-      <DependentUpon>SoldierSortingForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Database\Entities\BilletExperience.cs" />
-    <Compile Include="Database\Entities\BilletSelectionFilter.cs" />
-    <Compile Include="Database\Entities\BilletSelectionSorting.cs" />
-    <Compile Include="Database\Entities\SoldierExperience.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\RandomizedPoolSorting.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\RandomizedPoolFilter .cs" />
-    <Compile Include="Database\Entities\Experience.cs" />
-    <Compile Include="UI\ExperienceSelectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ExperienceSelectForm.Designer.cs">
-      <DependentUpon>ExperienceSelectForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ExperienceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ExperienceForm.Designer.cs">
-      <DependentUpon>ExperienceForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Simulation\SelectionProcedure.cs" />
-    <Compile Include="Simulation\SoldierPoolWrapper.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\RandomizedProcedureCareer.cs" />
-    <Compile Include="Controls\ListViewWithReordering.cs">
+    <Compile Update="Controls\ShadowLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Simulation\Enums.cs" />
-    <Compile Include="Extensions\ListExtensions.cs" />
-    <Compile Include="Extensions\IntExtensions.cs" />
-    <Compile Include="Extensions\NumericUpDownExtensions.cs" />
-    <Compile Include="Application\FormStyling.cs" />
-    <Compile Include="UI\CareerGeneratorEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\CareerGeneratorEditorForm.Designer.cs">
-      <DependentUpon>CareerGeneratorEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Database\BaseDatabase.cs" />
-    <Compile Include="Extensions\DictionaryExtensions.cs" />
-    <Compile Include="Database\Entities\CareerGenerator.cs" />
-    <Compile Include="Database\Entities\SpecialtyAssignment.cs" />
-    <Compile Include="Controls\MyCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\MyCheckBox.Designer.cs">
-      <DependentUpon>MyCheckBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Database\Entities\Billet Procedures\RandomizedPoolCareer.cs" />
-    <Compile Include="Simulation\SoldierFormWrapper.cs" />
-    <Compile Include="UI\RandomizedPoolForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\RandomizedPoolForm.Designer.cs">
-      <DependentUpon>RandomizedPoolForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\SimResultViewForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SimResultViewForm.Designer.cs">
-      <DependentUpon>SimResultViewForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Simulation\BilletWrapper.cs" />
-    <Compile Include="Database\Entities\IterationDate.cs" />
-    <Compile Include="Database\Entities\SoldierUnitAttachment.cs" />
-    <Compile Include="Database\SimDatabase.cs" />
-    <Compile Include="Database\Entities\SpecialtyGradeStatistics.cs" />
-    <Compile Include="Simulation\UnitBuilder.cs" />
-    <Compile Include="Simulation\UnitStatistics.cs" />
-    <Compile Include="Simulation\UnitTemplateWrapper.cs" />
-    <Compile Include="UI\RequiredSpecialtiesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\RequiredSpecialtiesForm.Designer.cs">
-      <DependentUpon>RequiredSpecialtiesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Database\Entities\Abstract\BilletCustomProcedure.cs" />
-    <Compile Include="Database\Entities\BilletSpecialty.cs" />
-    <Compile Include="Database\Entities\BilletSpecialtyRequirement.cs" />
-    <Compile Include="Database\Entities\BilletCatagory.cs" />
-    <Compile Include="Database\Entities\CareerLengthRange.cs" />
-    <Compile Include="Database\Entities\Specialty.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\RandomizedProcedure.cs" />
-    <Compile Include="Database\Entities\Billet Procedures\RandomizedPool.cs" />
-    <Compile Include="UI\RandomizedProcedureForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\RandomizedProcedureForm.Designer.cs">
-      <DependentUpon>RandomizedProcedureForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\SpecialtyEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SpecialtyEditorForm.Designer.cs">
-      <DependentUpon>SpecialtyEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\CareerLengthEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\CareerLengthEditorForm.Designer.cs">
-      <DependentUpon>CareerLengthEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\BilletEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\BilletEditorForm.Designer.cs">
-      <DependentUpon>BilletEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\CustomPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Application\ImageAccessor.cs" />
-    <Compile Include="Extensions\ProgressBarExtensions.cs" />
-    <Compile Include="Controls\GradientPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ShadowLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Simulation\SoldierWrapper.cs" />
-    <Compile Include="Application\SyncProgress.cs" />
-    <Compile Include="Application\TaskProgressUpdate.cs" />
-    <Compile Include="Extensions\DateTimeExt.cs" />
-    <Compile Include="Database\AppDatabase.cs" />
-    <Compile Include="Database\Entities\Assignment.cs" />
-    <Compile Include="Database\Entities\Billet.cs" />
-    <Compile Include="Database\Entities\Echelon.cs" />
-    <Compile Include="Database\Entities\DbVersion.cs" />
-    <Compile Include="Database\MigrationWizard.cs" />
-    <Compile Include="Database\Entities\UnitTemplate.cs" />
-    <Compile Include="Database\Entities\Unit.cs" />
-    <Compile Include="Database\Entities\Position.cs" />
-    <Compile Include="Database\Entities\Soldier.cs" />
-    <Compile Include="Database\Entities\UnitAttachment.cs" />
-    <Compile Include="Database\Entities\UnitTemplateAttachment.cs" />
-    <Compile Include="Database\Entities\Promotion.cs" />
-    <Compile Include="Database\Entities\Rank.cs" />
-    <Compile Include="Database\Entities\PastAssignment.cs" />
-    <Compile Include="UI\RankEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\RankEditorForm.Designer.cs">
-      <DependentUpon>RankEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ExceptionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ExceptionForm.Designer.cs">
-      <DependentUpon>ExceptionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Simulation\PromotableStatus.cs" />
-    <Compile Include="Database\Entities\RankGradeStatistics.cs" />
-    <Compile Include="Simulation\RandomNameGenerator.cs" />
-    <Compile Include="Simulation\RankType.cs" />
-    <Compile Include="Simulation\SimulatorSettings.cs" />
-    <Compile Include="Simulation\UnitWrapper.cs" />
-    <Compile Include="Simulation\PositionWrapper.cs" />
-    <Compile Include="UI\SoldierEditForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SoldierEditForm.Designer.cs">
-      <DependentUpon>SoldierEditForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\SoldierViewForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\SoldierViewForm.Designer.cs">
-      <DependentUpon>SoldierViewForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Application\Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Simulation\ISpawnable.cs" />
-    <Compile Include="Simulation\CryptoRandom.cs" />
-    <Compile Include="Application\Range.cs" />
-    <Compile Include="Database\RankCache.cs" />
-    <Compile Include="Simulation\Simulator.cs" />
-    <Compile Include="Simulation\SpawnGenerator.cs" />
-    <Compile Include="UI\TaskForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\TaskForm.Designer.cs">
-      <DependentUpon>TaskForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\UnitTypeManagerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\UnitTypeManagerForm.Designer.cs">
-      <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="UI\OrderedPoolForm.resx">
-      <DependentUpon>OrderedPoolForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\OrderedProcedureForm.resx">
-      <DependentUpon>OrderedProcedureForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\PositionHistoryForm.resx">
-      <DependentUpon>PositionHistoryForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\PositionStatsForm.resx">
-      <DependentUpon>PositionStatsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ExperienceNameChangeForm.resx">
-      <DependentUpon>ExperienceNameChangeForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\SoldierSortingForm.resx">
-      <DependentUpon>SoldierSortingForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\SoldierFilterForm.resx">
-      <DependentUpon>SoldierFilterForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ExperienceSelectForm.resx">
-      <DependentUpon>ExperienceSelectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\CareerGeneratorEditorForm.resx">
-      <DependentUpon>CareerGeneratorEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ExperienceForm.resx">
-      <DependentUpon>ExperienceForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\RandomizedPoolForm.resx">
-      <DependentUpon>RandomizedPoolForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\SimResultViewForm.resx">
-      <DependentUpon>SimResultViewForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\RequiredSpecialtiesForm.resx">
-      <DependentUpon>RequiredSpecialtiesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\RandomizedProcedureForm.resx">
-      <DependentUpon>RandomizedProcedureForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\SpecialtyEditorForm.resx">
-      <DependentUpon>SpecialtyEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\CareerLengthEditorForm.resx">
-      <DependentUpon>CareerLengthEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\BilletEditorForm.resx">
-      <DependentUpon>BilletEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\RankEditorForm.resx">
-      <DependentUpon>RankEditorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="UI\SoldierEditForm.resx">
-      <DependentUpon>SoldierEditForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\SoldierViewForm.resx">
-      <DependentUpon>SoldierViewForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\TaskForm.resx">
-      <DependentUpon>TaskForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\UnitTypeManagerForm.resx">
-      <DependentUpon>UnitTypeManagerForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
+    <EmbeddedResource Include="Properties\licenses.licx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\icons\o10.png">
@@ -531,17 +121,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="perscom_icon_sv6_icon.ico" />
-    <None Include="Resources\vistaerror.png" />
-    <None Include="Resources\vistaInfo.png" />
-    <None Include="Resources\vistaWarning.png" />
-    <None Include="Resources\plus.png" />
-    <Content Include="SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ToDo.txt" />
-    <None Include="Resources\background.png" />
-    <None Include="Resources\BannerTopSecond.png" />
-    <None Include="Resources\mainPattern.png" />
     <Content Include="Config\Names.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -598,18 +178,248 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CrossLite\CrossLite\CrossLite.csproj">
-      <Project>{19f0606e-4bdf-4e58-a722-4100c92f90c4}</Project>
-      <Name>CrossLite</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\CrossLite\CrossLite\CrossLite.csproj" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <Folder Include="Images\flags\" />
+    <Folder Include="Images\soldiers\" />
+    <Folder Include="Images\ranks\US SpaceForce\" />
+    <Folder Include="Images\ranks\US Navy\" />
+    <Folder Include="Images\ranks\US AirForce\" />
+    <Folder Include="Images\ranks\US Marines\" />
+    <Folder Include="Images\ranks\US Army\" />
+    <Folder Include="UI\SimResult\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.GenAI" Version="1.6.1" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="NodaTime" Version="3.3.2" />
+    <PackageReference Include="UI.for.WinForms.AllControls.Net80">
+      <Version>2026.1.415</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Database\Entities\BilletCustomGenerator.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\Condition.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\Epoch.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\ExceptionHandler.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\FormStyling.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\ImageAccessor.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\Program.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\Range.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\SyncProgress.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Application\TaskProgressUpdate.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Controls\CustomPanel.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Controls\GradientPanel.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Controls\ListViewWithReordering.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Controls\MyCheckBox.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Controls\MyCheckBox.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Controls\ShadowLabel.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\AppDatabase.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\BaseDatabase.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Abstract\AbstractBilletStatistics.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Abstract\AbstractFilter.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Abstract\AbstractSort.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Abstract\BilletCustomProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Assignment.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\BilletOrderedProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\BilletRandomizedProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\OrderedPool.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\OrderedPoolCareer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\OrderedPoolFilter.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\OrderedPoolGroup.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\OrderedPoolSorting.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\OrderedPoolSpecialty.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\OrderedProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\OrderedProcedureCareer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\RandomizedPool.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\RandomizedPoolCareer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\RandomizedPoolFilter .cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\RandomizedPoolSorting.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\RandomizedProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet Procedures\RandomizedProcedureCareer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Billet.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletCareer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletCatagory.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletCustomGenerator.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletExperience.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletSelectionFilter.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletSelectionGroup.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletSelectionSorting.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletSpecialty.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletSpecialtyRequirement.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\BilletStatistics.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\CareerGenerator.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\CareerLengthRange.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\DbVersion.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Echelon.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Experience.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\IterationDate.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\PastAssignment.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Position.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\PositionStatistics.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Promotion.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Rank.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\RankGradeStatistics.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Soldier.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\SoldierExperience.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\SoldierUnitAttachment.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Specialty.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\SpecialtyAssignment.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\SpecialtyGradeStatistics.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\Unit.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\UnitAttachment.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\UnitTemplate.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Entities\UnitTemplateAttachment.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\Enums.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\MigrationWizard.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\RankCache.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Database\SimDatabase.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\ChartColorPallets.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\DateTimeExt.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\DictionaryExtensions.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\IEnumerableExtensions.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\IntExtensions.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\ListExtensions.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\NumericUpDownExtensions.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\ProgressBarExtensions.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Extensions\StopWatchExtensions.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\obj\Release\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\obj\Release\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\obj\Release\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Properties\AssemblyInfo.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Properties\Resources.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Properties\Settings.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\BilletWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\CryptoRandom.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Enums.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Events\LateralPositionExchangeEventArgs.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Events\PositionAndRankChangeEventArgs.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Events\PositionChangeEventArgs.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Events\RankChangeEventArgs.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Events\SpecialtyChangeEventArgs.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\ISpawnable.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\OrderedProcedureWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\PositionWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Procedures\AbstractSelectionProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Procedures\LateralOnlyProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Procedures\OrderedSelectionProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Procedures\PromotionOnlyProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Procedures\PromotionOrLateralProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Procedures\RandomizedSelectionProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Procedures\SoldierEntryProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\PromotableStatus.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\RandomizedProcedureWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\RandomNameGenerator.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\RankType.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\SelectionProcedure.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\SimulationCache.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\Simulator.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\SimulatorSettings.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\SoldierFormWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\SoldierPoolWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\SoldierWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\SpawnGenerator.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\UnitBuilder.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\UnitStatistics.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\UnitTemplateWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Simulation\UnitWrapper.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\BilletEditorForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\BilletEditorForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\CareerGeneratorEditorForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\CareerGeneratorEditorForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\CareerLengthEditorForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\CareerLengthEditorForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExceptionForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExceptionForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceNameChangeForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceNameChangeForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceSelectForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceSelectForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\MainForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\MainForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\OrderedPoolForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\OrderedPoolForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\OrderedProcedureForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\OrderedProcedureForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\PositionHistoryForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\PositionHistoryForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\PositionStatsForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\PositionStatsForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RandomizedPoolForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RandomizedPoolForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RandomizedProcedureForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RandomizedProcedureForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RankEditorForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RankEditorForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RequiredSpecialtiesForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RequiredSpecialtiesForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SimResultViewForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SimResultViewForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierEditForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierEditForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierFilterForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierFilterForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierSortingForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierSortingForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierViewForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierViewForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SpecialtyEditorForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SpecialtyEditorForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\TaskForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\TaskForm.Designer.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\UnitTypeManagerForm.cs" />
+    <Compile Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\UnitTypeManagerForm.Designer.cs" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\Properties\Resources.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\BilletEditorForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\CareerGeneratorEditorForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\CareerLengthEditorForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExceptionForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceNameChangeForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\ExperienceSelectForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\MainForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\OrderedPoolForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\OrderedProcedureForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\PositionHistoryForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\PositionStatsForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RandomizedPoolForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RandomizedProcedureForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RankEditorForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\RequiredSpecialtiesForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SimResultViewForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierEditForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierFilterForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierSortingForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SoldierViewForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\SpecialtyEditorForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\TaskForm.resx" />
+    <EmbeddedResource Remove="PerscomSimulator_Backup_2019.05.19_11.47.16\UI\UnitTypeManagerForm.resx" />
+    <EmbeddedResource Remove="UI\ExceptionForm.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Telerik.WinControls">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.WinControls.ChartView">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.ChartView.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.WinControls.GridView">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.GridView.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.WinControls.Themes.Fluent">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.Themes.Fluent.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.WinControls.UI">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="TelerikCommon">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\TelerikCommon.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
