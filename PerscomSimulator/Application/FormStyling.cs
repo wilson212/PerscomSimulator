@@ -33,6 +33,12 @@ namespace Perscom
         public static readonly Color DarkBlueAccentColor = Color.FromArgb(45, 100, 160);
         public static readonly Color DarkBlueAccentMouseOverColor = Color.FromArgb(65, 130, 210);
         public static readonly Color DarkBlueAccentPressedColor = Color.FromArgb(30, 60, 90);
+        public static readonly Color DarkBlueAccentFocusColor = Color.FromArgb(100, 180, 255);
+
+        public static readonly Color BlueAccentColor = Color.FromArgb(65, 130, 210);
+        public static readonly Color BlueAccentPressedColor = Color.FromArgb(45, 100, 160);
+        public static readonly Color BlueAccentMouseOverColor = Color.FromArgb(85, 165, 250);
+        public static readonly Color BlueAccentFocusColor = Color.FromArgb(115, 195, 255);
 
         public static readonly Color RedAccentColor = Color.FromArgb(165, 0, 0);
         public static readonly Color RedAccentMouseOverColor = Color.FromArgb(200, 0, 0);
@@ -46,6 +52,25 @@ namespace Perscom
         private static readonly Pen GreyPen = new Pen(Color.FromArgb(62, 62, 62), 1);
 
         #endregion
+
+        public static void ApplyControlsTheme(Control.ControlCollection controls)
+        {
+            foreach (Control control in controls)
+            {
+                // If it's a Telerik control, clear the ThemeName
+                if (control is RadControl radControl)
+                {
+                    if (radControl.ThemeName == "Fluent")
+                        radControl.ThemeName = "FluentPerscomBlue";
+                }
+
+                // Recursively check children (panels, groupboxes, tab pages, etc.)
+                if (control.HasChildren)
+                {
+                    ApplyControlsTheme(control.Controls);
+                }
+            }
+        }
 
         /// <summary>
         /// Provides Fluent theme styling to a <see cref="RadButton"/> using the specified colors
@@ -125,6 +150,35 @@ namespace Perscom
         }
 
         /// <summary>
+        /// Provides Fluent theme styling to a <see cref="RadButton"/> using the specified colors
+        /// </summary>
+        /// <param name="button"></param>
+        /// <param name="accentColor"></param>
+        /// <param name="mouseOverColor"></param>
+        /// <param name="pressedColor"></param>
+        public static void StyleButton(RadButton button, Color accentColor, Color mouseOverColor, Color pressedColor, Color focusColor)
+        {
+            // Use base method
+            StyleButton(button, accentColor, mouseOverColor, pressedColor);
+
+            ///
+            /// Focused State (Border/Glow)
+            ///
+            button.ButtonElement.SetThemeValueOverride(
+                BorderPrimitive.ForeColorProperty,
+                focusColor,
+                "IsFocused",
+                typeof(BorderPrimitive)
+            );
+            button.ButtonElement.SetThemeValueOverride(
+                BorderPrimitive.GradientStyleProperty,
+                GradientStyles.Solid,
+                "IsFocused",
+                typeof(BorderPrimitive)
+            );
+        }
+
+        /// <summary>
         /// Converts a Fluent gray button to a blue color using the FluentPallete
         /// colors
         /// </summary>
@@ -139,6 +193,13 @@ namespace Perscom
         /// <param name="button"></param>
         public static void StyleButtonDarkBlue(RadButton button)
             => StyleButton(button, DarkBlueAccentColor, DarkBlueAccentMouseOverColor, DarkBlueAccentPressedColor);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="button"></param>
+        public static void StyleButtonBlue(RadButton button)
+            => StyleButton(button, BlueAccentColor, BlueAccentMouseOverColor, BlueAccentPressedColor);
 
         /// <summary>
         /// Converts a Fluent gray button to a red color using the FluentPallete

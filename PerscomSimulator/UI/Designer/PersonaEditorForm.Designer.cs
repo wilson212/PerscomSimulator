@@ -1375,13 +1375,13 @@
             Statistics.Dock = System.Windows.Forms.DockStyle.Fill;
             Statistics.Location = new System.Drawing.Point(0, 75);
             Statistics.Name = "Statistics";
-            Statistics.SelectedPage = radPageViewPage1;
+            Statistics.SelectedPage = radPageViewPage2;
             Statistics.Size = new System.Drawing.Size(1072, 672);
             Statistics.TabIndex = 19;
             Statistics.ThemeName = "Fluent";
             ((Telerik.WinControls.UI.RadPageViewStripElement)Statistics.GetChildAt(0)).StripButtons = Telerik.WinControls.UI.StripViewButtons.None;
-            ((Telerik.WinControls.UI.RadPageViewLabelElement)Statistics.GetChildAt(0).GetChildAt(2)).Text = "Persona Details";
-            ((Telerik.WinControls.UI.RadPageViewLabelElement)Statistics.GetChildAt(0).GetChildAt(3)).Text = "Persona Details";
+            ((Telerik.WinControls.UI.RadPageViewLabelElement)Statistics.GetChildAt(0).GetChildAt(2)).Text = "Innitial Attributes";
+            ((Telerik.WinControls.UI.RadPageViewLabelElement)Statistics.GetChildAt(0).GetChildAt(3)).Text = "Innitial Attributes";
             // 
             // PersonaEditorForm
             // 

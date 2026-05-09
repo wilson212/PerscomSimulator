@@ -5,8 +5,7 @@
     <RootNamespace>Perscom</RootNamespace>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
-    <UseWPF>true</UseWPF>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <UseWPF>False</UseWPF>
     <Platforms>x64</Platforms>
   </PropertyGroup>
   <PropertyGroup>
@@ -18,7 +17,7 @@
     <Compile Update="Controls\ShadowLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Resources\FluentPerscomBlue.tssp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\icons\o10.png">
@@ -191,6 +190,7 @@
     <Folder Include="UI\SimResult\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="5.2.1" />
     <PackageReference Include="Google.GenAI" Version="1.6.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="NodaTime" Version="3.3.2" />
@@ -403,23 +403,6 @@
     <EmbeddedResource Remove="UI\ExceptionForm.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Telerik.WinControls">
-      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.WinControls.ChartView">
-      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.ChartView.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.WinControls.GridView">
-      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.GridView.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.WinControls.Themes.Fluent">
-      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.Themes.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.WinControls.UI">
-      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\Telerik.WinControls.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="TelerikCommon">
-      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WinForms 2024 Q4\Bin80\TelerikCommon.dll</HintPath>
-    </Reference>
+    <None Remove="Resources\FluentPerscomBlue.tssp" />
   </ItemGroup>
 </Project>

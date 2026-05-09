@@ -15,6 +15,7 @@ namespace Perscom
         public FactionEditorForm()
         {
             InitializeComponent();
+            FormStyling.ApplyControlsTheme(this.Controls);
         }
 
         /// <summary>

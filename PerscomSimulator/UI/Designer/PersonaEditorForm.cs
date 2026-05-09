@@ -14,8 +14,6 @@ using Telerik.WinControls.UI;
 
 namespace Perscom
 {
-
-
     public partial class PersonaEditorForm : RadForm
     {
         /// <summary>
@@ -47,7 +45,8 @@ namespace Perscom
         {
             // Apply form styling and create controls
             InitializeComponent();
-            FormStyling.StyleButtonFluentBlue(saveButton);
+            FormStyling.ApplyControlsTheme(this.Controls);
+            //FormStyling.StyleButtonFluentBlue(saveButton);
 
             ExistingPersona = existing;
             IsNewPersona = (existing == null);
@@ -380,15 +379,15 @@ namespace Perscom
             string name = personaNameTextBox.Text.Trim();
             if (string.IsNullOrEmpty(name))
             {
-                MessageBox.Show("Please enter a name for this Persona.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RadMessageBox.Show("Please enter a name for this Persona.",
+                    "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
                 return;
             }
 
             if ((int)ProbabilityTrackBar.Value <= 0)
             {
-                MessageBox.Show("Spawn probability must be greater than zero.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RadMessageBox.Show("Spawn probability must be greater than zero.",
+                    "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
                 return;
             }
 
@@ -398,8 +397,8 @@ namespace Perscom
 
             if (avgAge < minAge || avgAge > maxAge)
             {
-                MessageBox.Show("Average age must be between minimum and maximum age.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RadMessageBox.Show("Average age must be between minimum and maximum age.",
+                    "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
                 return;
             }
 
@@ -409,8 +408,8 @@ namespace Perscom
 
             if (avgCareer < minCareer || avgCareer > maxCareer)
             {
-                MessageBox.Show("Average career length must be between minimum and maximum.",
-                    "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RadMessageBox.Show("Average career length must be between minimum and maximum.",
+                    "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
                 return;
             }
 
@@ -516,8 +515,8 @@ namespace Perscom
             catch (Exception ex)
             {
                 transaction.Rollback();
-                MessageBox.Show($"Failed to save Persona: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                RadMessageBox.Show($"Failed to save Persona: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, RadMessageIcon.Error);
             }
         }
 
