@@ -53,6 +53,7 @@ namespace Perscom.Database
         /// e.g., ThisRankId = First Sergeant (E-8) => NextRankId = Sergeant Major (E-9)
         /// Master Gunnery Sergeant is completely blocked off from them.
         /// </remarks>
+        [Column, Default(null)]
         public virtual int? NextRankId { get; set; } 
 
         /// <summary>

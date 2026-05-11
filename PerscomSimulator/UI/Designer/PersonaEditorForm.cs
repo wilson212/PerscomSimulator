@@ -36,6 +36,9 @@ namespace Perscom
         /// </summary>
         public PersonaEditorForm() : this(null)
         {
+            // Create components and apply theme
+            InitializeComponent();
+            FormStyling.ApplyControlsTheme(Controls);
         }
 
         /// <summary>

@@ -29,7 +29,7 @@ namespace Perscom.Database
         /// 
         /// </summary>
         [Column, Required, Default(0)]
-        public virtual PoolSelection PoolSelection => PoolSelection.Collective;
+        public virtual PoolSelection PoolSelection { get; set; } = PoolSelection.Collective;
 
         #endregion
     }

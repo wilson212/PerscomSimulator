@@ -52,7 +52,9 @@ namespace Perscom
         private PromotionBoardEditor(Rank rank, RankClassification rankClassification, 
             Occupation occupation, PromotionBoard existing)
         {
+            // Create components and apply theme
             InitializeComponent();
+            FormStyling.ApplyControlsTheme(Controls);
 
             // Fill board type dropdown
             foreach (PromotionBoardType item in Enum.GetValues(typeof(PromotionBoardType)))

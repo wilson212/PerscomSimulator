@@ -14,6 +14,12 @@ namespace Perscom.Database
         /// </summary>
         [Column, PrimaryKey]
         public virtual int Id { get; protected set; }
+        
+        /// <summary>
+        /// Gets or Sets the <see cref="Faction.Id"/> this entity references
+        /// </summary>
+        [Column, Required]
+        public virtual int FactionId { get; set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="Echelon"/> object
@@ -60,6 +66,17 @@ namespace Perscom.Database
         #endregion
 
         #region Foreign Key Properties
+        
+        /// <summary>
+        /// Gets or Sets the <see cref="Database.Faction"/> that 
+        /// this unit type falls under.
+        /// </summary>
+        [ForeignKey(nameof(FactionId))]
+        [References(nameof(Database.Faction.Id), 
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade
+        )]
+        public virtual Faction Faction { get; set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="Database.Echelon"/> that 
@@ -84,7 +101,6 @@ namespace Perscom.Database
         public virtual Echelon PromotionEchelon { get; set; }
 
         #endregion
-
 
         #region Child Database Sets
 

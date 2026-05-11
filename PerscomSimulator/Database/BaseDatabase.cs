@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using CrossLite;
 using CrossLite.CodeFirst;
@@ -136,8 +137,11 @@ namespace Perscom.Database
         /// <param name="Builder"></param>
         public BaseDatabase(SqliteConnectionStringBuilder Builder) : base(Builder)
         {
+            Debug.WriteLine($"Database: {Builder.DataSource}");
             // Open connection first
             base.Connect();
+            
+            Debug.WriteLine("Database initialized with WAL journal mode, NORMAL synchronous, 20MB cache, MEMORY temp store, 256MB mmap, and 4KB page size.");
             
             Execute("PRAGMA journal_mode = WAL;");      // Write-Ahead Logging - massive concurrency + write perf
             Execute("PRAGMA synchronous = NORMAL;");     // Safe with WAL, much faster than FULL
@@ -145,6 +149,8 @@ namespace Perscom.Database
             Execute("PRAGMA temp_store = MEMORY;");      // Temp tables in RAM
             Execute("PRAGMA mmap_io = 268435456;");      // 256MB memory-mapped I/O
             Execute("PRAGMA page_size = 4096;");         // Only effective on new DBs, but good default
+            
+            Debug.WriteLine("Database connection opened.");
 
             // Grab the current tables version
             if (DatabaseVersion == null)
@@ -155,11 +161,18 @@ namespace Perscom.Database
                 }
                 catch (SqliteException e) when (e.Message.Contains("no such table"))
                 {
+                    Debug.WriteLine("Database is empty, creating tables...");
+                    
                     // Rebuild database tables
                     BuildTables();
 
                     // Try 1 last time to get the Version
                     GetVersion();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"Failed to get database version: {e.Message}");
+                    throw new Exception($"Failed to get database version: {e.Message}");
                 }
             }
 

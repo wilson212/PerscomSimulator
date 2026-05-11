@@ -10,8 +10,18 @@ namespace Perscom
 {
     public partial class RankGradeEditorForm : RadForm
     {
-        public RankGradeEditorForm()
+        private Faction SelectedFaction { get; set; }
+
+        public RankGradeEditorForm(Faction selectedFaction)
         {
+            if (selectedFaction == null)
+            {
+                
+            }
+
+            SelectedFaction = selectedFaction;
+
+            // Create components and apply theme
             InitializeComponent();
             radTreeView1.TreeViewElement.DrawBorder = false;
             radTreeView1.Nodes.Add(new RadTreeNode("Enlisted") { Tag = RankType.Enlisted });
@@ -25,6 +35,7 @@ namespace Perscom
             radPanel2.PanelElement.PanelBorder.RightWidth = 0;
 
             // Button styling
+            FormStyling.ApplyControlsTheme(Controls);
             FormStyling.StyleButtonFluentBlue(applyButton);
             FormStyling.StyleButtonDarkBlue(CloseButton);
 
@@ -46,6 +57,13 @@ namespace Perscom
             addGradeMenuItem.Click += AddGradeMenuItem_Click;
             wizardMenuItem.Click += WizardMenuItem_Click;
             deleteGradeMenuItem.Click += DeleteGradeMenuItem_Click;
+            aiMenuItem.Click += AiMenuItem_Click;
+        }
+
+        private void AiMenuItem_Click(object sender, EventArgs e)
+        {
+            AdvisorChatForm.SetFactionId(SelectedFaction.Id);
+            AdvisorChatForm.Open(this);
         }
 
         private void RankGradeEditorForm_Load(object sender, EventArgs e)
@@ -67,7 +85,7 @@ namespace Perscom
             {
                 radTreeView1.SelectedNode = null;
             }
-            
+
             DescriptionGroupBox.Text = "Please Add or Select a Rank Grade";
             SelectionDropDownList.SelectedIndex = 0;
             PrevTIGReq.Value = 0;
@@ -189,7 +207,7 @@ namespace Perscom
 
         private void WizardMenuItem_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         /// <summary>
@@ -242,5 +260,10 @@ namespace Perscom
         }
 
         #endregion
+
+        private void RankGradeEditorForm_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

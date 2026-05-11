@@ -13,7 +13,9 @@ namespace Perscom
     {
         public MainForm()
         {
+            // Create components and apply theme
             InitializeComponent();
+            FormStyling.ApplyControlsTheme(Controls);
 
             // Button styling
             //FormStyling.StyleButtonFluentBlue(btnDesignUnit);

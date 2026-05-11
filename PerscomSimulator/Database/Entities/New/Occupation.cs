@@ -20,6 +20,12 @@ namespace Perscom.Database
         /// </summary>
         [Column, PrimaryKey]
         public virtual int Id { get; protected set; }
+        
+        /// <summary>
+        /// Gets or sets the <see cref="Faction.Id"/> this entity references
+        /// </summary>
+        [Column, Required]
+        public virtual int FactionId { get; set; }
 
         /// <summary>
         /// Gets or sets the code of this Occupational Occupation
@@ -39,6 +45,22 @@ namespace Perscom.Database
         [Column, Required]
         public virtual RankType Type { get; set; }
 
+        #endregion
+        
+        #region Parent Database Sets
+        
+        /// <summary>
+        /// Represents the faction associated with the occupation.
+        /// This property establishes a foreign key relationship to the <see cref="Faction"/> table
+        /// to ensure referential integrity within the database.
+        /// </summary>
+        [ForeignKey(nameof(FactionId))]
+        [References(nameof(Database.Faction.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade
+        )]
+        public virtual Faction Faction { get; set; }
+        
         #endregion
 
         #region Child Database Sets

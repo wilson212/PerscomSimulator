@@ -17,27 +17,27 @@ namespace Perscom.Database
         /// The IsUnique SpawnRate ID (Row ID)
         /// </summary>
         [Column, PrimaryKey]
-        public int PersonaId { get; set; }
+        public virtual int PersonaId { get; set; }
 
         /// <summary>
         /// The IsUnique Row ID
         /// </summary>
         [Column, PrimaryKey]
-        public AttributeType AttributeId { get; set; }
+        public virtual AttributeType AttributeId { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum spawn value a soldier will recieve using this
         /// <see cref="Database.Persona"/> for the provided Stat ID
         /// </summary>
         [Column, Required]
-        public int MinSpawnValue { get; set; } = 0;
+        public virtual int MinSpawnValue { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the maximim spawn value a soldier will recieve using this
         /// <see cref="Database.Persona"/> for the provided Stat ID
         /// </summary>
         [Column, Required]
-        public int MaxSpawnValue { get; set; } = 0;
+        public virtual int MaxSpawnValue { get; set; } = 0;
 
         #endregion
 

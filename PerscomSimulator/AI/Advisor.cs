@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Google.GenAI;
 using Google.GenAI.Types;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Telerik.WinControls.UI;
+using Telerik.WinControls.UI.ConversationalUI;
+using Type = Google.GenAI.Types.Type;
 
 namespace Perscom.AI;
 
@@ -25,17 +29,24 @@ public class Advisor
     /// It specifies the assistant's role, tasks, and behavior, such as querying database state before making suggestions
     /// and providing structured JSON outputs for confirmed designs.
     /// </summary>
-    private const string Context =
-        @"You are a military organization design assistant for a MILSIM Airsoft league simulator.
-You help users create rank systems, unit blueprints, and position blueprints.
-Always use the provided functions to query existing database state before making suggestions.
-When the user confirms a design, output structured JSON for entity creation.";
-    
+    private const string Context = @"You are a military organization design assistant for a MILSIM Airsoft league simulator.
+    You help users create rank systems, unit blueprints, and position blueprints.
+    Always use the provided functions to query existing database state before making suggestions.
+    When the user confirms a design, output structured JSON for entity creation.
+
+    CRITICAL CONTEXT:
+    - When querying ranks, rank classifications, and UnitBlueprints, Ensure the user has provided the Faction ID. A value of 0 indicates no faction is selected.
+
+    CRITICAL RULES:
+    - Never assume missing information. If a user asks to build a position but does not specify the parent unit, YOU MUST ask the user which unit it belongs to before calling any creation tools.
+    - If the user uses a vague unit name, use your tools to query the database and confirm the exact unit name with the user.
+    - Only use plain text when replying to the user. Do not use HTML or markdown.";
+
     /// <summary>
     /// The Gemini model ID used for generating responses.
     /// </summary>
-    private const string ModelId = "gemini-3.1-pro";
-    
+    protected string ModelId { get; set; }
+
     /// <summary>
     /// The conversation history maintained by the Advisor.
     /// </summary>
@@ -55,11 +66,12 @@ When the user confirms a design, output structured JSON for entity creation.";
     /// Creates a new Advisor instance with the specified Gemini API key.
     /// </summary>
     /// <param name="apiKey"></param>
-    public Advisor(string apiKey)
+    public Advisor(string apiKey, string modelName, System.Func<int> getFactionId)
     {
         GemeniClient = new Client(apiKey: apiKey);
+        ModelId = modelName;
         History = new List<Content>();
-        FunctionHandler = new AIFunctionHandler();
+        FunctionHandler = new AIFunctionHandler(getFactionId);
         
         Config = new GenerateContentConfig
         {
@@ -79,7 +91,7 @@ When the user confirms a design, output structured JSON for entity creation.";
     /// <param name="userMessage">The message input provided by the user as part of the conversation.</param>
     /// <param name="attachedEntitiesJson"></param>
     /// <returns>A Task representing the asynchronous operation, with a string containing the AI-generated response.</returns>
-    public async Task<string> SendMessageAsync(string userMessage, List<string> attachedEntitiesJson = null)
+    public async Task<string> SendMessageAsync(string userMessage, List<string> attachedEntitiesJson = null, RadChat chatWindow = null, Author aiAuthor = null)
     {
         var userParts = new List<Part> { new Part { Text = userMessage } };
         if (attachedEntitiesJson != null)
@@ -90,7 +102,7 @@ When the user confirms a design, output structured JSON for entity creation.";
                 userParts.Add(new Part { Text = mess });
             }
         }
-        
+
         // Add user message to history
         History.Add(new Content
         {
@@ -99,56 +111,77 @@ When the user confirms a design, output structured JSON for entity creation.";
         });
 
         // Send message to Gemini API
-        var response = await GemeniClient.Models.GenerateContentAsync(ModelId, History, Config);
-        
-        // Function call loop — keep going until Gemini returns plain text
-        while (response.Candidates?[0].Content?.Parts?.Any(p => p.FunctionCall != null) == true)
+        try
         {
-            var modelContent = response.Candidates[0].Content;
-            History.Add(modelContent); // Add the model's function call to history
-
-            // Find the function call in the model's response
-            var functionCall = modelContent.Parts?.FirstOrDefault(p => p.FunctionCall != null)?.FunctionCall;
-            if (functionCall == null || functionCall.Name == null) continue;
-            
-            // Execute the function
-            var args = functionCall.Args != null
-                ? JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(JsonSerializer.Serialize(functionCall.Args))
-                : new Dictionary<string, JsonElement>();
-
-            string result = FunctionHandler.HandleFunctionCall(functionCall.Name, args);
-
-            // Add the function response to history
-            History.Add(new Content
+            var response = await GemeniClient.Models.GenerateContentAsync(ModelId, History, Config);
+        
+            // Function call loop — keep going until Gemini returns plain text
+            while (response.Candidates?[0].Content?.Parts?.Any(p => p.FunctionCall != null) == true)
             {
-                Role = "function",
-                Parts = new List<Part>
+                var modelContent = response.Candidates[0].Content;
+                History.Add(modelContent); // Add the model's function call to history
+
+                // Find the function call in the model's response
+                var functionCall = modelContent.Parts?.FirstOrDefault(p => p.FunctionCall != null)?.FunctionCall;
+                if (functionCall == null || functionCall.Name == null) continue;
+
+                // Update Window
+                if (chatWindow != null && aiAuthor != null)
                 {
-                    new Part
+                    AIChatTextMessage message = new AIChatTextMessage($"Executing function call {functionCall.Name}", aiAuthor, DateTime.Now);
+                    chatWindow.AddMessage(message);
+                }
+            
+                // Execute the function
+                var args = functionCall.Args != null
+                    ? JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(JsonSerializer.Serialize(functionCall.Args))
+                    : new Dictionary<string, JsonElement>();
+
+                string result = FunctionHandler.HandleFunctionCall(functionCall.Name, args);
+
+                // Add the function response to history
+                History.Add(new Content
+                {
+                    Role = "function",
+                    Parts = new List<Part>
                     {
-                        FunctionResponse = new FunctionResponse
+                        new Part
                         {
-                            Name = functionCall.Name,
-                            Response = JsonSerializer.Deserialize<Dictionary<string, object>>(result)
+                            FunctionResponse = new FunctionResponse
+                            {
+                                Name = functionCall.Name,
+                                Response = JsonSerializer.Deserialize<Dictionary<string, object>>(result)
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            // Re-send with updated history
-            response = await GemeniClient.Models.GenerateContentAsync(ModelId, History, Config);
+                // Re-send with updated history
+                response = await GemeniClient.Models.GenerateContentAsync(ModelId, History, Config);
+            }
+            
+            // Add AI response to history
+            string aiAdvice = response.Text ?? "(No response)";
+            History.Add(new Content()
+            {
+                Role = "model", // Notice the role is "model" for the AI's responses
+                Parts = new List<Part> { new Part { Text = aiAdvice } }
+            });
+        
+            // Return AI advice
+            return aiAdvice;
         }
-        
-        // Add AI response to history
-        string aiAdvice = response.Text ?? "(No response)";
-        History.Add(new Content()
+        catch (ClientError ex) when (ex.Message.Contains("quota", StringComparison.OrdinalIgnoreCase))
         {
-            Role = "model", // Notice the role is "model" for the AI's responses
-            Parts = new List<Part> { new Part { Text = aiAdvice } }
-        });
-        
-        // Return AI advice
-        return aiAdvice;
+            // Remove the user message we just added since the call failed
+            History.RemoveAt(History.Count - 1);
+            return "⚠ API quota exceeded. Please wait a minute and try again.";
+        }
+        catch (ClientError ex)
+        {
+            History.RemoveAt(History.Count - 1);
+            return $"⚠ API error: {ex.Message}";
+        }
     }
     
     /// <summary>
@@ -163,6 +196,30 @@ When the user confirms a design, output structured JSON for entity creation.";
             {
                 FunctionDeclarations = new List<FunctionDeclaration>
                 {
+                    //
+                    // == Faction Tools ==
+                    //
+                    new FunctionDeclaration
+                    {
+                        Name = "GetSelectedFactionId",
+                        Description = "Returns the ID of the faction the user is currently working in, or Zero if no faction is selected.",
+                    },
+                    
+                    new FunctionDeclaration
+                    {
+                        Name = "GetFactionById",
+                        Description = "Returns the Faction entity (Id, Name) for a given faction ID or null if not found.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to look up." }
+                            },
+                            Required = ["factionId"]
+                        }
+                    },
+                    
                     //
                     // == Unit Building Tools ==
                     //
@@ -197,7 +254,6 @@ When the user confirms a design, output structured JSON for entity creation.";
                     {
                         Name = "GetEchelons",
                         Description = "Returns all Echelon levels (Fire Team, Squad, Platoon, Company, Battalion, etc.).",
-                        Parameters = new Schema { Type = Type.Integer, Properties = new Dictionary<string, Schema>() }
                     },
                     
                     //
@@ -208,7 +264,16 @@ When the user confirms a design, output structured JSON for entity creation.";
                     new FunctionDeclaration
                     {
                         Name = "GetPosBlueprintSchema",
-                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any military unit position.",
+                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any unit position blueprint. Requires a faction ID to scope valid ranks, units, and occupations.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to scope lookups to." }
+                            },
+                            Required = ["factionId"]
+                        }
                     },
         
                     // Tool 2: The Execution Tool
@@ -237,18 +302,36 @@ When the user confirms a design, output structured JSON for entity creation.";
                     new FunctionDeclaration
                     {
                         Name = "GetRankClassifications",
-                        Description = "Returns all RankClassification records (pay grade groups like E-1 through E-9, O-1 through O-10) from the database.",
+                        Description = "Returns all RankClassification records (pay grade groups like E-1 through E-9, O-1 through O-10) for a specific faction.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to filter by." }
+                            },
+                            Required = ["factionId"]
+                        }
                     },
                     
                     new FunctionDeclaration
                     {
                         Name = "GetRanks",
-                        Description = "Returns all Rank records (such as Private, Sergeant etc) from the database.",
+                        Description = "Returns all Rank records (such as Private, Sergeant etc) for a specific faction.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to filter by." }
+                            },
+                            Required = ["factionId"]
+                        }
                     },
                     
                     new FunctionDeclaration
                     {
-                        Name = "GetRanksByClassification",
+                        Name = "GetRanksByClassificationId",
                         Description = "Returns all Rank entities belonging to a specific RankClassification by it's Id.",
                         Parameters = new Schema
                         {
@@ -258,6 +341,78 @@ When the user confirms a design, output structured JSON for entity creation.";
                                 ["classificationId"] = new Schema { Type = Type.Integer, Description = "The RankClassification ID" }
                             },
                             Required = ["classificationId"]
+                        }
+                    },
+                    
+                    //
+                    // == Rank Classification Building Tools ==
+                    //
+
+                    // Discovery
+                    new FunctionDeclaration
+                    {
+                        Name = "GetRankClassificationSchema",
+                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any RankClassification. Requires a faction ID to scope lookups.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to scope lookups to." }
+                            },
+                            Required = ["factionId"]
+                        }
+                    },
+
+                    // Execution
+                    new FunctionDeclaration
+                    {
+                        Name = "BuildRankClassification",
+                        Description = "Creates a RankClassification (pay grade group) in the database. You MUST call GetRankClassificationSchema first. Pass the data as a single stringified JSON object matching that schema. Classifications MUST be created before Ranks.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["blueprintJsonPayload"] = new Schema { Type = Type.String, Description = "The complete, stringified JSON payload." }
+                            },
+                            Required = ["blueprintJsonPayload"]
+                        }
+                    },
+
+                    //
+                    // == Rank Building Tools ==
+                    //
+
+                    // Discovery
+                    new FunctionDeclaration
+                    {
+                        Name = "GetRankSchema",
+                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any Rank. Requires a faction ID to scope valid RankClassifications.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to scope lookups to." }
+                            },
+                            Required = ["factionId"]
+                        }
+                    },
+
+                    // Execution
+                    new FunctionDeclaration
+                    {
+                        Name = "BuildRank",
+                        Description = "Creates a Rank in the database. You MUST call GetRankSchema first. Pass the data as a single stringified JSON object matching that schema. The parent RankClassification MUST already exist.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["blueprintJsonPayload"] = new Schema { Type = Type.String, Description = "The complete, stringified JSON payload." }
+                            },
+                            Required = ["blueprintJsonPayload"]
                         }
                     },
                 }

@@ -67,7 +67,7 @@ namespace Perscom.Simulation
             // Set properties
             Position = position ?? throw new ArgumentNullException("position");
             ParentUnit = parent ?? throw new ArgumentNullException("parent");
-            BlueprintWrapper = SimulationCache.FetchBillet(blueprint, db);
+            BlueprintWrapper = SimulationCache.FetchBlueprintWrapper(blueprint, db);
 
             // Get our soldier promotion pool
             Echelon promotionP = BlueprintWrapper.PromotionPool;

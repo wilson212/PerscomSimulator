@@ -13,7 +13,9 @@ namespace Perscom
     {
         public RankGradeWizardForm()
         {
+            // Create components and apply theme
             InitializeComponent();
+            FormStyling.ApplyControlsTheme(Controls);
         }
     }
 }

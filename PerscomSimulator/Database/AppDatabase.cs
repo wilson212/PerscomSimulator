@@ -32,7 +32,6 @@ namespace Perscom.Database
             Builder = new SqliteConnectionStringBuilder();
             Builder.DataSource = Path.Combine(source, "AppData.db");
             Builder.ForeignKeys = true;
-            Builder["Journal Mode"] = "Wal";
         }
 
         /// <summary>

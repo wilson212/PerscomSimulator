@@ -38,6 +38,7 @@
             TreeContextMenu = new Telerik.WinControls.UI.RadContextMenu(components);
             addGradeMenuItem = new Telerik.WinControls.UI.RadMenuItem();
             wizardMenuItem = new Telerik.WinControls.UI.RadMenuItem();
+            aiMenuItem = new Telerik.WinControls.UI.RadMenuItem();
             radMenuSeparatorItem1 = new Telerik.WinControls.UI.RadMenuSeparatorItem();
             deleteGradeMenuItem = new Telerik.WinControls.UI.RadMenuItem();
             applyButton = new Telerik.WinControls.UI.RadButton();
@@ -60,6 +61,7 @@
             radMenuSeparatorItem2 = new Telerik.WinControls.UI.RadMenuSeparatorItem();
             deleteRankMenuItem = new Telerik.WinControls.UI.RadMenuItem();
             radPanel1 = new Telerik.WinControls.UI.RadPanel();
+            radRankSelector4 = new RadRankSelector();
             radRankSelector3 = new RadRankSelector();
             radRankSelector2 = new RadRankSelector();
             radRankSelector1 = new RadRankSelector();
@@ -67,7 +69,6 @@
             headerPanel = new System.Windows.Forms.Panel();
             label6 = new System.Windows.Forms.ShadowLabel();
             DescriptionGroupBox = new Telerik.WinControls.UI.RadGroupBox();
-            radRankSelector4 = new RadRankSelector();
             bottomPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)CloseButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radTreeView1).BeginInit();
@@ -148,7 +149,7 @@
             // 
             // TreeContextMenu
             // 
-            TreeContextMenu.Items.AddRange(new Telerik.WinControls.RadItem[] { addGradeMenuItem, wizardMenuItem, radMenuSeparatorItem1, deleteGradeMenuItem });
+            TreeContextMenu.Items.AddRange(new Telerik.WinControls.RadItem[] { addGradeMenuItem, wizardMenuItem, aiMenuItem, radMenuSeparatorItem1, deleteGradeMenuItem });
             // 
             // addGradeMenuItem
             // 
@@ -159,6 +160,11 @@
             // 
             wizardMenuItem.Name = "wizardMenuItem";
             wizardMenuItem.Text = "Rank Wizard";
+            // 
+            // aiMenuItem
+            // 
+            aiMenuItem.Name = "aiMenuItem";
+            aiMenuItem.Text = "Ask the AI";
             // 
             // radMenuSeparatorItem1
             // 
@@ -342,6 +348,16 @@
             radPanel1.TabIndex = 20;
             radPanel1.ThemeName = "Fluent";
             // 
+            // radRankSelector4
+            // 
+            radRankSelector4.BackColor = System.Drawing.Color.White;
+            radRankSelector4.Location = new System.Drawing.Point(371, 14);
+            radRankSelector4.Name = "radRankSelector4";
+            radRankSelector4.Rank = null;
+            radRankSelector4.RankTitle = "Rank 4";
+            radRankSelector4.Size = new System.Drawing.Size(108, 128);
+            radRankSelector4.TabIndex = 3;
+            // 
             // radRankSelector3
             // 
             radRankSelector3.BackColor = System.Drawing.Color.White;
@@ -421,16 +437,6 @@
             DescriptionGroupBox.Text = "Enlisted Grade 8";
             DescriptionGroupBox.ThemeName = "Fluent";
             // 
-            // radRankSelector4
-            // 
-            radRankSelector4.BackColor = System.Drawing.Color.White;
-            radRankSelector4.Location = new System.Drawing.Point(371, 14);
-            radRankSelector4.Name = "radRankSelector4";
-            radRankSelector4.Rank = null;
-            radRankSelector4.RankTitle = "Rank 4";
-            radRankSelector4.Size = new System.Drawing.Size(108, 128);
-            radRankSelector4.TabIndex = 3;
-            // 
             // RankGradeEditorForm
             // 
             AutoScaleBaseSize = new System.Drawing.Size(7, 15);
@@ -452,6 +458,7 @@
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             Text = "Rank and Grade Editor";
             ThemeName = "Fluent";
+            Load += RankGradeEditorForm_Load_1;
             bottomPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)CloseButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)radTreeView1).EndInit();
@@ -525,5 +532,6 @@
         private RadRankSelector radRankSelector1;
         private Telerik.WinControls.UI.RadCheckBox branchingCheckBox;
         private RadRankSelector radRankSelector4;
+        private Telerik.WinControls.UI.RadMenuItem aiMenuItem;
     }
 }

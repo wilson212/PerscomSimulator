@@ -16,32 +16,32 @@ namespace Perscom.Database
         /// The IsUnique Unit ID
         /// </summary>
         [Column, PrimaryKey]
-        public int Id { get; protected set; }
+        public virtual int Id { get; protected set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="UnitBlueprint"/> object
         /// ID that this entity references
         /// </summary>
         [Column, Required]
-        public int UnitBlueprintId { get; set; }
+        public virtual int UnitBlueprintId { get; set; }
 
         /// <summary>
         /// Gets or Sets the string name of this Unit
         /// </summary>
         [Column, Required]
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
         /// <summary>
         /// Gets or Sets the string name of this Unit
         /// </summary>
         [Column, Required, Default("")]
-        public string UnitCode { get; set; }
+        public virtual string UnitCode { get; set; }
 
         /// <summary>
         /// Gets or Sets the Parent Unit Id
         /// </summary>
         [Column, Default(null)]
-        public int? ParentUnitId { get; set; } = null;
+        public virtual int? ParentUnitId { get; set; } = null;
 
         #endregion
 

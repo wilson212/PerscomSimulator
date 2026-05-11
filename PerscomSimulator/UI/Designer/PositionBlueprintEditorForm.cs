@@ -14,10 +14,9 @@ namespace Perscom.UI
     {
         public PositionBlueprintEditorForm()
         {
-            // Create controls
+            // Create components and apply theme
             InitializeComponent();
-
-            // Form Styling
+            FormStyling.ApplyControlsTheme(Controls);
 
             // Data initialization
         }

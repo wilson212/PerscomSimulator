@@ -40,7 +40,7 @@ namespace Perscom.Simulation
            PersonaGenerator = null;
         }
 
-        public static PositionBlueprintWrapper FetchBillet(PositionBlueprint billet, SimDatabase db)
+        public static PositionBlueprintWrapper FetchBlueprintWrapper(PositionBlueprint billet, SimDatabase db)
         {
             if (!PosBlueprintWrappers.ContainsKey(billet.Id))
                 PosBlueprintWrappers.Add(billet.Id, new PositionBlueprintWrapper(billet, db));

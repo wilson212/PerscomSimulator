@@ -13,7 +13,9 @@ namespace Perscom
     {
         public SelectionProcedureForm()
         {
+            // Create components and apply theme
             InitializeComponent();
+            FormStyling.ApplyControlsTheme(Controls);
         }
     }
 }
