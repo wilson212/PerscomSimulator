@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using CrossLite;
 using Perscom.AI.Dtos;
 using Perscom.Database;
 using Perscom.Simulation;
@@ -77,6 +78,24 @@ namespace Perscom.AI
 
                 case "BuildRank":
                     return CreateRank(args["blueprintJsonPayload"].GetString());
+                
+                case "UpdateFaction":
+                    return UpdateFaction(factionId, args["updateJsonPayload"].GetString());
+
+                case "UpdateUnitBlueprint":
+                    return UpdateUnitBlueprint(factionId, args["updateJsonPayload"].GetString());
+
+                case "UpdatePositionBlueprint":
+                    return UpdatePositionBlueprint(factionId, args["updateJsonPayload"].GetString());
+                
+                case "SearchUnitBlueprints":
+                    return SearchUnitBlueprints(factionId, args["query"].GetString());
+
+                case "SearchRanks":
+                    return SearchRanks(factionId, args["query"].GetString());
+
+                case "SearchPositionBlueprints":
+                    return SearchPositionBlueprints(factionId, args["query"].GetString());
 
                 default:
                     return JsonSerializer.Serialize(new { error = $"Unknown function: {functionName}" });
@@ -509,7 +528,7 @@ namespace Perscom.AI
             // Show existing ranks so the AI can reference them for NextRankId and avoid duplicates
             var factionClassIds = classifications.Select(c => c.Id).ToList();
             var existingRanks = db.Ranks
-                .Where(r => factionClassIds.Contains(r.RankClassificationId))
+                .Where(r => r.RankClassificationId.In(factionClassIds))
                 .Select(r => new
                 {
                     r.Id,
@@ -621,6 +640,368 @@ namespace Perscom.AI
             {
                 return JsonSerializer.Serialize(new { success = false, error = ex.Message });
             }
+        }
+        
+        /// <summary>
+        /// Updates an existing Faction entity with partial data from the AI's JSON payload.
+        /// </summary>
+        private string UpdateFaction(int factionId, string jsonPayload)
+        {
+            try
+            {
+                var data = JsonSerializer.Deserialize<JsonElement>(jsonPayload);
+
+                using var db = new AppDatabase();
+                var faction = db.Factions.FirstOrDefault(f => f.Id == factionId);
+                if (faction == null)
+                    return JsonSerializer.Serialize(new { success = false, error = $"Faction with Id {factionId} not found." });
+
+                if (data.TryGetProperty("name", out var name))
+                    faction.Name = name.GetString();
+
+                if (data.TryGetProperty("shortTag", out var tag))
+                    faction.ShortTag = tag.GetString();
+
+                if (data.TryGetProperty("description", out var desc))
+                    faction.Description = desc.GetString();
+
+                if (data.TryGetProperty("themeColorCode", out var color))
+                    faction.ThemeColorCode = color.GetString();
+
+                db.Factions.Update(faction);
+
+                return JsonSerializer.Serialize(new
+                {
+                    success = true,
+                    message = $"Faction '{faction.Name}' (Id={faction.Id}) updated successfully.",
+                    faction = new { faction.Id, faction.Name, faction.ShortTag, faction.Description, faction.ThemeColorCode }
+                });
+            }
+            catch (Exception ex)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Updates an existing UnitBlueprint entity with partial data from the AI's JSON payload.
+        /// </summary>
+        private string UpdateUnitBlueprint(int unitBlueprintId, string jsonPayload)
+        {
+            try
+            {
+                var data = JsonSerializer.Deserialize<JsonElement>(jsonPayload);
+
+                using var db = new AppDatabase();
+                var blueprint = db.UnitBlueprints.FirstOrDefault(u => u.Id == unitBlueprintId);
+                if (blueprint == null)
+                    return JsonSerializer.Serialize(new { success = false, error = $"UnitBlueprint with Id {unitBlueprintId} not found." });
+
+                // Verify faction ownership
+                if (blueprint.FactionId != GetFactionId())
+                    return JsonSerializer.Serialize(new { success = false, error = $"UnitBlueprint {unitBlueprintId} belongs to a different faction." });
+
+                if (data.TryGetProperty("name", out var name))
+                    blueprint.Name = name.GetString();
+
+                if (data.TryGetProperty("unitNameFormat", out var unf))
+                    blueprint.UnitNameFormat = unf.GetString();
+
+                if (data.TryGetProperty("unitCodeFormat", out var ucf))
+                    blueprint.UnitCodeFormat = ucf.GetString();
+
+                if (data.TryGetProperty("echelonId", out var eid))
+                    blueprint.EchelonId = eid.GetInt32();
+
+                if (data.TryGetProperty("promotionPoolId", out var ppid))
+                    blueprint.PromotionPoolId = ppid.GetInt32();
+
+                db.UnitBlueprints.Update(blueprint);
+
+                return JsonSerializer.Serialize(new
+                {
+                    success = true,
+                    message = $"UnitBlueprint '{blueprint.Name}' (Id={blueprint.Id}) updated successfully.",
+                    unitBlueprint = new
+                    {
+                        blueprint.Id, blueprint.Name, blueprint.EchelonId,
+                        blueprint.UnitNameFormat, blueprint.UnitCodeFormat, blueprint.PromotionPoolId
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Updates an existing PositionBlueprint entity with partial data from the AI's JSON payload.
+        /// </summary>
+        private string UpdatePositionBlueprint(int positionBlueprintId, string jsonPayload)
+        {
+            try
+            {
+                var data = JsonSerializer.Deserialize<JsonElement>(jsonPayload);
+
+                using var db = new AppDatabase();
+                var pos = db.PositionBlueprints.FirstOrDefault(p => p.Id == positionBlueprintId);
+                if (pos == null)
+                    return JsonSerializer.Serialize(new { success = false, error = $"PositionBlueprint with Id {positionBlueprintId} not found." });
+
+                if (data.TryGetProperty("name", out var name))
+                    pos.Name = name.GetString();
+
+                if (data.TryGetProperty("unitBlueprintId", out var ubid))
+                    pos.UnitBlueprintId = ubid.GetInt32();
+
+                if (data.TryGetProperty("catagoryId", out var cid))
+                    pos.CatagoryId = cid.GetInt32();
+
+                if (data.TryGetProperty("targetRankId", out var trid))
+                    pos.TargetRankId = trid.GetInt32();
+
+                if (data.TryGetProperty("positionalRankId", out var prid))
+                    pos.PositionalRankId = prid.ValueKind == JsonValueKind.Null ? null : prid.GetInt32();
+
+                if (data.TryGetProperty("flag", out var flag))
+                    pos.Flag = Enum.Parse<PositionFlag>(flag.GetString());
+
+                if (data.TryGetProperty("promotionEchelonId", out var peid))
+                    pos.PromotionEchelonId = peid.GetInt32();
+
+                if (data.TryGetProperty("occupationId", out var oid))
+                    pos.OccupationId = oid.GetInt32();
+
+                if (data.TryGetProperty("stature", out var st))
+                    pos.Stature = st.GetInt32();
+
+                if (data.TryGetProperty("prestige", out var pr))
+                    pos.Prestige = pr.GetInt32();
+
+                if (data.TryGetProperty("minTourLength", out var minT))
+                    pos.MinTourLength = minT.GetInt32();
+
+                if (data.TryGetProperty("maxTourLength", out var maxT))
+                    pos.MaxTourLength = maxT.GetInt32();
+
+                if (data.TryGetProperty("canRetireEarly", out var cre))
+                    pos.CanRetireEarly = cre.GetBoolean();
+
+                if (data.TryGetProperty("canBePromotedEarly", out var cbpe))
+                    pos.CanBePromotedEarly = cbpe.GetBoolean();
+
+                if (data.TryGetProperty("canLateralEarly", out var cle))
+                    pos.CanLateralEarly = cle.GetBoolean();
+
+                if (data.TryGetProperty("waiverable", out var wav))
+                    pos.Waiverable = wav.GetBoolean();
+
+                if (data.TryGetProperty("selectionMethod", out var sm))
+                    pos.SelectionMethod = Enum.Parse<SelectionProcedure>(sm.GetString());
+
+                if (data.TryGetProperty("demoteOverRanked", out var dor))
+                    pos.DemoteOverRanked = dor.GetBoolean();
+
+                if (data.TryGetProperty("autoPromoteInRankRange", out var apr))
+                    pos.AutoPromoteInRankRange = apr.GetBoolean();
+
+                if (data.TryGetProperty("supervisorPositionBlueprintId", out var spid))
+                    pos.SupervisorPositionBlueprintId = spid.ValueKind == JsonValueKind.Null ? null : spid.GetInt32();
+
+                if (data.TryGetProperty("zIndex", out var zi))
+                    pos.ZIndex = zi.GetInt32();
+
+                db.PositionBlueprints.Update(pos);
+
+                return JsonSerializer.Serialize(new
+                {
+                    success = true,
+                    message = $"PositionBlueprint '{pos.Name}' (Id={pos.Id}) updated successfully.",
+                    positionBlueprint = new
+                    {
+                        pos.Id, pos.Name, pos.UnitBlueprintId, pos.CatagoryId,
+                        pos.TargetRankId, pos.PositionalRankId,
+                        Flag = pos.Flag.ToString(), pos.PromotionEchelonId,
+                        pos.OccupationId, pos.Stature, pos.Prestige,
+                        pos.MinTourLength, pos.MaxTourLength,
+                        pos.CanRetireEarly, pos.CanBePromotedEarly, pos.CanLateralEarly,
+                        pos.Waiverable, SelectionMethod = pos.SelectionMethod.ToString(),
+                        pos.DemoteOverRanked, pos.AutoPromoteInRankRange,
+                        pos.SupervisorPositionBlueprintId, pos.ZIndex
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            }
+        }
+        
+        /// <summary>
+        /// Searches UnitBlueprints by name using partial + fuzzy matching.
+        /// </summary>
+        private string SearchUnitBlueprints(int factionId, string query)
+        {
+            using var db = new AppDatabase();
+            var all = db.UnitBlueprints
+                .Where(u => u.FactionId == factionId)
+                .ToList();
+
+            var results = FuzzyMatch(all, query,
+                u => new[] { u.Name, u.UnitCodeFormat },
+                u => new { u.Id, u.Name, u.EchelonId, u.UnitNameFormat, u.UnitCodeFormat, u.PromotionPoolId });
+
+            return JsonSerializer.Serialize(new
+            {
+                description = $"UnitBlueprint search results for '{query}' in Faction {factionId}",
+                query,
+                count = results.Count,
+                results
+            });
+        }
+
+        /// <summary>
+        /// Searches Ranks by name or abbreviation using partial + fuzzy matching.
+        /// </summary>
+        private string SearchRanks(int factionId, string query)
+        {
+            using var db = new AppDatabase();
+            var factionRanks = GetFactionRanks(db, factionId);
+
+            var results = FuzzyMatch(factionRanks, query,
+                r => new[] { r.Name, r.Abbreviation },
+                r => new { r.Id, r.RankClassificationId, r.Name, r.Abbreviation, r.Precedence, r.IsPositional, r.NextRankId });
+
+            return JsonSerializer.Serialize(new
+            {
+                description = $"Rank search results for '{query}' in Faction {factionId}",
+                query,
+                count = results.Count,
+                results
+            });
+        }
+
+        /// <summary>
+        /// Searches PositionBlueprints by name using partial + fuzzy matching.
+        /// </summary>
+        private string SearchPositionBlueprints(int factionId, string query)
+        {
+            using var db = new AppDatabase();
+
+            // Get faction-scoped unit blueprint IDs to filter positions
+            var factionUnitIds = db.UnitBlueprints
+                .Where(u => u.FactionId == factionId)
+                .Select(u => u.Id)
+                .ToList();
+
+            var all = db.PositionBlueprints
+                .Where(p => factionUnitIds.Contains(p.UnitBlueprintId))
+                .ToList();
+
+            var results = FuzzyMatch(all, query,
+                p => new[] { p.Name },
+                p => new
+                {
+                    p.Id, p.Name, p.UnitBlueprintId, p.CatagoryId,
+                    p.TargetRankId, p.PositionalRankId,
+                    Flag = p.Flag.ToString(), p.PromotionEchelonId,
+                    p.OccupationId, p.Stature, p.Prestige
+                });
+
+            return JsonSerializer.Serialize(new
+            {
+                description = $"PositionBlueprint search results for '{query}' in Faction {factionId}",
+                query,
+                count = results.Count,
+                results
+            });
+        }
+
+        /// <summary>
+        /// Generic fuzzy matching helper. Scores entities by substring containment first,
+        /// then falls back to Levenshtein distance for misspelling tolerance.
+        /// Returns top 10 results sorted by relevance.
+        /// </summary>
+        private List<object> FuzzyMatch<T>(
+            List<T> entities,
+            string query,
+            Func<T, string[]> fieldSelector,
+            Func<T, object> projection)
+        {
+            string queryLower = query.ToLowerInvariant();
+
+            var scored = entities.Select(e =>
+            {
+                string[] fields = fieldSelector(e)
+                    .Where(f => f != null)
+                    .Select(f => f.ToLowerInvariant())
+                    .ToArray();
+
+                int bestScore = int.MaxValue;
+
+                foreach (var field in fields)
+                {
+                    // Exact match = best possible score
+                    if (field == queryLower)
+                    {
+                        bestScore = 0;
+                        break;
+                    }
+
+                    // Substring containment = very good score
+                    if (field.Contains(queryLower) || queryLower.Contains(field))
+                    {
+                        int score = Math.Abs(field.Length - queryLower.Length);
+                        bestScore = Math.Min(bestScore, score + 1);
+                        continue;
+                    }
+
+                    // Levenshtein distance for fuzzy/misspelling tolerance
+                    int distance = LevenshteinDistance(field, queryLower);
+                    // Normalize: allow up to ~40% character errors
+                    if (distance <= Math.Max(queryLower.Length, field.Length) * 0.4)
+                    {
+                        bestScore = Math.Min(bestScore, distance + 100); // offset so substring matches rank higher
+                    }
+                }
+
+                return new { Entity = e, Score = bestScore };
+            })
+            .Where(x => x.Score < int.MaxValue)
+            .OrderBy(x => x.Score)
+            .Take(10)
+            .Select(x => projection(x.Entity))
+            .ToList();
+
+            return scored;
+        }
+
+        /// <summary>
+        /// Standard Levenshtein distance calculation for fuzzy string matching.
+        /// </summary>
+        private static int LevenshteinDistance(string a, string b)
+        {
+            if (string.IsNullOrEmpty(a)) return b?.Length ?? 0;
+            if (string.IsNullOrEmpty(b)) return a.Length;
+
+            int[,] d = new int[a.Length + 1, b.Length + 1];
+
+            for (int i = 0; i <= a.Length; i++) d[i, 0] = i;
+            for (int j = 0; j <= b.Length; j++) d[0, j] = j;
+
+            for (int i = 1; i <= a.Length; i++)
+            {
+                for (int j = 1; j <= b.Length; j++)
+                {
+                    int cost = a[i - 1] == b[j - 1] ? 0 : 1;
+                    d[i, j] = Math.Min(
+                        Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
+                        d[i - 1, j - 1] + cost);
+                }
+            }
+
+            return d[a.Length, b.Length];
         }
     }
 }

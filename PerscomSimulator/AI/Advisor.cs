@@ -415,6 +415,110 @@ public class Advisor
                             Required = ["blueprintJsonPayload"]
                         }
                     },
+                    
+                    //
+                    // == Update Tools ==
+                    //
+
+                    new FunctionDeclaration
+                    {
+                        Name = "UpdateFaction",
+                        Description = "Updates an existing Faction's data (Name, ShortTag, Description, ThemeColorCode). Pass the faction ID and a stringified JSON object with ONLY the fields you want to change.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The ID of the Faction to update." },
+                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON with only the fields to update. Valid keys: name, shortTag, description, themeColorCode." }
+                            },
+                            Required = ["factionId", "updateJsonPayload"]
+                        }
+                    },
+
+                    new FunctionDeclaration
+                    {
+                        Name = "UpdateUnitBlueprint",
+                        Description = "Updates an existing UnitBlueprint's data (Name, UnitNameFormat, UnitCodeFormat, EchelonId, PromotionPoolId). Pass the blueprint ID and a stringified JSON object with ONLY the fields you want to change.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["unitBlueprintId"] = new Schema { Type = Type.Integer, Description = "The ID of the UnitBlueprint to update." },
+                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON with only the fields to update. Valid keys: name, unitNameFormat, unitCodeFormat, echelonId, promotionPoolId." }
+                            },
+                            Required = ["unitBlueprintId", "updateJsonPayload"]
+                        }
+                    },
+
+                    new FunctionDeclaration
+                    {
+                        Name = "UpdatePositionBlueprint",
+                        Description = "Updates an existing PositionBlueprint's data. Pass the blueprint ID and a stringified JSON object with ONLY the fields you want to change.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["positionBlueprintId"] = new Schema { Type = Type.Integer, Description = "The ID of the PositionBlueprint to update." },
+                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON with only the fields to update. Valid keys: name, unitBlueprintId, catagoryId, targetRankId, positionalRankId, flag, promotionEchelonId, occupationId, stature, prestige, minTourLength, maxTourLength, canRetireEarly, canBePromotedEarly, canLateralEarly, waiverable, selectionMethod, demoteOverRanked, autoPromoteInRankRange, supervisorPositionBlueprintId, zIndex." }
+                            },
+                            Required = ["positionBlueprintId", "updateJsonPayload"]
+                        }
+                    },
+                    
+                    //
+                    // == Search / Lookup Tools ==
+                    //
+
+                    new FunctionDeclaration
+                    {
+                        Name = "SearchUnitBlueprints",
+                        Description = "Searches for UnitBlueprints by name (supports partial and fuzzy matching). Use this when the user references a unit by name and you need to resolve it to an ID.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to scope the search to." },
+                                ["query"] = new Schema { Type = Type.String, Description = "The search term (partial name, abbreviation, or approximate spelling)." }
+                            },
+                            Required = ["factionId", "query"]
+                        }
+                    },
+
+                    new FunctionDeclaration
+                    {
+                        Name = "SearchRanks",
+                        Description = "Searches for Ranks by name or abbreviation (supports partial and fuzzy matching). Use this when the user references a rank by name and you need to resolve it to an ID.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to scope the search to." },
+                                ["query"] = new Schema { Type = Type.String, Description = "The search term (partial name, abbreviation, or approximate spelling)." }
+                            },
+                            Required = ["factionId", "query"]
+                        }
+                    },
+
+                    new FunctionDeclaration
+                    {
+                        Name = "SearchPositionBlueprints",
+                        Description = "Searches for PositionBlueprints by name (supports partial and fuzzy matching). Use this when the user references a position by name and you need to resolve it to an ID.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to scope the search to." },
+                                ["query"] = new Schema { Type = Type.String, Description = "The search term (partial name, abbreviation, or approximate spelling)." }
+                            },
+                            Required = ["factionId", "query"]
+                        }
+                    },
                 }
             }
         };
