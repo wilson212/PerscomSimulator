@@ -193,7 +193,7 @@ namespace Perscom
         /// <param name="e"></param>
         private async void chatWindow_SendMessage(object sender, SendMessageEventArgs e)
         {
-            // Lock chat window
+            // Lock the chat window
             chatWindow.ChatElement.InputTextBox.Enabled = false;
 
             // Show that the AI is typing
@@ -203,7 +203,7 @@ namespace Perscom
             ChatTextMessage textMessage = e.Message as ChatTextMessage;
             if (String.IsNullOrWhiteSpace(textMessage?.Message))
             {
-                // Unlock chat window
+                // Unlock the chat window
                 chatWindow.ChatElement.InputTextBox.Enabled = true;
                 return;
             }
@@ -218,7 +218,7 @@ namespace Perscom
             // Close typing indicater
             chatWindow.ChatElement.HideTypingIndicator();
 
-            // Unlock chat window
+            // Unlock the chat window
             chatWindow.ChatElement.InputTextBox.Enabled = true;
         }
     }

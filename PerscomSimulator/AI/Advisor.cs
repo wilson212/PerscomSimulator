@@ -201,23 +201,8 @@ public class Advisor
                     //
                     new FunctionDeclaration
                     {
-                        Name = "GetSelectedFactionId",
-                        Description = "Returns the ID of the faction the user is currently working in, or Zero if no faction is selected.",
-                    },
-                    
-                    new FunctionDeclaration
-                    {
-                        Name = "GetFactionById",
-                        Description = "Returns the Faction entity (Id, Name) for a given faction ID or null if not found.",
-                        Parameters = new Schema
-                        {
-                            Type = Type.Object,
-                            Properties = new Dictionary<string, Schema>
-                            {
-                                ["factionId"] = new Schema { Type = Type.Integer, Description = "The Faction ID to look up." }
-                            },
-                            Required = ["factionId"]
-                        }
+                        Name = "GetSelectedFaction",
+                        Description = "Returns the currently selected Faction (Id, Name, ShortTag, Description, ThemeColorCode) that the user is working in, or indicates if no faction is selected.",
                     },
                     
                     //
@@ -234,17 +219,14 @@ public class Advisor
                     // Tool 2: The Execution Tool
                     new FunctionDeclaration
                     {
-                        Name = "BuildMilitaryUnit",
-                        Description = "Executes the creation of the unit in the database. You MUST pass the data as a single stringified JSON object matching the schema from GetUnitBlueprintSchema.",
-                        Parameters = new Schema 
+                        Name = "CreateUnitBlueprints",
+                        Description = "Creates one or more Unit Blueprints in the database. You MUST call GetUnitBlueprintSchema first. Pass the data as a stringified JSON ARRAY of objects matching that schema (even for a single item).",
+                        Parameters = new Schema
                         {
                             Type = Type.Object,
                             Properties = new Dictionary<string, Schema>
                             {
-                                { 
-                                    "blueprintJsonPayload", 
-                                    new Schema { Type = Type.String, Description = "The complete, stringified JSON payload." } 
-                                }
+                                ["blueprintJsonPayload"] = new Schema { Type = Type.String, Description = "A stringified JSON array of Unit Blueprint objects." }
                             },
                             Required = ["blueprintJsonPayload"]
                         }
@@ -279,17 +261,14 @@ public class Advisor
                     // Tool 2: The Execution Tool
                     new FunctionDeclaration
                     {
-                        Name = "BuildMilitaryPos",
-                        Description = "Executes the creation of a position for a unit in the database. You MUST pass the data as a single stringified JSON object matching the schema from GetPosBlueprintSchema.",
-                        Parameters = new Schema 
+                        Name = "CreatePositionBlueprints",
+                        Description = "Creates one or more Position Blueprints in the database. You MUST call GetPosBlueprintSchema first. Pass the data as a stringified JSON ARRAY of objects matching that schema (even for a single item).",
+                        Parameters = new Schema
                         {
                             Type = Type.Object,
                             Properties = new Dictionary<string, Schema>
                             {
-                                { 
-                                    "blueprintJsonPayload", 
-                                    new Schema { Type = Type.String, Description = "The complete, stringified JSON payload." } 
-                                }
+                                ["blueprintJsonPayload"] = new Schema { Type = Type.String, Description = "A stringified JSON array of Position Blueprint objects." }
                             },
                             Required = ["blueprintJsonPayload"]
                         }
@@ -367,14 +346,14 @@ public class Advisor
                     // Execution
                     new FunctionDeclaration
                     {
-                        Name = "BuildRankClassification",
-                        Description = "Creates a RankClassification (pay grade group) in the database. You MUST call GetRankClassificationSchema first. Pass the data as a single stringified JSON object matching that schema. Classifications MUST be created before Ranks.",
+                        Name = "CreateRankClassifications",
+                        Description = "Creates one or more Rank Classifications (pay grade groups) in the database. You MUST call GetRankClassificationSchema first. Pass the data as a stringified JSON ARRAY of objects matching that schema (even for a single item). Classifications MUST be created before Ranks.",
                         Parameters = new Schema
                         {
                             Type = Type.Object,
                             Properties = new Dictionary<string, Schema>
                             {
-                                ["blueprintJsonPayload"] = new Schema { Type = Type.String, Description = "The complete, stringified JSON payload." }
+                                ["blueprintJsonPayload"] = new Schema { Type = Type.String, Description = "A stringified JSON array of RankClassification objects." }
                             },
                             Required = ["blueprintJsonPayload"]
                         }
@@ -403,14 +382,14 @@ public class Advisor
                     // Execution
                     new FunctionDeclaration
                     {
-                        Name = "BuildRank",
-                        Description = "Creates a Rank in the database. You MUST call GetRankSchema first. Pass the data as a single stringified JSON object matching that schema. The parent RankClassification MUST already exist.",
+                        Name = "CreateRanks",
+                        Description = "Creates one or more Ranks in the database. You MUST call GetRankSchema first. Pass the data as a stringified JSON ARRAY of objects matching that schema (even for a single item). The parent RankClassification MUST already exist. Use 'nextRankAbbreviation' (string) instead of an ID to reference other ranks — this allows referencing ranks within the same payload that haven't been inserted yet.",
                         Parameters = new Schema
                         {
                             Type = Type.Object,
                             Properties = new Dictionary<string, Schema>
                             {
-                                ["blueprintJsonPayload"] = new Schema { Type = Type.String, Description = "The complete, stringified JSON payload." }
+                                ["blueprintJsonPayload"] = new Schema { Type = Type.String, Description = "A stringified JSON array of Rank objects." }
                             },
                             Required = ["blueprintJsonPayload"]
                         }

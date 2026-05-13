@@ -6,15 +6,14 @@ namespace Perscom.AI.Dtos;
 
 public static class DtoMapper
 {
-    // ── Rank ──────────────────────────────────────────────
-    public static RankDto ToDto(this Rank entity) => new()
+    public static RankDto ToDto(this Rank entity, string nextRankAbbreviation = null) => new()
     {
         RankClassificationId = entity.RankClassificationId,
         Name = entity.Name,
         Abbreviation = entity.Abbreviation,
         Precedence = entity.Precedence,
         IsPositional = entity.IsPositional,
-        NextRankId = entity.NextRankId,
+        NextRankAbbreviation = nextRankAbbreviation,  // Caller resolves this
         Image = entity.Image
     };
 
@@ -25,7 +24,7 @@ public static class DtoMapper
         Abbreviation = dto.Abbreviation,
         Precedence = dto.Precedence,
         IsPositional = dto.IsPositional,
-        NextRankId = dto.NextRankId,
+        NextRankId = null,  // Caller wires this up in pass 2
         Image = dto.Image ?? ""
     };
 

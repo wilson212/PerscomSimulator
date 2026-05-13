@@ -36,17 +36,14 @@ namespace Perscom.AI
             
             switch (functionName)
             {
-                case "GetSelectedFactionId":
-                    return JsonSerializer.Serialize(new { factionId = GetFactionId() });
-                
-                case "GetFactionById":
-                    return GetFactionById(factionId);
+                case "GetSelectedFaction":
+                    return GetSelectedFaction();
                 
                 case "GetUnitBlueprintSchema":
                     return GetUnitBlueprintSchema();
 
-                case "BuildMilitaryUnit":
-                    return CreateUnitBlueprint(args["blueprintJsonPayload"].GetString());
+                case "CreateUnitBlueprints":
+                    return CreateUnitBlueprints(args["blueprintJsonPayload"].GetString());
 
                 case "GetEchelons":
                     return GetEchelons();
@@ -54,8 +51,8 @@ namespace Perscom.AI
                 case "GetPosBlueprintSchema":
                     return GetPosBlueprintSchema(factionId);
 
-                case "BuildMilitaryPos":
-                    return CreatePositionBlueprint(args["blueprintJsonPayload"].GetString());
+                case "CreatePositionBlueprints":
+                    return CreatePositionBlueprints(args["blueprintJsonPayload"].GetString());
 
                 case "GetRankClassifications":
                     return GetRankClassifications(factionId);
@@ -70,14 +67,14 @@ namespace Perscom.AI
                 case "GetRankClassificationSchema":
                     return GetRankClassificationSchema(factionId);
 
-                case "BuildRankClassification":
-                    return CreateRankClassification(args["blueprintJsonPayload"].GetString());
+                case "CreateRankClassifications":
+                    return CreateRankClassifications(args["blueprintJsonPayload"].GetString());
 
                 case "GetRankSchema":
                     return GetRankSchema(factionId);
 
-                case "BuildRank":
-                    return CreateRank(args["blueprintJsonPayload"].GetString());
+                case "CreateRanks":
+                    return CreateRanks(args["blueprintJsonPayload"].GetString());
                 
                 case "UpdateFaction":
                     return UpdateFaction(factionId, args["updateJsonPayload"].GetString());
@@ -102,17 +99,30 @@ namespace Perscom.AI
             }
         }
 
-        private string GetFactionById(int factionId)
+        private string GetSelectedFaction()
         {
+            int factionId = GetFactionId();
+            if (factionId == 0)
+            {
+                return JsonSerializer.Serialize(new
+                {
+                    description = "No faction is currently selected.",
+                    found = false,
+                    factionId = 0,
+                    faction = (object)null
+                });
+            }
+
             using var db = new AppDatabase();
             var faction = db.Factions.Where(f => f.Id == factionId)
-                .Select(f => new { f.Id, f.Name })
+                .Select(f => new { f.Id, f.Name, f.ShortTag, f.Description, f.ThemeColorCode })
                 .FirstOrDefault();
 
             return JsonSerializer.Serialize(new
             {
-                description = $"Faction lookup for Id {factionId}",
+                description = $"Currently selected faction",
                 found = faction != null,
+                factionId,
                 faction
             });
         }
@@ -259,7 +269,9 @@ namespace Perscom.AI
         {
             using var db = new AppDatabase();
             var echelons = db.Echelons.Select(e => new { e.Id, e.Name }).ToList();
-            var ranks = GetFactionRanks(db, factionId);
+            var ranks = GetFactionRanks(db, factionId)
+                .Select(r => new { r.Id, r.Name, r.Abbreviation, r.RankClassificationId })
+                .ToList();
             var occupations = db.Occupations.Where(o => o.FactionId == factionId).Select(o => new { o.Id, o.Code, o.Name }).ToList();
             var categories = db.PositionCatagories.Select(c => new { c.Id, c.Name }).ToList();
             var unitBlueprints = db.UnitBlueprints.Where(b => b.FactionId == factionId).Select(u => new { u.Id, u.Name }).ToList();
@@ -306,85 +318,119 @@ namespace Perscom.AI
         /// <summary>
         /// Deserializes the AI's JSON payload and inserts a UnitBlueprint into the database.
         /// </summary>
-        private string CreateUnitBlueprint(string jsonPayload)
+        private string CreateUnitBlueprints(string jsonPayload)
         {
             try
             {
-                var dto = JsonSerializer.Deserialize<UnitBlueprintDto>(jsonPayload,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dtos = JsonSerializer.Deserialize<List<UnitBlueprintDto>>(jsonPayload, options);
+                var created = new List<object>();
 
                 using var db = new AppDatabase();
-                var blueprint = new UnitBlueprint
-                {
-                    Name = dto.Name,
-                    EchelonId = dto.EchelonId,
-                    FactionId = dto.FactionId,
-                    UnitNameFormat = dto.UnitNameFormat ?? "",
-                    UnitCodeFormat = dto.UnitCodeFormat,
-                    PromotionPoolId = dto.PromotionPoolId
-                };
+                using var ts = db.BeginTransaction();
 
-                db.UnitBlueprints.Add(blueprint);
+                foreach (var dto in dtos)
+                {
+                    var blueprint = new UnitBlueprint
+                    {
+                        Name = dto.Name,
+                        EchelonId = dto.EchelonId,
+                        FactionId = dto.FactionId,
+                        UnitNameFormat = dto.UnitNameFormat ?? "",
+                        UnitCodeFormat = dto.UnitCodeFormat,
+                        PromotionPoolId = dto.PromotionPoolId
+                    };
+
+                    db.UnitBlueprints.Add(blueprint);
+                    created.Add(new { id = blueprint.Id, name = blueprint.Name });
+                }
+
+                ts.Commit();
 
                 return JsonSerializer.Serialize(new
                 {
-                    success = true, id = blueprint.Id,
-                    message = $"UnitBlueprint '{blueprint.Name}' created."
+                    success = true,
+                    count = created.Count,
+                    message = $"{created.Count} UnitBlueprint(s) created.",
+                    created
                 });
             }
             catch (Exception ex)
             {
-                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+                return JsonSerializer.Serialize(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                    originalPayload = jsonPayload
+                });
             }
         }
 
         /// <summary>
         /// Deserializes the AI's JSON payload and inserts a PositionBlueprint into the database.
         /// </summary>
-        private string CreatePositionBlueprint(string jsonPayload)
+        private string CreatePositionBlueprints(string jsonPayload)
         {
             try
             {
-                var dto = JsonSerializer.Deserialize<PositionBlueprintDto>(jsonPayload,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dtos = JsonSerializer.Deserialize<List<PositionBlueprintDto>>(jsonPayload, options);
+                var created = new List<object>();
 
                 using var db = new AppDatabase();
-                var pos = new PositionBlueprint
-                {
-                    Name = dto.Name,
-                    UnitBlueprintId = dto.UnitBlueprintId,
-                    CatagoryId = dto.CatagoryId,
-                    TargetRankId = dto.TargetRankId,
-                    PositionalRankId = dto.PositionalRankId,
-                    Flag = Enum.Parse<PositionFlag>(dto.Flag),
-                    PromotionEchelonId = dto.PromotionEchelonId,
-                    OccupationId = dto.OccupationId,
-                    Stature = dto.Stature,
-                    Prestige = dto.Prestige,
-                    MinTourLength = dto.MinTourLength,
-                    MaxTourLength = dto.MaxTourLength,
-                    CanRetireEarly = dto.CanRetireEarly,
-                    CanBePromotedEarly = dto.CanBePromotedEarly,
-                    CanLateralEarly = dto.CanLateralEarly,
-                    Waiverable = dto.Waiverable,
-                    SelectionMethod = Enum.Parse<SelectionProcedure>(dto.SelectionMethod),
-                    DemoteOverRanked = dto.DemoteOverRanked,
-                    AutoPromoteInRankRange = dto.AutoPromoteInRankRange,
-                    SupervisorPositionBlueprintId = dto.SupervisorPositionBlueprintId,
-                    ZIndex = dto.ZIndex
-                };
+                using var ts = db.BeginTransaction();
 
-                db.PositionBlueprints.Add(pos);
+                foreach (var dto in dtos)
+                {
+                    var pos = new PositionBlueprint
+                    {
+                        Name = dto.Name,
+                        UnitBlueprintId = dto.UnitBlueprintId,
+                        CatagoryId = dto.CatagoryId,
+                        TargetRankId = dto.TargetRankId,
+                        PositionalRankId = dto.PositionalRankId,
+                        Flag = Enum.Parse<PositionFlag>(dto.Flag),
+                        PromotionEchelonId = dto.PromotionEchelonId,
+                        OccupationId = dto.OccupationId,
+                        Stature = dto.Stature,
+                        Prestige = dto.Prestige,
+                        MinTourLength = dto.MinTourLength,
+                        MaxTourLength = dto.MaxTourLength,
+                        CanRetireEarly = dto.CanRetireEarly,
+                        CanBePromotedEarly = dto.CanBePromotedEarly,
+                        CanLateralEarly = dto.CanLateralEarly,
+                        Waiverable = dto.Waiverable,
+                        SelectionMethod = Enum.Parse<SelectionProcedure>(dto.SelectionMethod),
+                        DemoteOverRanked = dto.DemoteOverRanked,
+                        AutoPromoteInRankRange = dto.AutoPromoteInRankRange,
+                        SupervisorPositionBlueprintId = dto.SupervisorPositionBlueprintId,
+                        ZIndex = dto.ZIndex
+                    };
+
+                    db.PositionBlueprints.Add(pos);
+                    created.Add(new { id = pos.Id, name = pos.Name });
+                }
+
+                ts.Commit();
 
                 return JsonSerializer.Serialize(new
                 {
-                    success = true, id = pos.Id,
-                    message = $"PositionBlueprint '{pos.Name}' created."
+                    success = true,
+                    count = created.Count,
+                    message = $"{created.Count} PositionBlueprint(s) created.",
+                    created
                 });
             }
             catch (Exception ex)
             {
-                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+                return JsonSerializer.Serialize(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                    originalPayload = jsonPayload
+                });
             }
         }
         
@@ -449,61 +495,71 @@ namespace Perscom.AI
         /// <summary>
         /// Deserializes the AI's JSON payload and inserts a RankClassification into the database.
         /// </summary>
-        private string CreateRankClassification(string jsonPayload)
+        private string CreateRankClassifications(string jsonPayload)
         {
             try
             {
-                var dto = JsonSerializer.Deserialize<RankClassificationDto>(jsonPayload,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-                var rankType = Enum.Parse<RankType>(dto.Type);
-                var selection = Enum.Parse<PayGradeSelection>(dto.Selection);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dtos = JsonSerializer.Deserialize<List<RankClassificationDto>>(jsonPayload, options);
                 int factionId = GetFactionId();
+                var created = new List<object>();
 
                 using var db = new AppDatabase();
+                using var ts = db.BeginTransaction();
 
-                // Check for duplicate
-                var exists = db.RankClassifications
-                    .Any(rc => rc.FactionId == factionId
-                             && rc.Type == rankType
-                             && rc.PayGrade == dto.PayGrade);
-
-                if (exists)
+                foreach (var dto in dtos)
                 {
-                    return JsonSerializer.Serialize(new
+                    var rankType = Enum.Parse<RankType>(dto.Type);
+                    var selection = Enum.Parse<PayGradeSelection>(dto.Selection);
+
+                    var exists = db.RankClassifications
+                        .Any(rc => rc.FactionId == factionId
+                                 && rc.Type == rankType
+                                 && rc.PayGrade == dto.PayGrade);
+
+                    if (exists)
+                        throw new InvalidOperationException(
+                            $"{dto.Type}-{dto.PayGrade} already exists in this faction. Remove it from the payload or change its PayGrade.");
+
+                    var entity = new RankClassification
                     {
-                        success = false,
-                        error = $"A RankClassification for {dto.Type} grade {dto.PayGrade} already exists in this faction."
-                    });
+                        FactionId = factionId,
+                        Type = rankType,
+                        PayGrade = dto.PayGrade,
+                        Selection = selection,
+                        LockInTime = dto.LockInTime,
+                        MinTimeInGrade = dto.MinTimeInGrade,
+                        MaxTimeInGrade = dto.MaxTimeInGrade,
+                        PreviousTimeInGradeRequirement = dto.PreviousTimeInGradeRequirement,
+                        PromotableLength = dto.PromotableLength,
+                        Stipend = dto.Stipend,
+                        HasSplitRankLanes = dto.HasSplitRankLanes
+                    };
+
+                    db.RankClassifications.Add(entity);
+                    created.Add(new { id = entity.Id, type = dto.Type, payGrade = dto.PayGrade });
                 }
 
-                var entity = new RankClassification
-                {
-                    FactionId = factionId,
-                    Type = rankType,
-                    PayGrade = dto.PayGrade,
-                    Selection = selection,
-                    LockInTime = dto.LockInTime,
-                    MinTimeInGrade = dto.MinTimeInGrade,
-                    MaxTimeInGrade = dto.MaxTimeInGrade,
-                    PreviousTimeInGradeRequirement = dto.PreviousTimeInGradeRequirement,
-                    PromotableLength = dto.PromotableLength,
-                    Stipend = dto.Stipend,
-                    HasSplitRankLanes = dto.HasSplitRankLanes
-                };
-
-                db.RankClassifications.Add(entity);
+                ts.Commit();
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    id = entity.Id,
-                    message = $"RankClassification '{dto.Type}-{dto.PayGrade}' created with Id={entity.Id}."
+                    count = created.Count,
+                    message = $"{created.Count} RankClassification(s) created.",
+                    created
                 });
             }
             catch (Exception ex)
             {
-                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+                // Transaction auto-rollbacks via Dispose — nothing was persisted
+                return JsonSerializer.Serialize(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                    originalPayload = jsonPayload
+                });
             }
         }
 
@@ -527,7 +583,7 @@ namespace Perscom.AI
 
             // Show existing ranks so the AI can reference them for NextRankId and avoid duplicates
             var factionClassIds = classifications.Select(c => c.Id).ToList();
-            var existingRanks = db.Ranks
+            var eExistingRanks = db.Ranks
                 .Where(r => r.RankClassificationId.In(factionClassIds))
                 .Select(r => new
                 {
@@ -544,14 +600,14 @@ namespace Perscom.AI
             {
                 instructions = "Fill in this template to create a Rank. The RankClassificationId must reference " +
                                "a valid classification from 'validClassifications'. " +
-                               "NextRankId is ONLY used when the parent classification has HasSplitRankLanes=true — " +
+                               "NextRankAbbreviation is ONLY used when the parent classification has HasSplitRankLanes=true — " +
                                "it points to the specific rank this rank promotes into (e.g., 1stSgt → SgtMaj). " +
                                "Abbreviation must be unique across the entire database. " +
                                "Precedence controls priority within the same classification: " +
                                "entry-level rank = 0, positional/special ranks get higher values.",
                 factionId,
                 validClassifications = classifications,
-                existingRanks = existingRanks,
+                existingRanks = eExistingRanks,
                 template = new
                 {
                     rankClassificationId = "(int, required) FK to RankClassification.Id from validClassifications",
@@ -559,7 +615,7 @@ namespace Perscom.AI
                     abbreviation = "(string, required, unique) short form — e.g. 'PFC'",
                     precedence = "(int, default 0) priority within the same classification, 0 = base entry rank",
                     isPositional = "(bool, default false) true if this rank can only be achieved via special assignment",
-                    nextRankId = "(int?, optional) FK to an existing Rank.Id — only set when HasSplitRankLanes is true on the NEXT classification",
+                    nextRankAbbreviation = "(string?, optional) The ABBREVIATION of the rank this rank promotes into — only set when HasSplitRankLanes is true on the NEXT classification. Can reference a rank in the same payload or an existing rank.",
                     image = "(string, default '') optional image filename"
                 }
             };
@@ -570,75 +626,94 @@ namespace Perscom.AI
         /// <summary>
         /// Deserializes the AI's JSON payload and inserts a Rank into the database.
         /// </summary>
-        private string CreateRank(string jsonPayload)
+        private string CreateRanks(string jsonPayload)
         {
             try
             {
-                var dto = JsonSerializer.Deserialize<RankDto>(jsonPayload,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dtos = JsonSerializer.Deserialize<List<RankDto>>(jsonPayload, options);
+                int factionId = GetFactionId();
+                var created = new List<object>();
 
                 using var db = new AppDatabase();
+                using var ts = db.BeginTransaction();
 
-                // Validate the classification exists and belongs to the active faction
-                var classification = db.RankClassifications
-                    .FirstOrDefault(rc => rc.Id == dto.RankClassificationId);
+                // Pass 1: Insert all ranks WITHOUT NextRankId
+                var abbreviationToEntity = new Dictionary<string, Rank>(StringComparer.OrdinalIgnoreCase);
 
-                if (classification == null)
+                foreach (var dto in dtos)
                 {
-                    return JsonSerializer.Serialize(new
+                    var classification = db.RankClassifications
+                        .FirstOrDefault(rc => rc.Id == dto.RankClassificationId);
+
+                    if (classification == null)
+                        throw new InvalidOperationException(
+                            $"RankClassificationId {dto.RankClassificationId} does not exist. Cannot create rank '{dto.Name}'.");
+
+                    if (classification.FactionId != factionId)
+                        throw new InvalidOperationException(
+                            $"RankClassificationId {dto.RankClassificationId} belongs to a different faction. Cannot create rank '{dto.Name}'.");
+
+                    var entity = new Rank
                     {
-                        success = false,
-                        error = $"RankClassificationId {dto.RankClassificationId} does not exist."
-                    });
+                        RankClassificationId = dto.RankClassificationId,
+                        Name = dto.Name,
+                        Abbreviation = dto.Abbreviation,
+                        Precedence = dto.Precedence,
+                        IsPositional = dto.IsPositional,
+                        NextRankId = null,  // Deferred to pass 2
+                        Image = dto.Image ?? ""
+                    };
+
+                    db.Ranks.Add(entity);
+                    abbreviationToEntity[dto.Abbreviation] = entity;
+                    created.Add(new { id = entity.Id, name = entity.Name, abbreviation = entity.Abbreviation });
                 }
 
-                if (classification.FactionId != GetFactionId())
+                // Pass 2: Wire up NextRankId using abbreviation references
+                foreach (var dto in dtos.Where(d => !string.IsNullOrEmpty(d.NextRankAbbreviation)))
                 {
-                    return JsonSerializer.Serialize(new
-                    {
-                        success = false,
-                        error = $"RankClassificationId {dto.RankClassificationId} belongs to a different faction."
-                    });
-                }
+                    if (!abbreviationToEntity.TryGetValue(dto.Abbreviation, out var sourceRank))
+                        continue;
 
-                // Validate NextRankId if provided
-                if (dto.NextRankId.HasValue)
-                {
-                    var nextRank = db.Ranks.FirstOrDefault(r => r.Id == dto.NextRankId.Value);
-                    if (nextRank == null)
+                    // Check if the target is in this payload
+                    if (abbreviationToEntity.TryGetValue(dto.NextRankAbbreviation, out var targetRank))
                     {
-                        return JsonSerializer.Serialize(new
-                        {
-                            success = false,
-                            error = $"NextRankId {dto.NextRankId.Value} does not exist."
-                        });
+                        sourceRank.NextRankId = targetRank.Id;
                     }
+                    else
+                    {
+                        // Check if it's an existing rank in the database
+                        var existingTarget = db.Ranks.FirstOrDefault(r => r.Abbreviation == dto.NextRankAbbreviation);
+                        if (existingTarget == null)
+                            throw new InvalidOperationException(
+                                $"NextRankAbbreviation '{dto.NextRankAbbreviation}' does not match any rank in the payload or database. Cannot wire rank '{dto.Name}'.");
+
+                        sourceRank.NextRankId = existingTarget.Id;
+                    }
+
+                    db.Ranks.Update(sourceRank);
                 }
 
-                var entity = new Rank
-                {
-                    RankClassificationId = dto.RankClassificationId,
-                    Name = dto.Name,
-                    Abbreviation = dto.Abbreviation,
-                    Precedence = dto.Precedence,
-                    IsPositional = dto.IsPositional,
-                    NextRankId = dto.NextRankId,
-                    Image = dto.Image ?? ""
-                };
-
-                db.Ranks.Add(entity);
+                ts.Commit();
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    id = entity.Id,
-                    message = $"Rank '{entity.Name}' ({entity.Abbreviation}) created with Id={entity.Id}, " +
-                              $"under classification Id={entity.RankClassificationId}."
+                    count = created.Count,
+                    message = $"{created.Count} Rank(s) created.",
+                    created
                 });
             }
             catch (Exception ex)
             {
-                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+                return JsonSerializer.Serialize(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                    originalPayload = jsonPayload
+                });
             }
         }
         

@@ -7,6 +7,6 @@ public class RankDto
     public string Abbreviation { get; set; }
     public int Precedence { get; set; } = 0;
     public bool IsPositional { get; set; } = false;
-    public int? NextRankId { get; set; }
+    public string NextRankAbbreviation { get; set; }  // String reference instead of int FK
     public string Image { get; set; } = "";
 }

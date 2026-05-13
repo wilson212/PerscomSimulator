@@ -360,11 +360,10 @@ namespace Perscom.Database
                 }
 
                 // Create version record
+                DbVersions = new DbSet<DbVersion>(this);
                 DbVersion version = CreateEntity<DbVersion>();
                 version.Version = CurrentVersion;
                 version.AppliedOn = DateTime.Now;
-
-                DbVersions = new DbSet<DbVersion>(this);
                 DbVersions.Add(version);
 
                 tr.Commit();
