@@ -214,6 +214,7 @@ namespace Perscom
             // Await the response
             AIChatTextMessage message = new AIChatTextMessage(response, AiAuthor, DateTime.Now);
             chatWindow.AddMessage(message);
+            chatWindow.Refresh();
 
             // Close typing indicater
             chatWindow.ChatElement.HideTypingIndicator();

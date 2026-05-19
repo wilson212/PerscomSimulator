@@ -234,7 +234,7 @@
             this.radGroupBox1.Text = "Board Point Weights";
             this.radGroupBox1.ThemeName = "Fluent";
             // 
-            // TigCheckBox
+            // tigCheckBox
             // 
             this.TigCheckBox.Location = new System.Drawing.Point(26, 48);
             this.TigCheckBox.Name = "TigCheckBox";
@@ -243,7 +243,7 @@
             this.TigCheckBox.Text = "Factor in Time in Grade";
             this.TigCheckBox.ThemeName = "Fluent";
             // 
-            // PercentageTrackBar
+            // percentageTrackBar
             // 
             this.PercentageTrackBar.Enabled = false;
             this.PercentageTrackBar.LabelStyle = Telerik.WinControls.UI.TrackBarLabelStyle.TopLeft;
@@ -268,7 +268,7 @@
             this.radLabel1.TabIndex = 19;
             this.radLabel1.Text = "Pass Percentage Requirement:";
             // 
-            // PassFailCheckBox
+            // passFailCheckBox
             // 
             this.PassFailCheckBox.Location = new System.Drawing.Point(26, 217);
             this.PassFailCheckBox.Name = "PassFailCheckBox";
@@ -299,7 +299,7 @@
             this.radLabel29.TabIndex = 16;
             this.radLabel29.Text = "Total Board Points:";
             // 
-            // TigMaxSpinEditor
+            // tigMaxSpinEditor
             // 
             this.TigMaxSpinEditor.Enabled = false;
             this.TigMaxSpinEditor.Location = new System.Drawing.Point(341, 121);
@@ -321,7 +321,7 @@
             this.radLabel14.TabIndex = 12;
             this.radLabel14.Text = "Time In Grade Max Points:";
             // 
-            // FactorScaleTrackBar
+            // factorScaleTrackBar
             // 
             this.FactorScaleTrackBar.Enabled = false;
             this.FactorScaleTrackBar.LabelStyle = Telerik.WinControls.UI.TrackBarLabelStyle.TopLeft;

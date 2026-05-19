@@ -44,6 +44,18 @@ namespace Perscom.Database
         public virtual bool IsPositional { get; set; }
         
         /// <summary>
+        /// The stipend mode for this rank.
+        /// </summary>
+        [Column, Required, Default(StipendMode.Inherit)]
+        public virtual StipendMode StipendMode { get; set; }
+        
+        /// <summary>
+        /// The stipend amount for this rank.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public virtual double Stipend { get; set; }
+        
+        /// <summary>
         /// The identifier of the next rank in the hierarchy, used to establish a progression path. This should be
         /// null unless this <see cref="RankClassification.HasSplitRankLanes"/> is true.
         /// </summary>

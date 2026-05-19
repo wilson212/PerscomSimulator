@@ -39,7 +39,7 @@
             // lblRankTitle
             // 
             lblRankTitle.AutoSize = false;
-            lblRankTitle.Location = new System.Drawing.Point(0, 10);
+            lblRankTitle.Location = new System.Drawing.Point(2, 10);
             lblRankTitle.Name = "lblRankTitle";
             lblRankTitle.Size = new System.Drawing.Size(108, 18);
             lblRankTitle.TabIndex = 0;
@@ -49,7 +49,7 @@
             // lblRankName
             // 
             lblRankName.AutoSize = false;
-            lblRankName.Location = new System.Drawing.Point(0, 98);
+            lblRankName.Location = new System.Drawing.Point(2, 102);
             lblRankName.Name = "lblRankName";
             lblRankName.Size = new System.Drawing.Size(108, 18);
             lblRankName.TabIndex = 23;
@@ -64,8 +64,9 @@
             rankPictureBox.ImageLayout = Telerik.WinControls.UI.RadImageLayout.Center;
             rankPictureBox.Location = new System.Drawing.Point(6, 31);
             rankPictureBox.Name = "rankPictureBox";
-            rankPictureBox.Size = new System.Drawing.Size(96, 64);
+            rankPictureBox.Size = new System.Drawing.Size(100, 68);
             rankPictureBox.TabIndex = 22;
+            rankPictureBox.ThemeName = "Fluent";
             rankPictureBox.Click += OpenRankSelector;
             // 
             // RadRankSelector
@@ -77,7 +78,7 @@
             Controls.Add(rankPictureBox);
             Controls.Add(lblRankTitle);
             Name = "RadRankSelector";
-            Size = new System.Drawing.Size(108, 128);
+            Size = new System.Drawing.Size(112, 128);
             ((System.ComponentModel.ISupportInitialize)lblRankTitle).EndInit();
             ((System.ComponentModel.ISupportInitialize)lblRankName).EndInit();
             ((System.ComponentModel.ISupportInitialize)rankPictureBox).EndInit();

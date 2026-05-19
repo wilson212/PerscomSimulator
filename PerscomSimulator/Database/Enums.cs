@@ -206,4 +206,25 @@
         /// </summary>
         RandomByProbability
     }
+
+    /// <summary>
+    /// Defines the mode used to determine how a stipend value is applied or calculated.
+    /// </summary>
+    public enum StipendMode
+    {
+        /// <summary>
+        /// The stipend is inherited from the RankClassification.
+        /// </summary>
+        Inherit,
+        
+        /// <summary>
+        /// The stipend on the Rank overrides the RankClassification.
+        /// </summary>
+        Override,
+        
+        /// <summary>
+        /// The stipend if added to the RankClassification stipend.
+        /// </summary>
+        Offset
+    }
 }

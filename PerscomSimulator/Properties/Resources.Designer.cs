@@ -179,5 +179,23 @@ namespace Perscom.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+
+        internal static System.Drawing.Bitmap double_arrow_right
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("double_arrow_right", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
+        internal static System.Drawing.Bitmap go_next
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("go_next", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

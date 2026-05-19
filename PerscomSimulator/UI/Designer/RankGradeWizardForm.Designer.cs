@@ -161,7 +161,7 @@
             this.radLabel4.TabIndex = 18;
             this.radLabel4.Text = "Number of Warrant Rank Grades:";
             // 
-            // radSpinEditor2
+            // stipendAmountSpinEditor
             // 
             this.radSpinEditor2.Location = new System.Drawing.Point(35, 252);
             this.radSpinEditor2.Maximum = new decimal(new int[] {
@@ -182,7 +182,7 @@
             this.radLabel3.TabIndex = 16;
             this.radLabel3.Text = "Number of Officer Rank Grades:";
             // 
-            // radSpinEditor1
+            // precedenceSpinEditor
             // 
             this.radSpinEditor1.Location = new System.Drawing.Point(35, 160);
             this.radSpinEditor1.Maximum = new decimal(new int[] {

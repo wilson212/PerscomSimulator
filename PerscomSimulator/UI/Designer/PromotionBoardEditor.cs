@@ -1,13 +1,10 @@
-﻿using CrossLite.QueryBuilder;
-using Perscom.Database;
+﻿using Perscom.Database;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Telerik.WinControls;
-using Telerik.WinControls.Themes;
 using Telerik.WinControls.UI;
 
 namespace Perscom
@@ -49,43 +46,48 @@ namespace Perscom
         /// Exactly one of <paramref name="rank"/> or <paramref name="rankClassification"/> 
         /// must be non-null (unless editing an existing board).
         /// </summary>
-        private PromotionBoardEditor(Rank rank, RankClassification rankClassification, 
+        private PromotionBoardEditor(Rank rank, RankClassification rankClassification,
             Occupation occupation, PromotionBoard existing)
         {
             // Create components and apply theme
             InitializeComponent();
             FormStyling.ApplyControlsTheme(Controls);
 
+            // For some reason these arent apart of the forms Controls
+            gradedItemsContextMenu.ThemeName = "FluentPerscomBlue";
+            additionalContextMenu.ThemeName = "FluentPerscomBlue";
+
+            // Button styling
+            FormStyling.StyleButtonDarkBlue(saveButton);
+            FormStyling.StyleButtonRed(deleteButton);
+
             // Fill board type dropdown
             foreach (PromotionBoardType item in Enum.GetValues(typeof(PromotionBoardType)))
             {
-                BoardTypeDropDownList.Items.Add(new RadListDataItem
+                boardTypeDropDownList.Items.Add(new RadListDataItem
                 {
                     Tag = item,
                     Text = Enum.GetName(typeof(PromotionBoardType), item)
                 });
             }
-            BoardTypeDropDownList.SelectedIndex = 0;
-
-            // Button styling
-            FormStyling.StyleButtonFluentBlue(SaveButton);
-            FormStyling.StyleButtonRed(DeleteButton);
-
+            boardTypeDropDownList.SelectedIndex = 0;
+            
+            // Existing board?
             if (existing != null)
             {
                 // --- EDIT MODE ---
                 IsNewBoard = false;
                 Board = existing;
-                DeleteButton.Visible = true;
+                deleteButton.Visible = true;
 
                 // Resolve the scope from the existing entity's FK values
                 using var db = new AppDatabase();
                 if (Board.RankId.HasValue)
                     ScopedRank = db.Ranks.Find(Board.RankId.Value);
-                
+
                 if (Board.RankClassificationId.HasValue)
                     ScopedClassification = db.RankClassifications.Find(Board.RankClassificationId.Value);
-                
+
                 if (Board.OccupationId.HasValue)
                     ScopedOccupation = db.Occupations.Find(Board.OccupationId.Value);
 
@@ -96,7 +98,7 @@ namespace Perscom
             {
                 // --- NEW BOARD MODE ---
                 IsNewBoard = true;
-                DeleteButton.Visible = false;
+                deleteButton.Visible = false;
 
                 ScopedRank = rank;
                 ScopedClassification = rankClassification;
@@ -113,11 +115,83 @@ namespace Perscom
             // Lock down the "Board Details" section — user cannot change scope
             SetupScopeDisplay();
 
-            // Populate default weights if new, or load existing
-            if (IsNewBoard)
-                PopulateDefaultWeights();
-
             RecalculateTotalPoints();
+
+            // Register for events
+            addAttrMenuItem.Click += AddAttrMenuItem_Click;
+            editAttrMenuItem.Click += EditAttrMenuItem_Click;
+
+            // Context menu enable/disable logic
+            gradedItemsContextMenu.DropDownOpening += GradedItemsContextMenu_DropDownOpening;
+            additionalContextMenu.DropDownOpening += AdditionalContextMenu_DropDownOpening;
+        }
+
+        /// <summary>
+        /// Handles the click event for editing a selected attribute menu item.
+        /// Allows editing the selected item's properties within the grid, including its attribute
+        /// and weight, while excluding already used attributes from selection.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the menu item that triggered the method.</param>
+        /// <param name="e">Provides the event data associated with the click action.</param>
+        private void EditAttrMenuItem_Click(object sender, EventArgs e)
+        {
+            if (attrWeightsGridView.SelectedRows.Count == 0) return;
+
+            int rowIndex = attrWeightsGridView.SelectedRows[0].Index;
+            if (rowIndex < 0 || rowIndex >= Weights.Count) return;
+
+            var current = Weights[rowIndex];
+
+            // Exclude all used attributes except the one currently being edited
+            var excludedAttributes = Weights
+                .Where(w => w.Attribute != current.Attribute)
+                .Select(w => w.Attribute);
+
+            using var frm = new GradedAttributeForm(current.Attribute, current.Weight, excludedAttributes);
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                current.Attribute = frm.SelectedAttribute;
+                current.Weight = frm.MaxPoints;
+
+                attrWeightsGridView.Rows[rowIndex].Cells["column1"].Value =
+                    Enum.GetName(typeof(AttributeType), current.Attribute);
+                attrWeightsGridView.Rows[rowIndex].Cells["column2"].Value =
+                    current.Weight.ToString();
+
+                RecalculateTotalPoints();
+            }
+        }
+
+        /// <summary>
+        /// Handles the event triggered when the "Add Attribute" menu item is clicked.
+        /// Prompts the user to select an attribute and configure its weight,
+        /// then adds the new attribute along with its weight to the list of weights
+        /// and updates the attribute weights grid and total points.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">An object containing event data.</param>
+        private void AddAttrMenuItem_Click(object sender, EventArgs e)
+        {
+            var usedAttributes = Weights.Select(w => w.Attribute);
+
+            using var frm = new GradedAttributeForm(usedAttributes);
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                var weight = new PromotionBoardWeight
+                {
+                    Attribute = frm.SelectedAttribute,
+                    Weight = frm.MaxPoints
+                };
+                Weights.Add(weight);
+
+                attrWeightsGridView.Rows.Add(
+                    Enum.GetName(typeof(AttributeType), weight.Attribute),
+                    weight.Weight.ToString(),
+                    "0%"
+                );
+
+                RecalculateTotalPoints();
+            }
         }
 
         #region Public Constructors
@@ -216,66 +290,32 @@ namespace Perscom
         #region Data Loading
 
         /// <summary>
-        /// Populates the attribute weights grid with default zero-weight entries
-        /// </summary>
-        private void PopulateDefaultWeights()
-        {
-            Weights.Clear();
-            radGridView3.Rows.Clear();
-
-            var gradableAttributes = new[]
-            {
-                AttributeType.Leadership,
-                AttributeType.Composure,
-                AttributeType.Marksmanship,
-                AttributeType.Fitness,
-                AttributeType.Teamwork,
-                AttributeType.Discipline
-            };
-
-            foreach (var attr in gradableAttributes)
-            {
-                var weight = new PromotionBoardWeight
-                {
-                    Attribute = attr,
-                    Weight = 0
-                };
-                Weights.Add(weight);
-                radGridView3.Rows.Add(
-                    Enum.GetName(typeof(AttributeType), attr),
-                    "0",
-                    "0%"
-                );
-            }
-        }
-
-        /// <summary>
         /// Loads an existing board's values into the form controls
         /// </summary>
         private void LoadBoardIntoForm()
         {
             if (Board == null) return;
 
-            BoardTypeDropDownList.SelectedIndex = (int)Board.Type;
+            boardTypeDropDownList.SelectedIndex = (int)Board.Type;
 
-            PassFailCheckBox.Checked = Board.IsPassFail;
-            PercentageTrackBar.Value = Board.PassThreshold;
+            passFailCheckBox.Checked = Board.IsPassFail;
+            percentageTrackBar.Value = Board.PassThreshold;
 
             bool hasTig = Board.TimeInGradeFactor > 0 || Board.TimeInGradeMaxPoints > 0;
-            TigCheckBox.Checked = hasTig;
+            tigCheckBox.Checked = hasTig;
             if (hasTig)
             {
-                FactorScaleTrackBar.Value = Board.TimeInGradeFactor;
-                TigMaxSpinEditor.Value = Board.TimeInGradeMaxPoints;
+                factorScaleTrackBar.Value = Board.TimeInGradeFactor;
+                tigMaxSpinEditor.Value = Board.TimeInGradeMaxPoints;
             }
 
             // Form Rating (requires FormRatingFactor / FormRatingMaxPoints columns)
             // bool hasForm = Board.FormRatingFactor > 0 || Board.FormRatingMaxPoints > 0;
-            // radCheckBox2.Checked = hasForm;
+            // formScaleCheckBox.Checked = hasForm;
             // if (hasForm)
             // {
-            //     radTrackBar1.Value = Board.FormRatingFactor;
-            //     radSpinEditor1.Value = Board.FormRatingMaxPoints;
+            //     formRatingTrackBar.Value = Board.FormRatingFactor;
+            //     precedenceSpinEditor.Value = Board.FormRatingMaxPoints;
             // }
 
             LoadExistingWeights();
@@ -288,8 +328,6 @@ namespace Perscom
         {
             if (Board == null) return;
 
-            PopulateDefaultWeights(); // reset grid first
-
             using var db = new AppDatabase();
             var existingWeights = db.PromotionBoardWeights.FindAll(Board.Id).ToArray();
 
@@ -299,7 +337,7 @@ namespace Perscom
                 if (existing != null)
                 {
                     Weights[i] = existing;
-                    radGridView3.Rows[i].Cells["column2"].Value = existing.Weight.ToString();
+                    attrWeightsGridView.Rows[i].Cells["column2"].Value = existing.Weight.ToString();
                 }
             }
         }
@@ -312,10 +350,10 @@ namespace Perscom
         {
             int total = Weights.Sum(w => w.Weight);
 
-            if (TigCheckBox.Checked)
-                total += (int)TigMaxSpinEditor.Value;
+            if (tigCheckBox.Checked)
+                total += (int)tigMaxSpinEditor.Value;
 
-            if (radCheckBox2.Checked)
+            if (formScaleCheckBox.Checked)
                 total += (int)radSpinEditor1.Value;
 
             TotalPointsSpinEditor.Value = total;
@@ -326,12 +364,12 @@ namespace Perscom
         {
             int totalPoints = (int)TotalPointsSpinEditor.Value;
 
-            for (int i = 0; i < Weights.Count && i < radGridView3.Rows.Count; i++)
+            for (int i = 0; i < Weights.Count && i < attrWeightsGridView.Rows.Count; i++)
             {
                 double pct = totalPoints > 0
                     ? (Weights[i].Weight / (double)totalPoints) * 100.0
                     : 0;
-                radGridView3.Rows[i].Cells["column3"].Value = $"{pct:F1}%";
+                attrWeightsGridView.Rows[i].Cells["column3"].Value = $"{pct:F1}%";
             }
 
             UpdateAdditionalScoresGrid(totalPoints);
@@ -339,23 +377,7 @@ namespace Perscom
 
         private void UpdateAdditionalScoresGrid(int totalPoints)
         {
-            radGridView4.Rows.Clear();
 
-            if (TigCheckBox.Checked)
-            {
-                int tigMax = (int)TigMaxSpinEditor.Value;
-                double pct = totalPoints > 0 ? (tigMax / (double)totalPoints) * 100.0 : 0;
-                radGridView4.Rows.Add("Time in Grade",
-                    $"Factor Scale: {FactorScaleTrackBar.Value}", tigMax.ToString(), $"{pct:F1}%");
-            }
-
-            if (radCheckBox2.Checked)
-            {
-                int formMax = (int)radSpinEditor1.Value;
-                double pct = totalPoints > 0 ? (formMax / (double)totalPoints) * 100.0 : 0;
-                radGridView4.Rows.Add("Current Form Rating",
-                    $"Multiplier: {radTrackBar1.Value}", formMax.ToString(), $"{pct:F1}%");
-            }
         }
 
         #endregion
@@ -378,37 +400,37 @@ namespace Perscom
 
         #region Control Toggle Logic
 
-        private void TigCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
+        private void tigCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
         {
-            FactorScaleTrackBar.Enabled = TigCheckBox.Checked;
-            TigMaxSpinEditor.Enabled = TigCheckBox.Checked;
+            factorScaleTrackBar.Enabled = tigCheckBox.Checked;
+            tigMaxSpinEditor.Enabled = tigCheckBox.Checked;
             RecalculateTotalPoints();
         }
 
-        private void radCheckBox2_ToggleStateChanged(object sender, StateChangedEventArgs args)
+        private void formRatingCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
         {
-            radTrackBar1.Enabled = radCheckBox2.Checked;
-            radSpinEditor1.Enabled = radCheckBox2.Checked;
+            formRatingTrackBar.Enabled = formScaleCheckBox.Checked;
+            radSpinEditor1.Enabled = formScaleCheckBox.Checked;
             RecalculateTotalPoints();
         }
 
-        private void BoardTypeDropDownList_SelectedIndexChanged(object sender,
+        private void boardTypeDropDownList_SelectedIndexChanged(object sender,
             Telerik.WinControls.UI.Data.PositionChangedEventArgs e)
         {
-            if (BoardTypeDropDownList.SelectedIndex > 0)
+            if (boardTypeDropDownList.SelectedIndex > 0)
             {
-                PassFailCheckBox.Checked = true;
-                PassFailCheckBox.Enabled = false;
+                passFailCheckBox.Checked = true;
+                passFailCheckBox.Enabled = false;
             }
             else
             {
-                PassFailCheckBox.Enabled = true;
+                passFailCheckBox.Enabled = true;
             }
         }
 
         private void PassFailCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
         {
-            PercentageTrackBar.Enabled = PassFailCheckBox.Checked;
+            percentageTrackBar.Enabled = passFailCheckBox.Checked;
         }
 
         private void TigMaxSpinEditor_ValueChanged(object sender, EventArgs e)
@@ -416,6 +438,29 @@ namespace Perscom
 
         private void radSpinEditor1_ValueChanged(object sender, EventArgs e)
             => RecalculateTotalPoints();
+
+        private void attrWeightsGridView_DoubleClick(object sender, EventArgs e)
+        {
+            EditAttrMenuItem_Click(sender, e);
+        }
+
+        private void GradedItemsContextMenu_DropDownOpening(object sender, CancelEventArgs e)
+        {
+            bool hasSelection = attrWeightsGridView.SelectedRows.Count > 0
+                                && attrWeightsGridView.SelectedRows[0].Index >= 0;
+
+            editAttrMenuItem.Enabled = hasSelection;
+            deleteAttrMenuItem.Enabled = hasSelection;
+        }
+
+        private void AdditionalContextMenu_DropDownOpening(object sender, CancelEventArgs e)
+        {
+            bool hasSelection = addScoresGridView.SelectedRows.Count > 0
+                                && addScoresGridView.SelectedRows[0].Index >= 0;
+
+            editScoreMenuItem.Enabled = hasSelection;
+            deleteScoreMenuItem.Enabled = hasSelection;
+        }
 
         #endregion
 
@@ -453,14 +498,14 @@ namespace Perscom
                 if (ScopedOccupation != null)
                     Board.Name += $" ({ScopedOccupation.Code})";
 
-                Board.Type = (PromotionBoardType)BoardTypeDropDownList.SelectedItem.Tag;
-                Board.IsPassFail = PassFailCheckBox.Checked;
-                Board.PassThreshold = (int)PercentageTrackBar.Value;
+                Board.Type = (PromotionBoardType)boardTypeDropDownList.SelectedItem.Tag;
+                Board.IsPassFail = passFailCheckBox.Checked;
+                Board.PassThreshold = (int)percentageTrackBar.Value;
 
-                if (TigCheckBox.Checked)
+                if (tigCheckBox.Checked)
                 {
-                    Board.TimeInGradeFactor = (int)FactorScaleTrackBar.Value;
-                    Board.TimeInGradeMaxPoints = (int)TigMaxSpinEditor.Value;
+                    Board.TimeInGradeFactor = (int)factorScaleTrackBar.Value;
+                    Board.TimeInGradeMaxPoints = (int)tigMaxSpinEditor.Value;
                 }
                 else
                 {

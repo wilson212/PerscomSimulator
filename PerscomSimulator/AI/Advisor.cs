@@ -5,8 +5,10 @@ using Google.GenAI;
 using Google.GenAI.Types;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 using Telerik.WinControls.UI;
 using Telerik.WinControls.UI.ConversationalUI;
+using Telerik.Windows.Diagrams.Core;
 using Type = Google.GenAI.Types.Type;
 
 namespace Perscom.AI;
@@ -30,17 +32,19 @@ public class Advisor
     /// and providing structured JSON outputs for confirmed designs.
     /// </summary>
     private const string Context = @"You are a military organization design assistant for a MILSIM Airsoft league simulator.
-    You help users create rank systems, unit blueprints, and position blueprints.
-    Always use the provided functions to query existing database state before making suggestions.
-    When the user confirms a design, output structured JSON for entity creation.
+You help users create rank systems, unit blueprints, and position blueprints.
+Always use the provided functions to query existing database state before making suggestions.
+When the user confirms a design, output structured JSON for entity creation.
 
-    CRITICAL CONTEXT:
-    - When querying ranks, rank classifications, and UnitBlueprints, Ensure the user has provided the Faction ID. A value of 0 indicates no faction is selected.
+CRITICAL CONTEXT:
+- When querying ranks, rank classifications, and unit blueprints, Ensure the user has provided the Faction ID. A value of 0 indicates no faction is selected.
 
-    CRITICAL RULES:
-    - Never assume missing information. If a user asks to build a position but does not specify the parent unit, YOU MUST ask the user which unit it belongs to before calling any creation tools.
-    - If the user uses a vague unit name, use your tools to query the database and confirm the exact unit name with the user.
-    - Only use plain text when replying to the user. Do not use HTML or markdown.";
+CRITICAL RULES:
+- Never assume missing information. If a user asks to build a position but does not specify the parent unit, YOU MUST ask the user which unit it belongs to before calling any creation tools.
+- If the user uses a vague unit name, use your tools to query the database and confirm the exact unit name with the user.
+- Only use plain text when replying to the user. Do not use HTML or markdown.
+- ALWAYS complete the user's request fully. After calling a function and receiving results, you MUST use those results to either take the next action or provide a complete answer. Never stop after a single function call without responding to the user.
+- If a task requires multiple function calls (e.g., get schema then create), chain them all in one conversation turn. Do not wait for the user to prompt you again.";
 
     /// <summary>
     /// The Gemini model ID used for generating responses.
@@ -61,12 +65,18 @@ public class Advisor
     /// The function handler used to execute function calls from the AI's responses.'
     /// </summary>
     protected AIFunctionHandler FunctionHandler { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    protected AIChatTextMessage _statusMessage = null;
 
     /// <summary>
-    /// Creates a new Advisor instance with the specified Gemini API key.
+    /// Represents an AI-powered advisor for generating content and managing conversation history.
+    /// This class serves as a bridge for interacting with the Gemini AI client and provides tools
+    /// and configuration for customized AI-driven content generation.
     /// </summary>
-    /// <param name="apiKey"></param>
-    public Advisor(string apiKey, string modelName, System.Func<int> getFactionId)
+    public Advisor(string apiKey, string modelName, Func<int> getFactionId)
     {
         GemeniClient = new Client(apiKey: apiKey);
         ModelId = modelName;
@@ -76,6 +86,13 @@ public class Advisor
         Config = new GenerateContentConfig
         {
             Tools = GetTools(),
+            ToolConfig = new ToolConfig
+            {
+                FunctionCallingConfig = new FunctionCallingConfig
+                {
+                    Mode = FunctionCallingConfigMode.Auto
+                }
+            },
             SystemInstruction = new Content
             {
                 Role = "system",
@@ -103,85 +120,176 @@ public class Advisor
             }
         }
 
-        // Add user message to history
         History.Add(new Content
         {
             Role = "user",
             Parts = userParts
         });
+        int historySnapshot = History.Count;
 
-        // Send message to Gemini API
         try
         {
-            var response = await GemeniClient.Models.GenerateContentAsync(ModelId, History, Config);
-        
-            // Function call loop — keep going until Gemini returns plain text
-            while (response.Candidates?[0].Content?.Parts?.Any(p => p.FunctionCall != null) == true)
+            var response = await GenerateContentWithBackoffAsync();
+            response = await ProcessFunctionCallsAsync(response, chatWindow, aiAuthor);
+
+            string aiAdvice = response.Text;
+
+            // Retry loop for empty responses
+            int retries = 0;
+            while (string.IsNullOrWhiteSpace(aiAdvice) && retries < 3)
             {
-                var modelContent = response.Candidates[0].Content;
-                History.Add(modelContent); // Add the model's function call to history
+                retries++;
 
-                // Find the function call in the model's response
-                var functionCall = modelContent.Parts?.FirstOrDefault(p => p.FunctionCall != null)?.FunctionCall;
-                if (functionCall == null || functionCall.Name == null) continue;
+                if (response.Candidates?[0]?.Content != null)
+                    History.Add(response.Candidates[0].Content);
 
-                // Update Window
-                if (chatWindow != null && aiAuthor != null)
-                {
-                    AIChatTextMessage message = new AIChatTextMessage($"Executing function call {functionCall.Name}", aiAuthor, DateTime.Now);
-                    chatWindow.AddMessage(message);
-                }
-            
-                // Execute the function
-                var args = functionCall.Args != null
-                    ? JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(JsonSerializer.Serialize(functionCall.Args))
-                    : new Dictionary<string, JsonElement>();
-
-                string result = FunctionHandler.HandleFunctionCall(functionCall.Name, args);
-
-                // Add the function response to history
                 History.Add(new Content
                 {
-                    Role = "function",
+                    Role = "user",
                     Parts = new List<Part>
                     {
-                        new Part
-                        {
-                            FunctionResponse = new FunctionResponse
-                            {
-                                Name = functionCall.Name,
-                                Response = JsonSerializer.Deserialize<Dictionary<string, object>>(result)
-                            }
-                        }
+                        new Part { Text = "Please continue and complete the task. Use the function results you received to provide your answer or take the next action." }
                     }
                 });
 
-                // Re-send with updated history
-                response = await GemeniClient.Models.GenerateContentAsync(ModelId, History, Config);
+                response = await GenerateContentWithBackoffAsync();
+                response = await ProcessFunctionCallsAsync(response, chatWindow, aiAuthor);
+
+                aiAdvice = response.Text;
             }
-            
-            // Add AI response to history
-            string aiAdvice = response.Text ?? "(No response)";
-            History.Add(new Content()
+
+            if (string.IsNullOrWhiteSpace(aiAdvice))
+                aiAdvice = "(No response after retries)";
+
+            if (_statusMessage != null)
             {
-                Role = "model", // Notice the role is "model" for the AI's responses
+                chatWindow.ChatElement.MessagesViewElement.Items.RemoveLast();
+                _statusMessage = null;
+            }
+
+            History.Add(new Content
+            {
+                Role = "model",
                 Parts = new List<Part> { new Part { Text = aiAdvice } }
             });
-        
-            // Return AI advice
+
             return aiAdvice;
         }
         catch (ClientError ex) when (ex.Message.Contains("quota", StringComparison.OrdinalIgnoreCase))
         {
-            // Remove the user message we just added since the call failed
-            History.RemoveAt(History.Count - 1);
+            if (History.Count > historySnapshot)
+                History.RemoveRange(historySnapshot, History.Count - historySnapshot);
+            
             return "⚠ API quota exceeded. Please wait a minute and try again.";
+        }
+        catch (ServerError ex) when (ex.Message.Contains("high demand", StringComparison.OrdinalIgnoreCase))
+        {
+            if (History.Count > historySnapshot)
+                History.RemoveRange(historySnapshot, History.Count - historySnapshot);
+            
+            return "⚠ The AI model is currently experiencing high demand. Please try again in a few moments.";
         }
         catch (ClientError ex)
         {
-            History.RemoveAt(History.Count - 1);
+            if (History.Count > historySnapshot)
+                History.RemoveRange(historySnapshot, History.Count - historySnapshot);
+            
             return $"⚠ API error: {ex.Message}";
         }
+    }
+    
+    /// <summary>
+    /// Wraps the Gemini API call with an exponential backoff strategy to handle 503 High Demand server errors.
+    /// </summary>
+    private async Task<GenerateContentResponse> GenerateContentWithBackoffAsync()
+    {
+        int maxRetries = 4;
+        int baseDelayMilliseconds = 2000; // Start with a 2-second wait
+        Random jitterer = new Random();
+
+        for (int retryAttempt = 0; retryAttempt <= maxRetries; retryAttempt++)
+        {
+            try
+            {
+                // Execute the actual API call
+                return await GemeniClient.Models.GenerateContentAsync(ModelId, History, Config);
+            }
+            catch (ServerError ex) when (ex.Message.Contains("high demand", StringComparison.OrdinalIgnoreCase) || ex.HResult == unchecked((int)0x80131500))
+            {
+                if (retryAttempt == maxRetries)
+                {
+                    // We've exhausted our retries, throw the exception to be caught by SendMessageAsync's try/catch
+                    throw; 
+                }
+
+                // Calculate exponential backoff: 2s, 4s, 8s, 16s... plus random jitter
+                int delay = baseDelayMilliseconds * (int)Math.Pow(2, retryAttempt) + jitterer.Next(0, 1000);
+                
+                // Wait before trying again
+                await Task.Delay(delay);
+            }
+        }
+        
+        return null;
+    }
+    
+    /// <summary>
+    /// Processes function calls from the model's response in a loop until the model returns plain text.
+    /// Returns the final response after all function calls have been handled.
+    /// </summary>
+    private async Task<GenerateContentResponse> ProcessFunctionCallsAsync(
+        GenerateContentResponse response, RadChat chatWindow = null, Author aiAuthor = null)
+    {
+        while (response.Candidates?[0].Content?.Parts?.Any(p => p.FunctionCall != null) == true)
+        {
+            var modelContent = response.Candidates[0].Content;
+            History.Add(modelContent);
+
+            var functionCall = modelContent.Parts?.FirstOrDefault(p => p.FunctionCall != null)?.FunctionCall;
+            if (functionCall == null || functionCall.Name == null) break;
+
+            if (chatWindow != null && aiAuthor != null)
+            {
+                if (_statusMessage == null)
+                {
+                    _statusMessage = new AIChatTextMessage($"⚙ Executing function call {functionCall.Name}", aiAuthor, DateTime.Now);
+                    chatWindow.AddMessage(_statusMessage);
+                }
+                else
+                {
+                    // Update the existing message's text in-place
+                    _statusMessage.Message = $"⚙ Executing function call {functionCall.Name}...";
+                    chatWindow.Refresh();
+                }
+            }
+
+            var args = functionCall.Args != null
+                ? JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
+                    JsonSerializer.Serialize(functionCall.Args))
+                : new Dictionary<string, JsonElement>();
+
+            string result = FunctionHandler.HandleFunctionCall(functionCall.Name, args);
+
+            History.Add(new Content
+            {
+                Role = "function",
+                Parts = new List<Part>
+                {
+                    new Part
+                    {
+                        FunctionResponse = new FunctionResponse
+                        {
+                            Name = functionCall.Name,
+                            Response = JsonSerializer.Deserialize<Dictionary<string, object>>(result)
+                        }
+                    }
+                }
+            });
+
+            response = await GenerateContentWithBackoffAsync();
+        }
+
+        return response;
     }
     
     /// <summary>
@@ -378,6 +486,14 @@ public class Advisor
                             Required = ["factionId"]
                         }
                     },
+                    
+                    new FunctionDeclaration
+                    {
+                        Name = "GetRankImages",
+                        Description = "Returns a list of all available rank image file paths from the Images/Ranks directory (recursively). " +
+                                      "Use the returned 'path' values to set the 'image' field when creating ranks via CreateRanks. " +
+                                      "Call this BEFORE creating ranks if you want to assign images.",
+                    },
 
                     // Execution
                     new FunctionDeclaration
@@ -418,32 +534,61 @@ public class Advisor
                     new FunctionDeclaration
                     {
                         Name = "UpdateUnitBlueprint",
-                        Description = "Updates an existing UnitBlueprint's data (Name, UnitNameFormat, UnitCodeFormat, EchelonId, PromotionPoolId). Pass the blueprint ID and a stringified JSON object with ONLY the fields you want to change.",
+                        Description = "Updates an existing UnitBlueprint. Call GetUnitBlueprintSchema FIRST to learn the valid fields. Pass the blueprint ID and a stringified JSON object with ONLY the fields you want to change.",
                         Parameters = new Schema
                         {
                             Type = Type.Object,
                             Properties = new Dictionary<string, Schema>
                             {
                                 ["unitBlueprintId"] = new Schema { Type = Type.Integer, Description = "The ID of the UnitBlueprint to update." },
-                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON with only the fields to update. Valid keys: name, unitNameFormat, unitCodeFormat, echelonId, promotionPoolId." }
+                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON with only the fields to update. Call GetUnitBlueprintSchema first to see valid fields." }
                             },
-                            Required = ["unitBlueprintId", "updateJsonPayload"]
+                            Required = ["unitBlueprintId", "updateJsonPayload"],
                         }
                     },
 
                     new FunctionDeclaration
                     {
                         Name = "UpdatePositionBlueprint",
-                        Description = "Updates an existing PositionBlueprint's data. Pass the blueprint ID and a stringified JSON object with ONLY the fields you want to change.",
+                        Description = "Updates an existing PositionBlueprint. Call GetPosBlueprintSchema FIRST to learn the valid fields and lookup values. Pass a stringified JSON object with 'id' (required) and ONLY the fields you want to change.",
                         Parameters = new Schema
                         {
                             Type = Type.Object,
                             Properties = new Dictionary<string, Schema>
                             {
-                                ["positionBlueprintId"] = new Schema { Type = Type.Integer, Description = "The ID of the PositionBlueprint to update." },
-                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON with only the fields to update. Valid keys: name, unitBlueprintId, catagoryId, targetRankId, positionalRankId, flag, promotionEchelonId, occupationId, stature, prestige, minTourLength, maxTourLength, canRetireEarly, canBePromotedEarly, canLateralEarly, waiverable, selectionMethod, demoteOverRanked, autoPromoteInRankRange, supervisorPositionBlueprintId, zIndex." }
+                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON with 'id' (required) and only the fields to update. Call GetPosBlueprintSchema first to see valid fields." }
                             },
-                            Required = ["positionBlueprintId", "updateJsonPayload"]
+                            Required = ["updateJsonPayload"]
+                        }
+                    },
+
+                    new FunctionDeclaration
+                    {
+                        Name = "UpdateRankClassification",
+                        Description = "Updates an existing RankClassification. Type and PayGrade cannot be changed. Call GetRankClassificationSchema FIRST to learn the valid fields. Pass a stringified JSON object with 'id' (required) and ONLY the fields you want to change.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON with 'id' (required) and only the fields to update. Call GetRankClassificationSchema first to see valid fields." }
+                            },
+                            Required = ["updateJsonPayload"]
+                        }
+                    },
+
+                    new FunctionDeclaration
+                    {
+                        Name = "UpdateRanks",
+                        Description = "Updates one or more existing Ranks. Call GetRankSchema FIRST to learn the valid fields and their meanings. Pass a stringified JSON ARRAY of objects, each with 'id' (required) and ONLY the fields you want to change.",
+                        Parameters = new Schema
+                        {
+                            Type = Type.Object,
+                            Properties = new Dictionary<string, Schema>
+                            {
+                                ["updateJsonPayload"] = new Schema { Type = Type.String, Description = "Stringified JSON ARRAY of objects, each with 'id' (required) and only the fields to update. Call GetRankSchema first to see valid fields." }
+                            },
+                            Required = ["updateJsonPayload"]
                         }
                     },
                     

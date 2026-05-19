@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using CrossLite;
+﻿using CrossLite;
 using Perscom.AI.Dtos;
 using Perscom.Database;
-using Perscom.Simulation;
+using Perscom.Services;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 
 namespace Perscom.AI
 {
@@ -83,7 +84,13 @@ namespace Perscom.AI
                     return UpdateUnitBlueprint(factionId, args["updateJsonPayload"].GetString());
 
                 case "UpdatePositionBlueprint":
-                    return UpdatePositionBlueprint(factionId, args["updateJsonPayload"].GetString());
+                    return UpdatePositionBlueprint(args["updateJsonPayload"].GetString());
+
+                case "UpdateRankClassification":
+                    return UpdateRankClassification(factionId, args["updateJsonPayload"].GetString());
+
+                case "UpdateRanks":
+                    return UpdateRanks(factionId, args["updateJsonPayload"].GetString());
                 
                 case "SearchUnitBlueprints":
                     return SearchUnitBlueprints(factionId, args["query"].GetString());
@@ -93,6 +100,9 @@ namespace Perscom.AI
 
                 case "SearchPositionBlueprints":
                     return SearchPositionBlueprints(factionId, args["query"].GetString());
+                
+                case "GetRankImages":
+                    return GetRankImages();
 
                 default:
                     return JsonSerializer.Serialize(new { error = $"Unknown function: {functionName}" });
@@ -120,7 +130,7 @@ namespace Perscom.AI
 
             return JsonSerializer.Serialize(new
             {
-                description = $"Currently selected faction",
+                description = "Currently selected faction",
                 found = faction != null,
                 factionId,
                 faction
@@ -233,6 +243,46 @@ namespace Perscom.AI
                 })
             });
         }
+        
+        /// <summary>
+        /// Scans the Images/Ranks directory recursively and returns a list of all
+        /// available rank image relative paths, grouped by subfolder.
+        /// The AI can use these paths to set the <c>image</c> field when creating ranks.
+        /// </summary>
+        private string GetRankImages()
+        {
+            var ranksDir = Path.Combine(Program.RootPath, "Images", "ranks");
+
+            if (!Directory.Exists(ranksDir))
+            {
+                return JsonSerializer.Serialize(new
+                {
+                    description = "No Images/Ranks directory found.",
+                    count = 0,
+                    images = Array.Empty<object>()
+                });
+            }
+
+            var imagesDir = Path.Combine(Program.RootPath, "Images");
+            var files = Directory.GetFiles(ranksDir, "*.*", SearchOption.AllDirectories)
+                .Select(fullPath =>
+                {
+                    // Build relative path from the Images folder: "ranks/US Army/E5.svg"
+                    var relative = Path.GetRelativePath(imagesDir, fullPath).Replace('\\', '/');
+                    var folder = Path.GetFileName(Path.GetDirectoryName(fullPath));
+                    return new { path = relative, folder, fileName = Path.GetFileName(fullPath) };
+                })
+                .OrderBy(f => f.folder)
+                .ThenBy(f => f.fileName)
+                .ToList();
+
+            return JsonSerializer.Serialize(new
+            {
+                description = "Available rank images in Images/ranks (use the 'path' value for the Rank's image field — do NOT include the 'Images/' prefix).",
+                count = files.Count,
+                images = files
+            });
+        }
 
         /// <summary>
         /// Returns the JSON schema template and rules for UnitBlueprint creation.
@@ -324,35 +374,26 @@ namespace Perscom.AI
             {
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 var dtos = JsonSerializer.Deserialize<List<UnitBlueprintDto>>(jsonPayload, options);
-                var created = new List<object>();
+                var result = UnitBlueprintService.Create(dtos);
 
-                using var db = new AppDatabase();
-                using var ts = db.BeginTransaction();
-
-                foreach (var dto in dtos)
-                {
-                    var blueprint = new UnitBlueprint
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new
                     {
-                        Name = dto.Name,
-                        EchelonId = dto.EchelonId,
-                        FactionId = dto.FactionId,
-                        UnitNameFormat = dto.UnitNameFormat ?? "",
-                        UnitCodeFormat = dto.UnitCodeFormat,
-                        PromotionPoolId = dto.PromotionPoolId
-                    };
+                        success = false,
+                        error = result.Error,
+                        action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                        originalPayload = jsonPayload
+                    });
 
-                    db.UnitBlueprints.Add(blueprint);
-                    created.Add(new { id = blueprint.Id, name = blueprint.Name });
-                }
-
-                ts.Commit();
+                // Convert full entities to lightweight refs for the AI
+                var refs = result.Data.Select(e => e.ToRef()).ToList();
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    count = created.Count,
-                    message = $"{created.Count} UnitBlueprint(s) created.",
-                    created
+                    count = refs.Count,
+                    message = result.Message,
+                    created = refs
                 });
             }
             catch (Exception ex)
@@ -376,50 +417,26 @@ namespace Perscom.AI
             {
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 var dtos = JsonSerializer.Deserialize<List<PositionBlueprintDto>>(jsonPayload, options);
-                var created = new List<object>();
+                var result = PositionBlueprintService.Create(dtos);
 
-                using var db = new AppDatabase();
-                using var ts = db.BeginTransaction();
-
-                foreach (var dto in dtos)
-                {
-                    var pos = new PositionBlueprint
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new
                     {
-                        Name = dto.Name,
-                        UnitBlueprintId = dto.UnitBlueprintId,
-                        CatagoryId = dto.CatagoryId,
-                        TargetRankId = dto.TargetRankId,
-                        PositionalRankId = dto.PositionalRankId,
-                        Flag = Enum.Parse<PositionFlag>(dto.Flag),
-                        PromotionEchelonId = dto.PromotionEchelonId,
-                        OccupationId = dto.OccupationId,
-                        Stature = dto.Stature,
-                        Prestige = dto.Prestige,
-                        MinTourLength = dto.MinTourLength,
-                        MaxTourLength = dto.MaxTourLength,
-                        CanRetireEarly = dto.CanRetireEarly,
-                        CanBePromotedEarly = dto.CanBePromotedEarly,
-                        CanLateralEarly = dto.CanLateralEarly,
-                        Waiverable = dto.Waiverable,
-                        SelectionMethod = Enum.Parse<SelectionProcedure>(dto.SelectionMethod),
-                        DemoteOverRanked = dto.DemoteOverRanked,
-                        AutoPromoteInRankRange = dto.AutoPromoteInRankRange,
-                        SupervisorPositionBlueprintId = dto.SupervisorPositionBlueprintId,
-                        ZIndex = dto.ZIndex
-                    };
+                        success = false,
+                        error = result.Error,
+                        action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                        originalPayload = jsonPayload
+                    });
 
-                    db.PositionBlueprints.Add(pos);
-                    created.Add(new { id = pos.Id, name = pos.Name });
-                }
-
-                ts.Commit();
+                // Convert full entities to lightweight refs for the AI
+                var refs = result.Data.Select(e => e.ToRef()).ToList();
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    count = created.Count,
-                    message = $"{created.Count} PositionBlueprint(s) created.",
-                    created
+                    count = refs.Count,
+                    message = result.Message,
+                    created = refs
                 });
             }
             catch (Exception ex)
@@ -433,7 +450,13 @@ namespace Perscom.AI
                 });
             }
         }
-        
+
+        /// <summary>
+        /// Retrieves a list of ranks associated with the specified faction from the database.
+        /// </summary>
+        /// <param name="db">An instance of the <c>AppDatabase</c> used to query rank information.</param>
+        /// <param name="factionId">The unique identifier of the faction for which ranks are being retrieved.</param>
+        /// <returns>A list of <c>Rank</c> objects representing the ranks assigned to the specified faction.</returns>
         private List<Rank> GetFactionRanks(AppDatabase db, int factionId)
         {
             var ranks = db.Ranks.ToList()
@@ -493,7 +516,7 @@ namespace Perscom.AI
         }
 
         /// <summary>
-        /// Deserializes the AI's JSON payload and inserts a RankClassification into the database.
+        /// Deserializes the AI's JSON payload and inserts RankClassifications into the database via <see cref="RankService"/>.
         /// </summary>
         private string CreateRankClassifications(string jsonPayload)
         {
@@ -502,57 +525,29 @@ namespace Perscom.AI
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 var dtos = JsonSerializer.Deserialize<List<RankClassificationDto>>(jsonPayload, options);
                 int factionId = GetFactionId();
-                var created = new List<object>();
+                var result = RankService.CreateClassifications(factionId, dtos);
 
-                using var db = new AppDatabase();
-                using var ts = db.BeginTransaction();
-
-                foreach (var dto in dtos)
-                {
-                    var rankType = Enum.Parse<RankType>(dto.Type);
-                    var selection = Enum.Parse<PayGradeSelection>(dto.Selection);
-
-                    var exists = db.RankClassifications
-                        .Any(rc => rc.FactionId == factionId
-                                 && rc.Type == rankType
-                                 && rc.PayGrade == dto.PayGrade);
-
-                    if (exists)
-                        throw new InvalidOperationException(
-                            $"{dto.Type}-{dto.PayGrade} already exists in this faction. Remove it from the payload or change its PayGrade.");
-
-                    var entity = new RankClassification
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new
                     {
-                        FactionId = factionId,
-                        Type = rankType,
-                        PayGrade = dto.PayGrade,
-                        Selection = selection,
-                        LockInTime = dto.LockInTime,
-                        MinTimeInGrade = dto.MinTimeInGrade,
-                        MaxTimeInGrade = dto.MaxTimeInGrade,
-                        PreviousTimeInGradeRequirement = dto.PreviousTimeInGradeRequirement,
-                        PromotableLength = dto.PromotableLength,
-                        Stipend = dto.Stipend,
-                        HasSplitRankLanes = dto.HasSplitRankLanes
-                    };
+                        success = false,
+                        error = result.Error,
+                        action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                        originalPayload = jsonPayload
+                    });
 
-                    db.RankClassifications.Add(entity);
-                    created.Add(new { id = entity.Id, type = dto.Type, payGrade = dto.PayGrade });
-                }
-
-                ts.Commit();
+                var refs = result.Data.Select(e => e.ToRef()).ToList();
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    count = created.Count,
-                    message = $"{created.Count} RankClassification(s) created.",
-                    created
+                    count = refs.Count,
+                    message = result.Message,
+                    created = refs
                 });
             }
             catch (Exception ex)
             {
-                // Transaction auto-rollbacks via Dispose — nothing was persisted
                 return JsonSerializer.Serialize(new
                 {
                     success = false,
@@ -593,7 +588,8 @@ namespace Perscom.AI
                     r.Abbreviation,
                     r.Precedence,
                     r.IsPositional,
-                    r.NextRankId
+                    r.NextRankId,
+                    r.Image
                 }).ToList();
 
             var schema = new
@@ -615,8 +611,8 @@ namespace Perscom.AI
                     abbreviation = "(string, required, unique) short form — e.g. 'PFC'",
                     precedence = "(int, default 0) priority within the same classification, 0 = base entry rank",
                     isPositional = "(bool, default false) true if this rank can only be achieved via special assignment",
-                    nextRankAbbreviation = "(string?, optional) The ABBREVIATION of the rank this rank promotes into — only set when HasSplitRankLanes is true on the NEXT classification. Can reference a rank in the same payload or an existing rank.",
-                    image = "(string, default '') optional image filename"
+                    nextRankAbbreviation = "(string?, optional) The ABBREVIATION of the rank this rank promotes into — ONLY SET when the RankClassification HasSplitRankLanes is true. Can reference a rank in the same payload or an existing rank.",
+                    image = "(string, default '') relative image path WITHOUT the 'Images/' prefix (e.g. 'ranks/US Marines/E2.svg'). Use GetRankImages to get available paths."
                 }
             };
 
@@ -624,7 +620,7 @@ namespace Perscom.AI
         }
 
         /// <summary>
-        /// Deserializes the AI's JSON payload and inserts a Rank into the database.
+        /// Deserializes the AI's JSON payload and inserts Ranks into the database via <see cref="RankService"/>.
         /// </summary>
         private string CreateRanks(string jsonPayload)
         {
@@ -633,76 +629,25 @@ namespace Perscom.AI
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 var dtos = JsonSerializer.Deserialize<List<RankDto>>(jsonPayload, options);
                 int factionId = GetFactionId();
-                var created = new List<object>();
+                var result = RankService.CreateRanks(factionId, dtos);
 
-                using var db = new AppDatabase();
-                using var ts = db.BeginTransaction();
-
-                // Pass 1: Insert all ranks WITHOUT NextRankId
-                var abbreviationToEntity = new Dictionary<string, Rank>(StringComparer.OrdinalIgnoreCase);
-
-                foreach (var dto in dtos)
-                {
-                    var classification = db.RankClassifications
-                        .FirstOrDefault(rc => rc.Id == dto.RankClassificationId);
-
-                    if (classification == null)
-                        throw new InvalidOperationException(
-                            $"RankClassificationId {dto.RankClassificationId} does not exist. Cannot create rank '{dto.Name}'.");
-
-                    if (classification.FactionId != factionId)
-                        throw new InvalidOperationException(
-                            $"RankClassificationId {dto.RankClassificationId} belongs to a different faction. Cannot create rank '{dto.Name}'.");
-
-                    var entity = new Rank
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new
                     {
-                        RankClassificationId = dto.RankClassificationId,
-                        Name = dto.Name,
-                        Abbreviation = dto.Abbreviation,
-                        Precedence = dto.Precedence,
-                        IsPositional = dto.IsPositional,
-                        NextRankId = null,  // Deferred to pass 2
-                        Image = dto.Image ?? ""
-                    };
+                        success = false,
+                        error = result.Error,
+                        action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                        originalPayload = jsonPayload
+                    });
 
-                    db.Ranks.Add(entity);
-                    abbreviationToEntity[dto.Abbreviation] = entity;
-                    created.Add(new { id = entity.Id, name = entity.Name, abbreviation = entity.Abbreviation });
-                }
-
-                // Pass 2: Wire up NextRankId using abbreviation references
-                foreach (var dto in dtos.Where(d => !string.IsNullOrEmpty(d.NextRankAbbreviation)))
-                {
-                    if (!abbreviationToEntity.TryGetValue(dto.Abbreviation, out var sourceRank))
-                        continue;
-
-                    // Check if the target is in this payload
-                    if (abbreviationToEntity.TryGetValue(dto.NextRankAbbreviation, out var targetRank))
-                    {
-                        sourceRank.NextRankId = targetRank.Id;
-                    }
-                    else
-                    {
-                        // Check if it's an existing rank in the database
-                        var existingTarget = db.Ranks.FirstOrDefault(r => r.Abbreviation == dto.NextRankAbbreviation);
-                        if (existingTarget == null)
-                            throw new InvalidOperationException(
-                                $"NextRankAbbreviation '{dto.NextRankAbbreviation}' does not match any rank in the payload or database. Cannot wire rank '{dto.Name}'.");
-
-                        sourceRank.NextRankId = existingTarget.Id;
-                    }
-
-                    db.Ranks.Update(sourceRank);
-                }
-
-                ts.Commit();
+                var refs = result.Data.Select(e => e.ToRef()).ToList();
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    count = created.Count,
-                    message = $"{created.Count} Rank(s) created.",
-                    created
+                    count = refs.Count,
+                    message = result.Message,
+                    created = refs
                 });
             }
             catch (Exception ex)
@@ -718,38 +663,24 @@ namespace Perscom.AI
         }
         
         /// <summary>
-        /// Updates an existing Faction entity with partial data from the AI's JSON payload.
+        /// Updates an existing Faction entity with partial data from the AI's JSON payload via <see cref="FactionService"/>.
         /// </summary>
         private string UpdateFaction(int factionId, string jsonPayload)
         {
             try
             {
-                var data = JsonSerializer.Deserialize<JsonElement>(jsonPayload);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<UpdateFactionDto>(jsonPayload, options);
+                var result = FactionService.Update(factionId, dto);
 
-                using var db = new AppDatabase();
-                var faction = db.Factions.FirstOrDefault(f => f.Id == factionId);
-                if (faction == null)
-                    return JsonSerializer.Serialize(new { success = false, error = $"Faction with Id {factionId} not found." });
-
-                if (data.TryGetProperty("name", out var name))
-                    faction.Name = name.GetString();
-
-                if (data.TryGetProperty("shortTag", out var tag))
-                    faction.ShortTag = tag.GetString();
-
-                if (data.TryGetProperty("description", out var desc))
-                    faction.Description = desc.GetString();
-
-                if (data.TryGetProperty("themeColorCode", out var color))
-                    faction.ThemeColorCode = color.GetString();
-
-                db.Factions.Update(faction);
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new { success = false, error = result.Error });
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    message = $"Faction '{faction.Name}' (Id={faction.Id}) updated successfully.",
-                    faction = new { faction.Id, faction.Name, faction.ShortTag, faction.Description, faction.ThemeColorCode }
+                    message = result.Message,
+                    entity = result.Data.ToRef()
                 });
             }
             catch (Exception ex)
@@ -761,47 +692,22 @@ namespace Perscom.AI
         /// <summary>
         /// Updates an existing UnitBlueprint entity with partial data from the AI's JSON payload.
         /// </summary>
-        private string UpdateUnitBlueprint(int unitBlueprintId, string jsonPayload)
+        private string UpdateUnitBlueprint(int factionId, string jsonPayload)
         {
             try
             {
-                var data = JsonSerializer.Deserialize<JsonElement>(jsonPayload);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<UpdateUnitBlueprintDto>(jsonPayload, options);
+                var result = UnitBlueprintService.Update(factionId, dto);
 
-                using var db = new AppDatabase();
-                var blueprint = db.UnitBlueprints.FirstOrDefault(u => u.Id == unitBlueprintId);
-                if (blueprint == null)
-                    return JsonSerializer.Serialize(new { success = false, error = $"UnitBlueprint with Id {unitBlueprintId} not found." });
-
-                // Verify faction ownership
-                if (blueprint.FactionId != GetFactionId())
-                    return JsonSerializer.Serialize(new { success = false, error = $"UnitBlueprint {unitBlueprintId} belongs to a different faction." });
-
-                if (data.TryGetProperty("name", out var name))
-                    blueprint.Name = name.GetString();
-
-                if (data.TryGetProperty("unitNameFormat", out var unf))
-                    blueprint.UnitNameFormat = unf.GetString();
-
-                if (data.TryGetProperty("unitCodeFormat", out var ucf))
-                    blueprint.UnitCodeFormat = ucf.GetString();
-
-                if (data.TryGetProperty("echelonId", out var eid))
-                    blueprint.EchelonId = eid.GetInt32();
-
-                if (data.TryGetProperty("promotionPoolId", out var ppid))
-                    blueprint.PromotionPoolId = ppid.GetInt32();
-
-                db.UnitBlueprints.Update(blueprint);
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new { success = false, error = result.Error });
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    message = $"UnitBlueprint '{blueprint.Name}' (Id={blueprint.Id}) updated successfully.",
-                    unitBlueprint = new
-                    {
-                        blueprint.Id, blueprint.Name, blueprint.EchelonId,
-                        blueprint.UnitNameFormat, blueprint.UnitCodeFormat, blueprint.PromotionPoolId
-                    }
+                    message = result.Message,
+                    entity = result.Data.ToRef()
                 });
             }
             catch (Exception ex)
@@ -811,100 +717,90 @@ namespace Perscom.AI
         }
 
         /// <summary>
-        /// Updates an existing PositionBlueprint entity with partial data from the AI's JSON payload.
+        /// Updates an existing PositionBlueprint entity with partial data from the AI's JSON payload via <see cref="PositionBlueprintService"/>.
         /// </summary>
-        private string UpdatePositionBlueprint(int positionBlueprintId, string jsonPayload)
+        private string UpdatePositionBlueprint(string jsonPayload)
         {
             try
             {
-                var data = JsonSerializer.Deserialize<JsonElement>(jsonPayload);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<UpdatePositionBlueprintDto>(jsonPayload, options);
+                var result = PositionBlueprintService.Update(dto);
 
-                using var db = new AppDatabase();
-                var pos = db.PositionBlueprints.FirstOrDefault(p => p.Id == positionBlueprintId);
-                if (pos == null)
-                    return JsonSerializer.Serialize(new { success = false, error = $"PositionBlueprint with Id {positionBlueprintId} not found." });
-
-                if (data.TryGetProperty("name", out var name))
-                    pos.Name = name.GetString();
-
-                if (data.TryGetProperty("unitBlueprintId", out var ubid))
-                    pos.UnitBlueprintId = ubid.GetInt32();
-
-                if (data.TryGetProperty("catagoryId", out var cid))
-                    pos.CatagoryId = cid.GetInt32();
-
-                if (data.TryGetProperty("targetRankId", out var trid))
-                    pos.TargetRankId = trid.GetInt32();
-
-                if (data.TryGetProperty("positionalRankId", out var prid))
-                    pos.PositionalRankId = prid.ValueKind == JsonValueKind.Null ? null : prid.GetInt32();
-
-                if (data.TryGetProperty("flag", out var flag))
-                    pos.Flag = Enum.Parse<PositionFlag>(flag.GetString());
-
-                if (data.TryGetProperty("promotionEchelonId", out var peid))
-                    pos.PromotionEchelonId = peid.GetInt32();
-
-                if (data.TryGetProperty("occupationId", out var oid))
-                    pos.OccupationId = oid.GetInt32();
-
-                if (data.TryGetProperty("stature", out var st))
-                    pos.Stature = st.GetInt32();
-
-                if (data.TryGetProperty("prestige", out var pr))
-                    pos.Prestige = pr.GetInt32();
-
-                if (data.TryGetProperty("minTourLength", out var minT))
-                    pos.MinTourLength = minT.GetInt32();
-
-                if (data.TryGetProperty("maxTourLength", out var maxT))
-                    pos.MaxTourLength = maxT.GetInt32();
-
-                if (data.TryGetProperty("canRetireEarly", out var cre))
-                    pos.CanRetireEarly = cre.GetBoolean();
-
-                if (data.TryGetProperty("canBePromotedEarly", out var cbpe))
-                    pos.CanBePromotedEarly = cbpe.GetBoolean();
-
-                if (data.TryGetProperty("canLateralEarly", out var cle))
-                    pos.CanLateralEarly = cle.GetBoolean();
-
-                if (data.TryGetProperty("waiverable", out var wav))
-                    pos.Waiverable = wav.GetBoolean();
-
-                if (data.TryGetProperty("selectionMethod", out var sm))
-                    pos.SelectionMethod = Enum.Parse<SelectionProcedure>(sm.GetString());
-
-                if (data.TryGetProperty("demoteOverRanked", out var dor))
-                    pos.DemoteOverRanked = dor.GetBoolean();
-
-                if (data.TryGetProperty("autoPromoteInRankRange", out var apr))
-                    pos.AutoPromoteInRankRange = apr.GetBoolean();
-
-                if (data.TryGetProperty("supervisorPositionBlueprintId", out var spid))
-                    pos.SupervisorPositionBlueprintId = spid.ValueKind == JsonValueKind.Null ? null : spid.GetInt32();
-
-                if (data.TryGetProperty("zIndex", out var zi))
-                    pos.ZIndex = zi.GetInt32();
-
-                db.PositionBlueprints.Update(pos);
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new { success = false, error = result.Error });
 
                 return JsonSerializer.Serialize(new
                 {
                     success = true,
-                    message = $"PositionBlueprint '{pos.Name}' (Id={pos.Id}) updated successfully.",
-                    positionBlueprint = new
+                    message = result.Message,
+                    entity = result.Data.ToRef()
+                });
+            }
+            catch (Exception ex)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Updates an existing RankClassification entity with partial data from the AI's JSON payload via <see cref="RankService"/>.
+        /// </summary>
+        private string UpdateRankClassification(int factionId, string jsonPayload)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dto = JsonSerializer.Deserialize<UpdateRankClassificationDto>(jsonPayload, options);
+                var result = RankService.UpdateClassification(factionId, dto);
+
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new { success = false, error = result.Error });
+
+                return JsonSerializer.Serialize(new
+                {
+                    success = true,
+                    message = result.Message,
+                    entity = result.Data.ToRef()
+                });
+            }
+            catch (Exception ex)
+            {
+                return JsonSerializer.Serialize(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Updates ranks for a specific faction using the provided JSON payload.
+        /// </summary>
+        /// <param name="factionId">The unique identifier of the faction whose ranks are to be updated.</param>
+        /// <param name="jsonPayload">A JSON string containing a list of rank update data transfer objects (DTOs).</param>
+        /// <returns>A JSON string indicating the success or failure of the update operation, along with relevant details.</returns>
+        private string UpdateRanks(int factionId, string jsonPayload)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var dtos = JsonSerializer.Deserialize<List<UpdateRankDto>>(jsonPayload, options);
+                var result = RankService.UpdateRanks(factionId, dtos);
+
+                if (!result.Success)
+                    return JsonSerializer.Serialize(new
                     {
-                        pos.Id, pos.Name, pos.UnitBlueprintId, pos.CatagoryId,
-                        pos.TargetRankId, pos.PositionalRankId,
-                        Flag = pos.Flag.ToString(), pos.PromotionEchelonId,
-                        pos.OccupationId, pos.Stature, pos.Prestige,
-                        pos.MinTourLength, pos.MaxTourLength,
-                        pos.CanRetireEarly, pos.CanBePromotedEarly, pos.CanLateralEarly,
-                        pos.Waiverable, SelectionMethod = pos.SelectionMethod.ToString(),
-                        pos.DemoteOverRanked, pos.AutoPromoteInRankRange,
-                        pos.SupervisorPositionBlueprintId, pos.ZIndex
-                    }
+                        success = false,
+                        error = result.Error,
+                        action = "Fix the error in the payload and resubmit the ENTIRE corrected array.",
+                        originalPayload = jsonPayload
+                    });
+
+                var refs = result.Data.Select(r => new { id = r.Id, name = r.Name }).ToList();
+
+                return JsonSerializer.Serialize(new
+                {
+                    success = true,
+                    count = refs.Count,
+                    message = result.Message,
+                    updated = refs
                 });
             }
             catch (Exception ex)

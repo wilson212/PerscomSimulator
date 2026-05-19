@@ -53,6 +53,8 @@ namespace Perscom
         {
             RadSvgImage image = null;
             WeakReference reference = null;
+            if (String.IsNullOrEmpty(filePath))
+                return null;
 
             if (!References.TryGetValue(filePath, out reference))
             {
@@ -82,7 +84,7 @@ namespace Perscom
         private static RadSvgImage GetSvgImageFromDisk(string filePath)
         {
             filePath = Path.Combine(Program.RootPath, "Images", filePath);
-            return RadSvgImage.FromFile(filePath);
+            return File.Exists(filePath) ? RadSvgImage.FromFile(filePath) : null;
         }
     }
 }

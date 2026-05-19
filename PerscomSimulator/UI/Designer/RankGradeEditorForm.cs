@@ -1,7 +1,7 @@
 ﻿using Perscom.Database;
 using Perscom.Simulation;
 using System;
-using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Telerik.WinControls;
 using Telerik.WinControls.UI;
@@ -10,14 +10,61 @@ namespace Perscom
 {
     public partial class RankGradeEditorForm : RadForm
     {
+        /// <summary>
+        /// Stores a snapshot of the form field values at the time of load or last Apply.
+        /// Used to detect unsaved changes when the user tries to navigate away.
+        /// </summary>
+        private class FormSnapshot
+        {
+            public int SelectionIndex;
+            public decimal PrevTIG;
+            public decimal MaxTIG;
+            public decimal MinTIG;
+            public decimal LockIn;
+            public decimal Stipend;
+            public bool HasSplitLanes;
+        }
+
+        /// <summary>
+        /// Captures a snapshot of the current form field values.
+        /// </summary>
+        private FormSnapshot _lastSavedSnapshot;
+
+        /// <summary>
+        /// Represents the currently selected node in the RadTreeView control.
+        /// Used to track and manage the active selection state,
+        /// allowing for operations such as enabling or disabling menu items
+        /// and binding the form inputs to the selected classification.
+        /// </summary>
+        private RadTreeNode _selectedNode;
+
+        /// <summary>
+        /// Represents the faction currently selected in the rank and grade editor form.
+        /// This property provides access to the faction's details, such as its name and identifier,
+        /// and is used throughout the form to configure rank classifications and UI elements
+        /// specific to the selected faction.
+        /// </summary>
         private Faction SelectedFaction { get; set; }
 
+        /// <summary>
+        /// The currently selected RankClassification being edited, or null if none is selected.
+        /// </summary>
+        private RankClassification SelectedClassification { get; set; }
+
+        /// <summary>
+        /// The four rank selector controls in an array for easy indexed access.
+        /// </summary>
+        private RadRankSelector[] RankSelectors { get; set; }
+
+        /// <summary>
+        /// A form that allows users to edit rank classifications and pay grades for
+        /// the selected faction. Provides a tree view categorized by rank types (Enlisted,
+        /// Officer, Warrant) and various UI components for grade configuration.
+        /// </summary>
         public RankGradeEditorForm(Faction selectedFaction)
         {
             if (selectedFaction == null)
-            {
-                
-            }
+                throw new ArgumentNullException(nameof(selectedFaction));
 
             SelectedFaction = selectedFaction;
 
@@ -36,8 +83,10 @@ namespace Perscom
 
             // Button styling
             FormStyling.ApplyControlsTheme(Controls);
-            FormStyling.StyleButtonFluentBlue(applyButton);
-            FormStyling.StyleButtonDarkBlue(CloseButton);
+            FormStyling.StyleButtonDarkBlue(applyButton);
+
+            // Store rank selectors in an array for easy access
+            RankSelectors = new[] { radRankSelector1, radRankSelector2, radRankSelector3, radRankSelector4 };
 
             // Fill the selection dropdown with enum values
             foreach (PayGradeSelection item in Enum.GetValues(typeof(PayGradeSelection)))
@@ -47,17 +96,94 @@ namespace Perscom
                     Tag = item,
                     Text = Enum.GetName(typeof(PayGradeSelection), item)
                 };
-                SelectionDropDownList.Items.Add(radItem);
+                selectionTypeDropDownList.Items.Add(radItem);
             }
 
             // Set default values and indexes
             ResetFields(true);
+
+            // Set the header label to include the faction name
+            label6.Text = $"Rank And Grade Editor for {SelectedFaction.Name}";
 
             // Register event handlers
             addGradeMenuItem.Click += AddGradeMenuItem_Click;
             wizardMenuItem.Click += WizardMenuItem_Click;
             deleteGradeMenuItem.Click += DeleteGradeMenuItem_Click;
             aiMenuItem.Click += AiMenuItem_Click;
+            applyButton.Click += ApplyButton_Click;
+            boardButton.Click += BoardButton_Click;
+
+            // Wire up rank selector click events
+            foreach (var selector in RankSelectors)
+            {
+                selector.OnClick += RankSelector_Click;
+            }
+        }
+
+        private void RankGradeEditorForm_Load(object sender, EventArgs e)
+        {
+            LoadGradesFromDatabase();
+        }
+
+        /// <summary>
+        /// Loads all existing RankClassifications for the selected faction from the database
+        /// and populates the tree view under the appropriate root nodes.
+        /// </summary>
+        private void LoadGradesFromDatabase()
+        {
+            // Clear existing child nodes from root nodes
+            foreach (RadTreeNode rootNode in radTreeView1.Nodes)
+            {
+                rootNode.Nodes.Clear();
+            }
+
+            try
+            {
+                using var db = new AppDatabase();
+
+                // Fetch all RankClassifications for this faction, ordered by PayGrade
+                var classifications = db.RankClassifications
+                    .Where(rc => rc.FactionId == SelectedFaction.Id)
+                    .OrderBy(rc => rc.PayGrade)
+                    .ToList();
+
+                foreach (var classification in classifications)
+                {
+                    // Find the matching root node by RankType
+                    RadTreeNode parentNode = FindRootNodeByType(classification.Type);
+                    if (parentNode == null) continue;
+
+                    var childNode = new RadTreeNode(classification.ToString())
+                    {
+                        Tag = classification
+                    };
+                    parentNode.Nodes.Add(childNode);
+                }
+
+                // Expand all root nodes
+                foreach (RadTreeNode rootNode in radTreeView1.Nodes)
+                {
+                    rootNode.Expand();
+                }
+            }
+            catch (Exception ex)
+            {
+                RadMessageBox.Show($"Failed to load rank grades: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, RadMessageIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Finds the root tree node that corresponds to the given <see cref="RankType"/>.
+        /// </summary>
+        private RadTreeNode FindRootNodeByType(RankType type)
+        {
+            foreach (RadTreeNode node in radTreeView1.Nodes)
+            {
+                if (node.Tag is RankType nodeType && nodeType == type)
+                    return node;
+            }
+            return null;
         }
 
         private void AiMenuItem_Click(object sender, EventArgs e)
@@ -66,50 +192,151 @@ namespace Perscom
             AdvisorChatForm.Open(this);
         }
 
-        private void RankGradeEditorForm_Load(object sender, EventArgs e)
-        {
-            // Load existing grades from the database or simulation context if needed
-            // This could be implemented to populate the tree view with existing grades
-        }
-
         /// <summary>
         /// Resets the fields and selections in the user interface to their default values.
         /// </summary>
-        /// <remarks>This method clears the selected node in the tree view, resets text and numeric fields
-        /// to their  default states, and clears the rows in the ranks grid view. It is typically used to initialize  or
-        /// reset the form to a clean state.</remarks>
         private void ResetFields(bool clearSelectedNode)
         {
-            // Reset any fields or selections if necessary
             if (clearSelectedNode)
             {
                 radTreeView1.SelectedNode = null;
             }
 
+            SelectedClassification = null;
             DescriptionGroupBox.Text = "Please Add or Select a Rank Grade";
-            SelectionDropDownList.SelectedIndex = 0;
-            PrevTIGReq.Value = 0;
-            MaxTIG.Value = 0;
-            MinTIG.Value = 0;
-            LockInTime.Value = 0;
+            selectionTypeDropDownList.SelectedIndex = 0;
+            prevTimeInGradeSpinner.Value = 0;
+            maxTimeInGradeSpinner.Value = 0;
+            minTimeInGradeSpinner.Value = 0;
+            lockInTimeSpinner.Value = 0;
+            stipendSpinEditor.Value = 0;
+            branchingCheckBox.IsChecked = false;
+            _lastSavedSnapshot = null;
+
+            // Clear rank selectors
+            ClearRankSelectors();
+
+            // Disable editing controls
+            SetFormEnabled(false);
+        }
+
+        /// <summary>
+        /// Enables or disables the editing controls based on whether a rank grade is selected.
+        /// </summary>
+        private void SetFormEnabled(bool enabled)
+        {
+            // Spinners
+            prevTimeInGradeSpinner.Enabled = enabled;
+            maxTimeInGradeSpinner.Enabled = enabled;
+            minTimeInGradeSpinner.Enabled = enabled;
+            lockInTimeSpinner.Enabled = enabled;
+
+            // Dropdown
+            selectionTypeDropDownList.Enabled = enabled;
+
+            // Checkbox
+            branchingCheckBox.Enabled = enabled;
+
+            // Buttons
+            applyButton.Enabled = enabled;
+            boardButton.Enabled = enabled;
+
+            // Rank selectors
+            foreach (var selector in RankSelectors)
+            {
+                selector.Enabled = enabled;
+            }
+        }
+
+        /// <summary>
+        /// Clears all rank selector controls back to their default state.
+        /// </summary>
+        private void ClearRankSelectors()
+        {
+            foreach (var selector in RankSelectors)
+            {
+                selector.Rank = null;
+                selector.Visible = false;
+            }
         }
 
         /// <summary>
         /// Updates the UI to reflect the details of the specified rank classification.
         /// </summary>
-        /// <remarks>This method updates various UI elements, such as text fields, dropdowns, and grid
-        /// views,  to display the information associated with the provided rank classification.  It resets any previous
-        /// selections and populates the grid view with the ranks associated  with the classification.</remarks>
-        /// <param name="classification">The <see cref="RankClassification"/> object containing the details of the rank classification to display.</param>
         private void SelectClassification(RankClassification classification)
         {
-            // Reset any fields or selections if necessary
+            SelectedClassification = classification;
             DescriptionGroupBox.Text = $"{classification.Type} Grade {classification.PayGrade}";
-            SelectionDropDownList.SelectedIndex = 0;
-            PrevTIGReq.Value = classification.PreviousTimeInGradeRequirement;
-            MaxTIG.Value = classification.MaxTimeInGrade;
-            MinTIG.Value = classification.MinTimeInGrade;
-            LockInTime.Value = classification.LockInTime;
+
+            // Set the selection dropdown to match the classification's Selection value
+            for (int i = 0; i < selectionTypeDropDownList.Items.Count; i++)
+            {
+                if (selectionTypeDropDownList.Items[i].Tag is PayGradeSelection sel && sel == classification.Selection)
+                {
+                    selectionTypeDropDownList.SelectedIndex = i;
+                    break;
+                }
+            }
+
+            prevTimeInGradeSpinner.Value = classification.PreviousTimeInGradeRequirement;
+            maxTimeInGradeSpinner.Value = classification.MaxTimeInGrade;
+            minTimeInGradeSpinner.Value = classification.MinTimeInGrade;
+            lockInTimeSpinner.Value = classification.LockInTime;
+            stipendSpinEditor.Value = (decimal)classification.Stipend;
+            branchingCheckBox.IsChecked = classification.HasSplitRankLanes;
+
+            // Snapshot the clean state
+            _lastSavedSnapshot = CaptureSnapshot();
+
+            // Enable editing controls
+            SetFormEnabled(true);
+
+            // Load ranks for this classification into the rank selectors
+            LoadRanksForClassification(classification);
+        }
+
+        /// <summary>
+        /// Loads the ranks associated with the given classification into the RadRankSelector controls.
+        /// </summary>
+        private void LoadRanksForClassification(RankClassification classification)
+        {
+            ClearRankSelectors();
+
+            // Only load ranks if the classification has been persisted (has an Id)
+            if (classification.Id == 0) return;
+
+            try
+            {
+                using var db = new AppDatabase();
+
+                var ranks = db.Ranks
+                    .Where(r => r.RankClassificationId == classification.Id)
+                    .OrderBy(r => r.Precedence)
+                    .ToList();
+
+                for (int i = 0; i < ranks.Count && i < RankSelectors.Length; i++)
+                {
+                    RankSelectors[i].Rank = ranks[i];
+                    RankSelectors[i].RankTitle = $"Rank {i + 1}";
+                    RankSelectors[i].Visible = true;
+                }
+
+                // Show the next empty slot if there's room for more ranks
+                if (ranks.Count < RankSelectors.Length)
+                {
+                    RankSelectors[ranks.Count].Rank = null;
+                    RankSelectors[ranks.Count].RankTitle = $"Rank {ranks.Count + 1}";
+                    RankSelectors[ranks.Count].Visible = true;
+                }
+
+                // Center the visible selectors within the panel
+                CenterRankSelectors();
+            }
+            catch (Exception ex)
+            {
+                RadMessageBox.Show($"Failed to load ranks: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, RadMessageIcon.Error);
+            }
         }
 
         #region Form Styling
@@ -136,17 +363,134 @@ namespace Perscom
         }
 
         /// <summary>
+        /// Handles the Apply button click. Saves the currently selected classification's
+        /// field values back to the database using the CrossLite Unit of Work pattern.
+        /// </summary>
+        private void ApplyButton_Click(object sender, EventArgs e)
+        {
+            if (SelectedClassification == null)
+            {
+                RadMessageBox.Show("No rank grade selected to save.",
+                    "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
+                return;
+            }
+
+            using var db = new AppDatabase();
+            using var transaction = db.BeginTransaction();
+
+            try
+            {
+                // Validate HasSplitRankLanes consistency with child ranks' NextRankId
+                if (SelectedClassification.Id > 0)
+                {
+                    var ranks = SelectedClassification.Ranks.ToList();
+                    if (ranks.Count > 0)
+                    {
+                        bool hasSplit = branchingCheckBox.IsChecked;
+                        var ranksWithNext = ranks.Where(r => r.NextRankId.HasValue).ToList();
+                        var ranksWithoutNext = ranks.Where(r => !r.NextRankId.HasValue).ToList();
+
+                        if (!hasSplit && ranksWithNext.Count > 0)
+                        {
+                            string names = string.Join(", ", ranksWithNext.Select(r => r.Name));
+                            var result = RadMessageBox.Show(
+                                $"'Has Split Rank Lanes' is not checked, but the following rank(s) have a Next Rank set:\n\n{names}\n\nDo you want to continue saving anyway?",
+                                "Configuration Warning", MessageBoxButtons.YesNo, RadMessageIcon.Exclamation);
+
+                            if (result != DialogResult.Yes)
+                                return;
+                        }
+                        else if (hasSplit && ranksWithoutNext.Count > 0)
+                        {
+                            string names = string.Join(", ", ranksWithoutNext.Select(r => r.Name));
+                            var result = RadMessageBox.Show(
+                                $"'Has Split Rank Lanes' is checked, but the following rank(s) do not have a Next Rank set:\n\n{names}\n\nDo you want to continue saving anyway?",
+                                "Configuration Warning", MessageBoxButtons.YesNo, RadMessageIcon.Exclamation);
+
+                            if (result != DialogResult.Yes)
+                                return;
+                        }
+                    }
+                }
+
+                // Update the classification from form fields
+                SelectedClassification.PreviousTimeInGradeRequirement = (int)prevTimeInGradeSpinner.Value;
+                SelectedClassification.MaxTimeInGrade = (int)maxTimeInGradeSpinner.Value;
+                SelectedClassification.MinTimeInGrade = (int)minTimeInGradeSpinner.Value;
+                SelectedClassification.LockInTime = (int)lockInTimeSpinner.Value;
+                SelectedClassification.Stipend = (double)stipendSpinEditor.Value;
+                SelectedClassification.HasSplitRankLanes = branchingCheckBox.IsChecked;
+
+                // Get the selected PayGradeSelection from the dropdown
+                if (selectionTypeDropDownList.SelectedItem?.Tag is PayGradeSelection selection)
+                {
+                    SelectedClassification.Selection = selection;
+                }
+
+                if (SelectedClassification.Id == 0)
+                {
+                    // New classification — insert
+                    SelectedClassification.FactionId = SelectedFaction.Id;
+                    db.RankClassifications.Add(SelectedClassification);
+                }
+                else
+                {
+                    // Existing classification — update
+                    db.RankClassifications.Update(SelectedClassification);
+                }
+
+                transaction.Commit();
+
+                // Update the tree node text
+                if (radTreeView1.SelectedNode != null && radTreeView1.SelectedNode.Tag is RankClassification)
+                {
+                    radTreeView1.SelectedNode.Text = SelectedClassification.ToString();
+                    radTreeView1.SelectedNode.Tag = SelectedClassification;
+                }
+
+                // Reload ranks for the classification (in case Id was just assigned)
+                LoadRanksForClassification(SelectedClassification);
+
+                // Update the clean snapshot after successful save
+                _lastSavedSnapshot = CaptureSnapshot();
+
+                RadMessageBox.Show("Rank grade saved successfully.",
+                    "Success", MessageBoxButtons.OK, RadMessageIcon.Info);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                RadMessageBox.Show($"Failed to save rank grade: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, RadMessageIcon.Error);
+            }
+        }
+
+        /// <summary>
         /// Handles the event triggered when the selected node in the RadTreeView changes.
         /// </summary>
-        /// <remarks>This method updates the enabled state of menu items based on whether the selected
-        /// node is a root node or a child node. The <see cref="addGradeMenuItem"/> is enabled only for root nodes,
-        /// while the <see cref="deleteGradeMenuItem"/> is enabled for non-root nodes. The <see cref="wizardMenuItem"/>
-        /// is always enabled.</remarks>
-        /// <param name="sender">The source of the event, typically the RadTreeView control.</param>
-        /// <param name="e">An object containing event data, including the newly selected node.</param>
         private void radTreeView1_SelectedNodeChanged(object sender, RadTreeViewEventArgs e)
         {
+            // Check for unsaved changes before allowing navigation
+            if (HasUnsavedChanges())
+            {
+                var result = RadMessageBox.Show(
+                    "You have unsaved changes. Are you sure you want to switch without applying?",
+                    "Unsaved Changes",
+                    MessageBoxButtons.YesNo,
+                    RadMessageIcon.Question);
+
+                if (result != DialogResult.Yes)
+                {
+                    // Revert selection back to the previous node
+                    radTreeView1.SelectedNodeChanged -= radTreeView1_SelectedNodeChanged;
+                    radTreeView1.SelectedNode = _selectedNode;
+                    radTreeView1.SelectedNodeChanged += radTreeView1_SelectedNodeChanged;
+                    return;
+                }
+            }
+
             var node = e.Node;
+            _selectedNode = node;
             bool isRoot = node != null && node.Parent == null;
 
             addGradeMenuItem.Enabled = isRoot;
@@ -164,9 +508,68 @@ namespace Perscom
             }
         }
 
-        private void SelectionDropDownList_SelectedIndexChanged(object sender, Telerik.WinControls.UI.Data.PositionChangedEventArgs e)
+        private void SelectionTypeDropDownListSelectedIndexChanged(object sender, Telerik.WinControls.UI.Data.PositionChangedEventArgs e)
         {
-            //BoardDropDownList.Enabled = (SelectionDropDownList.SelectedIndex == 1);
+            // Enable/disable the board button based on whether PromotionBoard is selected
+            if (selectionTypeDropDownList.SelectedItem?.Tag is PayGradeSelection selection)
+            {
+                boardButton.Enabled = (selection == PayGradeSelection.PromotionBoard);
+            }
+        }
+
+        /// <summary>
+        /// Handles the board button click. Opens the promotion board editor for the selected classification.
+        /// </summary>
+        private void BoardButton_Click(object sender, EventArgs e)
+        {
+            if (SelectedClassification == null || SelectedClassification.Id == 0)
+            {
+                RadMessageBox.Show("Please save the rank grade before editing its promotion board.",
+                    "Validation", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
+                return;
+            }
+
+            // TODO: Open the PromotionBoardEditorForm for this classification
+            using var form = new PromotionBoardEditor(SelectedClassification);
+            form.ShowDialog(this);
+        }
+
+        /// <summary>
+        /// Handles click events on the RadRankSelector controls.
+        /// </summary>
+        private void RankSelector_Click(object sender, EventArgs e)
+        {
+            if (SelectedClassification == null || SelectedClassification.Id == 0)
+            {
+                RadMessageBox.Show("Please save the rank grade before adding ranks.",
+                    "Validation", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
+                return;
+            }
+
+            var selector = sender as RadRankSelector;
+            if (selector == null) return;
+
+            RankEditor editor;
+
+            if (selector.Rank != null)
+            {
+                // Edit existing rank
+                editor = new RankEditor(SelectedClassification, selector.Rank);
+            }
+            else
+            {
+                // Create new rank for this classification
+                editor = new RankEditor(SelectedClassification);
+            }
+
+            using (editor)
+            {
+                if (editor.ShowDialog(this) == DialogResult.OK)
+                {
+                    // Reload ranks to reflect changes
+                    LoadRanksForClassification(SelectedClassification);
+                }
+            }
         }
 
         private void DeleteGradeMenuItem_Click(object sender, EventArgs e)
@@ -193,29 +596,59 @@ namespace Perscom
             }
 
             // Only delete if selectedNode is the highest grade
-            if (highestNode == selectedNode)
+            if (highestNode != selectedNode)
             {
-                parentNode.Nodes.Remove(selectedNode);
-                radTreeView1.SelectedNode = parentNode;
-                ResetFields(false);
+                RadMessageBox.Show("Only the highest grade in this category can be deleted.",
+                    "Delete Grade", MessageBoxButtons.OK, RadMessageIcon.Info);
+                return;
             }
-            else
+
+            if (!(selectedNode.Tag is RankClassification classification))
+                return;
+
+            // Confirm deletion
+            var result = RadMessageBox.Show(
+                $"Are you sure you want to delete {classification}? This will also delete all associated ranks.",
+                "Confirm Delete", MessageBoxButtons.YesNo, RadMessageIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            // Delete from database if persisted
+            if (classification.Id > 0)
             {
-                RadMessageBox.Show("Only the highest grade in this category can be deleted.", "Delete Grade", MessageBoxButtons.OK, RadMessageIcon.Info);
+                using var db = new AppDatabase();
+                using var transaction = db.BeginTransaction();
+
+                try
+                {
+                    db.RankClassifications.Remove(classification);
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    RadMessageBox.Show($"Failed to delete rank grade: {ex.Message}",
+                        "Error", MessageBoxButtons.OK, RadMessageIcon.Error);
+                    return;
+                }
             }
+
+            parentNode.Nodes.Remove(selectedNode);
+            radTreeView1.SelectedNode = parentNode;
+            _selectedNode = parentNode;
+            ResetFields(false);
         }
 
         private void WizardMenuItem_Click(object sender, EventArgs e)
         {
-
+            // TODO: Open the Rank Wizard dialog
         }
 
         /// <summary>
-        /// Handles the click event for the "Add Grade" menu item. 
+        /// Handles the click event for the "Add Grade" menu item.
+        /// Creates a new RankClassification with the next PayGrade and persists it to the database.
         /// </summary>
-        /// <remarks>This method is invoked when the user selects the "Add Grade" option from the menu.</remarks>
-        /// <param name="sender">The source of the event, typically the menu item that was clicked.</param>
-        /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
         private void AddGradeMenuItem_Click(object sender, EventArgs e)
         {
             // Ensure a root node is selected
@@ -239,31 +672,129 @@ namespace Perscom
             // Increment PayGrade for new grade
             int newPayGrade = maxPayGrade + 1;
 
-            // Create new RankClassification
-            var newGrade = new RankClassification
-            {
-                Type = rankType,
-                PayGrade = newPayGrade,
-                Selection = PayGradeSelection.Automatic
-                // Other properties can be set to defaults or customized as needed
-            };
+            // Create and persist the new RankClassification
+            using var db = new AppDatabase();
+            using var transaction = db.BeginTransaction();
 
-            // Create new tree node and add to tree
-            var newNode = new RadTreeNode(newGrade.ToString())
+            try
             {
-                Tag = newGrade,
-            };
-            selectedNode.Nodes.Add(newNode);
-            radTreeView1.SelectedNode = newNode;
+                var newGrade = db.RankClassifications.Create();
+                newGrade.FactionId = SelectedFaction.Id;
+                newGrade.Type = rankType;
+                newGrade.PayGrade = newPayGrade;
+                newGrade.Selection = PayGradeSelection.Automatic;
+                newGrade.PreviousTimeInGradeRequirement = 12;
+                newGrade.MinTimeInGrade = 0;
+                newGrade.MaxTimeInGrade = 0;
+                newGrade.LockInTime = 0;
+                newGrade.HasSplitRankLanes = false;
 
-            SelectClassification(newGrade);
+                db.RankClassifications.Add(newGrade);
+                transaction.Commit();
+
+                // Create new tree node and add to tree
+                var newNode = new RadTreeNode(newGrade.ToString())
+                {
+                    Tag = newGrade,
+                };
+                selectedNode.Nodes.Add(newNode);
+                selectedNode.Expand();
+                radTreeView1.SelectedNode = newNode;
+                _selectedNode = newNode;
+
+                SelectClassification(newGrade);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                RadMessageBox.Show($"Failed to add rank grade: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, RadMessageIcon.Error);
+            }
         }
 
         #endregion
 
-        private void RankGradeEditorForm_Load_1(object sender, EventArgs e)
+        /// <summary>
+        /// Captures the current form field values into a snapshot.
+        /// </summary>
+        private FormSnapshot CaptureSnapshot()
         {
+            return new FormSnapshot
+            {
+                SelectionIndex = selectionTypeDropDownList.SelectedIndex,
+                PrevTIG = prevTimeInGradeSpinner.Value,
+                MaxTIG = maxTimeInGradeSpinner.Value,
+                MinTIG = minTimeInGradeSpinner.Value,
+                LockIn = lockInTimeSpinner.Value,
+                Stipend = stipendSpinEditor.Value,
+                HasSplitLanes = branchingCheckBox.IsChecked
+            };
+        }
 
+        /// <summary>
+        /// Returns true if the current form values differ from the last saved snapshot.
+        /// </summary>
+        private bool HasUnsavedChanges()
+        {
+            if (_lastSavedSnapshot == null || SelectedClassification == null)
+                return false;
+
+            var current = CaptureSnapshot();
+            return current.SelectionIndex != _lastSavedSnapshot.SelectionIndex
+                   || current.PrevTIG != _lastSavedSnapshot.PrevTIG
+                   || current.MaxTIG != _lastSavedSnapshot.MaxTIG
+                   || current.MinTIG != _lastSavedSnapshot.MinTIG
+                   || current.LockIn != _lastSavedSnapshot.LockIn
+                   || current.Stipend != _lastSavedSnapshot.Stipend
+                   || current.HasSplitLanes != _lastSavedSnapshot.HasSplitLanes;
+        }
+
+        /// <summary>
+        /// Horizontally centers the visible RadRankSelector controls within radPanel1.
+        /// </summary>
+        private void CenterRankSelectors()
+        {
+            const int gap = 0;  // horizontal gap between selectors (adjust if you want spacing)
+
+            // Collect visible selectors in order
+            var visible = RankSelectors.Where(s => s.Visible).ToArray();
+            if (visible.Length == 0) return;
+
+            int selectorWidth = visible[0].Width;  // all selectors are the same size
+            int totalWidth = (visible.Length * selectorWidth) + ((visible.Length - 1) * gap);
+            int startX = Math.Max(0, (radPanel1.Width - totalWidth) / 2);
+
+            for (int i = 0; i < visible.Length; i++)
+            {
+                visible[i].Location = new System.Drawing.Point(
+                    startX + (i * (selectorWidth + gap)),
+                    visible[i].Location.Y  // keep the same Y position
+                );
+            }
+        }
+
+        /// <summary>
+        /// Handles the FormClosing event for the RankGradeEditorForm.
+        /// Prompts the user to confirm closing the form if there are unsaved changes.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the form being closed.</param>
+        /// <param name="e">Provides data for the FormClosing event, including the option to cancel the close operation.</param>
+        private void RankGradeEditorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (HasUnsavedChanges())
+            {
+                var result = RadMessageBox.Show(
+                    "You have unsaved changes. Are you sure you want to close without applying?",
+                    "Unsaved Changes",
+                    MessageBoxButtons.YesNo,
+                    RadMessageIcon.Question);
+
+                if (result != DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
         }
     }
 }

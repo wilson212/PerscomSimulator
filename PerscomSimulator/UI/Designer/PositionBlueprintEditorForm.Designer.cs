@@ -339,7 +339,7 @@ namespace Perscom.UI
             radGroupBox4.Text = "Specialty Role";
             radGroupBox4.ThemeName = "Fluent";
             // 
-            // radRadioButton3
+            // inheritRadioButton
             // 
             radRadioButton3.CheckState = System.Windows.Forms.CheckState.Checked;
             radRadioButton3.Location = new System.Drawing.Point(155, 78);
@@ -357,7 +357,7 @@ namespace Perscom.UI
             radLabel10.TabIndex = 11;
             radLabel10.Text = "Position Role:";
             // 
-            // radRadioButton2
+            // offsetRadioButton
             // 
             radRadioButton2.Location = new System.Drawing.Point(234, 78);
             radRadioButton2.Name = "radRadioButton2";
@@ -367,7 +367,7 @@ namespace Perscom.UI
             radRadioButton2.Text = "All Soldiers";
             radRadioButton2.ThemeName = "Fluent";
             // 
-            // radRadioButton1
+            // overrideRadioButton
             // 
             radRadioButton1.Location = new System.Drawing.Point(334, 78);
             radRadioButton1.Name = "radRadioButton1";
@@ -438,7 +438,7 @@ namespace Perscom.UI
             radLabel11.TabIndex = 9;
             radLabel11.Text = "Accepted Roles:";
             // 
-            // radCheckBox2
+            // formScaleCheckBox
             // 
             radCheckBox2.Location = new System.Drawing.Point(155, 142);
             radCheckBox2.Name = "radCheckBox2";
@@ -579,7 +579,7 @@ namespace Perscom.UI
             radLabel27.TabIndex = 14;
             radLabel27.Text = "Max Tour Length:";
             // 
-            // radSpinEditor2
+            // stipendAmountSpinEditor
             // 
             radSpinEditor2.Location = new System.Drawing.Point(155, 218);
             radSpinEditor2.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -598,7 +598,7 @@ namespace Perscom.UI
             radLabel26.TabIndex = 12;
             radLabel26.Text = "Min Tour Length:";
             // 
-            // radSpinEditor1
+            // precedenceSpinEditor
             // 
             radSpinEditor1.Location = new System.Drawing.Point(155, 182);
             radSpinEditor1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -668,7 +668,7 @@ namespace Perscom.UI
             radLabel3.TabIndex = 4;
             radLabel3.Text = "Position Category:";
             // 
-            // radTextBox1
+            // rankNameTextBox
             // 
             radTextBox1.Location = new System.Drawing.Point(155, 51);
             radTextBox1.Name = "radTextBox1";
@@ -709,7 +709,7 @@ namespace Perscom.UI
             radLabel6.TabIndex = 7;
             radLabel6.Text = "Allowed Ranks:";
             // 
-            // radDropDownList1
+            // rankDropDownList
             // 
             radDropDownList1.Location = new System.Drawing.Point(193, 47);
             radDropDownList1.Name = "radDropDownList1";
@@ -1049,7 +1049,7 @@ namespace Perscom.UI
             radTrackBar2.ThumbSize = new System.Drawing.Size(8, 20);
             radTrackBar2.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar1
+            // formRatingTrackBar
             // 
             radTrackBar1.LabelStyle = TrackBarLabelStyle.TopLeft;
             radTrackBar1.Location = new System.Drawing.Point(22, 155);

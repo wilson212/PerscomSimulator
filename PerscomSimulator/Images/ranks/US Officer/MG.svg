@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 165.5 76.33"
+   enable-background="new 0 0 165.5 76.33"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <g id="Layer_90">
+    <g id="g30">
+      <linearGradient
+         id="SVGID_1_"
+         gradientUnits="userSpaceOnUse"
+         x1="9.6428003"
+         y1="68.040298"
+         x2="75.986198"
+         y2="21.5861">
+        <stop offset="0" style="stop-color:#595F68" id="stop1" />
+        <stop offset="0.2849" style="stop-color:#373E49" id="stop2" />
+        <stop offset="0.6746" style="stop-color:#525962" id="stop3" />
+        <stop offset="1" style="stop-color:#272E3A" id="stop4" />
+      </linearGradient>
+      <path
+         fill="url(#SVGID_1_)"
+         d="M 17.65,75.95 40.38,59.4 63.1,75.95 c 1.56,1.13 3.66,-0.4 3.06,-2.23 L 57.35,47.04 79.98,30.69 c 1.56,-1.13 0.76,-3.6 -1.16,-3.6 L 50.86,27.02 42.27,1.35 c -0.61,-1.81 -3.17,-1.8 -3.77,0 L 29.94,27 1.99,26.99 c -1.92,0 -2.72,2.47 -1.17,3.6 L 23.41,47.04 14.6,73.72 c -0.61,1.83 1.51,3.35 3.05,2.23 z"
+         id="path4"
+         style="fill:url(#SVGID_1_)" />
+      
+      <linearGradient
+         id="SVGID_00000179627193951650949920000011945785299976191876_"
+         gradientUnits="userSpaceOnUse"
+         x1="2.1283"
+         y1="28.588699"
+         x2="71.701302"
+         y2="53.911201">
+        <stop offset="0" style="stop-color:#EDEDEF" id="stop5" />
+        <stop offset="0.1054" style="stop-color:#E2E2E5" id="stop6" />
+        <stop offset="0.2922" style="stop-color:#C4C5C9" id="stop7" />
+        <stop offset="0.5384" style="stop-color:#93969D" id="stop8" />
+        <stop offset="0.8314" style="stop-color:#515660" id="stop9" />
+        <stop offset="1" style="stop-color:#272E3A" id="stop10" />
+      </linearGradient>
+      <polygon
+         fill="url(#SVGID_00000179627193951650949920000011945785299976191876_)"
+         points="40.38,41.29 40.38,56.94 16.48,74.34 40.38,41.29 25.75,46.28 1.99,28.97 40.38,41.29 31.38,28.99 40.38,1.99 40.38,41.29 49.42,29 78.81,29.08 40.38,41.29 55,46.28 64.27,74.34 "
+         id="polygon10"
+         style="fill:url(#SVGID_00000179627193951650949920000011945785299976191876_)" />
+      
+      <linearGradient
+         id="SVGID_00000144305080982259968420000001053248354249463948_"
+         gradientUnits="userSpaceOnUse"
+         x1="94.200699"
+         y1="68.040298"
+         x2="160.5441"
+         y2="21.5861">
+        <stop offset="0" style="stop-color:#595F68" id="stop11" />
+        <stop offset="0.2849" style="stop-color:#373E49" id="stop12" />
+        <stop offset="0.6746" style="stop-color:#525962" id="stop13" />
+        <stop offset="1" style="stop-color:#272E3A" id="stop14" />
+      </linearGradient>
+      <path
+         fill="url(#SVGID_00000144305080982259968420000001053248354249463948_)"
+         d="M 163.37,27.09 135.41,27.02 126.83,1.36 c -0.61,-1.81 -3.17,-1.8 -3.77,0 L 114.5,27 86.55,26.98 c -1.92,0 -2.72,2.47 -1.17,3.6 l 22.59,16.45 -8.81,26.68 c -0.61,1.84 1.52,3.36 3.06,2.23 l 22.73,-16.55 22.72,16.55 c 1.56,1.13 3.66,-0.4 3.06,-2.23 l -8.81,-26.68 22.63,-16.35 c 1.54,-1.12 0.74,-3.59 -1.18,-3.59 z"
+         id="path14"
+         style="fill:url(#SVGID_00000144305080982259968420000001053248354249463948_)" />
+      
+      <linearGradient
+         id="SVGID_00000099643421206057829520000005398789120401857174_"
+         gradientUnits="userSpaceOnUse"
+         x1="86.686203"
+         y1="28.588699"
+         x2="156.2592"
+         y2="53.911201">
+        <stop offset="0" style="stop-color:#EDEDEF" id="stop15" />
+        <stop offset="0.1054" style="stop-color:#E2E2E5" id="stop16" />
+        <stop offset="0.2922" style="stop-color:#C4C5C9" id="stop17" />
+        <stop offset="0.5384" style="stop-color:#93969D" id="stop18" />
+        <stop offset="0.8314" style="stop-color:#515660" id="stop19" />
+        <stop offset="1" style="stop-color:#272E3A" id="stop20" />
+      </linearGradient>
+      <polygon
+         fill="url(#SVGID_00000099643421206057829520000005398789120401857174_)"
+         points="124.94,41.29 133.97,29 163.36,29.08 124.94,41.29 139.56,46.28 148.82,74.34 124.94,41.29 124.94,56.94 101.04,74.34 124.94,41.29 110.31,46.28 86.55,28.97 124.94,41.29 115.94,28.99 124.94,1.99 "
+         id="polygon20"
+         style="fill:url(#SVGID_00000099643421206057829520000005398789120401857174_)" />
+    </g>
+  </g>
+</svg>

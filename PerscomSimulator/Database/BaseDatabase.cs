@@ -115,18 +115,39 @@ namespace Perscom.Database
         /// </summary>
         public DbSet<UnitBlueprintAttachment> UnitTypeAttachments { get; set; }
         
+        /// <summary>
+        /// Gets a set of <see cref="SelectionSoldierPool"/> entites stored in the database
+        /// </summary>
         public DbSet<SelectionSoldierPool> SelectionSoldierPools { get; set; }
 
+        /// <summary>
+        /// Gets a set of <see cref="CustomSelectionProceedure"/> entites stored in the database
+        /// </summary>
         public DbSet<CustomSelectionProceedure> CustomSelectionProceedures { get; set; }
 
+        /// <summary>
+        /// Gets a set of <see cref="PositionPerformanceModel"/> entites stored in the database
+        /// </summary>
         public DbSet<PositionPerformanceModel> PositionPerformanceModels { get; set; }
 
+        /// <summary>
+        /// Gets a set of <see cref="PositionBlueprint"/> entites stored in the database
+        /// </summary>
         public DbSet<PersonaTrait> PersonaTraits { get; set; }
 
+        /// <summary>
+        /// Gets a set of <see cref="PositionBlueprint"/> entites stored in the database
+        /// </summary>
         public DbSet<PersonaAttribute> PersonaAttributes { get; set; }
 
+        /// <summary>
+        /// Gets a set of <see cref="PositionBlueprint"/> entites stored in the database
+        /// </summary>
         public DbSet<TraitEffect> TraitEffects { get; set; }
 
+        /// <summary>
+        /// Gets a set of <see cref="PositionBlueprint"/> entites stored in the database
+        /// </summary>
         public DbSet<PersonalityTrait> PersonalityTraits { get; set; }
 
         #endregion
@@ -140,8 +161,8 @@ namespace Perscom.Database
             Debug.WriteLine($"Database: {Builder.DataSource}");
             // Open connection first
             base.Connect();
-            
-            Debug.WriteLine("Database initialized with WAL journal mode, NORMAL synchronous, 20MB cache, MEMORY temp store, 256MB mmap, and 4KB page size.");
+
+            Debug.WriteLine("Database connection opened.");
             
             Execute("PRAGMA journal_mode = WAL;");      // Write-Ahead Logging - massive concurrency + write perf
             Execute("PRAGMA synchronous = NORMAL;");     // Safe with WAL, much faster than FULL
@@ -149,8 +170,9 @@ namespace Perscom.Database
             Execute("PRAGMA temp_store = MEMORY;");      // Temp tables in RAM
             Execute("PRAGMA mmap_io = 268435456;");      // 256MB memory-mapped I/O
             Execute("PRAGMA page_size = 4096;");         // Only effective on new DBs, but good default
-            
-            Debug.WriteLine("Database connection opened.");
+            Execute("PRAGMA busy_timeout = 5000;");   // ← ADD THIS: wait up to 5 seconds for locks
+
+            Debug.WriteLine("Database initialized with WAL journal mode, NORMAL synchronous, 20MB cache, MEMORY temp store, 256MB mmap, and 4KB page size.");
 
             // Grab the current tables version
             if (DatabaseVersion == null)

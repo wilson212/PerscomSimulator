@@ -26,7 +26,7 @@ namespace Perscom
             addFactionMenuItem.Click += AddFactionMenuItem_Click;
             deleteFactionMenuItem.Click += DeleteFactionMenuItem_Click;
 
-            // Attach context menu to tree view
+            // Attach the context menu to the tree view
             radContextMenuManager1.SetRadContextMenu(radTreeView1, radContextMenu1);
 
             // Wire up tree view selection
@@ -40,7 +40,7 @@ namespace Perscom
             // Disable form elements until a faction is selected
             SetFormEnabled(false);
 
-            // Load factions into tree view
+            // Load factions into the tree view
             LoadFactionTree();
         }
 

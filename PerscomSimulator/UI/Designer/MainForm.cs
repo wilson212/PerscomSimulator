@@ -19,15 +19,48 @@ namespace Perscom
 
             // Button styling
             //FormStyling.StyleButtonFluentBlue(btnDesignUnit);
-            FormStyling.StyleButtonRed(btnDelete);
-            FormStyling.StyleButtonFluentBlue(btnRunSim);
-            FormStyling.StyleButtonDarkBlue(btnViewResult);
-            FormStyling.StyleButtonDarkBlue(btnVerify);
-            FormStyling.StyleButtonRed(btnClear);
-            FormStyling.StyleButtonFluentBlue(btnNew);
+            FormStyling.StyleButtonRed(deleteDbSourceButton);
+            FormStyling.StyleButtonFluentBlue(runSimButton);
+            FormStyling.StyleButtonDarkBlue(loadSimButton);
+            FormStyling.StyleButtonDarkBlue(verifyDbSourceButton);
+            FormStyling.StyleButtonRed(clearDbSourceButton);
+            FormStyling.StyleButtonFluentBlue(newDbSourceButton);
 
             // Register for events (We cannot do this from the designer)
             AddPersonaMenuItem.Click += AddPersonaMenuItem_Click;
+
+            // Subscribe to the dropdown's selection change
+            dbSourceDropDownList.SelectedIndexChanged += DbSourceDropDownList_SelectedIndexChanged;
+
+            // Disable tiles and sim buttons until a DB source is selected
+            //SetDatabaseDependentControlsEnabled(false);
+        }
+
+        private void SetDatabaseDependentControlsEnabled(bool enabled)
+        {
+            // Tile elements
+            FactionTileElement.Enabled = enabled;
+            PersonaTileElement.Enabled = enabled;
+            TraitsTileElement.Enabled = enabled;
+            CareerTileElement.Enabled = enabled;
+
+            // Simulation buttons
+            runSimButton.Enabled = enabled;
+            loadSimButton.Enabled = enabled;
+            verifyDbSourceButton.Enabled = enabled;
+            clearDbSourceButton.Enabled = enabled;
+
+            // Menu Items
+            //PageViewPage1.Enabled = enabled;
+            PageViewPage2.Enabled = enabled;
+            PageViewPage3.Enabled = enabled;
+            PageViewPage5.Enabled = enabled;
+        }
+
+        private void DbSourceDropDownList_SelectedIndexChanged(object sender, Telerik.WinControls.UI.Data.PositionChangedEventArgs e)
+        {
+            bool hasSelection = dbSourceDropDownList.SelectedIndex >= 0 && !string.IsNullOrWhiteSpace(dbSourceDropDownList.Text);
+            SetDatabaseDependentControlsEnabled(hasSelection);
         }
 
         private void AddPersonaMenuItem_Click(object sender, EventArgs e)

@@ -33,7 +33,7 @@
             fluentTheme1 = new Telerik.WinControls.Themes.FluentTheme();
             label6 = new System.Windows.Forms.ShadowLabel();
             headerPanel = new System.Windows.Forms.Panel();
-            advisorButton = new Telerik.WinControls.UI.RadButton();
+            advisorButton = new Telerik.WinControls.UI.RadAIPromptButton();
             bottomPanel = new System.Windows.Forms.Panel();
             radTreeView1 = new Telerik.WinControls.UI.RadTreeView();
             radLabel4 = new Telerik.WinControls.UI.RadLabel();
@@ -74,7 +74,6 @@
             headerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)advisorButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radTreeView1).BeginInit();
-            radTreeView1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)radLabel4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radPanel2).BeginInit();
             radPanel2.SuspendLayout();
@@ -131,17 +130,20 @@
             // 
             // advisorButton
             // 
-            advisorButton.Location = new System.Drawing.Point(1113, 12);
+            advisorButton.Location = new System.Drawing.Point(1127, 12);
             advisorButton.Name = "advisorButton";
-            advisorButton.Size = new System.Drawing.Size(110, 47);
-            advisorButton.TabIndex = 1;
-            advisorButton.Text = "Open AI Assistant";
+            // 
+            // 
+            // 
+            advisorButton.Size = new System.Drawing.Size(96, 48);
+            advisorButton.TabIndex = 7;
             advisorButton.ThemeName = "Fluent";
             advisorButton.Click += advisorButton_Click;
             // 
             // bottomPanel
             // 
             bottomPanel.BackColor = System.Drawing.SystemColors.ControlLight;
+            bottomPanel.BackgroundImage = Properties.Resources.mainPattern;
             bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             bottomPanel.Location = new System.Drawing.Point(0, 836);
             bottomPanel.Name = "bottomPanel";
@@ -152,8 +154,7 @@
             // radTreeView1
             // 
             radTreeView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            radTreeView1.Controls.Add(radLabel4);
-            radTreeView1.Dock = System.Windows.Forms.DockStyle.Left;
+            radTreeView1.Dock = System.Windows.Forms.DockStyle.Top;
             radTreeView1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             radTreeView1.ForeColor = System.Drawing.Color.Black;
             radTreeView1.ItemHeight = 28;
@@ -162,13 +163,13 @@
             radTreeView1.Location = new System.Drawing.Point(0, 0);
             radTreeView1.Name = "radTreeView1";
             radTreeView1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            radTreeView1.Size = new System.Drawing.Size(220, 730);
+            radTreeView1.Size = new System.Drawing.Size(226, 703);
             radTreeView1.TabIndex = 16;
             radTreeView1.ThemeName = "Fluent";
             // 
             // radLabel4
             // 
-            radLabel4.Location = new System.Drawing.Point(26, 693);
+            radLabel4.Location = new System.Drawing.Point(26, 706);
             radLabel4.Name = "radLabel4";
             radLabel4.Size = new System.Drawing.Size(171, 18);
             radLabel4.TabIndex = 17;
@@ -176,6 +177,7 @@
             // 
             // radPanel2
             // 
+            radPanel2.Controls.Add(radLabel4);
             radPanel2.Controls.Add(radTreeView1);
             radPanel2.Dock = System.Windows.Forms.DockStyle.Left;
             radPanel2.Location = new System.Drawing.Point(0, 106);
@@ -518,11 +520,10 @@
             headerPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)advisorButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)radTreeView1).EndInit();
-            radTreeView1.ResumeLayout(false);
-            radTreeView1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)radLabel4).EndInit();
             ((System.ComponentModel.ISupportInitialize)radPanel2).EndInit();
             radPanel2.ResumeLayout(false);
+            radPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)radPanel3).EndInit();
             radPanel3.ResumeLayout(false);
             radPanel3.PerformLayout();
@@ -582,7 +583,6 @@
         private Telerik.WinControls.UI.RadLabel radLabel2;
         private Telerik.WinControls.UI.RadTextBox radTextBox1;
         private Telerik.WinControls.UI.RadPictureBox flagPictureBox;
-        private Telerik.WinControls.UI.RadButton advisorButton;
         private Telerik.WinControls.UI.RadContextMenuManager radContextMenuManager1;
         private Telerik.WinControls.UI.RadContextMenu radContextMenu1;
         private Telerik.WinControls.UI.RadMenuItem addFactionMenuItem;
@@ -595,5 +595,6 @@
         private Telerik.WinControls.UI.RadTextBox radTextBox2;
         private Telerik.WinControls.UI.RadTextBox radTextBox3;
         private Telerik.WinControls.UI.RadLabel radLabel6;
+        private Telerik.WinControls.UI.RadAIPromptButton advisorButton;
     }
 }

@@ -45,16 +45,18 @@
             radLabel15 = new Telerik.WinControls.UI.RadLabel();
             radLabel1 = new Telerik.WinControls.UI.RadLabel();
             radLabel2 = new Telerik.WinControls.UI.RadLabel();
-            PrevTIGReq = new Telerik.WinControls.UI.RadSpinEditor();
+            prevTimeInGradeSpinner = new Telerik.WinControls.UI.RadSpinEditor();
             radGroupBox1 = new Telerik.WinControls.UI.RadGroupBox();
+            stipendSpinEditor = new Telerik.WinControls.UI.RadSpinEditor();
+            radLabel6 = new Telerik.WinControls.UI.RadLabel();
             branchingCheckBox = new Telerik.WinControls.UI.RadCheckBox();
             boardButton = new Telerik.WinControls.UI.RadButton();
-            SelectionDropDownList = new Telerik.WinControls.UI.RadDropDownList();
+            selectionTypeDropDownList = new Telerik.WinControls.UI.RadDropDownList();
             radLabel5 = new Telerik.WinControls.UI.RadLabel();
-            LockInTime = new Telerik.WinControls.UI.RadSpinEditor();
+            lockInTimeSpinner = new Telerik.WinControls.UI.RadSpinEditor();
             radLabel3 = new Telerik.WinControls.UI.RadLabel();
-            MinTIG = new Telerik.WinControls.UI.RadSpinEditor();
-            MaxTIG = new Telerik.WinControls.UI.RadSpinEditor();
+            minTimeInGradeSpinner = new Telerik.WinControls.UI.RadSpinEditor();
+            maxTimeInGradeSpinner = new Telerik.WinControls.UI.RadSpinEditor();
             radContextMenuManager1 = new Telerik.WinControls.UI.RadContextMenuManager();
             RanksContextMenu = new Telerik.WinControls.UI.RadContextMenu(components);
             addRankMenuItem = new Telerik.WinControls.UI.RadMenuItem();
@@ -72,23 +74,24 @@
             bottomPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)CloseButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radTreeView1).BeginInit();
-            radTreeView1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)radLabel4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)applyButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel15).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)PrevTIGReq).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)prevTimeInGradeSpinner).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox1).BeginInit();
             radGroupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)stipendSpinEditor).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel6).BeginInit();
             ((System.ComponentModel.ISupportInitialize)branchingCheckBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)boardButton).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)SelectionDropDownList).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)selectionTypeDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel5).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)LockInTime).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)lockInTimeSpinner).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel3).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MinTIG).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)MaxTIG).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)minTimeInGradeSpinner).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)maxTimeInGradeSpinner).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radPanel1).BeginInit();
             radPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)radPanel2).BeginInit();
@@ -101,11 +104,12 @@
             // bottomPanel
             // 
             bottomPanel.BackColor = System.Drawing.SystemColors.ControlLight;
+            bottomPanel.BackgroundImage = Properties.Resources.mainPattern;
             bottomPanel.Controls.Add(CloseButton);
             bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            bottomPanel.Location = new System.Drawing.Point(0, 587);
+            bottomPanel.Location = new System.Drawing.Point(0, 607);
             bottomPanel.Name = "bottomPanel";
-            bottomPanel.Size = new System.Drawing.Size(757, 50);
+            bottomPanel.Size = new System.Drawing.Size(767, 50);
             bottomPanel.TabIndex = 15;
             bottomPanel.Paint += bottomPanel_Paint;
             // 
@@ -123,8 +127,7 @@
             // radTreeView1
             // 
             radTreeView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            radTreeView1.Controls.Add(radLabel4);
-            radTreeView1.Dock = System.Windows.Forms.DockStyle.Left;
+            radTreeView1.Dock = System.Windows.Forms.DockStyle.Top;
             radTreeView1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
             radTreeView1.ForeColor = System.Drawing.Color.Black;
             radTreeView1.ItemHeight = 28;
@@ -134,14 +137,14 @@
             radTreeView1.Name = "radTreeView1";
             radTreeView1.RadContextMenu = TreeContextMenu;
             radTreeView1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            radTreeView1.Size = new System.Drawing.Size(220, 512);
+            radTreeView1.Size = new System.Drawing.Size(226, 498);
             radTreeView1.TabIndex = 16;
             radTreeView1.ThemeName = "Fluent";
             radTreeView1.SelectedNodeChanged += radTreeView1_SelectedNodeChanged;
             // 
             // radLabel4
             // 
-            radLabel4.Location = new System.Drawing.Point(22, 476);
+            radLabel4.Location = new System.Drawing.Point(26, 505);
             radLabel4.Name = "radLabel4";
             radLabel4.Size = new System.Drawing.Size(171, 18);
             radLabel4.TabIndex = 17;
@@ -179,16 +182,16 @@
             // 
             // applyButton
             // 
-            applyButton.Location = new System.Drawing.Point(245, 544);
+            applyButton.Location = new System.Drawing.Point(245, 564);
             applyButton.Name = "applyButton";
-            applyButton.Size = new System.Drawing.Size(498, 32);
+            applyButton.Size = new System.Drawing.Size(508, 32);
             applyButton.TabIndex = 19;
             applyButton.Text = "Apply Changes";
             applyButton.ThemeName = "Fluent";
             // 
             // radLabel15
             // 
-            radLabel15.Location = new System.Drawing.Point(16, 93);
+            radLabel15.Location = new System.Drawing.Point(25, 93);
             radLabel15.Name = "radLabel15";
             radLabel15.Size = new System.Drawing.Size(191, 18);
             radLabel15.TabIndex = 3;
@@ -196,7 +199,7 @@
             // 
             // radLabel1
             // 
-            radLabel1.Location = new System.Drawing.Point(280, 34);
+            radLabel1.Location = new System.Drawing.Point(289, 34);
             radLabel1.Name = "radLabel1";
             radLabel1.Size = new System.Drawing.Size(146, 18);
             radLabel1.TabIndex = 5;
@@ -204,34 +207,36 @@
             // 
             // radLabel2
             // 
-            radLabel2.Location = new System.Drawing.Point(280, 93);
+            radLabel2.Location = new System.Drawing.Point(289, 93);
             radLabel2.Name = "radLabel2";
             radLabel2.Size = new System.Drawing.Size(195, 18);
             radLabel2.TabIndex = 6;
             radLabel2.Text = "Minimum Time In Grade (Retirement):";
             // 
-            // PrevTIGReq
+            // prevTimeInGradeSpinner
             // 
-            PrevTIGReq.Location = new System.Drawing.Point(16, 117);
-            PrevTIGReq.Name = "PrevTIGReq";
-            PrevTIGReq.NullableValue = new decimal(new int[] { 18, 0, 0, 0 });
-            PrevTIGReq.Size = new System.Drawing.Size(194, 24);
-            PrevTIGReq.TabIndex = 14;
-            PrevTIGReq.ThemeName = "Fluent";
-            PrevTIGReq.Value = new decimal(new int[] { 18, 0, 0, 0 });
+            prevTimeInGradeSpinner.Location = new System.Drawing.Point(25, 117);
+            prevTimeInGradeSpinner.Name = "prevTimeInGradeSpinner";
+            prevTimeInGradeSpinner.NullableValue = new decimal(new int[] { 18, 0, 0, 0 });
+            prevTimeInGradeSpinner.Size = new System.Drawing.Size(194, 24);
+            prevTimeInGradeSpinner.TabIndex = 14;
+            prevTimeInGradeSpinner.ThemeName = "Fluent";
+            prevTimeInGradeSpinner.Value = new decimal(new int[] { 18, 0, 0, 0 });
             // 
             // radGroupBox1
             // 
             radGroupBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
+            radGroupBox1.Controls.Add(stipendSpinEditor);
+            radGroupBox1.Controls.Add(radLabel6);
             radGroupBox1.Controls.Add(branchingCheckBox);
             radGroupBox1.Controls.Add(boardButton);
-            radGroupBox1.Controls.Add(SelectionDropDownList);
+            radGroupBox1.Controls.Add(selectionTypeDropDownList);
             radGroupBox1.Controls.Add(radLabel5);
-            radGroupBox1.Controls.Add(LockInTime);
+            radGroupBox1.Controls.Add(lockInTimeSpinner);
             radGroupBox1.Controls.Add(radLabel3);
-            radGroupBox1.Controls.Add(MinTIG);
-            radGroupBox1.Controls.Add(MaxTIG);
-            radGroupBox1.Controls.Add(PrevTIGReq);
+            radGroupBox1.Controls.Add(minTimeInGradeSpinner);
+            radGroupBox1.Controls.Add(maxTimeInGradeSpinner);
+            radGroupBox1.Controls.Add(prevTimeInGradeSpinner);
             radGroupBox1.Controls.Add(radLabel2);
             radGroupBox1.Controls.Add(radLabel1);
             radGroupBox1.Controls.Add(radLabel15);
@@ -239,81 +244,99 @@
             radGroupBox1.HeaderText = "Grade Details";
             radGroupBox1.Location = new System.Drawing.Point(245, 127);
             radGroupBox1.Name = "radGroupBox1";
-            radGroupBox1.Size = new System.Drawing.Size(498, 245);
+            radGroupBox1.Size = new System.Drawing.Size(508, 265);
             radGroupBox1.TabIndex = 17;
             radGroupBox1.Text = "Grade Details";
             radGroupBox1.ThemeName = "Fluent";
             // 
+            // stipendSpinEditor
+            // 
+            stipendSpinEditor.DecimalPlaces = 2;
+            stipendSpinEditor.Location = new System.Drawing.Point(287, 176);
+            stipendSpinEditor.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            stipendSpinEditor.Name = "stipendSpinEditor";
+            stipendSpinEditor.Size = new System.Drawing.Size(194, 24);
+            stipendSpinEditor.TabIndex = 25;
+            stipendSpinEditor.ThemeName = "Fluent";
+            // 
+            // radLabel6
+            // 
+            radLabel6.Location = new System.Drawing.Point(287, 152);
+            radLabel6.Name = "radLabel6";
+            radLabel6.Size = new System.Drawing.Size(47, 18);
+            radLabel6.TabIndex = 24;
+            radLabel6.Text = "Stipend:";
+            // 
             // branchingCheckBox
             // 
-            branchingCheckBox.Location = new System.Drawing.Point(177, 215);
+            branchingCheckBox.Location = new System.Drawing.Point(37, 229);
             branchingCheckBox.Name = "branchingCheckBox";
-            branchingCheckBox.Size = new System.Drawing.Size(145, 18);
+            branchingCheckBox.Size = new System.Drawing.Size(144, 18);
             branchingCheckBox.TabIndex = 4;
-            branchingCheckBox.Text = "Is Branching Rank Grade";
+            branchingCheckBox.Text = "Is Split Lane Rank Grade";
             branchingCheckBox.ThemeName = "Fluent";
             // 
             // boardButton
             // 
-            boardButton.Location = new System.Drawing.Point(278, 168);
+            boardButton.Location = new System.Drawing.Point(287, 221);
             boardButton.Name = "boardButton";
             boardButton.Size = new System.Drawing.Size(196, 32);
             boardButton.TabIndex = 23;
-            boardButton.Text = "Generic Promotion Board";
+            boardButton.Text = "Rank Grade Promotion Board";
             boardButton.ThemeName = "Fluent";
             // 
-            // SelectionDropDownList
+            // selectionTypeDropDownList
             // 
-            SelectionDropDownList.DropDownStyle = Telerik.WinControls.RadDropDownStyle.DropDownList;
-            SelectionDropDownList.Location = new System.Drawing.Point(16, 58);
-            SelectionDropDownList.Name = "SelectionDropDownList";
-            SelectionDropDownList.Size = new System.Drawing.Size(194, 24);
-            SelectionDropDownList.TabIndex = 22;
-            SelectionDropDownList.ThemeName = "Fluent";
-            SelectionDropDownList.SelectedIndexChanged += SelectionDropDownList_SelectedIndexChanged;
+            selectionTypeDropDownList.DropDownStyle = Telerik.WinControls.RadDropDownStyle.DropDownList;
+            selectionTypeDropDownList.Location = new System.Drawing.Point(25, 58);
+            selectionTypeDropDownList.Name = "selectionTypeDropDownList";
+            selectionTypeDropDownList.Size = new System.Drawing.Size(194, 24);
+            selectionTypeDropDownList.TabIndex = 22;
+            selectionTypeDropDownList.ThemeName = "Fluent";
+            selectionTypeDropDownList.SelectedIndexChanged += SelectionTypeDropDownListSelectedIndexChanged;
             // 
             // radLabel5
             // 
-            radLabel5.Location = new System.Drawing.Point(16, 34);
+            radLabel5.Location = new System.Drawing.Point(25, 34);
             radLabel5.Name = "radLabel5";
             radLabel5.Size = new System.Drawing.Size(177, 18);
             radLabel5.TabIndex = 21;
             radLabel5.Text = "Promotable Status (To this Grade):";
             radLabel5.ThemeName = "Fluent";
             // 
-            // LockInTime
+            // lockInTimeSpinner
             // 
-            LockInTime.Location = new System.Drawing.Point(16, 176);
-            LockInTime.Name = "LockInTime";
-            LockInTime.Size = new System.Drawing.Size(194, 24);
-            LockInTime.TabIndex = 18;
-            LockInTime.ThemeName = "Fluent";
+            lockInTimeSpinner.Location = new System.Drawing.Point(25, 176);
+            lockInTimeSpinner.Name = "lockInTimeSpinner";
+            lockInTimeSpinner.Size = new System.Drawing.Size(194, 24);
+            lockInTimeSpinner.TabIndex = 18;
+            lockInTimeSpinner.ThemeName = "Fluent";
             // 
             // radLabel3
             // 
-            radLabel3.Location = new System.Drawing.Point(16, 152);
+            radLabel3.Location = new System.Drawing.Point(25, 152);
             radLabel3.Name = "radLabel3";
             radLabel3.Size = new System.Drawing.Size(71, 18);
             radLabel3.TabIndex = 17;
             radLabel3.Text = "Lock In Time:";
             // 
-            // MinTIG
+            // minTimeInGradeSpinner
             // 
-            MinTIG.Location = new System.Drawing.Point(280, 117);
-            MinTIG.Name = "MinTIG";
-            MinTIG.NullableValue = new decimal(new int[] { 12, 0, 0, 0 });
-            MinTIG.Size = new System.Drawing.Size(194, 24);
-            MinTIG.TabIndex = 16;
-            MinTIG.ThemeName = "Fluent";
-            MinTIG.Value = new decimal(new int[] { 12, 0, 0, 0 });
+            minTimeInGradeSpinner.Location = new System.Drawing.Point(289, 117);
+            minTimeInGradeSpinner.Name = "minTimeInGradeSpinner";
+            minTimeInGradeSpinner.NullableValue = new decimal(new int[] { 12, 0, 0, 0 });
+            minTimeInGradeSpinner.Size = new System.Drawing.Size(194, 24);
+            minTimeInGradeSpinner.TabIndex = 16;
+            minTimeInGradeSpinner.ThemeName = "Fluent";
+            minTimeInGradeSpinner.Value = new decimal(new int[] { 12, 0, 0, 0 });
             // 
-            // MaxTIG
+            // maxTimeInGradeSpinner
             // 
-            MaxTIG.Location = new System.Drawing.Point(280, 58);
-            MaxTIG.Name = "MaxTIG";
-            MaxTIG.Size = new System.Drawing.Size(194, 24);
-            MaxTIG.TabIndex = 15;
-            MaxTIG.ThemeName = "Fluent";
+            maxTimeInGradeSpinner.Location = new System.Drawing.Point(289, 58);
+            maxTimeInGradeSpinner.Name = "maxTimeInGradeSpinner";
+            maxTimeInGradeSpinner.Size = new System.Drawing.Size(194, 24);
+            maxTimeInGradeSpinner.TabIndex = 15;
+            maxTimeInGradeSpinner.ThemeName = "Fluent";
             // 
             // RanksContextMenu
             // 
@@ -342,58 +365,60 @@
             radPanel1.Controls.Add(radRankSelector3);
             radPanel1.Controls.Add(radRankSelector2);
             radPanel1.Controls.Add(radRankSelector1);
-            radPanel1.Location = new System.Drawing.Point(245, 381);
+            radPanel1.Location = new System.Drawing.Point(245, 401);
             radPanel1.Name = "radPanel1";
-            radPanel1.Size = new System.Drawing.Size(498, 154);
+            radPanel1.Size = new System.Drawing.Size(508, 154);
             radPanel1.TabIndex = 20;
             radPanel1.ThemeName = "Fluent";
             // 
             // radRankSelector4
             // 
             radRankSelector4.BackColor = System.Drawing.Color.White;
-            radRankSelector4.Location = new System.Drawing.Point(371, 14);
+            radRankSelector4.ImagePadding = 4;
+            radRankSelector4.Location = new System.Drawing.Point(378, 9);
             radRankSelector4.Name = "radRankSelector4";
             radRankSelector4.Rank = null;
-            radRankSelector4.RankTitle = "Rank 4";
-            radRankSelector4.Size = new System.Drawing.Size(108, 128);
-            radRankSelector4.TabIndex = 3;
+            radRankSelector4.Size = new System.Drawing.Size(124, 140);
+            radRankSelector4.TabIndex = 7;
             // 
             // radRankSelector3
             // 
             radRankSelector3.BackColor = System.Drawing.Color.White;
-            radRankSelector3.Location = new System.Drawing.Point(254, 14);
+            radRankSelector3.ImagePadding = 4;
+            radRankSelector3.Location = new System.Drawing.Point(254, 9);
             radRankSelector3.Name = "radRankSelector3";
             radRankSelector3.Rank = null;
-            radRankSelector3.RankTitle = "Rank 3";
-            radRankSelector3.Size = new System.Drawing.Size(108, 128);
-            radRankSelector3.TabIndex = 2;
+            radRankSelector3.Size = new System.Drawing.Size(124, 140);
+            radRankSelector3.TabIndex = 6;
             // 
             // radRankSelector2
             // 
             radRankSelector2.BackColor = System.Drawing.Color.White;
-            radRankSelector2.Location = new System.Drawing.Point(137, 14);
+            radRankSelector2.ImagePadding = 4;
+            radRankSelector2.Location = new System.Drawing.Point(130, 9);
             radRankSelector2.Name = "radRankSelector2";
             radRankSelector2.Rank = null;
-            radRankSelector2.RankTitle = "Rank 2";
-            radRankSelector2.Size = new System.Drawing.Size(108, 128);
-            radRankSelector2.TabIndex = 1;
+            radRankSelector2.Size = new System.Drawing.Size(124, 140);
+            radRankSelector2.TabIndex = 5;
             // 
             // radRankSelector1
             // 
             radRankSelector1.BackColor = System.Drawing.Color.White;
-            radRankSelector1.Location = new System.Drawing.Point(20, 14);
+            radRankSelector1.ImagePadding = 4;
+            radRankSelector1.Location = new System.Drawing.Point(6, 9);
             radRankSelector1.Name = "radRankSelector1";
             radRankSelector1.Rank = null;
-            radRankSelector1.Size = new System.Drawing.Size(108, 128);
-            radRankSelector1.TabIndex = 0;
+            radRankSelector1.Size = new System.Drawing.Size(124, 140);
+            radRankSelector1.TabIndex = 4;
             // 
             // radPanel2
             // 
+            radPanel2.Controls.Add(radLabel4);
             radPanel2.Controls.Add(radTreeView1);
             radPanel2.Dock = System.Windows.Forms.DockStyle.Left;
             radPanel2.Location = new System.Drawing.Point(0, 75);
             radPanel2.Name = "radPanel2";
-            radPanel2.Size = new System.Drawing.Size(226, 512);
+            radPanel2.Size = new System.Drawing.Size(226, 532);
             radPanel2.TabIndex = 21;
             radPanel2.ThemeName = "Fluent";
             // 
@@ -405,7 +430,7 @@
             headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             headerPanel.Location = new System.Drawing.Point(0, 0);
             headerPanel.Name = "headerPanel";
-            headerPanel.Size = new System.Drawing.Size(757, 75);
+            headerPanel.Size = new System.Drawing.Size(767, 75);
             headerPanel.TabIndex = 14;
             headerPanel.Paint += headerPanel_Paint;
             // 
@@ -432,7 +457,7 @@
             DescriptionGroupBox.HeaderTextAlignment = System.Drawing.ContentAlignment.TopCenter;
             DescriptionGroupBox.Location = new System.Drawing.Point(245, 81);
             DescriptionGroupBox.Name = "DescriptionGroupBox";
-            DescriptionGroupBox.Size = new System.Drawing.Size(498, 38);
+            DescriptionGroupBox.Size = new System.Drawing.Size(508, 38);
             DescriptionGroupBox.TabIndex = 22;
             DescriptionGroupBox.Text = "Enlisted Grade 8";
             DescriptionGroupBox.ThemeName = "Fluent";
@@ -443,7 +468,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.SystemColors.ControlLightLight;
-            ClientSize = new System.Drawing.Size(757, 637);
+            ClientSize = new System.Drawing.Size(767, 657);
             Controls.Add(DescriptionGroupBox);
             Controls.Add(radPanel2);
             Controls.Add(applyButton);
@@ -458,33 +483,35 @@
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             Text = "Rank and Grade Editor";
             ThemeName = "Fluent";
-            Load += RankGradeEditorForm_Load_1;
+            FormClosing += RankGradeEditorForm_FormClosing;
+            Load += RankGradeEditorForm_Load;
             bottomPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)CloseButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)radTreeView1).EndInit();
-            radTreeView1.ResumeLayout(false);
-            radTreeView1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)radLabel4).EndInit();
             ((System.ComponentModel.ISupportInitialize)applyButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel15).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel1).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)PrevTIGReq).EndInit();
+            ((System.ComponentModel.ISupportInitialize)prevTimeInGradeSpinner).EndInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox1).EndInit();
             radGroupBox1.ResumeLayout(false);
             radGroupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)stipendSpinEditor).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel6).EndInit();
             ((System.ComponentModel.ISupportInitialize)branchingCheckBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)boardButton).EndInit();
-            ((System.ComponentModel.ISupportInitialize)SelectionDropDownList).EndInit();
+            ((System.ComponentModel.ISupportInitialize)selectionTypeDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel5).EndInit();
-            ((System.ComponentModel.ISupportInitialize)LockInTime).EndInit();
+            ((System.ComponentModel.ISupportInitialize)lockInTimeSpinner).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel3).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MinTIG).EndInit();
-            ((System.ComponentModel.ISupportInitialize)MaxTIG).EndInit();
+            ((System.ComponentModel.ISupportInitialize)minTimeInGradeSpinner).EndInit();
+            ((System.ComponentModel.ISupportInitialize)maxTimeInGradeSpinner).EndInit();
             ((System.ComponentModel.ISupportInitialize)radPanel1).EndInit();
             radPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)radPanel2).EndInit();
             radPanel2.ResumeLayout(false);
+            radPanel2.PerformLayout();
             headerPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)DescriptionGroupBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)this).EndInit();
@@ -504,12 +531,12 @@
         private Telerik.WinControls.UI.RadLabel radLabel15;
         private Telerik.WinControls.UI.RadLabel radLabel1;
         private Telerik.WinControls.UI.RadLabel radLabel2;
-        private Telerik.WinControls.UI.RadSpinEditor PrevTIGReq;
+        private Telerik.WinControls.UI.RadSpinEditor prevTimeInGradeSpinner;
         private Telerik.WinControls.UI.RadGroupBox radGroupBox1;
-        private Telerik.WinControls.UI.RadSpinEditor LockInTime;
+        private Telerik.WinControls.UI.RadSpinEditor lockInTimeSpinner;
         private Telerik.WinControls.UI.RadLabel radLabel3;
-        private Telerik.WinControls.UI.RadSpinEditor MinTIG;
-        private Telerik.WinControls.UI.RadSpinEditor MaxTIG;
+        private Telerik.WinControls.UI.RadSpinEditor minTimeInGradeSpinner;
+        private Telerik.WinControls.UI.RadSpinEditor maxTimeInGradeSpinner;
         private Telerik.WinControls.UI.RadContextMenu TreeContextMenu;
         private Telerik.WinControls.UI.RadContextMenuManager radContextMenuManager1;
         private Telerik.WinControls.UI.RadContextMenu RanksContextMenu;
@@ -524,14 +551,16 @@
         private Telerik.WinControls.UI.RadPanel radPanel2;
         private Telerik.WinControls.UI.RadLabel radLabel4;
         private Telerik.WinControls.UI.RadLabel radLabel5;
-        private Telerik.WinControls.UI.RadDropDownList SelectionDropDownList;
+        private Telerik.WinControls.UI.RadDropDownList selectionTypeDropDownList;
         private Telerik.WinControls.UI.RadGroupBox DescriptionGroupBox;
         private Telerik.WinControls.UI.RadButton boardButton;
+        private Telerik.WinControls.UI.RadCheckBox branchingCheckBox;
+        private Telerik.WinControls.UI.RadMenuItem aiMenuItem;
+        private RadRankSelector radRankSelector4;
         private RadRankSelector radRankSelector3;
         private RadRankSelector radRankSelector2;
         private RadRankSelector radRankSelector1;
-        private Telerik.WinControls.UI.RadCheckBox branchingCheckBox;
-        private RadRankSelector radRankSelector4;
-        private Telerik.WinControls.UI.RadMenuItem aiMenuItem;
+        private Telerik.WinControls.UI.RadSpinEditor stipendSpinEditor;
+        private Telerik.WinControls.UI.RadLabel radLabel6;
     }
 }
