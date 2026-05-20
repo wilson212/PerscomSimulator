@@ -265,7 +265,7 @@ namespace Perscom.Simulation
             {
                 if (soldier.AttributesWithModifiers.TryGetValue(weight.Attribute, out int attrValue))
                 {
-                    score += attrValue * weight.Weight;
+                    score += attrValue * weight.ExpectedLevel;
                 }
             }
 

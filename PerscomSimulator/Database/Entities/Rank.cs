@@ -136,6 +136,13 @@ namespace Perscom.Database
         [InverseForeignKey(nameof(Database.PositionBlueprint.TargetRankId))]
         public virtual EntitySet<PositionBlueprint> PositionBlueprintsByRankId { get; set; }
 
+        /// <summary>
+        /// Represents a collection of <see cref="PromotionBoard"/> entities
+        /// associated with this rank. This defines the promotion rules
+        /// and criteria that apply to soldiers within this rank.
+        /// </summary>
+        public virtual EntitySet<PromotionBoard> PromotionBoards { get; set; }
+
         #endregion
         
         public RankType Type => Classification?.Type ?? default;

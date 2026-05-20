@@ -36,112 +36,112 @@
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn5 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn6 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition2 = new Telerik.WinControls.UI.TableViewDefinition();
-            this.headerPanel = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.ShadowLabel();
-            this.radPageView1 = new Telerik.WinControls.UI.RadPageView();
-            this.radPageViewPage1 = new Telerik.WinControls.UI.RadPageViewPage();
-            this.radGridView1 = new Telerik.WinControls.UI.RadGridView();
-            this.radPageViewPage2 = new Telerik.WinControls.UI.RadPageViewPage();
-            this.radGridView2 = new Telerik.WinControls.UI.RadGridView();
-            this.radGroupBox1 = new Telerik.WinControls.UI.RadGroupBox();
-            this.TigCheckBox = new Telerik.WinControls.UI.RadCheckBox();
-            this.PercentageTrackBar = new Telerik.WinControls.UI.RadTrackBar();
-            this.radLabel1 = new Telerik.WinControls.UI.RadLabel();
-            this.PassFailCheckBox = new Telerik.WinControls.UI.RadCheckBox();
-            this.TotalPointsSpinEditor = new Telerik.WinControls.UI.RadSpinEditor();
-            this.radLabel29 = new Telerik.WinControls.UI.RadLabel();
-            this.TigMaxSpinEditor = new Telerik.WinControls.UI.RadSpinEditor();
-            this.radLabel14 = new Telerik.WinControls.UI.RadLabel();
-            this.FactorScaleTrackBar = new Telerik.WinControls.UI.RadTrackBar();
-            this.radLabel13 = new Telerik.WinControls.UI.RadLabel();
-            this.headerPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.radPageView1)).BeginInit();
-            this.radPageView1.SuspendLayout();
-            this.radPageViewPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1.MasterTemplate)).BeginInit();
-            this.radPageViewPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView2.MasterTemplate)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGroupBox1)).BeginInit();
-            this.radGroupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TigCheckBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PercentageTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PassFailCheckBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.TotalPointsSpinEditor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel29)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.TigMaxSpinEditor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel14)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.FactorScaleTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel13)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
-            this.SuspendLayout();
+            headerPanel = new System.Windows.Forms.Panel();
+            label6 = new System.Windows.Forms.ShadowLabel();
+            radPageView1 = new Telerik.WinControls.UI.RadPageView();
+            radPageViewPage1 = new Telerik.WinControls.UI.RadPageViewPage();
+            radGridView1 = new Telerik.WinControls.UI.RadGridView();
+            radPageViewPage2 = new Telerik.WinControls.UI.RadPageViewPage();
+            radGridView2 = new Telerik.WinControls.UI.RadGridView();
+            radGroupBox1 = new Telerik.WinControls.UI.RadGroupBox();
+            TigCheckBox = new Telerik.WinControls.UI.RadCheckBox();
+            PercentageTrackBar = new Telerik.WinControls.UI.RadTrackBar();
+            radLabel1 = new Telerik.WinControls.UI.RadLabel();
+            PassFailCheckBox = new Telerik.WinControls.UI.RadCheckBox();
+            TotalPointsSpinEditor = new Telerik.WinControls.UI.RadSpinEditor();
+            radLabel29 = new Telerik.WinControls.UI.RadLabel();
+            TigMaxSpinEditor = new Telerik.WinControls.UI.RadSpinEditor();
+            radLabel14 = new Telerik.WinControls.UI.RadLabel();
+            FactorScaleTrackBar = new Telerik.WinControls.UI.RadTrackBar();
+            radLabel13 = new Telerik.WinControls.UI.RadLabel();
+            headerPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)radPageView1).BeginInit();
+            radPageView1.SuspendLayout();
+            radPageViewPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)radGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radGridView1.MasterTemplate).BeginInit();
+            radPageViewPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)radGridView2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radGridView2.MasterTemplate).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radGroupBox1).BeginInit();
+            radGroupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)TigCheckBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)PercentageTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)PassFailCheckBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)TotalPointsSpinEditor).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel29).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)TigMaxSpinEditor).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel14).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)FactorScaleTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel13).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)this).BeginInit();
+            SuspendLayout();
             // 
             // headerPanel
             // 
-            this.headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.headerPanel.BackgroundImage = global::Perscom.Properties.Resources.mainPattern;
-            this.headerPanel.Controls.Add(this.label6);
-            this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.headerPanel.Location = new System.Drawing.Point(0, 0);
-            this.headerPanel.Name = "headerPanel";
-            this.headerPanel.Size = new System.Drawing.Size(1230, 75);
-            this.headerPanel.TabIndex = 20;
+            headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            headerPanel.BackgroundImage = Properties.Resources.mainPattern;
+            headerPanel.Controls.Add(label6);
+            headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            headerPanel.Location = new System.Drawing.Point(0, 0);
+            headerPanel.Name = "headerPanel";
+            headerPanel.Size = new System.Drawing.Size(1230, 75);
+            headerPanel.TabIndex = 20;
             // 
             // label6
             // 
-            this.label6.BackColor = System.Drawing.Color.Transparent;
-            this.label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.ForeColor = System.Drawing.SystemColors.Control;
-            this.label6.Location = new System.Drawing.Point(26, 22);
-            this.label6.Name = "label6";
-            this.label6.ShadowDirection = 90;
-            this.label6.ShadowOpacity = 225;
-            this.label6.ShadowSoftness = 3F;
-            this.label6.Size = new System.Drawing.Size(516, 37);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Selection Procedure Editor";
+            label6.BackColor = System.Drawing.Color.Transparent;
+            label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);
+            label6.ForeColor = System.Drawing.SystemColors.Control;
+            label6.Location = new System.Drawing.Point(26, 22);
+            label6.Name = "label6";
+            label6.ShadowDirection = 60;
+            label6.ShadowOpacity = 180;
+            label6.ShadowSoftness = 3F;
+            label6.Size = new System.Drawing.Size(516, 37);
+            label6.TabIndex = 0;
+            label6.Text = "Selection Procedure Editor";
             // 
             // radPageView1
             // 
-            this.radPageView1.Controls.Add(this.radPageViewPage1);
-            this.radPageView1.Controls.Add(this.radPageViewPage2);
-            this.radPageView1.DefaultPage = this.radPageViewPage1;
-            this.radPageView1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.radPageView1.Location = new System.Drawing.Point(2, 367);
-            this.radPageView1.Margin = new System.Windows.Forms.Padding(0);
-            this.radPageView1.Name = "radPageView1";
-            this.radPageView1.SelectedPage = this.radPageViewPage1;
-            this.radPageView1.Size = new System.Drawing.Size(532, 235);
-            this.radPageView1.TabIndex = 0;
-            this.radPageView1.ThemeName = "Fluent";
-            ((Telerik.WinControls.UI.RadPageViewStripElement)(this.radPageView1.GetChildAt(0))).StripButtons = Telerik.WinControls.UI.StripViewButtons.Scroll;
+            radPageView1.Controls.Add(radPageViewPage1);
+            radPageView1.Controls.Add(radPageViewPage2);
+            radPageView1.DefaultPage = radPageViewPage1;
+            radPageView1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            radPageView1.Location = new System.Drawing.Point(2, 367);
+            radPageView1.Margin = new System.Windows.Forms.Padding(0);
+            radPageView1.Name = "radPageView1";
+            radPageView1.SelectedPage = radPageViewPage1;
+            radPageView1.Size = new System.Drawing.Size(532, 235);
+            radPageView1.TabIndex = 0;
+            radPageView1.ThemeName = "Fluent";
+            ((Telerik.WinControls.UI.RadPageViewStripElement)radPageView1.GetChildAt(0)).StripButtons = Telerik.WinControls.UI.StripViewButtons.Scroll;
             // 
             // radPageViewPage1
             // 
-            this.radPageViewPage1.Controls.Add(this.radGridView1);
-            this.radPageViewPage1.ItemSize = new System.Drawing.SizeF(119F, 29F);
-            this.radPageViewPage1.Location = new System.Drawing.Point(6, 36);
-            this.radPageViewPage1.Name = "radPageViewPage1";
-            this.radPageViewPage1.Size = new System.Drawing.Size(520, 193);
-            this.radPageViewPage1.Text = "Selection Grouping";
+            radPageViewPage1.Controls.Add(radGridView1);
+            radPageViewPage1.ItemSize = new System.Drawing.SizeF(119F, 29F);
+            radPageViewPage1.Location = new System.Drawing.Point(6, 36);
+            radPageViewPage1.Name = "radPageViewPage1";
+            radPageViewPage1.Size = new System.Drawing.Size(520, 193);
+            radPageViewPage1.Text = "Selection Grouping";
             // 
             // radGridView1
             // 
-            this.radGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.radGridView1.Location = new System.Drawing.Point(0, 0);
-            this.radGridView1.Margin = new System.Windows.Forms.Padding(0);
+            radGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            radGridView1.Location = new System.Drawing.Point(0, 0);
+            radGridView1.Margin = new System.Windows.Forms.Padding(0);
             // 
             // 
             // 
-            this.radGridView1.MasterTemplate.AllowAddNewRow = false;
-            this.radGridView1.MasterTemplate.AllowColumnChooser = false;
-            this.radGridView1.MasterTemplate.AllowColumnReorder = false;
-            this.radGridView1.MasterTemplate.AllowColumnResize = false;
-            this.radGridView1.MasterTemplate.AllowDragToGroup = false;
-            this.radGridView1.MasterTemplate.AllowEditRow = false;
-            this.radGridView1.MasterTemplate.AllowRowResize = false;
+            radGridView1.MasterTemplate.AllowAddNewRow = false;
+            radGridView1.MasterTemplate.AllowColumnChooser = false;
+            radGridView1.MasterTemplate.AllowColumnReorder = false;
+            radGridView1.MasterTemplate.AllowColumnResize = false;
+            radGridView1.MasterTemplate.AllowDragToGroup = false;
+            radGridView1.MasterTemplate.AllowEditRow = false;
+            radGridView1.MasterTemplate.AllowRowResize = false;
             gridViewTextBoxColumn1.HeaderText = "Function";
             gridViewTextBoxColumn1.Name = "column1";
             gridViewTextBoxColumn1.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -152,42 +152,39 @@
             gridViewTextBoxColumn3.HeaderText = "Value";
             gridViewTextBoxColumn3.Name = "column3";
             gridViewTextBoxColumn3.Width = 175;
-            this.radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
-            gridViewTextBoxColumn1,
-            gridViewTextBoxColumn2,
-            gridViewTextBoxColumn3});
-            this.radGridView1.MasterTemplate.EnableAlternatingRowColor = true;
-            this.radGridView1.MasterTemplate.HorizontalScrollState = Telerik.WinControls.UI.ScrollState.AlwaysHide;
-            this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
-            this.radGridView1.Name = "radGridView1";
-            this.radGridView1.ReadOnly = true;
-            this.radGridView1.Size = new System.Drawing.Size(520, 193);
-            this.radGridView1.TabIndex = 11;
-            this.radGridView1.ThemeName = "Fluent";
+            radGridView1.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] { gridViewTextBoxColumn1, gridViewTextBoxColumn2, gridViewTextBoxColumn3 });
+            radGridView1.MasterTemplate.EnableAlternatingRowColor = true;
+            radGridView1.MasterTemplate.HorizontalScrollState = Telerik.WinControls.UI.ScrollState.AlwaysHide;
+            radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
+            radGridView1.Name = "radGridView1";
+            radGridView1.ReadOnly = true;
+            radGridView1.Size = new System.Drawing.Size(520, 193);
+            radGridView1.TabIndex = 11;
+            radGridView1.ThemeName = "Fluent";
             // 
             // radPageViewPage2
             // 
-            this.radPageViewPage2.Controls.Add(this.radGridView2);
-            this.radPageViewPage2.ItemSize = new System.Drawing.SizeF(107F, 29F);
-            this.radPageViewPage2.Location = new System.Drawing.Point(6, 36);
-            this.radPageViewPage2.Name = "radPageViewPage2";
-            this.radPageViewPage2.Size = new System.Drawing.Size(520, 193);
-            this.radPageViewPage2.Text = "Selection Sorting";
+            radPageViewPage2.Controls.Add(radGridView2);
+            radPageViewPage2.ItemSize = new System.Drawing.SizeF(107F, 29F);
+            radPageViewPage2.Location = new System.Drawing.Point(6, 36);
+            radPageViewPage2.Name = "radPageViewPage2";
+            radPageViewPage2.Size = new System.Drawing.Size(520, 193);
+            radPageViewPage2.Text = "Selection Sorting";
             // 
             // radGridView2
             // 
-            this.radGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.radGridView2.Location = new System.Drawing.Point(0, 0);
+            radGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            radGridView2.Location = new System.Drawing.Point(0, 0);
             // 
             // 
             // 
-            this.radGridView2.MasterTemplate.AllowAddNewRow = false;
-            this.radGridView2.MasterTemplate.AllowColumnChooser = false;
-            this.radGridView2.MasterTemplate.AllowColumnReorder = false;
-            this.radGridView2.MasterTemplate.AllowColumnResize = false;
-            this.radGridView2.MasterTemplate.AllowDragToGroup = false;
-            this.radGridView2.MasterTemplate.AllowEditRow = false;
-            this.radGridView2.MasterTemplate.AllowRowResize = false;
+            radGridView2.MasterTemplate.AllowAddNewRow = false;
+            radGridView2.MasterTemplate.AllowColumnChooser = false;
+            radGridView2.MasterTemplate.AllowColumnReorder = false;
+            radGridView2.MasterTemplate.AllowColumnResize = false;
+            radGridView2.MasterTemplate.AllowDragToGroup = false;
+            radGridView2.MasterTemplate.AllowEditRow = false;
+            radGridView2.MasterTemplate.AllowRowResize = false;
             gridViewTextBoxColumn4.HeaderText = "Function";
             gridViewTextBoxColumn4.Name = "column1";
             gridViewTextBoxColumn4.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
@@ -198,189 +195,179 @@
             gridViewTextBoxColumn6.HeaderText = "Value";
             gridViewTextBoxColumn6.Name = "column3";
             gridViewTextBoxColumn6.Width = 175;
-            this.radGridView2.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] {
-            gridViewTextBoxColumn4,
-            gridViewTextBoxColumn5,
-            gridViewTextBoxColumn6});
-            this.radGridView2.MasterTemplate.EnableAlternatingRowColor = true;
-            this.radGridView2.MasterTemplate.HorizontalScrollState = Telerik.WinControls.UI.ScrollState.AlwaysHide;
-            this.radGridView2.MasterTemplate.ViewDefinition = tableViewDefinition2;
-            this.radGridView2.Name = "radGridView2";
-            this.radGridView2.ReadOnly = true;
-            this.radGridView2.Size = new System.Drawing.Size(520, 193);
-            this.radGridView2.TabIndex = 10;
-            this.radGridView2.ThemeName = "Fluent";
+            radGridView2.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] { gridViewTextBoxColumn4, gridViewTextBoxColumn5, gridViewTextBoxColumn6 });
+            radGridView2.MasterTemplate.EnableAlternatingRowColor = true;
+            radGridView2.MasterTemplate.HorizontalScrollState = Telerik.WinControls.UI.ScrollState.AlwaysHide;
+            radGridView2.MasterTemplate.ViewDefinition = tableViewDefinition2;
+            radGridView2.Name = "radGridView2";
+            radGridView2.ReadOnly = true;
+            radGridView2.Size = new System.Drawing.Size(520, 193);
+            radGridView2.TabIndex = 10;
+            radGridView2.ThemeName = "Fluent";
             // 
             // radGroupBox1
             // 
-            this.radGroupBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
-            this.radGroupBox1.Controls.Add(this.TigCheckBox);
-            this.radGroupBox1.Controls.Add(this.PercentageTrackBar);
-            this.radGroupBox1.Controls.Add(this.radLabel1);
-            this.radGroupBox1.Controls.Add(this.PassFailCheckBox);
-            this.radGroupBox1.Controls.Add(this.TotalPointsSpinEditor);
-            this.radGroupBox1.Controls.Add(this.radLabel29);
-            this.radGroupBox1.Controls.Add(this.radPageView1);
-            this.radGroupBox1.Controls.Add(this.TigMaxSpinEditor);
-            this.radGroupBox1.Controls.Add(this.radLabel14);
-            this.radGroupBox1.Controls.Add(this.FactorScaleTrackBar);
-            this.radGroupBox1.Controls.Add(this.radLabel13);
-            this.radGroupBox1.HeaderMargin = new System.Windows.Forms.Padding(3);
-            this.radGroupBox1.HeaderText = "Board Point Weights";
-            this.radGroupBox1.Location = new System.Drawing.Point(584, 97);
-            this.radGroupBox1.Name = "radGroupBox1";
-            this.radGroupBox1.Size = new System.Drawing.Size(536, 604);
-            this.radGroupBox1.TabIndex = 29;
-            this.radGroupBox1.Text = "Board Point Weights";
-            this.radGroupBox1.ThemeName = "Fluent";
+            radGroupBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
+            radGroupBox1.Controls.Add(TigCheckBox);
+            radGroupBox1.Controls.Add(PercentageTrackBar);
+            radGroupBox1.Controls.Add(radLabel1);
+            radGroupBox1.Controls.Add(PassFailCheckBox);
+            radGroupBox1.Controls.Add(TotalPointsSpinEditor);
+            radGroupBox1.Controls.Add(radLabel29);
+            radGroupBox1.Controls.Add(radPageView1);
+            radGroupBox1.Controls.Add(TigMaxSpinEditor);
+            radGroupBox1.Controls.Add(radLabel14);
+            radGroupBox1.Controls.Add(FactorScaleTrackBar);
+            radGroupBox1.Controls.Add(radLabel13);
+            radGroupBox1.HeaderMargin = new System.Windows.Forms.Padding(3);
+            radGroupBox1.HeaderText = "Board Point Weights";
+            radGroupBox1.Location = new System.Drawing.Point(584, 97);
+            radGroupBox1.Name = "radGroupBox1";
+            radGroupBox1.Size = new System.Drawing.Size(536, 604);
+            radGroupBox1.TabIndex = 29;
+            radGroupBox1.Text = "Board Point Weights";
+            radGroupBox1.ThemeName = "Fluent";
             // 
-            // tigCheckBox
+            // TigCheckBox
             // 
-            this.TigCheckBox.Location = new System.Drawing.Point(26, 48);
-            this.TigCheckBox.Name = "TigCheckBox";
-            this.TigCheckBox.Size = new System.Drawing.Size(139, 18);
-            this.TigCheckBox.TabIndex = 21;
-            this.TigCheckBox.Text = "Factor in Time in Grade";
-            this.TigCheckBox.ThemeName = "Fluent";
+            TigCheckBox.Location = new System.Drawing.Point(26, 48);
+            TigCheckBox.Name = "TigCheckBox";
+            TigCheckBox.Size = new System.Drawing.Size(139, 18);
+            TigCheckBox.TabIndex = 21;
+            TigCheckBox.Text = "Factor in Time in Grade";
+            TigCheckBox.ThemeName = "Fluent";
             // 
-            // percentageTrackBar
+            // PercentageTrackBar
             // 
-            this.PercentageTrackBar.Enabled = false;
-            this.PercentageTrackBar.LabelStyle = Telerik.WinControls.UI.TrackBarLabelStyle.TopLeft;
-            this.PercentageTrackBar.LargeChange = 5;
-            this.PercentageTrackBar.Location = new System.Drawing.Point(26, 275);
-            this.PercentageTrackBar.Maximum = 100F;
-            this.PercentageTrackBar.Minimum = 50F;
-            this.PercentageTrackBar.Name = "PercentageTrackBar";
-            this.PercentageTrackBar.ShowButtons = true;
-            this.PercentageTrackBar.Size = new System.Drawing.Size(475, 60);
-            this.PercentageTrackBar.SnapMode = Telerik.WinControls.UI.TrackBarSnapModes.None;
-            this.PercentageTrackBar.TabIndex = 20;
-            this.PercentageTrackBar.ThemeName = "Fluent";
-            this.PercentageTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
-            this.PercentageTrackBar.Value = 70F;
+            PercentageTrackBar.Enabled = false;
+            PercentageTrackBar.LabelStyle = Telerik.WinControls.UI.TrackBarLabelStyle.TopLeft;
+            PercentageTrackBar.LargeChange = 5;
+            PercentageTrackBar.Location = new System.Drawing.Point(26, 275);
+            PercentageTrackBar.Maximum = 100F;
+            PercentageTrackBar.Minimum = 50F;
+            PercentageTrackBar.Name = "PercentageTrackBar";
+            PercentageTrackBar.ShowButtons = true;
+            PercentageTrackBar.Size = new System.Drawing.Size(475, 60);
+            PercentageTrackBar.SnapMode = Telerik.WinControls.UI.TrackBarSnapModes.None;
+            PercentageTrackBar.TabIndex = 20;
+            PercentageTrackBar.ThemeName = "Fluent";
+            PercentageTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            PercentageTrackBar.Value = 70F;
             // 
             // radLabel1
             // 
-            this.radLabel1.Location = new System.Drawing.Point(42, 251);
-            this.radLabel1.Name = "radLabel1";
-            this.radLabel1.Size = new System.Drawing.Size(157, 18);
-            this.radLabel1.TabIndex = 19;
-            this.radLabel1.Text = "Pass Percentage Requirement:";
+            radLabel1.Location = new System.Drawing.Point(42, 251);
+            radLabel1.Name = "radLabel1";
+            radLabel1.Size = new System.Drawing.Size(157, 18);
+            radLabel1.TabIndex = 19;
+            radLabel1.Text = "Pass Percentage Requirement:";
             // 
-            // passFailCheckBox
+            // PassFailCheckBox
             // 
-            this.PassFailCheckBox.Location = new System.Drawing.Point(26, 217);
-            this.PassFailCheckBox.Name = "PassFailCheckBox";
-            this.PassFailCheckBox.Size = new System.Drawing.Size(110, 18);
-            this.PassFailCheckBox.TabIndex = 18;
-            this.PassFailCheckBox.Text = "Is Pass/Fail board";
-            this.PassFailCheckBox.ThemeName = "Fluent";
+            PassFailCheckBox.Location = new System.Drawing.Point(26, 217);
+            PassFailCheckBox.Name = "PassFailCheckBox";
+            PassFailCheckBox.Size = new System.Drawing.Size(110, 18);
+            PassFailCheckBox.TabIndex = 18;
+            PassFailCheckBox.Text = "Is Pass/Fail board";
+            PassFailCheckBox.ThemeName = "Fluent";
             // 
             // TotalPointsSpinEditor
             // 
-            this.TotalPointsSpinEditor.Enabled = false;
-            this.TotalPointsSpinEditor.Location = new System.Drawing.Point(341, 241);
-            this.TotalPointsSpinEditor.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.TotalPointsSpinEditor.Name = "TotalPointsSpinEditor";
-            this.TotalPointsSpinEditor.Size = new System.Drawing.Size(160, 24);
-            this.TotalPointsSpinEditor.TabIndex = 17;
-            this.TotalPointsSpinEditor.ThemeName = "Fluent";
+            TotalPointsSpinEditor.Enabled = false;
+            TotalPointsSpinEditor.Location = new System.Drawing.Point(341, 241);
+            TotalPointsSpinEditor.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+            TotalPointsSpinEditor.Name = "TotalPointsSpinEditor";
+            TotalPointsSpinEditor.Size = new System.Drawing.Size(160, 24);
+            TotalPointsSpinEditor.TabIndex = 17;
+            TotalPointsSpinEditor.ThemeName = "Fluent";
             // 
             // radLabel29
             // 
-            this.radLabel29.Location = new System.Drawing.Point(341, 217);
-            this.radLabel29.Name = "radLabel29";
-            this.radLabel29.Size = new System.Drawing.Size(100, 18);
-            this.radLabel29.TabIndex = 16;
-            this.radLabel29.Text = "Total Board Points:";
+            radLabel29.Location = new System.Drawing.Point(341, 217);
+            radLabel29.Name = "radLabel29";
+            radLabel29.Size = new System.Drawing.Size(100, 18);
+            radLabel29.TabIndex = 16;
+            radLabel29.Text = "Total Board Points:";
             // 
-            // tigMaxSpinEditor
+            // TigMaxSpinEditor
             // 
-            this.TigMaxSpinEditor.Enabled = false;
-            this.TigMaxSpinEditor.Location = new System.Drawing.Point(341, 121);
-            this.TigMaxSpinEditor.Maximum = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
-            this.TigMaxSpinEditor.Name = "TigMaxSpinEditor";
-            this.TigMaxSpinEditor.Size = new System.Drawing.Size(160, 24);
-            this.TigMaxSpinEditor.TabIndex = 13;
-            this.TigMaxSpinEditor.ThemeName = "Fluent";
+            TigMaxSpinEditor.Enabled = false;
+            TigMaxSpinEditor.Location = new System.Drawing.Point(341, 121);
+            TigMaxSpinEditor.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+            TigMaxSpinEditor.Name = "TigMaxSpinEditor";
+            TigMaxSpinEditor.Size = new System.Drawing.Size(160, 24);
+            TigMaxSpinEditor.TabIndex = 13;
+            TigMaxSpinEditor.ThemeName = "Fluent";
             // 
             // radLabel14
             // 
-            this.radLabel14.Location = new System.Drawing.Point(341, 85);
-            this.radLabel14.Name = "radLabel14";
-            this.radLabel14.Size = new System.Drawing.Size(137, 18);
-            this.radLabel14.TabIndex = 12;
-            this.radLabel14.Text = "Time In Grade Max Points:";
+            radLabel14.Location = new System.Drawing.Point(341, 85);
+            radLabel14.Name = "radLabel14";
+            radLabel14.Size = new System.Drawing.Size(137, 18);
+            radLabel14.TabIndex = 12;
+            radLabel14.Text = "Time In Grade Max Points:";
             // 
-            // factorScaleTrackBar
+            // FactorScaleTrackBar
             // 
-            this.FactorScaleTrackBar.Enabled = false;
-            this.FactorScaleTrackBar.LabelStyle = Telerik.WinControls.UI.TrackBarLabelStyle.TopLeft;
-            this.FactorScaleTrackBar.LargeChange = 1;
-            this.FactorScaleTrackBar.LargeTickFrequency = 1;
-            this.FactorScaleTrackBar.Location = new System.Drawing.Point(26, 109);
-            this.FactorScaleTrackBar.Maximum = 10F;
-            this.FactorScaleTrackBar.Minimum = 1F;
-            this.FactorScaleTrackBar.Name = "FactorScaleTrackBar";
-            this.FactorScaleTrackBar.ShowButtons = true;
-            this.FactorScaleTrackBar.Size = new System.Drawing.Size(253, 60);
-            this.FactorScaleTrackBar.TabIndex = 11;
-            this.FactorScaleTrackBar.ThemeName = "Fluent";
-            this.FactorScaleTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
-            this.FactorScaleTrackBar.Value = 1F;
+            FactorScaleTrackBar.Enabled = false;
+            FactorScaleTrackBar.LabelStyle = Telerik.WinControls.UI.TrackBarLabelStyle.TopLeft;
+            FactorScaleTrackBar.LargeChange = 1;
+            FactorScaleTrackBar.LargeTickFrequency = 1;
+            FactorScaleTrackBar.Location = new System.Drawing.Point(26, 109);
+            FactorScaleTrackBar.Maximum = 10F;
+            FactorScaleTrackBar.Minimum = 1F;
+            FactorScaleTrackBar.Name = "FactorScaleTrackBar";
+            FactorScaleTrackBar.ShowButtons = true;
+            FactorScaleTrackBar.Size = new System.Drawing.Size(253, 60);
+            FactorScaleTrackBar.TabIndex = 11;
+            FactorScaleTrackBar.ThemeName = "Fluent";
+            FactorScaleTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            FactorScaleTrackBar.Value = 1F;
             // 
             // radLabel13
             // 
-            this.radLabel13.Location = new System.Drawing.Point(39, 85);
-            this.radLabel13.Name = "radLabel13";
-            this.radLabel13.Size = new System.Drawing.Size(142, 18);
-            this.radLabel13.TabIndex = 10;
-            this.radLabel13.Text = "Time In Grade Factor Scale:";
+            radLabel13.Location = new System.Drawing.Point(39, 85);
+            radLabel13.Name = "radLabel13";
+            radLabel13.Size = new System.Drawing.Size(142, 18);
+            radLabel13.TabIndex = 10;
+            radLabel13.Text = "Time In Grade Factor Scale:";
             // 
             // SelectionProcedureForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(1230, 773);
-            this.Controls.Add(this.radGroupBox1);
-            this.Controls.Add(this.headerPanel);
-            this.Name = "SelectionProcedureForm";
-            this.Text = "SelectionProcedureForm";
-            this.ThemeName = "Fluent";
-            this.headerPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.radPageView1)).EndInit();
-            this.radPageView1.ResumeLayout(false);
-            this.radPageViewPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1.MasterTemplate)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).EndInit();
-            this.radPageViewPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView2.MasterTemplate)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGroupBox1)).EndInit();
-            this.radGroupBox1.ResumeLayout(false);
-            this.radGroupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TigCheckBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PercentageTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PassFailCheckBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.TotalPointsSpinEditor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel29)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.TigMaxSpinEditor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel14)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.FactorScaleTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radLabel13)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleBaseSize = new System.Drawing.Size(7, 15);
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.SystemColors.ControlLightLight;
+            ClientSize = new System.Drawing.Size(1230, 773);
+            Controls.Add(radGroupBox1);
+            Controls.Add(headerPanel);
+            Name = "SelectionProcedureForm";
+            Text = "SelectionProcedureForm";
+            ThemeName = "Fluent";
+            headerPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)radPageView1).EndInit();
+            radPageView1.ResumeLayout(false);
+            radPageViewPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)radGridView1.MasterTemplate).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radGridView1).EndInit();
+            radPageViewPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)radGridView2.MasterTemplate).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radGridView2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radGroupBox1).EndInit();
+            radGroupBox1.ResumeLayout(false);
+            radGroupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)TigCheckBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)PercentageTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)PassFailCheckBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)TotalPointsSpinEditor).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel29).EndInit();
+            ((System.ComponentModel.ISupportInitialize)TigMaxSpinEditor).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel14).EndInit();
+            ((System.ComponentModel.ISupportInitialize)FactorScaleTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel13).EndInit();
+            ((System.ComponentModel.ISupportInitialize)this).EndInit();
+            ResumeLayout(false);
 
         }
 

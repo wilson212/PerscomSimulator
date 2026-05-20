@@ -2,7 +2,6 @@
 using CrossLite.CodeFirst;
 using Perscom.Simulation;
 using System;
-using System.Collections.Generic;
 
 namespace Perscom.Database
 {
@@ -72,7 +71,7 @@ namespace Perscom.Database
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual IEnumerable<PromotionBoard> PromotionBoards { get; set; }
+        public virtual EntitySet<PromotionBoard> PromotionBoards { get; set; }
 
         #endregion
 

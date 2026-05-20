@@ -5,7 +5,6 @@ using Google.GenAI;
 using Google.GenAI.Types;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Web;
 using Telerik.WinControls.UI;
 using Telerik.WinControls.UI.ConversationalUI;
 using Telerik.Windows.Diagrams.Core;
@@ -163,7 +162,7 @@ CRITICAL RULES:
 
             if (_statusMessage != null)
             {
-                chatWindow.ChatElement.MessagesViewElement.Items.RemoveLast();
+                chatWindow?.Invoke(() => chatWindow.ChatElement.MessagesViewElement.Items.RemoveLast());
                 _statusMessage = null;
             }
 
@@ -253,13 +252,13 @@ CRITICAL RULES:
                 if (_statusMessage == null)
                 {
                     _statusMessage = new AIChatTextMessage($"⚙ Executing function call {functionCall.Name}", aiAuthor, DateTime.Now);
-                    chatWindow.AddMessage(_statusMessage);
+                    chatWindow.Invoke(() => chatWindow.AddMessage(_statusMessage));
                 }
                 else
                 {
                     // Update the existing message's text in-place
                     _statusMessage.Message = $"⚙ Executing function call {functionCall.Name}...";
-                    chatWindow.Refresh();
+                    chatWindow.Invoke(() => chatWindow.Refresh());
                 }
             }
 
@@ -321,7 +320,7 @@ CRITICAL RULES:
                     new FunctionDeclaration
                     {
                         Name = "GetUnitBlueprintSchema",
-                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any military unit.",
+                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any unit blueprint. Requires a faction ID to scope valid ranks, units, and occupations.",
                     },
         
                     // Tool 2: The Execution Tool

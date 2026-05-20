@@ -1,4 +1,5 @@
-﻿using Perscom.Database;
+﻿using Microsoft.Identity.Client;
+using Perscom.Database;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -135,7 +136,7 @@ namespace Perscom
 
         private void bottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooterDark(bottomPanel, e);
+            FormStyling.StyleFormFooterDarker(bottomPanel, e);
         }
 
         private void RankTileElement_Click(object sender, EventArgs e)
@@ -163,7 +164,8 @@ namespace Perscom
 
         private void advisorButton_Click(object sender, EventArgs e)
         {
-            AdvisorChatForm.Open(this);
+            // Show as dialog to prevent the RadAiForm from popping up
+            AdvisorChatForm.Open(this, true);
         }
 
         #region Helper Functions

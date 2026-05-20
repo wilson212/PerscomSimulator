@@ -32,20 +32,22 @@
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn1 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn2 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn3 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
-            Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn4 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn5 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn6 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn7 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
+            Telerik.WinControls.UI.GridViewTextBoxColumn gridViewTextBoxColumn8 = new Telerik.WinControls.UI.GridViewTextBoxColumn();
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition2 = new Telerik.WinControls.UI.TableViewDefinition();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PromotionBoardEditor));
             fluentTheme1 = new Telerik.WinControls.Themes.FluentTheme();
             radGroupBox1 = new Telerik.WinControls.UI.RadGroupBox();
-            formScaleCheckBox = new Telerik.WinControls.UI.RadCheckBox();
-            radSpinEditor1 = new Telerik.WinControls.UI.RadSpinEditor();
-            radLabel4 = new Telerik.WinControls.UI.RadLabel();
-            formRatingTrackBar = new Telerik.WinControls.UI.RadTrackBar();
+            expiresCheckBox = new Telerik.WinControls.UI.RadCheckBox();
+            promtableLenSpinEditor = new Telerik.WinControls.UI.RadSpinEditor();
             radLabel5 = new Telerik.WinControls.UI.RadLabel();
+            formScaleCheckBox = new Telerik.WinControls.UI.RadCheckBox();
+            formRatingRadSpinEditor = new Telerik.WinControls.UI.RadSpinEditor();
+            radLabel4 = new Telerik.WinControls.UI.RadLabel();
             tigCheckBox = new Telerik.WinControls.UI.RadCheckBox();
             percentageTrackBar = new Telerik.WinControls.UI.RadTrackBar();
             radLabel1 = new Telerik.WinControls.UI.RadLabel();
@@ -75,24 +77,25 @@
             radMenuSeparatorItem2 = new Telerik.WinControls.UI.RadMenuSeparatorItem();
             deleteScoreMenuItem = new Telerik.WinControls.UI.RadMenuItem();
             radGroupBox3 = new Telerik.WinControls.UI.RadGroupBox();
-            radCheckBox1 = new Telerik.WinControls.UI.RadCheckBox();
-            radPictureBox1 = new Telerik.WinControls.UI.RadPictureBox();
+            rankPictureDisplayBox = new RadClassificationRankDisplay();
+            applyAllRanksInGradeCheckBox = new Telerik.WinControls.UI.RadCheckBox();
             radLabel3 = new Telerik.WinControls.UI.RadLabel();
-            radDropDownList1 = new Telerik.WinControls.UI.RadDropDownList();
+            occupationDropDownList = new Telerik.WinControls.UI.RadDropDownList();
             bottomPanel = new System.Windows.Forms.Panel();
             deleteButton = new Telerik.WinControls.UI.RadButton();
             cancelButton = new Telerik.WinControls.UI.RadButton();
             saveButton = new Telerik.WinControls.UI.RadButton();
             headerPanel = new System.Windows.Forms.Panel();
-            label6 = new System.Windows.Forms.ShadowLabel();
+            headerLabel = new System.Windows.Forms.ShadowLabel();
             radGroupBox4 = new Telerik.WinControls.UI.RadGroupBox();
             ((System.ComponentModel.ISupportInitialize)radGroupBox1).BeginInit();
             radGroupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)formScaleCheckBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radLabel4).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)formRatingTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)expiresCheckBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)promtableLenSpinEditor).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel5).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)formScaleCheckBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)formRatingRadSpinEditor).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)tigCheckBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)percentageTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel1).BeginInit();
@@ -116,10 +119,9 @@
             radGroupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)radGroupBox3).BeginInit();
             radGroupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)radCheckBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radPictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)applyAllRanksInGradeCheckBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel3).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)occupationDropDownList).BeginInit();
             bottomPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)deleteButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)cancelButton).BeginInit();
@@ -133,11 +135,12 @@
             // radGroupBox1
             // 
             radGroupBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
-            radGroupBox1.Controls.Add(formScaleCheckBox);
-            radGroupBox1.Controls.Add(radSpinEditor1);
-            radGroupBox1.Controls.Add(radLabel4);
-            radGroupBox1.Controls.Add(formRatingTrackBar);
+            radGroupBox1.Controls.Add(expiresCheckBox);
+            radGroupBox1.Controls.Add(promtableLenSpinEditor);
             radGroupBox1.Controls.Add(radLabel5);
+            radGroupBox1.Controls.Add(formScaleCheckBox);
+            radGroupBox1.Controls.Add(formRatingRadSpinEditor);
+            radGroupBox1.Controls.Add(radLabel4);
             radGroupBox1.Controls.Add(tigCheckBox);
             radGroupBox1.Controls.Add(percentageTrackBar);
             radGroupBox1.Controls.Add(radLabel1);
@@ -155,6 +158,34 @@
             radGroupBox1.Text = "Board Point Weights";
             radGroupBox1.ThemeName = "Fluent";
             // 
+            // expiresCheckBox
+            // 
+            expiresCheckBox.Location = new System.Drawing.Point(307, 183);
+            expiresCheckBox.Name = "expiresCheckBox";
+            expiresCheckBox.Size = new System.Drawing.Size(148, 18);
+            expiresCheckBox.TabIndex = 29;
+            expiresCheckBox.Text = "Promotion Status Expires";
+            expiresCheckBox.ThemeName = "Fluent";
+            expiresCheckBox.CheckStateChanged += expiresCheckBox_CheckStateChanged;
+            // 
+            // promtableLenSpinEditor
+            // 
+            promtableLenSpinEditor.Enabled = false;
+            promtableLenSpinEditor.Location = new System.Drawing.Point(340, 243);
+            promtableLenSpinEditor.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+            promtableLenSpinEditor.Name = "promtableLenSpinEditor";
+            promtableLenSpinEditor.Size = new System.Drawing.Size(160, 24);
+            promtableLenSpinEditor.TabIndex = 28;
+            promtableLenSpinEditor.ThemeName = "Fluent";
+            // 
+            // radLabel5
+            // 
+            radLabel5.Location = new System.Drawing.Point(341, 219);
+            radLabel5.Name = "radLabel5";
+            radLabel5.Size = new System.Drawing.Size(138, 18);
+            radLabel5.TabIndex = 27;
+            radLabel5.Text = "Promotable Status Length:";
+            // 
             // formScaleCheckBox
             // 
             formScaleCheckBox.Location = new System.Drawing.Point(26, 183);
@@ -165,50 +196,24 @@
             formScaleCheckBox.ThemeName = "Fluent";
             formScaleCheckBox.ToggleStateChanged += formRatingCheckBox_ToggleStateChanged;
             // 
-            // radSpinEditor1
+            // formRatingRadSpinEditor
             // 
-            radSpinEditor1.Enabled = false;
-            radSpinEditor1.Location = new System.Drawing.Point(341, 248);
-            radSpinEditor1.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
-            radSpinEditor1.Name = "radSpinEditor1";
-            radSpinEditor1.ReadOnly = true;
-            radSpinEditor1.Size = new System.Drawing.Size(160, 24);
-            radSpinEditor1.TabIndex = 25;
-            radSpinEditor1.ThemeName = "Fluent";
-            radSpinEditor1.ValueChanged += radSpinEditor1_ValueChanged;
+            formRatingRadSpinEditor.Enabled = false;
+            formRatingRadSpinEditor.Location = new System.Drawing.Point(57, 243);
+            formRatingRadSpinEditor.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+            formRatingRadSpinEditor.Name = "formRatingRadSpinEditor";
+            formRatingRadSpinEditor.Size = new System.Drawing.Size(200, 24);
+            formRatingRadSpinEditor.TabIndex = 25;
+            formRatingRadSpinEditor.ThemeName = "Fluent";
+            formRatingRadSpinEditor.ValueChanged += formRatingSpinEditor_ValueChanged;
             // 
             // radLabel4
             // 
-            radLabel4.Location = new System.Drawing.Point(341, 212);
+            radLabel4.Location = new System.Drawing.Point(54, 219);
             radLabel4.Name = "radLabel4";
             radLabel4.Size = new System.Drawing.Size(93, 18);
             radLabel4.TabIndex = 24;
             radLabel4.Text = "Form Max Points:";
-            // 
-            // formRatingTrackBar
-            // 
-            formRatingTrackBar.Enabled = false;
-            formRatingTrackBar.LabelStyle = Telerik.WinControls.UI.TrackBarLabelStyle.TopLeft;
-            formRatingTrackBar.LargeChange = 1;
-            formRatingTrackBar.LargeTickFrequency = 1;
-            formRatingTrackBar.Location = new System.Drawing.Point(26, 236);
-            formRatingTrackBar.Maximum = 10F;
-            formRatingTrackBar.Minimum = 1F;
-            formRatingTrackBar.Name = "formRatingTrackBar";
-            formRatingTrackBar.ShowButtons = true;
-            formRatingTrackBar.Size = new System.Drawing.Size(253, 60);
-            formRatingTrackBar.TabIndex = 23;
-            formRatingTrackBar.ThemeName = "Fluent";
-            formRatingTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
-            formRatingTrackBar.Value = 1F;
-            // 
-            // radLabel5
-            // 
-            radLabel5.Location = new System.Drawing.Point(39, 212);
-            radLabel5.Name = "radLabel5";
-            radLabel5.Size = new System.Drawing.Size(120, 18);
-            radLabel5.TabIndex = 22;
-            radLabel5.Text = "Form Factor Multiplier:";
             // 
             // tigCheckBox
             // 
@@ -360,17 +365,20 @@
             attrWeightsGridView.MasterTemplate.AllowEditRow = false;
             attrWeightsGridView.MasterTemplate.AllowRowHeaderContextMenu = false;
             attrWeightsGridView.MasterTemplate.AllowRowResize = false;
-            gridViewTextBoxColumn1.HeaderText = "Stat Name";
+            gridViewTextBoxColumn1.HeaderText = "Attribute";
             gridViewTextBoxColumn1.Name = "column1";
             gridViewTextBoxColumn1.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn1.Width = 280;
-            gridViewTextBoxColumn2.HeaderText = "Points";
+            gridViewTextBoxColumn1.Width = 180;
+            gridViewTextBoxColumn2.HeaderText = "Expected Level";
             gridViewTextBoxColumn2.Name = "column2";
-            gridViewTextBoxColumn2.Width = 125;
-            gridViewTextBoxColumn3.HeaderText = "Overall Percentage";
+            gridViewTextBoxColumn2.Width = 120;
+            gridViewTextBoxColumn3.HeaderText = "Points";
             gridViewTextBoxColumn3.Name = "column3";
-            gridViewTextBoxColumn3.Width = 125;
-            attrWeightsGridView.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] { gridViewTextBoxColumn1, gridViewTextBoxColumn2, gridViewTextBoxColumn3 });
+            gridViewTextBoxColumn3.Width = 100;
+            gridViewTextBoxColumn4.HeaderText = "Overall Percentage";
+            gridViewTextBoxColumn4.Name = "column4";
+            gridViewTextBoxColumn4.Width = 120;
+            attrWeightsGridView.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] { gridViewTextBoxColumn1, gridViewTextBoxColumn2, gridViewTextBoxColumn3, gridViewTextBoxColumn4 });
             attrWeightsGridView.MasterTemplate.EnableAlternatingRowColor = true;
             attrWeightsGridView.MasterTemplate.HorizontalScrollState = Telerik.WinControls.UI.ScrollState.AlwaysHide;
             attrWeightsGridView.MasterTemplate.ViewDefinition = tableViewDefinition1;
@@ -380,7 +388,9 @@
             attrWeightsGridView.Size = new System.Drawing.Size(564, 318);
             attrWeightsGridView.TabIndex = 10;
             attrWeightsGridView.ThemeName = "Fluent";
+            attrWeightsGridView.CellFormatting += GridView_CellFormatting;
             attrWeightsGridView.DoubleClick += attrWeightsGridView_DoubleClick;
+            attrWeightsGridView.Leave += GridView_Leave;
             // 
             // radGroupBox7
             // 
@@ -412,19 +422,19 @@
             addScoresGridView.MasterTemplate.AllowDragToGroup = false;
             addScoresGridView.MasterTemplate.AllowEditRow = false;
             addScoresGridView.MasterTemplate.AllowRowResize = false;
-            gridViewTextBoxColumn4.HeaderText = "Function";
-            gridViewTextBoxColumn4.Name = "column1";
-            gridViewTextBoxColumn4.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            gridViewTextBoxColumn4.Width = 240;
-            gridViewTextBoxColumn5.HeaderText = "Comparison";
-            gridViewTextBoxColumn5.Name = "column2";
-            gridViewTextBoxColumn5.Width = 125;
-            gridViewTextBoxColumn6.HeaderText = "Value";
-            gridViewTextBoxColumn6.Name = "column3";
-            gridViewTextBoxColumn7.HeaderText = "Points";
-            gridViewTextBoxColumn7.Name = "column4";
-            gridViewTextBoxColumn7.Width = 100;
-            addScoresGridView.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] { gridViewTextBoxColumn4, gridViewTextBoxColumn5, gridViewTextBoxColumn6, gridViewTextBoxColumn7 });
+            gridViewTextBoxColumn5.HeaderText = "Function";
+            gridViewTextBoxColumn5.Name = "column1";
+            gridViewTextBoxColumn5.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            gridViewTextBoxColumn5.Width = 240;
+            gridViewTextBoxColumn6.HeaderText = "Comparison";
+            gridViewTextBoxColumn6.Name = "column2";
+            gridViewTextBoxColumn6.Width = 125;
+            gridViewTextBoxColumn7.HeaderText = "Value";
+            gridViewTextBoxColumn7.Name = "column3";
+            gridViewTextBoxColumn8.HeaderText = "Points";
+            gridViewTextBoxColumn8.Name = "column4";
+            gridViewTextBoxColumn8.Width = 100;
+            addScoresGridView.MasterTemplate.Columns.AddRange(new Telerik.WinControls.UI.GridViewDataColumn[] { gridViewTextBoxColumn5, gridViewTextBoxColumn6, gridViewTextBoxColumn7, gridViewTextBoxColumn8 });
             addScoresGridView.MasterTemplate.EnableAlternatingRowColor = true;
             addScoresGridView.MasterTemplate.HorizontalScrollState = Telerik.WinControls.UI.ScrollState.AlwaysHide;
             addScoresGridView.MasterTemplate.ViewDefinition = tableViewDefinition2;
@@ -434,6 +444,8 @@
             addScoresGridView.Size = new System.Drawing.Size(564, 318);
             addScoresGridView.TabIndex = 10;
             addScoresGridView.ThemeName = "Fluent";
+            addScoresGridView.CellFormatting += GridView_CellFormatting;
+            addScoresGridView.Leave += GridView_Leave;
             // 
             // radGroupBox2
             // 
@@ -505,10 +517,10 @@
             // radGroupBox3
             // 
             radGroupBox3.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
-            radGroupBox3.Controls.Add(radCheckBox1);
-            radGroupBox3.Controls.Add(radPictureBox1);
+            radGroupBox3.Controls.Add(rankPictureDisplayBox);
+            radGroupBox3.Controls.Add(applyAllRanksInGradeCheckBox);
             radGroupBox3.Controls.Add(radLabel3);
-            radGroupBox3.Controls.Add(radDropDownList1);
+            radGroupBox3.Controls.Add(occupationDropDownList);
             radGroupBox3.Controls.Add(radLabel2);
             radGroupBox3.Controls.Add(radLabel28);
             radGroupBox3.Controls.Add(boardTypeDropDownList);
@@ -521,21 +533,24 @@
             radGroupBox3.Text = "Board Details";
             radGroupBox3.ThemeName = "Fluent";
             // 
-            // radCheckBox1
+            // rankPictureDisplayBox
             // 
-            radCheckBox1.Location = new System.Drawing.Point(212, 122);
-            radCheckBox1.Name = "radCheckBox1";
-            radCheckBox1.Size = new System.Drawing.Size(259, 18);
-            radCheckBox1.TabIndex = 27;
-            radCheckBox1.Text = "Apply these rules to all Ranks in this Pay Grade.";
-            radCheckBox1.ThemeName = "Fluent";
+            rankPictureDisplayBox.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            rankPictureDisplayBox.Location = new System.Drawing.Point(17, 56);
+            rankPictureDisplayBox.Name = "rankPictureDisplayBox";
+            rankPictureDisplayBox.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
+            rankPictureDisplayBox.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
+            rankPictureDisplayBox.Size = new System.Drawing.Size(130, 82);
+            rankPictureDisplayBox.TabIndex = 28;
             // 
-            // radPictureBox1
+            // applyAllRanksInGradeCheckBox
             // 
-            radPictureBox1.Location = new System.Drawing.Point(34, 52);
-            radPictureBox1.Name = "radPictureBox1";
-            radPictureBox1.Size = new System.Drawing.Size(88, 88);
-            radPictureBox1.TabIndex = 26;
+            applyAllRanksInGradeCheckBox.Location = new System.Drawing.Point(220, 123);
+            applyAllRanksInGradeCheckBox.Name = "applyAllRanksInGradeCheckBox";
+            applyAllRanksInGradeCheckBox.Size = new System.Drawing.Size(279, 18);
+            applyAllRanksInGradeCheckBox.TabIndex = 27;
+            applyAllRanksInGradeCheckBox.Text = "Apply to all ranks in this pay grade without a board";
+            applyAllRanksInGradeCheckBox.ThemeName = "Fluent";
             // 
             // radLabel3
             // 
@@ -545,15 +560,15 @@
             radLabel3.TabIndex = 24;
             radLabel3.Text = "Occupation:";
             // 
-            // radDropDownList1
+            // occupationDropDownList
             // 
-            radDropDownList1.DropDownStyle = Telerik.WinControls.RadDropDownStyle.DropDownList;
-            radDropDownList1.Location = new System.Drawing.Point(284, 88);
-            radDropDownList1.Name = "radDropDownList1";
-            radDropDownList1.Size = new System.Drawing.Size(215, 24);
-            radDropDownList1.TabIndex = 25;
-            radDropDownList1.Text = "Overrides default promotion board";
-            radDropDownList1.ThemeName = "Fluent";
+            occupationDropDownList.DropDownStyle = Telerik.WinControls.RadDropDownStyle.DropDownList;
+            occupationDropDownList.Location = new System.Drawing.Point(284, 88);
+            occupationDropDownList.Name = "occupationDropDownList";
+            occupationDropDownList.Size = new System.Drawing.Size(215, 24);
+            occupationDropDownList.TabIndex = 25;
+            occupationDropDownList.Text = "Overrides default promotion board";
+            occupationDropDownList.ThemeName = "Fluent";
             // 
             // bottomPanel
             // 
@@ -606,7 +621,7 @@
             // 
             headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             headerPanel.BackgroundImage = Properties.Resources.mainPattern;
-            headerPanel.Controls.Add(label6);
+            headerPanel.Controls.Add(headerLabel);
             headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             headerPanel.Location = new System.Drawing.Point(0, 0);
             headerPanel.Name = "headerPanel";
@@ -614,19 +629,19 @@
             headerPanel.TabIndex = 19;
             headerPanel.Paint += headerPanel_Paint;
             // 
-            // label6
+            // headerLabel
             // 
-            label6.BackColor = System.Drawing.Color.Transparent;
-            label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);
-            label6.ForeColor = System.Drawing.SystemColors.Control;
-            label6.Location = new System.Drawing.Point(26, 22);
-            label6.Name = "label6";
-            label6.ShadowDirection = 90;
-            label6.ShadowOpacity = 225;
-            label6.ShadowSoftness = 3F;
-            label6.Size = new System.Drawing.Size(694, 37);
-            label6.TabIndex = 0;
-            label6.Text = "Promotion Board Editor";
+            headerLabel.BackColor = System.Drawing.Color.Transparent;
+            headerLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);
+            headerLabel.ForeColor = System.Drawing.SystemColors.Control;
+            headerLabel.Location = new System.Drawing.Point(26, 22);
+            headerLabel.Name = "headerLabel";
+            headerLabel.ShadowDirection = 60;
+            headerLabel.ShadowOpacity = 180;
+            headerLabel.ShadowSoftness = 3F;
+            headerLabel.Size = new System.Drawing.Size(694, 37);
+            headerLabel.TabIndex = 0;
+            headerLabel.Text = "Promotion Board Editor";
             // 
             // radGroupBox4
             // 
@@ -663,11 +678,12 @@
             ((System.ComponentModel.ISupportInitialize)radGroupBox1).EndInit();
             radGroupBox1.ResumeLayout(false);
             radGroupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)formScaleCheckBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radLabel4).EndInit();
-            ((System.ComponentModel.ISupportInitialize)formRatingTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)expiresCheckBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)promtableLenSpinEditor).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel5).EndInit();
+            ((System.ComponentModel.ISupportInitialize)formScaleCheckBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)formRatingRadSpinEditor).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel4).EndInit();
             ((System.ComponentModel.ISupportInitialize)tigCheckBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)percentageTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel1).EndInit();
@@ -692,10 +708,9 @@
             ((System.ComponentModel.ISupportInitialize)radGroupBox3).EndInit();
             radGroupBox3.ResumeLayout(false);
             radGroupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)radCheckBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radPictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)applyAllRanksInGradeCheckBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel3).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)occupationDropDownList).EndInit();
             bottomPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)deleteButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)cancelButton).EndInit();
@@ -715,7 +730,7 @@
         private System.Windows.Forms.Panel bottomPanel;
         private Telerik.WinControls.UI.RadButton saveButton;
         private System.Windows.Forms.Panel headerPanel;
-        private System.Windows.Forms.ShadowLabel label6;
+        private System.Windows.Forms.ShadowLabel headerLabel;
         private Telerik.WinControls.UI.RadGroupBox radGroupBox1;
         private Telerik.WinControls.UI.RadSpinEditor TotalPointsSpinEditor;
         private Telerik.WinControls.UI.RadLabel radLabel29;
@@ -740,16 +755,13 @@
         private Telerik.WinControls.UI.RadButton cancelButton;
         private Telerik.WinControls.UI.RadButton deleteButton;
         private Telerik.WinControls.UI.RadGroupBox radGroupBox3;
-        private Telerik.WinControls.UI.RadDropDownList radDropDownList1;
+        private Telerik.WinControls.UI.RadDropDownList occupationDropDownList;
         private Telerik.WinControls.UI.RadLabel radLabel3;
         private Telerik.WinControls.UI.RadGroupBox radGroupBox4;
-        private Telerik.WinControls.UI.RadPictureBox radPictureBox1;
-        private Telerik.WinControls.UI.RadCheckBox radCheckBox1;
+        private Telerik.WinControls.UI.RadCheckBox applyAllRanksInGradeCheckBox;
         private Telerik.WinControls.UI.RadCheckBox formScaleCheckBox;
-        private Telerik.WinControls.UI.RadSpinEditor radSpinEditor1;
+        private Telerik.WinControls.UI.RadSpinEditor formRatingRadSpinEditor;
         private Telerik.WinControls.UI.RadLabel radLabel4;
-        private Telerik.WinControls.UI.RadTrackBar formRatingTrackBar;
-        private Telerik.WinControls.UI.RadLabel radLabel5;
         private Telerik.WinControls.UI.RadMenuItem addAttrMenuItem;
         private Telerik.WinControls.UI.RadMenuItem editAttrMenuItem;
         private Telerik.WinControls.UI.RadMenuSeparatorItem radMenuSeparatorItem1;
@@ -758,5 +770,9 @@
         private Telerik.WinControls.UI.RadMenuItem editScoreMenuItem;
         private Telerik.WinControls.UI.RadMenuSeparatorItem radMenuSeparatorItem2;
         private Telerik.WinControls.UI.RadMenuItem deleteScoreMenuItem;
+        private Telerik.WinControls.UI.RadCheckBox expiresCheckBox;
+        private Telerik.WinControls.UI.RadSpinEditor promtableLenSpinEditor;
+        private Telerik.WinControls.UI.RadLabel radLabel5;
+        private RadClassificationRankDisplay rankPictureDisplayBox;
     }
 }

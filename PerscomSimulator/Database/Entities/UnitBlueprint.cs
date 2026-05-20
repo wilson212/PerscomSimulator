@@ -4,6 +4,10 @@ using System;
 
 namespace Perscom.Database
 {
+    /// <summary>
+    /// Represents the blueprint or template for creating unit entities in the application.
+    /// Defines key attributes and relationships required for unit creation and management.
+    /// </summary>
     [Table]
     public class UnitBlueprint : EntityBase, IEquatable<UnitBlueprint>
     {

@@ -40,8 +40,14 @@ public class PromotionBoardWeight : EntityBase
     /// The weight multiplier applied to this attribute's value when scoring candidates.
     /// Higher values mean this attribute matters more for this board.
     /// </summary>
+    [Column, Required, Default(10)]
+    public virtual int ExpectedLevel { get; set; } = 10;
+
+    /// <summary>
+    /// The amount of points this attribute contributes to the overall score.
+    /// </summary>
     [Column, Required, Default(1)]
-    public virtual int Weight { get; set; }
+    public virtual int Points { get; set; } = 1;
     
     #region Foreign Key Navigation Properties
 

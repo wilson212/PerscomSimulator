@@ -3,6 +3,16 @@ using CrossLite.CodeFirst;
 
 namespace Perscom.Database;
 
+/// <summary>
+/// Represents a Faction entity in the application's database.
+/// A faction is an organizational group with a unique identifier and distinct properties such as name,
+/// theme color, short tag, description, and optional image representation.
+/// </summary>
+/// <remarks>
+/// This class forms the basis for representing factions in the application database and
+/// is annotated with attributes for database mapping and constraints. It inherits
+/// from <see cref="EntityBase"/>, enabling integration with CrossLite and its CodeFirst features.
+/// </remarks>
 [Table]
 public class Faction : EntityBase
 {

@@ -19,12 +19,22 @@ namespace Perscom
         private RankClassification _rankClassification;
 
         /// <summary>
+        /// The custom promotion board for this rank.
+        /// </summary>
+        private PromotionBoard _promotionBoard;
+
+        /// <summary>
         /// Creates a new RankEditor for a new rank under the given classification.
         /// </summary>
         public RankEditor(RankClassification classification, Rank rank = null)
         {
             InitializeComponent();
             FormStyling.ApplyControlsTheme(Controls);
+            FormStyling.StyleButtonRed(deleteButton);
+            FormStyling.StyleButtonGreen(saveButton);
+            FormStyling.StyleButtonBlue(boardButton);
+
+            // Store
             _rankClassification = classification;
 
             // Creating a new rank?
@@ -43,6 +53,8 @@ namespace Perscom
 
                 // Set default UI state
                 inheritRadioButton.IsChecked = true;
+                deleteButton.Enabled = false;
+                boardButton.Enabled = false;
             }
             else
             {
@@ -96,6 +108,32 @@ namespace Perscom
                     rankImageSelector.SetImage(image);
                 }
             }
+
+            LoadPromotionBoard();
+        }
+
+        private void LoadPromotionBoard()
+        {
+            // Check if this rank has a custom (rank-specific) promotion board
+            using (var db = new AppDatabase())
+            {
+                _promotionBoard = db.PromotionBoards.Find(
+                    b => b.RankId == _rank.Id
+                         && b.RankClassificationId == null
+                         && b.OccupationId == null
+                );
+
+                if (_promotionBoard != null)
+                {
+                    FormStyling.StyleButtonBlue(boardButton);
+                    boardButton.Text = "Edit Promotion Board";
+                }
+                else
+                {
+                    FormStyling.StyleButtonFluentDefault(boardButton);
+                    boardButton.Text = "Add Promotion Board";
+                }
+            }
         }
 
         /// <summary>
@@ -118,7 +156,7 @@ namespace Perscom
 
         private void bottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooterGray(bottomPanel, e);
+            FormStyling.StyleFormFooter(bottomPanel, e);
             base.OnPaint(e);
         }
 
@@ -151,7 +189,7 @@ namespace Perscom
         /// </summary>
         private void saveButton_Click(object sender, EventArgs e)
         {
-            // Validate required fields
+            // ValidateAndAlertUserOnFail required fields
             string name = rankNameTextBox.Text.Trim();
             if (string.IsNullOrEmpty(name))
             {
@@ -164,6 +202,15 @@ namespace Perscom
             if (string.IsNullOrEmpty(abbreviation))
             {
                 RadMessageBox.Show("Please enter an abbreviation for this Rank.",
+                    "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
+                return;
+            }
+            
+            // Positional ranks cannot have a custom promotion board
+            if (isPositionalCheckBox.IsChecked && _promotionBoard != null)
+            {
+                RadMessageBox.Show(
+                    "A positional rank cannot have a custom promotion board. Please remove the promotion board first.",
                     "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
                 return;
             }
@@ -197,6 +244,7 @@ namespace Perscom
 
                 RadMessageBox.Show("Rank saved successfully.", "Success", MessageBoxButtons.OK, RadMessageIcon.Info);
 
+                // Now that the rank has an ID, enable the custom board checkbox
                 DialogResult = DialogResult.OK;
                 Close();
             }
@@ -210,12 +258,76 @@ namespace Perscom
 
         private void rankImageSelector_OnImageChanged(object sender, EventArgs e)
         {
-            
-
             // Update the rank entity
             _rank.Image = rankImageSelector.SelectedImagePath;
+        }
 
-            // Update the control
+        private void boardButton_Click(object sender, EventArgs e)
+        {
+            if (_rank.Id <= 0) return;
+
+            // PromotionBoardEditor handles creation if no board exists yet
+            DialogResult result;
+            if (_promotionBoard != null)
+            {
+                using var form = new PromotionBoardEditor(_promotionBoard);
+                result = form.ShowDialog(this);
+            }
+            else
+            {
+                using var form = new PromotionBoardEditor(_rank);
+                result = form.ShowDialog(this);
+            }
+
+            if (result == DialogResult.OK)
+            {
+                // Board was saved — requery to grab the (possibly new) entity
+                using var db = new AppDatabase();
+                _promotionBoard = db.PromotionBoards.Find(
+                    b => b.RankId == _rank.Id
+                         && b.RankClassificationId == null
+                         && b.OccupationId == null
+                );
+
+                FormStyling.StyleButtonBlue(boardButton);
+                boardButton.Text = "Edit Promotion Board";
+            }
+            else if (result == DialogResult.Abort)
+            {
+                // Board was deleted
+                _promotionBoard = null;
+
+                FormStyling.StyleButtonFluentDefault(boardButton);
+                boardButton.Text = "Add Promotion Board";
+            }
+            // DialogResult.Cancel = no changes, do nothing
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            if (_rank.Id <= 0) return;
+
+            var result = RadMessageBox.Show(
+                $"Are you sure you want to delete the rank \"{_rank.Name}\"? Doing so will delete all promotion boards and position blueprints that reference this rank. This action cannot be undone.",
+                "Confirm Delete", MessageBoxButtons.YesNo, RadMessageIcon.Exclamation);
+
+            if (result != DialogResult.Yes) return;
+
+            using var db = new AppDatabase();
+            using var transaction = db.BeginTransaction();
+            try
+            {
+                db.Ranks.Remove(_rank);
+                transaction.Commit();
+
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                RadMessageBox.Show($"Failed to delete rank: {ex.Message}", "Error", MessageBoxButtons.OK, RadMessageIcon.Error);
+            }
         }
     }
 }

@@ -55,8 +55,8 @@
             label6.ForeColor = System.Drawing.SystemColors.Control;
             label6.Location = new System.Drawing.Point(12, 19);
             label6.Name = "label6";
-            label6.ShadowDirection = 90;
-            label6.ShadowOpacity = 225;
+            label6.ShadowDirection = 60;
+            label6.ShadowOpacity = 180;
             label6.ShadowSoftness = 3F;
             label6.Size = new System.Drawing.Size(466, 37);
             label6.TabIndex = 2;
@@ -73,6 +73,7 @@
             chatWindow.ThemeName = "Fluent";
             chatWindow.TimeSeparatorInterval = System.TimeSpan.Parse("1.00:00:00");
             chatWindow.SendMessage += chatWindow_SendMessage;
+            chatWindow.ToolbarActionClicked += chatWindow_ToolbarActionClicked;
             // 
             // AdvisorChatForm
             // 

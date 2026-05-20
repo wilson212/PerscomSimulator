@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using Perscom.UI;
 using Telerik.WinControls;
 using Telerik.WinControls.UI;
 
@@ -48,6 +49,46 @@ namespace Perscom
             get { return lblInstruction.Text; }
             set { lblInstruction.Text = value; }
         }
+        
+        /// <summary>
+        /// The radius of the drop shadow drawn behind each rank image.
+        /// 0 = no shadow.
+        /// </summary>
+        [Category("Data")]
+        [Description("Drop shadow blur radius in pixels. 0 disables the shadow.")]
+        [DefaultValue(3)]
+        public int ShadowRadius { get; set; } = 3;
+
+        /// <summary>
+        /// The color of the drop shadow.
+        /// </summary>
+        [Category("Data")]
+        [Description("The color of the drop shadow behind each rank image.")]
+        public Color ShadowColor { get; set; } = Color.FromArgb(120, 0, 0, 0);
+
+        /// <summary>
+        /// Horizontal and vertical offset of the drop shadow in pixels.
+        /// </summary>
+        [Category("Data")]
+        [Description("Pixel offset of the drop shadow (X and Y).")]
+        [DefaultValue(2)]
+        public int ShadowOffset { get; set; } = 2;
+
+        /// <summary>
+        /// The width of the outline stroke drawn around each rank image.
+        /// 0 = no outline.
+        /// </summary>
+        [Category("Data")]
+        [Description("Width in pixels of the outline drawn around each rank image. 0 disables.")]
+        [DefaultValue(1)]
+        public int OutlineWidth { get; set; } = 1;
+
+        /// <summary>
+        /// The color of the outline drawn around each rank image.
+        /// </summary>
+        [Category("Data")]
+        [Description("The color of the outline drawn around each rank image.")]
+        public Color OutlineColor { get; set; } = Color.FromArgb(180, 0, 0, 0);
 
         /// <summary>
         /// Gets the relative file path of the currently selected image in the RankImageSelector control.
@@ -127,7 +168,7 @@ namespace Perscom
                 MultiSelect = false
             };
 
-            dialog.OpenFileDialogForm.ThemeName = "FluentPerscomBlue";
+            dialog.OpenFileDialogForm.ThemeName = Program.ThemeName;
             dialog.OpenFileDialogForm.StartPosition = FormStartPosition.CenterParent;
             if (dialog.ShowDialog(_parentForm) != DialogResult.OK)
                 return;
@@ -169,15 +210,62 @@ namespace Perscom
                 var oldImage = rankPictureBox.Image;
                 rankPictureBox.SvgImage = null;
 
-                // Reduce the available area by the padding on each side
+                // Account for outline + shadow so they don't clip
+                int margin = Math.Max(OutlineWidth, ShadowRadius + ShadowOffset);
+
+                // Reduce the available area by the padding AND the effect margin on each side
                 var paddedSize = new Size(
-                    Math.Max(1, rankPictureBox.Width - (ImagePadding * 2)),
-                    Math.Max(1, rankPictureBox.Height - (ImagePadding * 2))
+                    Math.Max(1, rankPictureBox.Width - (ImagePadding * 2) - (margin * 2)),
+                    Math.Max(1, rankPictureBox.Height - (ImagePadding * 2) - (margin * 2))
                 );
 
-                var sizeRatio = ScaleToFit(svgImage.Size, paddedSize);
-                rankPictureBox.Image = svgImage.GetRasterImage(sizeRatio);
-                oldImage?.Dispose();
+                var sizeRatio = Imager.ScaleToFit(svgImage.Size, paddedSize);
+                if (sizeRatio.Width <= 0 || sizeRatio.Height <= 0)
+                    sizeRatio = new Size(1, 1);
+
+                int areaW = rankPictureBox.Width - (ImagePadding * 2);
+                int areaH = rankPictureBox.Height - (ImagePadding * 2);
+
+                Bitmap composite = null;
+                try
+                {
+                    composite = new Bitmap(Math.Max(1, areaW), Math.Max(1, areaH));
+                    using (Graphics g = Graphics.FromImage(composite))
+                    {
+                        g.Clear(Color.Transparent);
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                        g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                        var bmp = svgImage.GetRasterImage(sizeRatio);
+                        if (bmp != null && bmp.Width > 0 && bmp.Height > 0)
+                        {
+                            int x = (areaW - sizeRatio.Width) / 2;
+                            int y = (areaH - sizeRatio.Height) / 2;
+
+                            if (ShadowRadius > 0 && ShadowOffset > 0)
+                            {
+                                Imager.DrawDropShadow(g, bmp, x, y, sizeRatio.Width, sizeRatio.Height,
+                                    ShadowRadius, ShadowOffset, ShadowColor);
+                            }
+
+                            if (OutlineWidth > 0)
+                            {
+                                Imager.DrawOutline(g, bmp, x, y, sizeRatio.Width, sizeRatio.Height,
+                                    OutlineWidth, OutlineColor);
+                            }
+
+                            g.DrawImage(bmp, x, y, sizeRatio.Width, sizeRatio.Height);
+                        }
+                    }
+
+                    rankPictureBox.Image = composite;
+                    oldImage?.Dispose();
+                }
+                catch
+                {
+                    composite?.Dispose();
+                }
             }
             else
             {
@@ -185,35 +273,6 @@ namespace Perscom
                 rankPictureBox.Image = Properties.Resources.plus;
                 oldImage?.Dispose();
             }
-        }
-
-        /// <summary>
-        /// Calculates a size that fits within the target size while maintaining aspect ratio.
-        /// </summary>
-        private Size ScaleToFit(Size source, Size target)
-        {
-            if (source.Width == 0 || source.Height == 0 || target.Width == 0 || target.Height == 0)
-                return target;
-
-            float sourceRatio = (float)source.Width / source.Height;
-            float targetRatio = (float)target.Width / target.Height;
-
-            int width, height;
-
-            if (sourceRatio > targetRatio)
-            {
-                // Source is wider, fit to width
-                width = target.Width;
-                height = (int)(target.Width / sourceRatio);
-            }
-            else
-            {
-                // Source is taller, fit to height
-                height = target.Height;
-                width = (int)(target.Height * sourceRatio);
-            }
-
-            return new Size(width, height);
         }
         
         /// <summary>

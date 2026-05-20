@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows.Forms;
 using Telerik.WinControls;
 using Telerik.WinControls.UI;
+using Telerik.Windows.Documents.Spreadsheet.Expressions.Functions;
+using static Telerik.Pdf.PdfName;
 
 namespace Perscom
 {
@@ -55,6 +57,11 @@ namespace Perscom
         /// The four rank selector controls in an array for easy indexed access.
         /// </summary>
         private RadRankSelector[] RankSelectors { get; set; }
+        
+        /// <summary>
+        /// The custom promotion board for the currently selected classification.
+        /// </summary>
+        private PromotionBoard _promotionBoard;
 
         /// <summary>
         /// A form that allows users to edit rank classifications and pay grades for
@@ -110,8 +117,6 @@ namespace Perscom
             wizardMenuItem.Click += WizardMenuItem_Click;
             deleteGradeMenuItem.Click += DeleteGradeMenuItem_Click;
             aiMenuItem.Click += AiMenuItem_Click;
-            applyButton.Click += ApplyButton_Click;
-            boardButton.Click += BoardButton_Click;
 
             // Wire up rank selector click events
             foreach (var selector in RankSelectors)
@@ -215,6 +220,9 @@ namespace Perscom
 
             // Clear rank selectors
             ClearRankSelectors();
+            
+            // Clear board
+            _promotionBoard = null;
 
             // Disable editing controls
             SetFormEnabled(false);
@@ -292,13 +300,13 @@ namespace Perscom
             SetFormEnabled(true);
 
             // Load ranks for this classification into the rank selectors
-            LoadRanksForClassification(classification);
+            LoadRanksAndBoardForClassification(classification);
         }
 
         /// <summary>
         /// Loads the ranks associated with the given classification into the RadRankSelector controls.
         /// </summary>
-        private void LoadRanksForClassification(RankClassification classification)
+        private void LoadRanksAndBoardForClassification(RankClassification classification)
         {
             ClearRankSelectors();
 
@@ -331,6 +339,23 @@ namespace Perscom
 
                 // Center the visible selectors within the panel
                 CenterRankSelectors();
+                
+                _promotionBoard = db.PromotionBoards.Find(
+                    b => b.RankClassificationId == SelectedClassification.Id
+                         && b.RankId == null
+                         && b.OccupationId == null
+                );
+
+                if (_promotionBoard != null)
+                {
+                    FormStyling.StyleButtonBlue(boardButton);
+                    boardButton.Text = "Edit Promotion Board";
+                }
+                else
+                {
+                    FormStyling.StyleButtonFluentDefault(boardButton);
+                    boardButton.Text = "Add Promotion Board";
+                }
             }
             catch (Exception ex)
             {
@@ -349,7 +374,7 @@ namespace Perscom
 
         private void bottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooterGray(bottomPanel, e);
+            FormStyling.StyleFormFooter(bottomPanel, e);
             base.OnPaint(e);
         }
 
@@ -380,38 +405,9 @@ namespace Perscom
 
             try
             {
-                // Validate HasSplitRankLanes consistency with child ranks' NextRankId
-                if (SelectedClassification.Id > 0)
-                {
-                    var ranks = SelectedClassification.Ranks.ToList();
-                    if (ranks.Count > 0)
-                    {
-                        bool hasSplit = branchingCheckBox.IsChecked;
-                        var ranksWithNext = ranks.Where(r => r.NextRankId.HasValue).ToList();
-                        var ranksWithoutNext = ranks.Where(r => !r.NextRankId.HasValue).ToList();
-
-                        if (!hasSplit && ranksWithNext.Count > 0)
-                        {
-                            string names = string.Join(", ", ranksWithNext.Select(r => r.Name));
-                            var result = RadMessageBox.Show(
-                                $"'Has Split Rank Lanes' is not checked, but the following rank(s) have a Next Rank set:\n\n{names}\n\nDo you want to continue saving anyway?",
-                                "Configuration Warning", MessageBoxButtons.YesNo, RadMessageIcon.Exclamation);
-
-                            if (result != DialogResult.Yes)
-                                return;
-                        }
-                        else if (hasSplit && ranksWithoutNext.Count > 0)
-                        {
-                            string names = string.Join(", ", ranksWithoutNext.Select(r => r.Name));
-                            var result = RadMessageBox.Show(
-                                $"'Has Split Rank Lanes' is checked, but the following rank(s) do not have a Next Rank set:\n\n{names}\n\nDo you want to continue saving anyway?",
-                                "Configuration Warning", MessageBoxButtons.YesNo, RadMessageIcon.Exclamation);
-
-                            if (result != DialogResult.Yes)
-                                return;
-                        }
-                    }
-                }
+                // ValidateAndAlertUserOnFail HasSplitRankLanes consistency with child ranks' NextRankId
+                var isValidated = ValidateAndAlertUserOnFail(db);
+                if (!isValidated) return;
 
                 // Update the classification from form fields
                 SelectedClassification.PreviousTimeInGradeRequirement = (int)prevTimeInGradeSpinner.Value;
@@ -449,9 +445,9 @@ namespace Perscom
                 }
 
                 // Reload ranks for the classification (in case Id was just assigned)
-                LoadRanksForClassification(SelectedClassification);
+                LoadRanksAndBoardForClassification(SelectedClassification);
 
-                // Update the clean snapshot after successful save
+                // Update the clean snapshot after a successful save
                 _lastSavedSnapshot = CaptureSnapshot();
 
                 RadMessageBox.Show("Rank grade saved successfully.",
@@ -529,9 +525,41 @@ namespace Perscom
                 return;
             }
 
-            // TODO: Open the PromotionBoardEditorForm for this classification
-            using var form = new PromotionBoardEditor(SelectedClassification);
-            form.ShowDialog(this);
+            // PromotionBoardEditor handles creation if no board exists yet
+            DialogResult result = DialogResult.None;
+            if (_promotionBoard != null)
+            {
+                using var form = new PromotionBoardEditor(_promotionBoard);
+                result = form.ShowDialog(this);
+            }
+            else
+            {
+                using var form = new PromotionBoardEditor(SelectedClassification);
+                result = form.ShowDialog(this);
+            }
+
+            // Requery the database to see if a board was created or deleted
+            if (result == DialogResult.OK)
+            {
+                // Grab Board
+                using var db = new AppDatabase();
+                _promotionBoard = db.PromotionBoards.Find(
+                    b => b.RankClassificationId == SelectedClassification.Id
+                         && b.RankId == null
+                         && b.OccupationId == null
+                );
+                
+                FormStyling.StyleButtonBlue(boardButton);
+                boardButton.Text = "Edit Promotion Board";
+            }
+            else if (result == DialogResult.Abort)
+            {
+                // Board Delete button was pressed
+                _promotionBoard = null;
+                
+                FormStyling.StyleButtonFluentDefault(boardButton);
+                boardButton.Text = "Add Promotion Board";
+            }
         }
 
         /// <summary>
@@ -567,7 +595,7 @@ namespace Perscom
                 if (editor.ShowDialog(this) == DialogResult.OK)
                 {
                     // Reload ranks to reflect changes
-                    LoadRanksForClassification(SelectedClassification);
+                    LoadRanksAndBoardForClassification(SelectedClassification);
                 }
             }
         }
@@ -771,6 +799,79 @@ namespace Perscom
                     visible[i].Location.Y  // keep the same Y position
                 );
             }
+        }
+
+        /// <summary>
+        /// Validates the rank classification's configuration, ensuring consistency between the
+        /// "HasSplitRankLanes" setting and the child ranks' "NextRankId" values. Displays an
+        /// alert message to the user if any validation issues are detected.
+        /// </summary>
+        /// <returns>True if the validation succeeds; otherwise, false if any validation errors occur.</returns>
+        private bool ValidateAndAlertUserOnFail(AppDatabase db)
+        {
+            if (SelectedClassification.Id > 0)
+            {
+                var ranks = SelectedClassification.Ranks.ToList();
+                if (ranks.Count > 0)
+                {
+                    bool hasSplit = branchingCheckBox.IsChecked;
+                    var ranksWithNext = ranks.Where(r => r.NextRankId.HasValue).ToList();
+                    var ranksWithoutNext = ranks.Where(r => !r.NextRankId.HasValue).ToList();
+                    PayGradeSelection selMethod = (PayGradeSelection)selectionTypeDropDownList.SelectedItem.Tag;
+
+                    if (!hasSplit && ranksWithNext.Count > 0)
+                    {
+                        string names = string.Join(", ", ranksWithNext.Select(r => r.Name));
+                        var result = RadMessageBox.Show(
+                            $"'Has Split Rank Lanes' is not checked, but the following rank(s) have a Next Rank set:\n\n{names}\n\nDo you want to continue saving anyway?",
+                            "Configuration Warning", MessageBoxButtons.YesNo, RadMessageIcon.Exclamation);
+
+                        if (result != DialogResult.Yes)
+                            return false;
+                    }
+                    else if (hasSplit && ranksWithoutNext.Count > 0)
+                    {
+                        string names = string.Join(", ", ranksWithoutNext.Select(r => r.Name));
+                        var result = RadMessageBox.Show(
+                            $"'Has Split Rank Lanes' is checked, but the following rank(s) do not have a Next Rank set:\n\n{names}\n\nDo you want to continue saving anyway?",
+                            "Configuration Warning", MessageBoxButtons.YesNo, RadMessageIcon.Exclamation);
+
+                        if (result != DialogResult.Yes)
+                            return false;
+                    }
+
+                    // If selection is PromotionBoard and HasSplitLanes, every non-positional rank must have its own board
+                    if (hasSplit && selMethod == PayGradeSelection.PromotionBoard)
+                    {
+                        var missingBoardRanks = ranks
+                            .Where(r => !r.IsPositional)
+                            .Where(r => !db.PromotionBoards.Any(
+                                b => b.RankId == r.Id
+                                        && b.RankClassificationId == null
+                                        && b.OccupationId == null))
+                            .ToList();
+
+                        if (missingBoardRanks.Count > 0)
+                        {
+                            string names = string.Join(", ", missingBoardRanks.Select(r => r.Name));
+                            RadMessageBox.Show(
+                                $"Selection method is 'Promotion Board' with split rank lanes enabled. " +
+                                $"Each non-positional rank must have its own promotion board.\n\n" +
+                                $"The following rank(s) are missing a promotion board:\n{names}",
+                                "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    RadMessageBox.Show(
+                        $"The selected RankClassification has no ranks", "Validation Error", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

@@ -611,7 +611,6 @@
             ImproveTrackBar.Size = new System.Drawing.Size(310, 60);
             ImproveTrackBar.TabIndex = 23;
             ImproveTrackBar.ThemeName = "Fluent";
-            ImproveTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             ImproveTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             ImproveTrackBar.Value = 10F;
             ImproveTrackBar.ToolTipTextNeeded += ImproveTrackBar_ToolTipTextNeeded;
@@ -634,7 +633,6 @@
             IntellectTrackBar.Size = new System.Drawing.Size(310, 60);
             IntellectTrackBar.TabIndex = 21;
             IntellectTrackBar.ThemeName = "Fluent";
-            IntellectTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             IntellectTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             IntellectTrackBar.Value = 10F;
             IntellectTrackBar.ToolTipTextNeeded += IntellectTrackBar_ToolTipTextNeeded;
@@ -657,7 +655,6 @@
             AdaptTrackBar.Size = new System.Drawing.Size(310, 60);
             AdaptTrackBar.TabIndex = 19;
             AdaptTrackBar.ThemeName = "Fluent";
-            AdaptTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             AdaptTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             AdaptTrackBar.Value = 10F;
             AdaptTrackBar.ToolTipTextNeeded += AdaptTrackBar_ToolTipTextNeeded;
@@ -835,7 +832,6 @@
             OpennessTrackBar.Size = new System.Drawing.Size(310, 60);
             OpennessTrackBar.TabIndex = 25;
             OpennessTrackBar.ThemeName = "Fluent";
-            OpennessTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             OpennessTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             OpennessTrackBar.Value = 10F;
             // 
@@ -856,7 +852,6 @@
             MindfullTrackBar.Size = new System.Drawing.Size(310, 60);
             MindfullTrackBar.TabIndex = 23;
             MindfullTrackBar.ThemeName = "Fluent";
-            MindfullTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             MindfullTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             MindfullTrackBar.Value = 10F;
             // 
@@ -877,7 +872,6 @@
             AgreeableTrackBar.Size = new System.Drawing.Size(310, 60);
             AgreeableTrackBar.TabIndex = 21;
             AgreeableTrackBar.ThemeName = "Fluent";
-            AgreeableTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             AgreeableTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             AgreeableTrackBar.Value = 10F;
             AgreeableTrackBar.ToolTipTextNeeded += NeuroticismTrackBar_ToolTipTextNeeded;
@@ -908,7 +902,6 @@
             ExtraversionTrackBar.Size = new System.Drawing.Size(310, 60);
             ExtraversionTrackBar.TabIndex = 15;
             ExtraversionTrackBar.ThemeName = "Fluent";
-            ExtraversionTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             ExtraversionTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             ExtraversionTrackBar.Value = 10F;
             ExtraversionTrackBar.ToolTipTextNeeded += ExtraversionTrackBar_ToolTipTextNeeded;
@@ -922,7 +915,6 @@
             ConTrackBar.Size = new System.Drawing.Size(310, 60);
             ConTrackBar.TabIndex = 5;
             ConTrackBar.ThemeName = "Fluent";
-            ConTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             ConTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             ConTrackBar.Value = 10F;
             ConTrackBar.ToolTipTextNeeded += ConTrackBar_ToolTipTextNeeded;
@@ -944,7 +936,6 @@
             AmbitionTrackBar.Size = new System.Drawing.Size(310, 60);
             AmbitionTrackBar.TabIndex = 17;
             AmbitionTrackBar.ThemeName = "Fluent";
-            AmbitionTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             AmbitionTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             AmbitionTrackBar.Value = 10F;
             AmbitionTrackBar.ToolTipTextNeeded += AmbitionTrackBar_ToolTipTextNeeded;
@@ -991,7 +982,6 @@
             CommTrackBar.Size = new System.Drawing.Size(310, 60);
             CommTrackBar.TabIndex = 15;
             CommTrackBar.ThemeName = "Fluent";
-            CommTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             CommTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             CommTrackBar.Value = 10F;
             // 
@@ -1013,7 +1003,6 @@
             TeamWorkTrackBar.Size = new System.Drawing.Size(310, 60);
             TeamWorkTrackBar.TabIndex = 13;
             TeamWorkTrackBar.ThemeName = "Fluent";
-            TeamWorkTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             TeamWorkTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             TeamWorkTrackBar.Value = 10F;
             TeamWorkTrackBar.ToolTipTextNeeded += TeamWorkTrackBar_ToolTipTextNeeded;
@@ -1036,7 +1025,6 @@
             StabilityTrackBar.Size = new System.Drawing.Size(310, 60);
             StabilityTrackBar.TabIndex = 11;
             StabilityTrackBar.ThemeName = "Fluent";
-            StabilityTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             StabilityTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             StabilityTrackBar.Value = 10F;
             StabilityTrackBar.ToolTipTextNeeded += StabilityTrackBar_ToolTipTextNeeded;
@@ -1060,7 +1048,6 @@
             FitnessTrackBar.Size = new System.Drawing.Size(310, 60);
             FitnessTrackBar.TabIndex = 9;
             FitnessTrackBar.ThemeName = "Fluent";
-            FitnessTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             FitnessTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             FitnessTrackBar.Value = 10F;
             FitnessTrackBar.ToolTipTextNeeded += FitnessTrackBar_ToolTipTextNeeded;
@@ -1083,7 +1070,6 @@
             MarksmanTrackBar.Size = new System.Drawing.Size(310, 60);
             MarksmanTrackBar.TabIndex = 7;
             MarksmanTrackBar.ThemeName = "Fluent";
-            MarksmanTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             MarksmanTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             MarksmanTrackBar.Value = 10F;
             MarksmanTrackBar.ToolTipTextNeeded += MarksmanTrackBar_ToolTipTextNeeded;
@@ -1106,7 +1092,6 @@
             LeadershipTrackBar.Size = new System.Drawing.Size(310, 60);
             LeadershipTrackBar.TabIndex = 1;
             LeadershipTrackBar.ThemeName = "Fluent";
-            LeadershipTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             LeadershipTrackBar.TrackBarMode = Telerik.WinControls.UI.TrackBarRangeMode.Range;
             LeadershipTrackBar.Value = 10F;
             LeadershipTrackBar.ToolTipTextNeeded += LeadershipTrackBar_ToolTipTextNeeded;
@@ -1350,8 +1335,8 @@
             label6.ForeColor = System.Drawing.SystemColors.Control;
             label6.Location = new System.Drawing.Point(26, 22);
             label6.Name = "label6";
-            label6.ShadowDirection = 90;
-            label6.ShadowOpacity = 225;
+            label6.ShadowDirection = 60;
+            label6.ShadowOpacity = 180;
             label6.ShadowSoftness = 3F;
             label6.Size = new System.Drawing.Size(466, 37);
             label6.TabIndex = 1;
@@ -1375,13 +1360,13 @@
             Statistics.Dock = System.Windows.Forms.DockStyle.Fill;
             Statistics.Location = new System.Drawing.Point(0, 75);
             Statistics.Name = "Statistics";
-            Statistics.SelectedPage = radPageViewPage2;
+            Statistics.SelectedPage = radPageViewPage1;
             Statistics.Size = new System.Drawing.Size(1072, 672);
             Statistics.TabIndex = 19;
             Statistics.ThemeName = "Fluent";
             ((Telerik.WinControls.UI.RadPageViewStripElement)Statistics.GetChildAt(0)).StripButtons = Telerik.WinControls.UI.StripViewButtons.None;
-            ((Telerik.WinControls.UI.RadPageViewLabelElement)Statistics.GetChildAt(0).GetChildAt(2)).Text = "Innitial Attributes";
-            ((Telerik.WinControls.UI.RadPageViewLabelElement)Statistics.GetChildAt(0).GetChildAt(3)).Text = "Innitial Attributes";
+            ((Telerik.WinControls.UI.RadPageViewLabelElement)Statistics.GetChildAt(0).GetChildAt(2)).Text = "Persona Details";
+            ((Telerik.WinControls.UI.RadPageViewLabelElement)Statistics.GetChildAt(0).GetChildAt(3)).Text = "Persona Details";
             // 
             // PersonaEditorForm
             // 

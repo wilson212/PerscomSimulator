@@ -124,30 +124,127 @@ namespace System.Windows.Forms
                 Invalidate();
             }
         }
+        
+        protected override Padding DefaultPadding => new Padding((int)(shadowDepth + softness));
+        
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+
+            // Calculate the content rectangle (respects Padding)
+            Rectangle contentRect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
+
+            // Build StringFormat for measuring
+            using var sf = new StringFormat();
+            sf.FormatFlags |= StringFormatFlags.NoWrap;
+            sf.Trimming = StringTrimming.EllipsisCharacter;
+
+            // Measure text to manually compute position
+            SizeF textSize = e.Graphics.MeasureString(Text, Font, contentRect.Width, sf);
+
+            // Compute vertical position from TextAlign
+            float textY;
+            switch (TextAlign)
+            {
+                case ContentAlignment.BottomLeft:
+                case ContentAlignment.BottomCenter:
+                case ContentAlignment.BottomRight:
+                    textY = contentRect.Bottom - textSize.Height;
+                    break;
+                case ContentAlignment.MiddleLeft:
+                case ContentAlignment.MiddleCenter:
+                case ContentAlignment.MiddleRight:
+                    textY = contentRect.Y + (contentRect.Height - textSize.Height) / 2f;
+                    break;
+                default: // Top*
+                    textY = contentRect.Y;
+                    break;
+            }
+
+            // Compute horizontal position from TextAlign
+            float textX;
+            switch (TextAlign)
+            {
+                case ContentAlignment.TopRight:
+                case ContentAlignment.MiddleRight:
+                case ContentAlignment.BottomRight:
+                    textX = contentRect.Right - textSize.Width;
+                    break;
+                case ContentAlignment.TopCenter:
+                case ContentAlignment.MiddleCenter:
+                case ContentAlignment.BottomCenter:
+                    textX = contentRect.X + (contentRect.Width - textSize.Width) / 2f;
+                    break;
+                default: // *Left
+                    textX = contentRect.X;
+                    break;
+            }
+
+            // Shadow offset
+            double angle = Math.PI * direction / 180.0;
+            float offsetX = (float)(shadowDepth * Math.Cos(angle));
+            float offsetY = (float)(shadowDepth * Math.Sin(angle));
+
+            // Draw shadow passes
+            int passes = Math.Max(1, (int)softness);
+            int alphaPerPass = Math.Max(1, opacity / (passes * passes));
+
+            using (var shadowBrush = new SolidBrush(Color.FromArgb(alphaPerPass, color)))
+            {
+                for (int x = -passes; x <= passes; x++)
+                {
+                    for (int y = -passes; y <= passes; y++)
+                    {
+                        e.Graphics.DrawString(Text, Font, shadowBrush,
+                            textX + offsetX + x, textY + offsetY + y);
+                    }
+                }
+            }
+
+            // Draw foreground text
+            using (var foreBrush = new SolidBrush(ForeColor))
+            {
+                e.Graphics.DrawString(Text, Font, foreBrush, textX, textY);
+            }
+        }
+        
+        /*
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            Graphics screenGraphics = e.Graphics;
-            Bitmap shadowBitmap = new Bitmap(
-                Math.Max((int)(Width / softness), 1),
-                Math.Max((int)(Height / softness), 1)
-            );
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
 
-            using (Graphics imageGraphics = Graphics.FromImage(shadowBitmap))
+            double angle = Math.PI * direction / 180.0;
+            float offsetX = (float)(shadowDepth * Math.Cos(angle));
+            float offsetY = (float)(shadowDepth * Math.Sin(angle));
+
+            // Draw multiple shadow passes at slight offsets for a soft blur effect
+            int passes = Math.Max(1, (int)softness);
+            int alphaPerPass = Math.Max(1, opacity / (passes * passes));
+
+            using (var shadowBrush = new SolidBrush(Color.FromArgb(alphaPerPass, color)))
             {
-                double angle = Math.PI * direction / 180.0;
-                imageGraphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                Matrix transformMatrix = new Matrix();
-                transformMatrix.Scale(1 / softness, 1 / softness);
-                transformMatrix.Translate((float)(shadowDepth * Math.Cos(angle)), (float)(shadowDepth * Math.Sin(angle)));
-                imageGraphics.Transform = transformMatrix;
-                imageGraphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(opacity, color)), 0, 0, StringFormat.GenericTypographic);
+                for (int x = -passes; x <= passes; x++)
+                {
+                    for (int y = -passes; y <= passes; y++)
+                    {
+                        e.Graphics.DrawString(
+                            Text, Font, shadowBrush,
+                            offsetX + x, offsetY + y,
+                            StringFormat.GenericTypographic
+                        );
+                    }
+                }
             }
 
-            screenGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            screenGraphics.DrawImage(shadowBitmap, ClientRectangle, 0, 0, shadowBitmap.Width, shadowBitmap.Height, GraphicsUnit.Pixel);
-            screenGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-            screenGraphics.DrawString(Text, Font, new SolidBrush(ForeColor), 0, 0, StringFormat.GenericTypographic);
+            // Draw foreground text
+            using (var foreBrush = new SolidBrush(ForeColor))
+            {
+                e.Graphics.DrawString(Text, Font, foreBrush, 0, 0, StringFormat.GenericTypographic);
+            }
         }
+        */
     }
 }

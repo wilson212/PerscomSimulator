@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RankEditor));
             bottomPanel = new System.Windows.Forms.Panel();
+            deleteButton = new Telerik.WinControls.UI.RadButton();
             saveButton = new Telerik.WinControls.UI.RadButton();
             headerPanel = new System.Windows.Forms.Panel();
             label6 = new System.Windows.Forms.ShadowLabel();
@@ -50,7 +51,9 @@
             offsetRadioButton = new Telerik.WinControls.UI.RadRadioButton();
             inheritRadioButton = new Telerik.WinControls.UI.RadRadioButton();
             radPictureBox1 = new Telerik.WinControls.UI.RadPictureBox();
+            boardButton = new Telerik.WinControls.UI.RadButton();
             bottomPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)deleteButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)saveButton).BeginInit();
             headerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)radLabel1).BeginInit();
@@ -68,6 +71,7 @@
             ((System.ComponentModel.ISupportInitialize)offsetRadioButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)inheritRadioButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radPictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)boardButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)this).BeginInit();
             SuspendLayout();
             // 
@@ -75,17 +79,28 @@
             // 
             bottomPanel.BackColor = System.Drawing.SystemColors.ControlLight;
             bottomPanel.BackgroundImage = Properties.Resources.mainPattern;
+            bottomPanel.Controls.Add(deleteButton);
             bottomPanel.Controls.Add(saveButton);
             bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            bottomPanel.Location = new System.Drawing.Point(0, 555);
+            bottomPanel.Location = new System.Drawing.Point(0, 618);
             bottomPanel.Name = "bottomPanel";
             bottomPanel.Size = new System.Drawing.Size(507, 50);
             bottomPanel.TabIndex = 17;
             bottomPanel.Paint += bottomPanel_Paint;
             // 
+            // deleteButton
+            // 
+            deleteButton.Location = new System.Drawing.Point(19, 14);
+            deleteButton.Name = "deleteButton";
+            deleteButton.Size = new System.Drawing.Size(110, 24);
+            deleteButton.TabIndex = 1;
+            deleteButton.Text = "Delete Rank";
+            deleteButton.ThemeName = "Fluent";
+            deleteButton.Click += deleteButton_Click;
+            // 
             // saveButton
             // 
-            saveButton.Location = new System.Drawing.Point(198, 15);
+            saveButton.Location = new System.Drawing.Point(375, 14);
             saveButton.Name = "saveButton";
             saveButton.Size = new System.Drawing.Size(110, 24);
             saveButton.TabIndex = 0;
@@ -112,8 +127,8 @@
             label6.ForeColor = System.Drawing.SystemColors.Control;
             label6.Location = new System.Drawing.Point(26, 22);
             label6.Name = "label6";
-            label6.ShadowDirection = 90;
-            label6.ShadowOpacity = 225;
+            label6.ShadowDirection = 60;
+            label6.ShadowOpacity = 180;
             label6.ShadowSoftness = 3F;
             label6.Size = new System.Drawing.Size(237, 37);
             label6.TabIndex = 0;
@@ -195,7 +210,9 @@
             rankImageSelector.InstructionText = "Click to Add";
             rankImageSelector.Location = new System.Drawing.Point(32, 81);
             rankImageSelector.Name = "rankImageSelector";
+            rankImageSelector.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
             rankImageSelector.RankText = "This Rank";
+            rankImageSelector.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
             rankImageSelector.Size = new System.Drawing.Size(156, 156);
             rankImageSelector.TabIndex = 29;
             rankImageSelector.OnImageChanged += rankImageSelector_OnImageChanged;
@@ -206,9 +223,11 @@
             nextRankSelector.ImagePadding = 4;
             nextRankSelector.Location = new System.Drawing.Point(320, 81);
             nextRankSelector.Name = "nextRankSelector";
+            nextRankSelector.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
             nextRankSelector.Rank = null;
             nextRankSelector.RankName = "Click to Select";
             nextRankSelector.RankTitle = "Next Rank";
+            nextRankSelector.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
             nextRankSelector.ShowNextRank = false;
             nextRankSelector.Size = new System.Drawing.Size(128, 128);
             nextRankSelector.TabIndex = 30;
@@ -280,13 +299,24 @@
             radPictureBox1.Size = new System.Drawing.Size(48, 48);
             radPictureBox1.TabIndex = 37;
             // 
+            // boardButton
+            // 
+            boardButton.Location = new System.Drawing.Point(148, 563);
+            boardButton.Name = "boardButton";
+            boardButton.Size = new System.Drawing.Size(210, 32);
+            boardButton.TabIndex = 38;
+            boardButton.Text = "Promotion Board Settings";
+            boardButton.ThemeName = "Fluent";
+            boardButton.Click += boardButton_Click;
+            // 
             // RankEditor
             // 
             AutoScaleBaseSize = new System.Drawing.Size(7, 15);
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.SystemColors.ControlLightLight;
-            ClientSize = new System.Drawing.Size(507, 605);
+            ClientSize = new System.Drawing.Size(507, 668);
+            Controls.Add(boardButton);
             Controls.Add(radPictureBox1);
             Controls.Add(inheritRadioButton);
             Controls.Add(offsetRadioButton);
@@ -314,6 +344,7 @@
             Text = "Rank Editor";
             ThemeName = "Fluent";
             bottomPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)deleteButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)saveButton).EndInit();
             headerPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)radLabel1).EndInit();
@@ -331,6 +362,7 @@
             ((System.ComponentModel.ISupportInitialize)offsetRadioButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)inheritRadioButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)radPictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)boardButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)this).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -360,5 +392,7 @@
         private Telerik.WinControls.UI.RadRadioButton offsetRadioButton;
         private Telerik.WinControls.UI.RadRadioButton inheritRadioButton;
         private Telerik.WinControls.UI.RadPictureBox radPictureBox1;
+        private Telerik.WinControls.UI.RadButton boardButton;
+        private Telerik.WinControls.UI.RadButton deleteButton;
     }
 }

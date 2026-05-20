@@ -546,7 +546,7 @@ namespace Perscom
 
         private void BottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooterDark(bottomPanel, e);
+            FormStyling.StyleFormFooterDarker(bottomPanel, e);
             base.OnPaint(e);
         }
 

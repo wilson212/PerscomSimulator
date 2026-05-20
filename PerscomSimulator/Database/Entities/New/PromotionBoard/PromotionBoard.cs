@@ -82,6 +82,12 @@ namespace Perscom.Database
         /// </summary>
         [Column, Required, Default(0)]
         public virtual int TimeInGradeFactor { get; set; }
+        
+        /// <summary>
+        /// The maximum score a candidate can achieve for Form Rating.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public virtual int FormRatingMaxPoints { get; set; }
 
         #endregion
 
@@ -130,6 +136,11 @@ namespace Perscom.Database
         /// Contains the list of weights for this promotion board
         /// </summary>
         public virtual EntitySet<PromotionBoardWeight> Weights { get; set; }
+        
+        /// <summary>
+        /// Contains the list of weights for this promotion board
+        /// </summary>
+        public virtual EntitySet<PromotionBoardAddScore> AdditionalScores { get; set; }
 
         #endregion
     }

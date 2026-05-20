@@ -108,8 +108,8 @@
             label6.ForeColor = System.Drawing.SystemColors.Control;
             label6.Location = new System.Drawing.Point(26, 22);
             label6.Name = "label6";
-            label6.ShadowDirection = 90;
-            label6.ShadowOpacity = 225;
+            label6.ShadowDirection = 60;
+            label6.ShadowOpacity = 180;
             label6.ShadowSoftness = 3F;
             label6.Size = new System.Drawing.Size(717, 37);
             label6.TabIndex = 0;

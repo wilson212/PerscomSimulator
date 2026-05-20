@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using Perscom.UI;
 using Telerik.WinControls;
 
 namespace Perscom
@@ -62,6 +63,46 @@ namespace Perscom
         [Description("Gets or sets the padding in pixels applied around the rank image.")]
         [DefaultValue(0)]
         public int ImagePadding { get; set; } = 0;
+        
+        /// <summary>
+        /// The radius of the drop shadow drawn behind each rank image.
+        /// 0 = no shadow.
+        /// </summary>
+        [Category("Data")]
+        [Description("Drop shadow blur radius in pixels. 0 disables the shadow.")]
+        [DefaultValue(3)]
+        public int ShadowRadius { get; set; } = 3;
+
+        /// <summary>
+        /// The color of the drop shadow.
+        /// </summary>
+        [Category("Data")]
+        [Description("The color of the drop shadow behind each rank image.")]
+        public Color ShadowColor { get; set; } = Color.FromArgb(120, 0, 0, 0);
+
+        /// <summary>
+        /// Horizontal and vertical offset of the drop shadow in pixels.
+        /// </summary>
+        [Category("Data")]
+        [Description("Pixel offset of the drop shadow (X and Y).")]
+        [DefaultValue(2)]
+        public int ShadowOffset { get; set; } = 2;
+
+        /// <summary>
+        /// The width of the outline stroke drawn around each rank image.
+        /// 0 = no outline.
+        /// </summary>
+        [Category("Data")]
+        [Description("Width in pixels of the outline drawn around each rank image. 0 disables.")]
+        [DefaultValue(1)]
+        public int OutlineWidth { get; set; } = 1;
+
+        /// <summary>
+        /// The color of the outline drawn around each rank image.
+        /// </summary>
+        [Category("Data")]
+        [Description("The color of the outline drawn around each rank image.")]
+        public Color OutlineColor { get; set; } = Color.FromArgb(180, 0, 0, 0);
 
         /// <summary>
         /// Gets or sets the rank object associated with the control.
@@ -108,11 +149,19 @@ namespace Perscom
 
             _rank = rank;
             RankName = rank.Name;
+            int referenceH = Math.Max(1, _targetSize.Height - (ImagePadding * 2));
+
+            // Calculate the effect margin needed for shadow/outline so they don't clip
+            int effectMargin = 0;
+            if (ShadowRadius > 0 && ShadowOffset > 0)
+                effectMargin = Math.Max(effectMargin, ShadowRadius + ShadowOffset);
+            if (OutlineWidth > 0)
+                effectMargin = Math.Max(effectMargin, OutlineWidth);
 
             if (ShowNextRank && rank.NextRankId.HasValue && rank.NextRank != null)
             {
-                // Branching: still need manual compositing for two images
-                rankPictureBox.SvgImage = null; // clear SVG so .Image takes over
+                // --- Composite two-rank path ---
+                rankPictureBox.SvgImage = null;
 
                 RadSvgImage currentSvg = ImageAccessor.GetSvgImage(rank.Image);
                 RadSvgImage nextSvg = ImageAccessor.GetSvgImage(rank.NextRank.Image);
@@ -120,50 +169,57 @@ namespace Perscom
                 if (currentSvg != null && nextSvg != null)
                 {
                     int arrowSize = 16;
-                    int minGap = 2;
-                    int maxGap = 6;
-                    int gap = minGap; // Start with minimum gap for sizing calculation
-                    
+                    int minGap = 4; // minimum 4px on each side of the arrow
+
+                    // Full area for the bitmap
+                    int fullW = Math.Max(1, _targetSize.Width - (ImagePadding * 2));
+                    int fullH = Math.Max(1, _targetSize.Height - (ImagePadding * 2));
+
+                    // Padded target for ScaleToFit (shrunk by effect margin)
                     var paddedTarget = new Size(
-                        Math.Max(1, _targetSize.Width - (ImagePadding * 2)),
-                        Math.Max(1, _targetSize.Height - (ImagePadding * 2))
+                        Math.Max(1, fullW - (effectMargin * 2)),
+                        Math.Max(1, fullH - (effectMargin * 2))
                     );
 
                     // Calculate available width for BOTH rank images combined
-                    int reservedWidth = arrowSize + (gap * 2); // arrow + gaps on each side
-                    int availableForRanks = paddedTarget.Width - reservedWidth; // e.g. 96 - 20 = 76
-                    int perRankMaxWidth = availableForRanks / 2; // e.g. 38px each
+                    int reservedWidth = arrowSize + (minGap * 2);
+                    int availableForRanks = paddedTarget.Width - reservedWidth;
+                    int perRankMaxWidth = availableForRanks / 2;
 
-                    // Target size accounts for total composition width
                     Size rankTargetSize = new Size(perRankMaxWidth, paddedTarget.Height);
 
-                    // Calculate scaled sizes maintaining aspect ratios
-                    Size currentScaledSize = ScaleToFit(currentSvg.Size, rankTargetSize);
-                    Size nextScaledSize = ScaleToFit(nextSvg.Size, rankTargetSize);
+                    Size currentScaledSize = Imager.ScaleToFit(currentSvg.Size, rankTargetSize);
+                    Size nextScaledSize = Imager.ScaleToFit(nextSvg.Size, rankTargetSize);
 
-                    // Validate sizes before proceeding
                     if (currentScaledSize.Width <= 0 || currentScaledSize.Height <= 0 ||
                         nextScaledSize.Width <= 0 || nextScaledSize.Height <= 0)
                     {
                         var oldImage = rankPictureBox.Image;
                         rankPictureBox.SvgImage = null;
-                        rankPictureBox.Image = currentSvg.GetRasterImage(new Size(64, 64));
+                        var fallbackSize = Imager.ScaleToFit(currentSvg.Size, paddedTarget);
+                        rankPictureBox.Image = currentSvg.GetRasterImage(fallbackSize);
                         oldImage?.Dispose();
                         return;
                     }
 
-                    // Total width of the composition
-                    int compositionWidth = currentScaledSize.Width + gap + arrowSize + gap + nextScaledSize.Width;
-                    int startX = Math.Max(0, (paddedTarget.Width - compositionWidth) / 2);
+                    // Total minimum composition width
+                    int minCompositionWidth = currentScaledSize.Width + (minGap * 2) + arrowSize + nextScaledSize.Width;
 
-                    // Create composite bitmap
+                    // Distribute any extra space equally to both gaps
+                    int extraSpace = Math.Max(0, fullW - minCompositionWidth);
+                    int gap = minGap + (extraSpace / 2);
+
+                    // Recalculate actual composition width with the final gap
+                    int compositionWidth = currentScaledSize.Width + gap + arrowSize + gap + nextScaledSize.Width;
+                    int startX = Math.Max(0, (fullW - compositionWidth) / 2);
+
                     Bitmap composite = null;
                     Bitmap currentBmp = null;
                     Bitmap nextBmp = null;
 
                     try
                     {
-                        composite = new Bitmap(paddedTarget.Width, paddedTarget.Height);
+                        composite = new Bitmap(fullW, fullH);
                         using (Graphics g = Graphics.FromImage(composite))
                         {
                             g.Clear(Color.Transparent);
@@ -171,109 +227,149 @@ namespace Perscom
                             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                             g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
 
-                            // Rasterize images
                             currentBmp = currentSvg.GetRasterImage(currentScaledSize);
                             nextBmp = nextSvg.GetRasterImage(nextScaledSize);
 
                             // Draw current rank (left side)
                             if (currentBmp != null && currentBmp.Width > 0 && currentBmp.Height > 0)
                             {
-                                int currentY = Math.Max(0, (paddedTarget.Height - currentScaledSize.Height) / 2);
+                                int currentY = Math.Max(0, (fullH - currentScaledSize.Height) / 2);
+
+                                // Scale effects to match the smaller image size
+                                int scaledShadowRadius = Imager.ScaleEffect(ShadowRadius, currentScaledSize.Height, referenceH);
+                                int scaledShadowOffset = Imager.ScaleEffect(ShadowOffset, currentScaledSize.Height, referenceH);
+                                int scaledOutlineWidth = Imager.ScaleEffect(OutlineWidth, currentScaledSize.Height, referenceH);
+
+                                if (scaledShadowRadius > 0)
+                                    Imager.DrawDropShadow(g, currentBmp, startX, currentY,
+                                        currentScaledSize.Width, currentScaledSize.Height,
+                                        scaledShadowRadius, scaledShadowOffset, ShadowColor);
+
+                                if (scaledOutlineWidth > 0)
+                                    Imager.DrawOutline(g, currentBmp, startX, currentY,
+                                        currentScaledSize.Width, currentScaledSize.Height,
+                                        scaledOutlineWidth, OutlineColor);
+
                                 g.DrawImage(currentBmp, startX, currentY, currentScaledSize.Width, currentScaledSize.Height);
                             }
 
                             // Draw arrow in the center between the two ranks
                             int arrowX = startX + currentScaledSize.Width + gap;
-                            int arrowY = (paddedTarget.Height - 8) / 2; // Vertically centered
+                            int arrowY = ((fullH - arrowSize) / 2) + 1; // +1 nudge to visually center
                             g.DrawImage(Resources.double_arrow_right, arrowX, arrowY, arrowSize, arrowSize);
 
-                            // Draw next rank (right side, full size)
+                            // Draw next rank (right side)
                             if (nextBmp != null && nextBmp.Width > 0 && nextBmp.Height > 0)
                             {
                                 int nextX = arrowX + arrowSize + gap;
-                                int nextY = Math.Max(0, (paddedTarget.Height - nextScaledSize.Height) / 2);
+                                int nextY = Math.Max(0, (fullH - nextScaledSize.Height) / 2);
+
+                                int scaledShadowRadiusNext = Imager.ScaleEffect(ShadowRadius, nextScaledSize.Height, referenceH);
+                                int scaledShadowOffsetNext = Imager.ScaleEffect(ShadowOffset, nextScaledSize.Height, referenceH);
+                                int scaledOutlineWidthNext = Imager.ScaleEffect(OutlineWidth, nextScaledSize.Height, referenceH);
+
+                                if (scaledShadowRadiusNext > 0)
+                                    Imager.DrawDropShadow(g, nextBmp, nextX, nextY,
+                                        nextScaledSize.Width, nextScaledSize.Height,
+                                        scaledShadowRadiusNext, scaledShadowOffsetNext, ShadowColor);
+
+                                if (scaledOutlineWidthNext > 0)
+                                    Imager.DrawOutline(g, nextBmp, nextX, nextY,
+                                        nextScaledSize.Width, nextScaledSize.Height,
+                                        scaledOutlineWidthNext, OutlineColor);
+
                                 g.DrawImage(nextBmp, nextX, nextY, nextScaledSize.Width, nextScaledSize.Height);
                             }
                         }
 
-                        // Store old image reference
                         var oldImage = rankPictureBox.Image;
-                        
-                        // Set new image
                         rankPictureBox.Image = composite;
                         oldImage?.Dispose();
                     }
                     catch (Exception ex)
                     {
-                        // Clean up on error
                         composite?.Dispose();
                         System.Diagnostics.Debug.WriteLine($"Error creating composite rank image: {ex.Message}");
-                        
-                        // Fallback: just show the current rank
+
                         var oldImage = rankPictureBox.Image;
-                        rankPictureBox.Image = currentSvg?.GetRasterImage(new Size(64, 64));
+                        var fallbackPadded = new Size(
+                            Math.Max(1, _targetSize.Width - (ImagePadding * 2)),
+                            Math.Max(1, _targetSize.Height - (ImagePadding * 2))
+                        );
+                        var fallbackSize = Imager.ScaleToFit(currentSvg.Size, fallbackPadded);
+                        rankPictureBox.Image = currentSvg?.GetRasterImage(fallbackSize);
                         oldImage?.Dispose();
                     }
                 }
             }
             else
             {
-                // Scale down SVG to fit the picture box while maintaining aspect ratio
+                // --- Single rank path ---
                 var svgImage = ImageAccessor.GetSvgImage(rank.Image);
                 if (svgImage != null)
                 {
-                    // Calculate the scaled size maintaining aspect ratio
-                    var paddedSize = new Size(
-                        Math.Max(1, _targetSize.Width - (ImagePadding * 2)),
-                        Math.Max(1, _targetSize.Height - (ImagePadding * 2))
-                    );
-                    Size scaledSize = ScaleToFit(svgImage.Size, paddedSize);
+                    int fullW = Math.Max(1, _targetSize.Width - (ImagePadding * 2));
+                    int fullH = Math.Max(1, _targetSize.Height - (ImagePadding * 2));
 
-                    // Rasterize at the scaled size
-                    var oldImage = rankPictureBox.Image;
-                    rankPictureBox.SvgImage = null;
-                    rankPictureBox.Image = svgImage.GetRasterImage(scaledSize);
-                    oldImage?.Dispose();
+                    // Shrink the scale target by the effect margin so shadow/outline don't clip
+                    var paddedSize = new Size(
+                        Math.Max(1, fullW - (effectMargin * 2)),
+                        Math.Max(1, fullH - (effectMargin * 2))
+                    );
+                    Size scaledSize = Imager.ScaleToFit(svgImage.Size, paddedSize);
+                    if (scaledSize.Width <= 0 || scaledSize.Height <= 0)
+                        scaledSize = new Size(1, 1);
+
+                    Bitmap composite = null;
+                    try
+                    {
+                        composite = new Bitmap(fullW, fullH);
+                        using (Graphics g = Graphics.FromImage(composite))
+                        {
+                            g.Clear(Color.Transparent);
+                            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                            var bmp = svgImage.GetRasterImage(scaledSize);
+                            if (bmp != null && bmp.Width > 0 && bmp.Height > 0)
+                            {
+                                int x = (fullW - scaledSize.Width) / 2;
+                                int y = (fullH - scaledSize.Height) / 2;
+
+                                if (ShadowRadius > 0)
+                                    Imager.DrawDropShadow(g, bmp, x, y, scaledSize.Width, scaledSize.Height,
+                                        ShadowRadius, ShadowOffset, ShadowColor);
+
+                                if (OutlineWidth > 0)
+                                    Imager.DrawOutline(g, bmp, x, y, scaledSize.Width, scaledSize.Height,
+                                        OutlineWidth, OutlineColor);
+
+                                g.DrawImage(bmp, x, y, scaledSize.Width, scaledSize.Height);
+                            }
+                        }
+
+                        var oldImage = rankPictureBox.Image;
+                        rankPictureBox.SvgImage = null;
+                        rankPictureBox.Image = composite;
+                        oldImage?.Dispose();
+                    }
+                    catch
+                    {
+                        composite?.Dispose();
+                    }
                 }
                 else
-                { 
+                {
                     var oldImage = rankPictureBox.Image;
-                    rankPictureBox.Image = null; 
+                    rankPictureBox.Image = null;
                     oldImage?.Dispose();
                 }
             }
-            
+
             rankPictureBox.Invalidate();
         }
-
-        /// <summary>
-        /// Calculates a size that fits within the target size while maintaining aspect ratio.
-        /// </summary>
-        private Size ScaleToFit(Size source, Size target)
-        {
-            if (source.Width == 0 || source.Height == 0 || target.Width == 0 || target.Height == 0)
-                return target;
-
-            float sourceRatio = (float)source.Width / source.Height;
-            float targetRatio = (float)target.Width / target.Height;
-
-            int width, height;
-
-            if (sourceRatio > targetRatio)
-            {
-                // Source is wider, fit to width
-                width = target.Width;
-                height = (int)(target.Width / sourceRatio);
-            }
-            else
-            {
-                // Source is taller, fit to height
-                height = target.Height;
-                width = (int)(target.Height * sourceRatio);
-            }
-
-            return new Size(width, height);
-        }
+        
 
         private void OpenRankSelector(object sender, EventArgs e)
         {

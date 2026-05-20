@@ -29,6 +29,10 @@ namespace Perscom
         public static readonly Color AccentColor = Color.FromArgb(0, 153, 188);
         public static readonly Color AccentMouseOverColor = Color.FromArgb(0, 191, 232);
         public static readonly Color AccentPressedColor = Color.FromArgb(0, 135, 164);
+        
+        public static readonly Color GrayAccentColor = Color.FromArgb(204, 204, 204);
+        public static readonly Color GrayAccentMouseOverColor = Color.FromArgb(216, 216, 216);
+        public static readonly Color GrayAccentPressedColor = Color.FromArgb(164, 164, 164);
 
         public static readonly Color DarkBlueAccentColor = Color.FromArgb(45, 100, 160);
         public static readonly Color DarkBlueAccentMouseOverColor = Color.FromArgb(65, 130, 210);
@@ -61,7 +65,7 @@ namespace Perscom
                 if (control is RadControl radControl)
                 {
                     if (radControl.ThemeName == "Fluent")
-                        radControl.ThemeName = "FluentPerscomBlue";
+                        radControl.ThemeName = Program.ThemeName;
                 }
 
                 // Recursively check children (panels, groupboxes, tab pages, etc.)
@@ -73,16 +77,26 @@ namespace Perscom
         }
 
         /// <summary>
+        /// Applies the Theme to the form and its controls
+        /// </summary>
+        /// <param name="form"></param>
+        public static void ApplyTheme(RadForm form)
+        {
+            form.BackColor = SystemColors.ControlLightLight;
+            ApplyControlsTheme(form.Controls);
+        }
+
+        /// <summary>
         /// Provides Fluent theme styling to a <see cref="RadButton"/> using the specified colors
         /// </summary>
         /// <param name="button"></param>
         /// <param name="accentColor"></param>
         /// <param name="mouseOverColor"></param>
         /// <param name="pressedColor"></param>
-        public static void StyleButton(RadButton button, Color accentColor, Color mouseOverColor, Color pressedColor)
+        public static void StyleButton(RadButton button, Color accentColor, Color mouseOverColor, Color pressedColor, Color textColor)
         {
             // Set the font color
-            button.ButtonElement.ForeColor = Color.White;
+            button.ButtonElement.ForeColor = textColor;
 
             ///
             /// Default State
@@ -156,10 +170,10 @@ namespace Perscom
         /// <param name="accentColor"></param>
         /// <param name="mouseOverColor"></param>
         /// <param name="pressedColor"></param>
-        public static void StyleButton(RadButton button, Color accentColor, Color mouseOverColor, Color pressedColor, Color focusColor)
+        public static void StyleButton(RadButton button, Color accentColor, Color mouseOverColor, Color pressedColor, Color focusColor, Color textColor)
         {
             // Use base method
-            StyleButton(button, accentColor, mouseOverColor, pressedColor);
+            StyleButton(button, accentColor, mouseOverColor, pressedColor, textColor);
 
             ///
             /// Focused State (Border/Glow)
@@ -179,12 +193,51 @@ namespace Perscom
         }
 
         /// <summary>
+        /// Styles the button exactly like the default Fluent button
+        /// </summary>
+        /// <param name="button"></param>
+        public static void StyleButtonFluentDefault(RadButton button)
+        {
+            // Reset Font Color
+            button.ButtonElement.ResetThemeValueOverride(VisualElement.ForeColorProperty);
+            button.ButtonElement.ForeColor = Color.Black;
+
+            // Reset Default State
+            button.ButtonElement.ResetThemeValueOverride(VisualElement.BackColorProperty, "");
+            button.ButtonElement.ResetThemeValueOverride(FillPrimitive.GradientStyleProperty, "");
+
+            // Reset Mouse Over State
+            button.ButtonElement.ResetThemeValueOverride(VisualElement.BackColorProperty, "MouseOver");
+            button.ButtonElement.ResetThemeValueOverride(FillPrimitive.GradientStyleProperty, "MouseOver");
+
+            // Reset Pressed State
+            button.ButtonElement.ResetThemeValueOverride(VisualElement.BackColorProperty, "Pressed");
+            button.ButtonElement.ResetThemeValueOverride(FillPrimitive.GradientStyleProperty, "Pressed");
+
+            // Reset Is Default State
+            button.ButtonElement.ResetThemeValueOverride(VisualElement.BackColorProperty, "IsDefault");
+            button.ButtonElement.ResetThemeValueOverride(FillPrimitive.GradientStyleProperty, "IsDefault");
+
+            // Reset Focus State
+            button.ButtonElement.ResetThemeValueOverride(BorderPrimitive.ForeColorProperty, "IsFocused");
+            button.ButtonElement.ResetThemeValueOverride(BorderPrimitive.GradientStyleProperty, "IsFocused");
+        }
+
+        /// <summary>
         /// Converts a Fluent gray button to a blue color using the FluentPallete
         /// colors
         /// </summary>
         /// <param name="button"></param>
         public static void StyleButtonFluentBlue(RadButton button) 
-            => StyleButton(button, AccentColor, AccentMouseOverColor, AccentPressedColor);
+            => StyleButton(button, AccentColor, AccentMouseOverColor, AccentPressedColor, Color.White);
+        
+        /// <summary>
+        /// Converts a Fluent gray button to the default Gray color using the FluentPallete
+        /// colors
+        /// </summary>
+        /// <param name="button"></param>
+        public static void StyleButtonFluentAltGray(RadButton button) 
+            => StyleButton(button, GrayAccentColor, GrayAccentMouseOverColor, GrayAccentPressedColor, Color.Black);
 
         /// <summary>
         /// Converts a Fluent gray button to a blue color using the FluentPallete
@@ -192,14 +245,14 @@ namespace Perscom
         /// </summary>
         /// <param name="button"></param>
         public static void StyleButtonDarkBlue(RadButton button)
-            => StyleButton(button, DarkBlueAccentColor, DarkBlueAccentMouseOverColor, DarkBlueAccentPressedColor);
+            => StyleButton(button, DarkBlueAccentColor, DarkBlueAccentMouseOverColor, DarkBlueAccentPressedColor, Color.White);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="button"></param>
         public static void StyleButtonBlue(RadButton button)
-            => StyleButton(button, BlueAccentColor, BlueAccentMouseOverColor, BlueAccentPressedColor);
+            => StyleButton(button, BlueAccentColor, BlueAccentMouseOverColor, BlueAccentPressedColor, Color.White);
 
         /// <summary>
         /// Converts a Fluent gray button to a red color using the FluentPallete
@@ -207,7 +260,7 @@ namespace Perscom
         /// </summary>
         /// <param name="button"></param>
         public static void StyleButtonRed(RadButton button)
-            => StyleButton(button, RedAccentColor, RedAccentMouseOverColor, RedAccentPressedColor);
+            => StyleButton(button, RedAccentColor, RedAccentMouseOverColor, RedAccentPressedColor, Color.White);
 
         /// <summary>
         /// Converts a Fluent gray button to a green color using the FluentPallete
@@ -215,7 +268,7 @@ namespace Perscom
         /// </summary>
         /// <param name="button"></param>
         public static void StyleButtonGreen(RadButton button)
-            => StyleButton(button, GreenAccentColor, GreenAccentMouseOverColor, GreenAccentPressedColor);
+            => StyleButton(button, GreenAccentColor, GreenAccentMouseOverColor, GreenAccentPressedColor, Color.White);
 
         /// <summary>
         /// Applies the dark background to a Form's header panel, as well as applying
@@ -270,7 +323,7 @@ namespace Perscom
         /// <summary>
         /// Applies the Gray background to a Form's footer panel.
         /// </summary>
-        public static void StyleFormFooterGray(Panel bottomPanel, PaintEventArgs e)
+        public static void StyleFormFooter(Panel bottomPanel, PaintEventArgs e)
         {
             // Set background color
             bottomPanel.BackColor = PANEL_COLOR_DARK;
@@ -298,7 +351,7 @@ namespace Perscom
         /// <summary>
         /// Applies the Gray background to a Form's footer panel.
         /// </summary>
-        public static void StyleFormFooterDark(Panel bottomPanel, PaintEventArgs e)
+        public static void StyleFormFooterDarker(Panel bottomPanel, PaintEventArgs e)
         {
             // Set background color
             bottomPanel.BackColor = PANEL_COLOR_DARKER;
@@ -322,7 +375,7 @@ namespace Perscom
         /// <summary>
         /// Applies the Gray background to a Form's footer panel.
         /// </summary>
-        public static void StyleFormFooter(RadPanel bottomPanel)
+        public static void StyleRadPanelFooter(RadPanel bottomPanel)
         {
             // Set background color
             bottomPanel.BackColor = PANEL_COLOR_GRAY;

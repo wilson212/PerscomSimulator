@@ -34,13 +34,13 @@
             bottomPanel = new System.Windows.Forms.Panel();
             CloseButton = new Telerik.WinControls.UI.RadButton();
             radTreeView1 = new Telerik.WinControls.UI.RadTreeView();
-            radLabel4 = new Telerik.WinControls.UI.RadLabel();
             TreeContextMenu = new Telerik.WinControls.UI.RadContextMenu(components);
             addGradeMenuItem = new Telerik.WinControls.UI.RadMenuItem();
             wizardMenuItem = new Telerik.WinControls.UI.RadMenuItem();
             aiMenuItem = new Telerik.WinControls.UI.RadMenuItem();
             radMenuSeparatorItem1 = new Telerik.WinControls.UI.RadMenuSeparatorItem();
             deleteGradeMenuItem = new Telerik.WinControls.UI.RadMenuItem();
+            radLabel4 = new Telerik.WinControls.UI.RadLabel();
             applyButton = new Telerik.WinControls.UI.RadButton();
             radLabel15 = new Telerik.WinControls.UI.RadLabel();
             radLabel1 = new Telerik.WinControls.UI.RadLabel();
@@ -142,14 +142,6 @@
             radTreeView1.ThemeName = "Fluent";
             radTreeView1.SelectedNodeChanged += radTreeView1_SelectedNodeChanged;
             // 
-            // radLabel4
-            // 
-            radLabel4.Location = new System.Drawing.Point(26, 505);
-            radLabel4.Name = "radLabel4";
-            radLabel4.Size = new System.Drawing.Size(171, 18);
-            radLabel4.TabIndex = 17;
-            radLabel4.Text = "Right click to open context menu";
-            // 
             // TreeContextMenu
             // 
             TreeContextMenu.Items.AddRange(new Telerik.WinControls.RadItem[] { addGradeMenuItem, wizardMenuItem, aiMenuItem, radMenuSeparatorItem1, deleteGradeMenuItem });
@@ -180,6 +172,14 @@
             deleteGradeMenuItem.Name = "deleteGradeMenuItem";
             deleteGradeMenuItem.Text = "Delete Rank Grade";
             // 
+            // radLabel4
+            // 
+            radLabel4.Location = new System.Drawing.Point(26, 505);
+            radLabel4.Name = "radLabel4";
+            radLabel4.Size = new System.Drawing.Size(171, 18);
+            radLabel4.TabIndex = 17;
+            radLabel4.Text = "Right click to open context menu";
+            // 
             // applyButton
             // 
             applyButton.Location = new System.Drawing.Point(245, 564);
@@ -188,6 +188,7 @@
             applyButton.TabIndex = 19;
             applyButton.Text = "Apply Changes";
             applyButton.ThemeName = "Fluent";
+            applyButton.Click += ApplyButton_Click;
             // 
             // radLabel15
             // 
@@ -284,6 +285,7 @@
             boardButton.TabIndex = 23;
             boardButton.Text = "Rank Grade Promotion Board";
             boardButton.ThemeName = "Fluent";
+            boardButton.Click += BoardButton_Click;
             // 
             // selectionTypeDropDownList
             // 
@@ -377,7 +379,11 @@
             radRankSelector4.ImagePadding = 4;
             radRankSelector4.Location = new System.Drawing.Point(378, 9);
             radRankSelector4.Name = "radRankSelector4";
+            radRankSelector4.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
+            radRankSelector4.OutlineWidth = 0;
             radRankSelector4.Rank = null;
+            radRankSelector4.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
+            radRankSelector4.ShadowRadius = 1;
             radRankSelector4.Size = new System.Drawing.Size(124, 140);
             radRankSelector4.TabIndex = 7;
             // 
@@ -387,7 +393,11 @@
             radRankSelector3.ImagePadding = 4;
             radRankSelector3.Location = new System.Drawing.Point(254, 9);
             radRankSelector3.Name = "radRankSelector3";
+            radRankSelector3.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
+            radRankSelector3.OutlineWidth = 0;
             radRankSelector3.Rank = null;
+            radRankSelector3.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
+            radRankSelector3.ShadowRadius = 1;
             radRankSelector3.Size = new System.Drawing.Size(124, 140);
             radRankSelector3.TabIndex = 6;
             // 
@@ -397,7 +407,11 @@
             radRankSelector2.ImagePadding = 4;
             radRankSelector2.Location = new System.Drawing.Point(130, 9);
             radRankSelector2.Name = "radRankSelector2";
+            radRankSelector2.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
+            radRankSelector2.OutlineWidth = 0;
             radRankSelector2.Rank = null;
+            radRankSelector2.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
+            radRankSelector2.ShadowRadius = 1;
             radRankSelector2.Size = new System.Drawing.Size(124, 140);
             radRankSelector2.TabIndex = 5;
             // 
@@ -407,7 +421,11 @@
             radRankSelector1.ImagePadding = 4;
             radRankSelector1.Location = new System.Drawing.Point(6, 9);
             radRankSelector1.Name = "radRankSelector1";
+            radRankSelector1.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
+            radRankSelector1.OutlineWidth = 0;
             radRankSelector1.Rank = null;
+            radRankSelector1.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
+            radRankSelector1.ShadowRadius = 1;
             radRankSelector1.Size = new System.Drawing.Size(124, 140);
             radRankSelector1.TabIndex = 4;
             // 
@@ -441,8 +459,8 @@
             label6.ForeColor = System.Drawing.SystemColors.Control;
             label6.Location = new System.Drawing.Point(26, 22);
             label6.Name = "label6";
-            label6.ShadowDirection = 90;
-            label6.ShadowOpacity = 225;
+            label6.ShadowDirection = 60;
+            label6.ShadowOpacity = 180;
             label6.ShadowSoftness = 3F;
             label6.Size = new System.Drawing.Size(717, 37);
             label6.TabIndex = 0;

@@ -94,6 +94,11 @@ namespace Perscom.Database
         /// Gets a set of <see cref="PromotionBoardWeight"/> entites stored in the database
         /// </summary>
         public DbSet<PromotionBoardWeight> PromotionBoardWeights { get; set; }
+        
+        /// <summary>
+        /// Gets a set of <see cref="PromotionBoardAddScore"/> entites stored in the database
+        /// </summary>
+        public DbSet<PromotionBoardAddScore> PromotionBoardAddScores { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="Rank"/> entites stored in the database
@@ -226,6 +231,7 @@ namespace Perscom.Database
             SelectionSoldierPools = new DbSet<SelectionSoldierPool>(this);
             PromotionBoards = new DbSet<PromotionBoard>(this);
             PromotionBoardWeights = new DbSet<PromotionBoardWeight>(this);
+            PromotionBoardAddScores = new DbSet<PromotionBoardAddScore>(this);
 
             // Migrations
             MigrationWizard wizard = new MigrationWizard(this);
@@ -264,6 +270,7 @@ namespace Perscom.Database
                 // ============================================================
 
                 // Tier 5: Leaf tables (depend on Tier 4 or lower)
+                this.DropTable<PromotionBoardAddScore>();
                 this.DropTable<PromotionBoardWeight>();
                 this.DropTable<SelectionSoldierPool>();
                 this.DropTable<SelectionSorting>();
@@ -340,6 +347,7 @@ namespace Perscom.Database
                 this.CreateTable<SelectionSorting>();
                 this.CreateTable<SelectionSoldierPool>();           // -> CustomSelectionProceedure, Rank
                 this.CreateTable<PromotionBoardWeight>();           // -> PromotionBoard
+                this.CreateTable<PromotionBoardAddScore>();         // -> PromotionBoard
 
                 // Seed Echelons
                 Echelons = new DbSet<Echelon>(this);

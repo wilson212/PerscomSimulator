@@ -86,8 +86,8 @@
             label6.ForeColor = System.Drawing.SystemColors.Control;
             label6.Location = new System.Drawing.Point(26, 22);
             label6.Name = "label6";
-            label6.ShadowDirection = 90;
-            label6.ShadowOpacity = 225;
+            label6.ShadowDirection = 60;
+            label6.ShadowOpacity = 180;
             label6.ShadowSoftness = 3F;
             label6.Size = new System.Drawing.Size(237, 37);
             label6.TabIndex = 0;
@@ -96,7 +96,7 @@
             // rankDropDownList
             // 
             rankDropDownList.Location = new System.Drawing.Point(44, 163);
-            rankDropDownList.Name = "radDropDownList1";
+            rankDropDownList.Name = "rankDropDownList";
             rankDropDownList.Size = new System.Drawing.Size(282, 24);
             rankDropDownList.TabIndex = 20;
             rankDropDownList.Text = "Select Rank";

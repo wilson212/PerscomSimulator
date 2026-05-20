@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Telerik.WinControls;
 using Telerik.WinControls.UI;
+using Telerik.Windows.Documents.Flow.FormatProviders.Html;
 
 namespace Perscom
 {
@@ -16,10 +17,18 @@ namespace Perscom
         public AttributeType SelectedAttribute { get; private set; }
 
         /// <summary>
+        /// The Expected level value after the user clicks Save
+        /// </summary>
+        public int ExpectedLevel { get; private set; }
+
+        /// <summary>
         /// The max points value after the user clicks Save
         /// </summary>
         public int MaxPoints { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private HashSet<AttributeType> _excludedAttributes = new();
 
         /// <summary>
@@ -36,7 +45,7 @@ namespace Perscom
         /// <summary>
         /// Creates a new GradedAttributeForm in Edit mode, excluding other attributes already on the board
         /// </summary>
-        public GradedAttributeForm(AttributeType attribute, int weight, IEnumerable<AttributeType> excludedAttributes)
+        public GradedAttributeForm(AttributeType attribute, int expLevel, int maxPoints, IEnumerable<AttributeType> excludedAttributes)
             : this(excludedAttributes)
         {
             // Pre-select the current attribute
@@ -48,7 +57,8 @@ namespace Perscom
                     break;
                 }
             }
-            scoreSpinEditor.Value = weight;
+            scoreSpinEditor.Value = maxPoints;
+            expLvlSpinEditor.Value = expLevel;
         }
 
         /// <summary>
@@ -86,7 +96,7 @@ namespace Perscom
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            // Validate selection
+            // ValidateAndAlertUserOnFail selection
             if (attrDropDownList.SelectedItem == null || attrDropDownList.SelectedItem.Tag is not AttributeType)
             {
                 MessageBox.Show("Please select an attribute.", "Validation",
@@ -96,6 +106,7 @@ namespace Perscom
 
             SelectedAttribute = (AttributeType)attrDropDownList.SelectedItem.Tag;
             MaxPoints = (int)scoreSpinEditor.Value;
+            ExpectedLevel = (int)expLvlSpinEditor.Value;
 
             DialogResult = DialogResult.OK;
             Close();
@@ -111,7 +122,7 @@ namespace Perscom
 
         private void bottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooterGray(bottomPanel, e);
+            FormStyling.StyleFormFooter(bottomPanel, e);
             base.OnPaint(e);
         }
 

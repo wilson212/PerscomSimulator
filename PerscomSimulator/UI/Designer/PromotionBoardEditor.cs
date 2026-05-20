@@ -1,10 +1,13 @@
 ﻿using Perscom.Database;
+using Perscom.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Telerik.WinControls;
 using Telerik.WinControls.UI;
 
 namespace Perscom
@@ -42,6 +45,11 @@ namespace Perscom
         private List<PromotionBoardWeight> Weights { get; set; } = [];
 
         /// <summary>
+        /// Represents a collection of additional scores associated with the promotion board.
+        /// </summary>
+        private List<PromotionBoardAddScore> AdditionalScores { get; set; } = [];
+
+        /// <summary>
         /// Master constructor — all public constructors funnel into this one.
         /// Exactly one of <paramref name="rank"/> or <paramref name="rankClassification"/> 
         /// must be non-null (unless editing an existing board).
@@ -53,9 +61,9 @@ namespace Perscom
             InitializeComponent();
             FormStyling.ApplyControlsTheme(Controls);
 
-            // For some reason these arent apart of the forms Controls
-            gradedItemsContextMenu.ThemeName = "FluentPerscomBlue";
-            additionalContextMenu.ThemeName = "FluentPerscomBlue";
+            // For some reason these aren't a part of the forms Controls
+            gradedItemsContextMenu.ThemeName = Program.ThemeName;
+            additionalContextMenu.ThemeName = Program.ThemeName;
 
             // Button styling
             FormStyling.StyleButtonDarkBlue(saveButton);
@@ -71,7 +79,7 @@ namespace Perscom
                 });
             }
             boardTypeDropDownList.SelectedIndex = 0;
-            
+
             // Existing board?
             if (existing != null)
             {
@@ -120,10 +128,112 @@ namespace Perscom
             // Register for events
             addAttrMenuItem.Click += AddAttrMenuItem_Click;
             editAttrMenuItem.Click += EditAttrMenuItem_Click;
+            deleteAttrMenuItem.Click += DeleteAttrMenuItem_Click;
+            addScoreMenuItem.Click += AddScoreMenuItem_Click;
+            editScoreMenuItem.Click += EditScoreMenuItem_Click;
+            deleteScoreMenuItem.Click += DeleteScoreMenuItem_Click;
 
             // Context menu enable/disable logic
             gradedItemsContextMenu.DropDownOpening += GradedItemsContextMenu_DropDownOpening;
             additionalContextMenu.DropDownOpening += AdditionalContextMenu_DropDownOpening;
+        }
+
+        private void DeleteScoreMenuItem_Click(object sender, EventArgs e)
+        {
+            if (addScoresGridView.SelectedRows.Count == 0) return;
+
+            int rowIndex = addScoresGridView.SelectedRows[0].Index;
+            if (rowIndex < 0 || rowIndex >= AdditionalScores.Count) return;
+
+            var result = MessageBox.Show(
+                "Are you sure you want to remove this score entry?",
+                "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            AdditionalScores.RemoveAt(rowIndex);
+            addScoresGridView.Rows.RemoveAt(rowIndex);
+
+            RecalculateTotalPoints();
+        }
+
+        private void DeleteAttrMenuItem_Click(object sender, EventArgs e)
+        {
+            if (attrWeightsGridView.SelectedRows.Count == 0) return;
+
+            int rowIndex = attrWeightsGridView.SelectedRows[0].Index;
+            if (rowIndex < 0 || rowIndex >= Weights.Count) return;
+
+            var result = MessageBox.Show(
+                "Are you sure you want to remove this attribute weight?",
+                "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            Weights.RemoveAt(rowIndex);
+            attrWeightsGridView.Rows.RemoveAt(rowIndex);
+
+            RecalculateTotalPoints();
+        }
+
+        private void EditScoreMenuItem_Click(object sender, EventArgs e)
+        {
+            if (addScoresGridView.SelectedRows.Count == 0) return;
+
+            int rowIndex = addScoresGridView.SelectedRows[0].Index;
+            if (rowIndex < 0 || rowIndex >= AdditionalScores.Count) return;
+
+            var current = AdditionalScores[rowIndex];
+
+            using var frm = new GradedScoreForm(
+                current.Selector, (SoldierFunction)current.SelectorId, current.Operator,
+                current.ExpectedLevel, current.Points);
+
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                current.Selector = frm.SelectedMethod;
+                current.SelectorId = (int)frm.SelectedValue;
+                current.Operator = frm.SelectedOperator;
+                current.ExpectedLevel = frm.RequiredValue;
+                current.Points = frm.PointsValue;
+
+                string functionText = $"{current.Selector}.{(SoldierFunction)current.SelectorId}";
+
+                addScoresGridView.Rows[rowIndex].Cells["column1"].Value = functionText;
+                addScoresGridView.Rows[rowIndex].Cells["column2"].Value = Enum.GetName(typeof(ComparisonOperator), current.Operator);
+                addScoresGridView.Rows[rowIndex].Cells["column3"].Value = current.ExpectedLevel.ToString();
+                addScoresGridView.Rows[rowIndex].Cells["column4"].Value = current.Points.ToString();
+
+                RecalculateTotalPoints();
+            }
+        }
+
+        private void AddScoreMenuItem_Click(object sender, EventArgs e)
+        {
+            using var frm = new GradedScoreForm();
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                var score = new PromotionBoardAddScore
+                {
+                    Selector = frm.SelectedMethod,
+                    SelectorId = (int)frm.SelectedValue,
+                    Operator = frm.SelectedOperator,
+                    ExpectedLevel = frm.RequiredValue,
+                    Points = frm.PointsValue
+                };
+                AdditionalScores.Add(score);
+
+                string functionText = $"{score.Selector}.{(SoldierFunction)score.SelectorId}";
+
+                addScoresGridView.Rows.Add(
+                    functionText,
+                    Enum.GetName(typeof(ComparisonOperator), score.Operator),
+                    score.ExpectedLevel.ToString(),
+                    score.Points.ToString()
+                );
+
+                RecalculateTotalPoints();
+            }
         }
 
         /// <summary>
@@ -147,16 +257,16 @@ namespace Perscom
                 .Where(w => w.Attribute != current.Attribute)
                 .Select(w => w.Attribute);
 
-            using var frm = new GradedAttributeForm(current.Attribute, current.Weight, excludedAttributes);
+            using var frm = new GradedAttributeForm(current.Attribute, current.ExpectedLevel, current.Points, excludedAttributes);
             if (frm.ShowDialog(this) == DialogResult.OK)
             {
                 current.Attribute = frm.SelectedAttribute;
-                current.Weight = frm.MaxPoints;
+                current.ExpectedLevel = frm.ExpectedLevel;
+                current.Points = frm.MaxPoints;
 
-                attrWeightsGridView.Rows[rowIndex].Cells["column1"].Value =
-                    Enum.GetName(typeof(AttributeType), current.Attribute);
-                attrWeightsGridView.Rows[rowIndex].Cells["column2"].Value =
-                    current.Weight.ToString();
+                attrWeightsGridView.Rows[rowIndex].Cells["column1"].Value = Enum.GetName(typeof(AttributeType), current.Attribute);
+                attrWeightsGridView.Rows[rowIndex].Cells["column2"].Value = current.ExpectedLevel.ToString();
+                attrWeightsGridView.Rows[rowIndex].Cells["column3"].Value = current.Points.ToString();
 
                 RecalculateTotalPoints();
             }
@@ -180,13 +290,15 @@ namespace Perscom
                 var weight = new PromotionBoardWeight
                 {
                     Attribute = frm.SelectedAttribute,
-                    Weight = frm.MaxPoints
+                    ExpectedLevel = frm.ExpectedLevel,
+                    Points = frm.MaxPoints
                 };
                 Weights.Add(weight);
 
                 attrWeightsGridView.Rows.Add(
                     Enum.GetName(typeof(AttributeType), weight.Attribute),
-                    weight.Weight.ToString(),
+                    weight.ExpectedLevel.ToString(),
+                    weight.Points.ToString(),
                     "0%"
                 );
 
@@ -236,53 +348,46 @@ namespace Perscom
         /// </summary>
         private void SetupScopeDisplay()
         {
-            // --- Rank image + label ---
-            if (ScopedRank != null)
-            {
-                radLabel2.Text = $"Promotion To Rank: {ScopedRank.Abbreviation} - {ScopedRank.Name}";
-                if (!string.IsNullOrEmpty(ScopedRank.Image))
-                    radPictureBox1.Image = ImageAccessor.GetImage(Path.Combine("Large", ScopedRank.Image));
-            }
-            else if (ScopedClassification != null)
+            if (ScopedClassification != null)
             {
                 radLabel2.Text = $"Promotion To Pay Grade: {ScopedClassification}";
-                radPictureBox1.Image = null;
+                rankPictureDisplayBox.SetClassification(ScopedClassification);
             }
 
             // --- Occupation dropdown: display-only ---
-            radDropDownList1.Items.Clear();
+            occupationDropDownList.Items.Clear();
             if (ScopedOccupation != null)
             {
-                radDropDownList1.Items.Add(new RadListDataItem
+                occupationDropDownList.Items.Add(new RadListDataItem
                 {
                     Tag = ScopedOccupation,
                     Text = ScopedOccupation.ToString()
                 });
-                radDropDownList1.SelectedIndex = 0;
+                occupationDropDownList.SelectedIndex = 0;
             }
             else
             {
-                radDropDownList1.Items.Add(new RadListDataItem
+                occupationDropDownList.Items.Add(new RadListDataItem
                 {
                     Tag = null,
                     Text = "(Default — No Occupation Override)"
                 });
-                radDropDownList1.SelectedIndex = 0;
+                occupationDropDownList.SelectedIndex = 0;
             }
-            radDropDownList1.Enabled = false; // locked
+            occupationDropDownList.ReadOnly = true; //  Locked
 
             // --- "Apply to all ranks in pay grade" checkbox: display-only ---
             // Checked = scoped to classification without a specific rank
-            radCheckBox1.Checked = (ScopedRank == null && ScopedClassification != null);
-            radCheckBox1.Enabled = false; // locked
+            applyAllRanksInGradeCheckBox.Checked = (ScopedRank == null && ScopedClassification != null);
+            applyAllRanksInGradeCheckBox.Enabled = false; // locked
 
             // Update header label
             string scopeText = ScopedRank != null
-                ? $"Promotion Board Editor — {ScopedRank.Abbreviation}"
-                : $"Promotion Board Editor — {ScopedClassification}";
+                ? $"Promotion Board Editor for {ScopedRank.Name}"
+                : $"Promotion Board Editor for {ScopedClassification}";
             if (ScopedOccupation != null)
-                scopeText += $" ({ScopedOccupation.Code})";
-            label6.Text = scopeText;
+                scopeText += $" ({ScopedOccupation.Code} {ScopedOccupation.Name})";
+            headerLabel.Text = scopeText;
         }
 
         #endregion
@@ -301,6 +406,7 @@ namespace Perscom
             passFailCheckBox.Checked = Board.IsPassFail;
             percentageTrackBar.Value = Board.PassThreshold;
 
+            // Time in Grade
             bool hasTig = Board.TimeInGradeFactor > 0 || Board.TimeInGradeMaxPoints > 0;
             tigCheckBox.Checked = hasTig;
             if (hasTig)
@@ -309,16 +415,27 @@ namespace Perscom
                 tigMaxSpinEditor.Value = Board.TimeInGradeMaxPoints;
             }
 
-            // Form Rating (requires FormRatingFactor / FormRatingMaxPoints columns)
-            // bool hasForm = Board.FormRatingFactor > 0 || Board.FormRatingMaxPoints > 0;
-            // formScaleCheckBox.Checked = hasForm;
-            // if (hasForm)
-            // {
-            //     formRatingTrackBar.Value = Board.FormRatingFactor;
-            //     precedenceSpinEditor.Value = Board.FormRatingMaxPoints;
-            // }
+            // Form Rating
+            bool hasForm = Board.FormRatingMaxPoints > 0;
+            formScaleCheckBox.Checked = hasForm;
+            if (hasForm)
+            {
+                formRatingRadSpinEditor.Value = Board.FormRatingMaxPoints;
+            }
+            
+            // Expiry
+            bool hasExpiry = Board.PromotableLength > 0;
+            expiresCheckBox.Checked = hasExpiry;
+            if (hasExpiry)
+            {
+                promtableLenSpinEditor.Value = Board.PromotableLength;
+            }
 
+            // Load existing weights and scores
             LoadExistingWeights();
+
+            // Load existing additional scores
+            LoadExistingAddScores();
         }
 
         /// <summary>
@@ -331,14 +448,41 @@ namespace Perscom
             using var db = new AppDatabase();
             var existingWeights = db.PromotionBoardWeights.FindAll(Board.Id).ToArray();
 
-            for (int i = 0; i < Weights.Count; i++)
+            foreach (var weight in existingWeights)
             {
-                var existing = existingWeights.FirstOrDefault(w => w.Attribute == Weights[i].Attribute);
-                if (existing != null)
-                {
-                    Weights[i] = existing;
-                    attrWeightsGridView.Rows[i].Cells["column2"].Value = existing.Weight.ToString();
-                }
+                Weights.Add(weight);
+
+                attrWeightsGridView.Rows.Add(
+                    Enum.GetName(typeof(AttributeType), weight.Attribute),
+                    weight.ExpectedLevel.ToString(),
+                    weight.Points.ToString(),
+                    "0%"
+                );
+            }
+        }
+
+        /// <summary>
+        /// Loads existing PromotionBoardAddScore records from the database
+        /// </summary>
+        private void LoadExistingAddScores()
+        {
+            if (Board == null) return;
+
+            using var db = new AppDatabase();
+            var existing = db.PromotionBoardAddScores.FindAll(Board.Id).ToList();
+
+            foreach (var score in existing)
+            {
+                AdditionalScores.Add(score);
+
+                string functionText = $"{score.Selector}.{(SoldierFunction)score.SelectorId}";
+
+                addScoresGridView.Rows.Add(
+                    functionText,
+                    Enum.GetName(typeof(ComparisonOperator), score.Operator),
+                    score.ExpectedLevel.ToString(),
+                    score.Points.ToString()
+                );
             }
         }
 
@@ -348,13 +492,14 @@ namespace Perscom
 
         private void RecalculateTotalPoints()
         {
-            int total = Weights.Sum(w => w.Weight);
+            int total = Weights.Sum(w => w.Points);
+            total += AdditionalScores.Sum(s => s.Points);
 
             if (tigCheckBox.Checked)
                 total += (int)tigMaxSpinEditor.Value;
 
             if (formScaleCheckBox.Checked)
-                total += (int)radSpinEditor1.Value;
+                total += (int)formRatingRadSpinEditor.Value;
 
             TotalPointsSpinEditor.Value = total;
             RecalculatePercentages();
@@ -367,9 +512,9 @@ namespace Perscom
             for (int i = 0; i < Weights.Count && i < attrWeightsGridView.Rows.Count; i++)
             {
                 double pct = totalPoints > 0
-                    ? (Weights[i].Weight / (double)totalPoints) * 100.0
+                    ? (Weights[i].Points / (double)totalPoints) * 100.0
                     : 0;
-                attrWeightsGridView.Rows[i].Cells["column3"].Value = $"{pct:F1}%";
+                attrWeightsGridView.Rows[i].Cells["column4"].Value = $"{pct:F1}%";
             }
 
             UpdateAdditionalScoresGrid(totalPoints);
@@ -392,7 +537,7 @@ namespace Perscom
 
         private void bottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooterDark(bottomPanel, e);
+            FormStyling.StyleFormFooterDarker(bottomPanel, e);
             base.OnPaint(e);
         }
 
@@ -409,9 +554,17 @@ namespace Perscom
 
         private void formRatingCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
         {
-            formRatingTrackBar.Enabled = formScaleCheckBox.Checked;
-            radSpinEditor1.Enabled = formScaleCheckBox.Checked;
-            RecalculateTotalPoints();
+            formRatingRadSpinEditor.Enabled = formScaleCheckBox.Checked;
+            if (!formScaleCheckBox.Checked)
+                formRatingRadSpinEditor.Value = 0; // This will trigger the ValueChanged event, which will recalculate total points
+            else
+                RecalculateTotalPoints();
+        }
+        
+        private void expiresCheckBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            promtableLenSpinEditor.Enabled = expiresCheckBox.Checked;
+            promtableLenSpinEditor.Value = !expiresCheckBox.Checked ? 0 : 12;
         }
 
         private void boardTypeDropDownList_SelectedIndexChanged(object sender,
@@ -436,7 +589,7 @@ namespace Perscom
         private void TigMaxSpinEditor_ValueChanged(object sender, EventArgs e)
             => RecalculateTotalPoints();
 
-        private void radSpinEditor1_ValueChanged(object sender, EventArgs e)
+        private void formRatingSpinEditor_ValueChanged(object sender, EventArgs e)
             => RecalculateTotalPoints();
 
         private void attrWeightsGridView_DoubleClick(object sender, EventArgs e)
@@ -501,6 +654,19 @@ namespace Perscom
                 Board.Type = (PromotionBoardType)boardTypeDropDownList.SelectedItem.Tag;
                 Board.IsPassFail = passFailCheckBox.Checked;
                 Board.PassThreshold = (int)percentageTrackBar.Value;
+                
+                // Form Rating
+                if (formScaleCheckBox.Checked)
+                {
+                    Board.FormRatingMaxPoints = (int)formRatingRadSpinEditor.Value;
+                }
+                else
+                {
+                    Board.FormRatingMaxPoints = 0;
+                }
+
+                // Promotable Length
+                Board.PromotableLength = (int)promtableLenSpinEditor.Value;
 
                 if (tigCheckBox.Checked)
                 {
@@ -524,18 +690,32 @@ namespace Perscom
                     db.PromotionBoards.Update(Board);
                 }
 
-                // Delete old weights, re-insert current
-                var oldWeights = db.PromotionBoardWeights.FindAll(Board.Id).ToArray();
-                if (oldWeights.Length > 0)
-                    db.PromotionBoardWeights.RemoveRange(oldWeights);
+                // Before re-inserting weights and scores:
+                db.PromotionBoardWeights.Remove(w => w.PromotionBoardId == Board.Id);
+                db.PromotionBoardAddScores.Remove(s => s.PromotionBoardId == Board.Id);
 
-                foreach (var weight in Weights.Where(w => w.Weight > 0))
+                // Delete old weights, re-insert current
+                foreach (var weight in Weights.Where(w => w.ExpectedLevel > 0))
                 {
                     var entity = db.PromotionBoardWeights.Create();
                     entity.PromotionBoardId = Board.Id;
                     entity.Attribute = weight.Attribute;
-                    entity.Weight = weight.Weight;
+                    entity.ExpectedLevel = weight.ExpectedLevel;
+                    entity.Points = weight.Points;
                     db.PromotionBoardWeights.Add(entity);
+                }
+
+                // Delete old additional scores, re-insert current
+                foreach (var score in AdditionalScores)
+                {
+                    var entity = db.PromotionBoardAddScores.Create();
+                    entity.PromotionBoardId = Board.Id;
+                    entity.Selector = score.Selector;
+                    entity.SelectorId = score.SelectorId;
+                    entity.Operator = score.Operator;
+                    entity.ExpectedLevel = score.ExpectedLevel;
+                    entity.Points = score.Points;
+                    db.PromotionBoardAddScores.Add(entity);
                 }
 
                 transaction.Commit();
@@ -572,15 +752,14 @@ namespace Perscom
 
             try
             {
-                var weights = db.PromotionBoardWeights.FindAll(Board.Id).ToList();
-
-                if (weights.Count > 0)
-                    db.PromotionBoardWeights.RemoveRange(weights);
-
+                // Clear all references to this board and delete the board itself
+                db.PromotionBoardWeights.Remove(w => w.PromotionBoardId == Board.Id);
+                db.PromotionBoardAddScores.Remove(s => s.PromotionBoardId == Board.Id);
                 db.PromotionBoards.Remove(Board);
 
+                // Commit the transaction
                 transaction.Commit();
-                this.DialogResult = DialogResult.OK;
+                this.DialogResult = DialogResult.Abort;
                 this.Close();
             }
             catch (Exception ex)
@@ -592,5 +771,46 @@ namespace Perscom
         }
 
         #endregion
+
+        /// <summary>
+        /// Prevents the selected cell border and "pop" out
+        /// </summary>
+        private void GridView_CellFormatting(object sender, CellFormattingEventArgs e)
+        {
+            if (e.CellElement.IsCurrent)
+            {
+                // 1. Keep the border enabled so the layout engine doesn't recalculate the size
+                e.CellElement.DrawBorder = true;
+
+                // 2. Make the focus border invisible
+                e.CellElement.BorderColor = Color.Transparent;
+
+                // 3. Force the style to match standard cells so it doesn't try to draw a 3D focus box
+                e.CellElement.BorderBoxStyle = BorderBoxStyle.SingleBorder;
+                e.CellElement.BorderGradientStyle = GradientStyles.Solid;
+            }
+            else
+            {
+                // Restore default theme behavior for non-current cells
+                e.CellElement.ResetValue(LightVisualElement.DrawBorderProperty, ValueResetFlags.Local);
+                e.CellElement.ResetValue(LightVisualElement.BorderColorProperty, ValueResetFlags.Local);
+                e.CellElement.ResetValue(LightVisualElement.BorderBoxStyleProperty, ValueResetFlags.Local);
+                e.CellElement.ResetValue(LightVisualElement.BorderGradientStyleProperty, ValueResetFlags.Local);
+            }
+        }
+
+        /// <summary>
+        /// Clears the selected row on the grid view when an external control is selected
+        /// </summary>
+        private void GridView_Leave(object sender, EventArgs e)
+        {
+            var gridView = (RadGridView)sender;
+
+            // Clears all highlighted selections
+            gridView.ClearSelection();
+
+            // Removes the internal "active" pointer so the theme completely lets go of the row
+            gridView.CurrentRow = null;
+        }
     }
 }

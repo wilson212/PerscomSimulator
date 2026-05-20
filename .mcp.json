@@ -1,0 +1,26 @@
+﻿{
+  "servers": {
+    "telerik-winforms-assistant": {
+      "type": "stdio",
+      "command": "dnx",
+      "args": [
+        "Telerik.WinForms.MCP",
+        "--yes"
+      ],
+      "env": {
+        "TELERIK_LICENSE_PATH": "C:\\Users\\Steve\\AppData\\Roaming\\Telerik\\telerik-license.txt"
+      }
+    },
+    "telerik-dpl-assistant": {
+      "type": "stdio",
+      "command": "dnx",
+      "args": [
+        "Telerik.DPL.MCP",
+        "--yes"
+      ],
+      "env": {
+        "TELERIK_LICENSE_PATH": "C:\\Users\\Steve\\AppData\\Roaming\\Telerik\\telerik-license.txt"
+      }
+    }
+  }
+}

@@ -97,7 +97,7 @@ namespace Perscom
 
         private void bottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooterGray(bottomPanel, e);
+            FormStyling.StyleFormFooter(bottomPanel, e);
             base.OnPaint(e);
         }
 

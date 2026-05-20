@@ -5,7 +5,19 @@ namespace Perscom
 {
     static class Program
     {
+        /// <summary>
+        /// Gets the root directory path of the application at startup.
+        /// This property provides the base path for accessing application-specific
+        /// resources and directories, such as configuration files, image directories,
+        /// and error logs. Useful for building paths relative to the startup location
+        /// of the application.
+        /// </summary>
         public static string RootPath { get; } = System.Windows.Forms.Application.StartupPath;
+
+        /// <summary>
+        /// Gets the name of the current application theme.
+        /// </summary>
+        public static string ThemeName { get; } = "FluentPerscomBlue";
 
         /// <summary>
         /// The main entry point for the application.
@@ -30,7 +42,7 @@ namespace Perscom
             //ThemeResolutionService.ApplicationThemeName = "FluentPerscomBlue";
 
             // Setup Rad Message Box
-            RadMessageBox.SetThemeName("FluentPerscomBlue");
+            RadMessageBox.SetThemeName(ThemeName);
 
             // Run the main GUI
             System.Windows.Forms.Application.Run(new MainForm());
