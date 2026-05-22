@@ -158,8 +158,8 @@ namespace Perscom.Database
 
         /// <summary>
         /// Indicates whether the soldier holding this <see cref="PositionBlueprint"/> will be
-        /// automatically promoted in <see cref="Database.Rank.PayGrade"/> if their current grade
-        /// is lower than the <see cref="MaxRank.Grade"/>.
+        /// automatically promoted if thier current <see cref="RankClassification.PayGrade"/> is lower than
+        /// the <see cref="RankClassification.PayGrade"/> of the <see cref="TargetRank"/>
         /// </summary>
         [Column, Required, Default(0)]
         public virtual bool AutoPromoteInRankRange { get; set; } = false;
@@ -179,8 +179,8 @@ namespace Perscom.Database
         public virtual LogicOperator ExperienceLogic { get; set; }
 
         /// <summary>
-        /// Gets or sets the order in which this Billet will display in the Billet List View
-        /// on the <see cref="UnitTypeManagerForm"/>, relative to the other billet ZIndexies.
+        /// Gets or sets the order in which this Blueprint will display in the Position List View
+        /// on the <see cref="UnitBlueprintEditor"/>, relative to the other position ZIndexies.
         /// </summary>
         [Column, Required, Default(0)]
         public virtual int ZIndex { get; set; } = 0;

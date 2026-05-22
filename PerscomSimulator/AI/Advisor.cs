@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Google.GenAI;
 using Google.GenAI.Types;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Perscom.Database;
 using Telerik.WinControls.UI;
 using Telerik.WinControls.UI.ConversationalUI;
 using Telerik.Windows.Diagrams.Core;
@@ -37,6 +39,12 @@ When the user confirms a design, output structured JSON for entity creation.
 
 CRITICAL CONTEXT:
 - When querying ranks, rank classifications, and unit blueprints, Ensure the user has provided the Faction ID. A value of 0 indicates no faction is selected.
+
+ENTITY RELATIONSHIPS:
+- Faction → has many RankClassifications → each has many Ranks
+- Faction → has many UnitBlueprints → each has many PositionBlueprints
+- PositionBlueprint references a TargetRankId (the target rank a soldier should be when in this position)
+- RankClassification defines the pay grade; Rank is the specific title within it
 
 CRITICAL RULES:
 - Never assume missing information. If a user asks to build a position but does not specify the parent unit, YOU MUST ask the user which unit it belongs to before calling any creation tools.
@@ -98,6 +106,38 @@ CRITICAL RULES:
                 Parts = new List<Part> { new Part { Text = Context } }
             },
         };
+        
+        // Seed the faction context into history so the AI knows from the start, and doesnt waste valuable tokens
+        // and RPM asking for it
+        int factionId = getFactionId();
+        if (factionId > 0)
+        {
+            using var db = new AppDatabase();
+            var faction = db.Factions.Where(f => f.Id == factionId)
+                .Select(f => new { f.Id, f.Name, f.ShortTag, f.Description, f.ThemeColorCode })
+                .FirstOrDefault();
+
+            if (faction != null)
+            {
+                string factionJson = JsonSerializer.Serialize(new
+                {
+                    description = "The user is currently working in this faction.",
+                    factionId = faction.Id,
+                    faction
+                });
+
+                History.Add(new Content
+                {
+                    Role = "user",
+                    Parts = new List<Part> { new Part { Text = $"[System Context] Active faction: {factionJson}" } }
+                });
+                History.Add(new Content
+                {
+                    Role = "model",
+                    Parts = new List<Part> { new Part { Text = $"Understood. I'm working with the {faction.Name} faction (ID: {faction.Id})." } }
+                });
+            }
+        }
     }
 
     /// <summary>
@@ -139,8 +179,13 @@ CRITICAL RULES:
             {
                 retries++;
 
-                if (response.Candidates?[0]?.Content != null)
-                    History.Add(response.Candidates[0].Content);
+                // Only add the model's content if it has parts AND wasn't already
+                // added by ProcessFunctionCallsAsync (which adds function-call content itself).
+                var candidateContent = response.Candidates?[0]?.Content;
+                if (candidateContent?.Parts != null && !candidateContent.Parts.Any(p => p.FunctionCall != null))
+                {
+                    History.Add(candidateContent);
+                }
 
                 History.Add(new Content
                 {
@@ -204,7 +249,6 @@ CRITICAL RULES:
     {
         int maxRetries = 4;
         int baseDelayMilliseconds = 2000; // Start with a 2-second wait
-        Random jitterer = new Random();
 
         for (int retryAttempt = 0; retryAttempt <= maxRetries; retryAttempt++)
         {
@@ -222,7 +266,7 @@ CRITICAL RULES:
                 }
 
                 // Calculate exponential backoff: 2s, 4s, 8s, 16s... plus random jitter
-                int delay = baseDelayMilliseconds * (int)Math.Pow(2, retryAttempt) + jitterer.Next(0, 1000);
+                int delay = baseDelayMilliseconds * (int)Math.Pow(2, retryAttempt) + Random.Shared.Next(0, 1000);
                 
                 // Wait before trying again
                 await Task.Delay(delay);
@@ -244,45 +288,58 @@ CRITICAL RULES:
             var modelContent = response.Candidates[0].Content;
             History.Add(modelContent);
 
-            var functionCall = modelContent.Parts?.FirstOrDefault(p => p.FunctionCall != null)?.FunctionCall;
-            if (functionCall == null || functionCall.Name == null) break;
+            // Collect ALL function calls from this response
+            var functionCallParts = modelContent.Parts?.Where(p => p.FunctionCall != null).ToList();
+            if (functionCallParts == null || functionCallParts.Count == 0) break;
+            
+            // Debugging
+            Debug.WriteLine($"[AI] Received {functionCallParts.Count} parallel function call(s): " +
+                            string.Join(", ", functionCallParts.Select(p => p.FunctionCall.Name)));
 
-            if (chatWindow != null && aiAuthor != null)
+            var responseParts = new List<Part>();
+
+            foreach (var part in functionCallParts)
             {
-                if (_statusMessage == null)
+                var functionCall = part.FunctionCall;
+                if (functionCall?.Name == null) continue;
+
+                // Update status message
+                if (chatWindow != null && aiAuthor != null)
                 {
-                    _statusMessage = new AIChatTextMessage($"⚙ Executing function call {functionCall.Name}", aiAuthor, DateTime.Now);
-                    chatWindow.Invoke(() => chatWindow.AddMessage(_statusMessage));
+                    if (_statusMessage == null)
+                    {
+                        _statusMessage = new AIChatTextMessage($"⚙ Executing function call {functionCall.Name}", aiAuthor, DateTime.Now);
+                        chatWindow.Invoke(() => chatWindow.AddMessage(_statusMessage));
+                    }
+                    else
+                    {
+                        _statusMessage.Message = $"⚙ Executing function call {functionCall.Name}...";
+                        chatWindow.Invoke(() => chatWindow.Refresh());
+                    }
                 }
-                else
+
+                var args = functionCall.Args != null
+                    ? JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
+                        JsonSerializer.Serialize(functionCall.Args))
+                    : new Dictionary<string, JsonElement>();
+
+                string result = FunctionHandler.HandleFunctionCall(functionCall.Name, args);
+
+                responseParts.Add(new Part
                 {
-                    // Update the existing message's text in-place
-                    _statusMessage.Message = $"⚙ Executing function call {functionCall.Name}...";
-                    chatWindow.Invoke(() => chatWindow.Refresh());
-                }
+                    FunctionResponse = new FunctionResponse
+                    {
+                        Name = functionCall.Name,
+                        Response = JsonSerializer.Deserialize<Dictionary<string, object>>(result)
+                    }
+                });
             }
 
-            var args = functionCall.Args != null
-                ? JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
-                    JsonSerializer.Serialize(functionCall.Args))
-                : new Dictionary<string, JsonElement>();
-
-            string result = FunctionHandler.HandleFunctionCall(functionCall.Name, args);
-
+            // Add ALL function responses in a single Content entry
             History.Add(new Content
             {
                 Role = "function",
-                Parts = new List<Part>
-                {
-                    new Part
-                    {
-                        FunctionResponse = new FunctionResponse
-                        {
-                            Name = functionCall.Name,
-                            Response = JsonSerializer.Deserialize<Dictionary<string, object>>(result)
-                        }
-                    }
-                }
+                Parts = responseParts
             });
 
             response = await GenerateContentWithBackoffAsync();
@@ -309,7 +366,13 @@ CRITICAL RULES:
                     new FunctionDeclaration
                     {
                         Name = "GetSelectedFaction",
-                        Description = "Returns the currently selected Faction (Id, Name, ShortTag, Description, ThemeColorCode) that the user is working in, or indicates if no faction is selected.",
+                        Description = "Returns the currently selected Faction. The faction is provided at the start of the session — only call this if you've lost track of which faction the user is working in."
+                    },
+                    
+                    new FunctionDeclaration
+                    {
+                        Name = "GetEchelons",
+                        Description = "Returns all Echelon levels (Fire Team, Squad, Platoon, Company, Battalion, etc.).",
                     },
                     
                     //
@@ -320,7 +383,7 @@ CRITICAL RULES:
                     new FunctionDeclaration
                     {
                         Name = "GetUnitBlueprintSchema",
-                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any unit blueprint. Requires a faction ID to scope valid ranks, units, and occupations.",
+                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any unit blueprint.",
                     },
         
                     // Tool 2: The Execution Tool
@@ -339,12 +402,6 @@ CRITICAL RULES:
                         }
                     },
                     
-                    new FunctionDeclaration
-                    {
-                        Name = "GetEchelons",
-                        Description = "Returns all Echelon levels (Fire Team, Squad, Platoon, Company, Battalion, etc.).",
-                    },
-                    
                     //
                     // == Position Building Tools ==
                     //
@@ -353,7 +410,7 @@ CRITICAL RULES:
                     new FunctionDeclaration
                     {
                         Name = "GetPosBlueprintSchema",
-                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any unit position blueprint. Requires a faction ID to scope valid ranks, units, and occupations.",
+                        Description = "Returns the JSON template and rules for creating PositionBlueprints. Call GetRanks, GetEchelons, and SearchUnitBlueprints first to resolve valid IDs.",
                         Parameters = new Schema
                         {
                             Type = Type.Object,
@@ -438,7 +495,7 @@ CRITICAL RULES:
                     new FunctionDeclaration
                     {
                         Name = "GetRankClassificationSchema",
-                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any RankClassification. Requires a faction ID to scope lookups.",
+                        Description = "Returns the JSON template and rules for creating RankClassifications. Call GetRankClassifications first if you need to check existing records.",
                         Parameters = new Schema
                         {
                             Type = Type.Object,
@@ -474,7 +531,7 @@ CRITICAL RULES:
                     new FunctionDeclaration
                     {
                         Name = "GetRankSchema",
-                        Description = "Call this FIRST to get the strictly formatted JSON template and database rules before building any Rank. Requires a faction ID to scope valid RankClassifications.",
+                        Description = "Returns the JSON template and rules for creating Ranks. Call GetRankClassifications and GetRanks first to get valid IDs and avoid duplicates.",
                         Parameters = new Schema
                         {
                             Type = Type.Object,

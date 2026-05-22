@@ -199,12 +199,17 @@ namespace Perscom
         /// <param name="e">The event data.</param>
         private void AdvisorChatForm_Load(object sender, EventArgs e)
         {
-            AIChatTextMessage message = new AIChatTextMessage(
-                "Advisor online. I am ready to assist with TO&E generation, rank structures, and unit blueprints. You can ask me to draft new elements from scratch, or attach an existing unit from your database for me to review and staff. What are we standing up today?",
-                AiAuthor,
-                DateTime.Now
-            );
-            chatWindow.AddMessage(message);
+            if (chatWindow.ChatElement.MessagesViewElement.Items.Count == 0)
+            {
+                AIChatTextMessage message = new AIChatTextMessage(
+                    "Advisor online. I am ready to assist with TO&E generation, rank structures, and unit blueprints. " +
+                    "You can ask me to draft new elements from scratch, or attach an existing unit from your database " +
+                    "for me to review and staff. What are we standing up today?",
+                    AiAuthor,
+                    DateTime.Now
+                );
+                chatWindow.AddMessage(message);
+            }
         }
 
         private void headerPanel_Paint(object sender, PaintEventArgs e)

@@ -69,7 +69,7 @@
             radRankSelector1 = new RadRankSelector();
             radPanel2 = new Telerik.WinControls.UI.RadPanel();
             headerPanel = new System.Windows.Forms.Panel();
-            label6 = new System.Windows.Forms.ShadowLabel();
+            headerLabel = new System.Windows.Forms.ShadowLabel();
             DescriptionGroupBox = new Telerik.WinControls.UI.RadGroupBox();
             bottomPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)CloseButton).BeginInit();
@@ -124,7 +124,7 @@
             CloseButton.ThemeName = "Fluent";
             CloseButton.Click += CloseButton_Click;
             // 
-            // radTreeView1
+            // unitTreeView
             // 
             radTreeView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
             radTreeView1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -243,7 +243,7 @@
             radGroupBox1.Controls.Add(radLabel15);
             radGroupBox1.HeaderMargin = new System.Windows.Forms.Padding(3);
             radGroupBox1.HeaderText = "Grade Details";
-            radGroupBox1.Location = new System.Drawing.Point(245, 127);
+            radGroupBox1.Location = new System.Drawing.Point(245, 126);
             radGroupBox1.Name = "radGroupBox1";
             radGroupBox1.Size = new System.Drawing.Size(508, 265);
             radGroupBox1.TabIndex = 17;
@@ -444,7 +444,7 @@
             // 
             headerPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             headerPanel.BackgroundImage = Properties.Resources.mainPattern;
-            headerPanel.Controls.Add(label6);
+            headerPanel.Controls.Add(headerLabel);
             headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             headerPanel.Location = new System.Drawing.Point(0, 0);
             headerPanel.Name = "headerPanel";
@@ -452,21 +452,21 @@
             headerPanel.TabIndex = 14;
             headerPanel.Paint += headerPanel_Paint;
             // 
-            // label6
+            // headerLabel
             // 
-            label6.BackColor = System.Drawing.Color.Transparent;
-            label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);
-            label6.ForeColor = System.Drawing.SystemColors.Control;
-            label6.Location = new System.Drawing.Point(26, 22);
-            label6.Name = "label6";
-            label6.ShadowDirection = 60;
-            label6.ShadowOpacity = 180;
-            label6.ShadowSoftness = 3F;
-            label6.Size = new System.Drawing.Size(717, 37);
-            label6.TabIndex = 0;
-            label6.Text = "Rank And Grade Editor for Faction Name";
+            headerLabel.BackColor = System.Drawing.Color.Transparent;
+            headerLabel.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);
+            headerLabel.ForeColor = System.Drawing.SystemColors.Control;
+            headerLabel.Location = new System.Drawing.Point(26, 22);
+            headerLabel.Name = "label6";
+            headerLabel.ShadowDirection = 60;
+            headerLabel.ShadowOpacity = 180;
+            headerLabel.ShadowSoftness = 3F;
+            headerLabel.Size = new System.Drawing.Size(717, 37);
+            headerLabel.TabIndex = 0;
+            headerLabel.Text = "Rank And Grade Editor for Faction Name";
             // 
-            // DescriptionGroupBox
+            // descriptionGroupBox
             // 
             DescriptionGroupBox.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
             DescriptionGroupBox.HeaderAlignment = Telerik.WinControls.UI.HeaderAlignment.Center;
@@ -475,7 +475,7 @@
             DescriptionGroupBox.HeaderTextAlignment = System.Drawing.ContentAlignment.TopCenter;
             DescriptionGroupBox.Location = new System.Drawing.Point(245, 81);
             DescriptionGroupBox.Name = "DescriptionGroupBox";
-            DescriptionGroupBox.Size = new System.Drawing.Size(508, 38);
+            DescriptionGroupBox.Size = new System.Drawing.Size(508, 36);
             DescriptionGroupBox.TabIndex = 22;
             DescriptionGroupBox.Text = "Enlisted Grade 8";
             DescriptionGroupBox.ThemeName = "Fluent";
@@ -543,7 +543,7 @@
         private System.Windows.Forms.Panel bottomPanel;
         private Telerik.WinControls.UI.RadButton CloseButton;
         private System.Windows.Forms.Panel headerPanel;
-        private System.Windows.Forms.ShadowLabel label6;
+        private System.Windows.Forms.ShadowLabel headerLabel;
         private Telerik.WinControls.UI.RadTreeView radTreeView1;
         private Telerik.WinControls.UI.RadButton applyButton;
         private Telerik.WinControls.UI.RadLabel radLabel15;

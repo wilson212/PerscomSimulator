@@ -104,11 +104,7 @@ namespace Perscom
         /// Sets the classification and renders all of its rank images as a layered composite.
         /// </summary>
         /// <param name="classification">The RankClassification whose ranks to display.</param>
-        /// <param name="ranks">
-        /// Pre-fetched ranks for this classification, sorted by Precedence ascending.
-        /// If null, the control will query them from the database.
-        /// </param>
-        public void SetClassification(RankClassification classification, IEnumerable<Rank> ranks = null)
+        public void SetRanks(RankClassification classification)
         {
             _classification = classification;
 
@@ -121,15 +117,18 @@ namespace Perscom
                 return;
             }
 
-            if (ranks != null)
-            {
-                _ranks = ranks.OrderBy(r => r.Precedence).ToList();
-            }
-            else
-            {
-                _ranks = classification.Ranks.OrderBy(r => r.Precedence).ToList();
-            }
+            // Fetch all ranks for this classification
+            _ranks = _classification.Ranks.OrderBy(r => r.Precedence).ToList();
+            RenderComposite();
+        }
 
+        /// <summary>
+        /// Sets the ranks to display.
+        /// </summary>
+        /// <param name="ranks"></param>
+        public void SetRanks(IEnumerable<Rank> ranks)
+        {
+            _ranks = ranks.OrderBy(r => r.Precedence).ToList();
             RenderComposite();
         }
 

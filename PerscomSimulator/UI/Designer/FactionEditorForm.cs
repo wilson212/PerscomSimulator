@@ -136,25 +136,31 @@ namespace Perscom
 
         private void bottomPanel_Paint(object sender, PaintEventArgs e)
         {
-            FormStyling.StyleFormFooterDarker(bottomPanel, e);
+            FormStyling.StyleFormFooter(bottomPanel, e);
         }
 
         private void RankTileElement_Click(object sender, EventArgs e)
         {
-            using (RankGradeEditorForm form = new RankGradeEditorForm(SelectedFaction))
+            using (var form = new RankGradeEditorForm(SelectedFaction))
             {
                 form.ShowDialog(this);
             }
         }
 
-        private void OccupationTileElement_Click(object sender, EventArgs e)
+        private void UnitTileElement_Click(object sender, EventArgs e)
         {
-
+            using (var form = new UnitBlueprintEditor(SelectedFaction))
+            {
+                form.ShowDialog(this);
+            }
         }
 
-        private void TraitsTileElement_Click(object sender, EventArgs e)
+        private void OccupationsTileElement_Click(object sender, EventArgs e)
         {
-
+            using (var form = new OccupationEditor(SelectedFaction))
+            {
+                form.ShowDialog(this);
+            }
         }
 
         private void EvalBoardsTileElement_Click(object sender, EventArgs e)
@@ -162,7 +168,7 @@ namespace Perscom
 
         }
 
-        private void advisorButton_Click(object sender, EventArgs e)
+        private void AdvisorButton_Click(object sender, EventArgs e)
         {
             // Show as dialog to prevent the RadAiForm from popping up
             AdvisorChatForm.Open(this, true);

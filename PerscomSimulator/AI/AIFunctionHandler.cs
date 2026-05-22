@@ -16,6 +16,12 @@ namespace Perscom.AI
     public class AIFunctionHandler
     {
         private Func<int> GetFactionId { get; }
+
+        /// <summary>
+        /// Represents a static instance of <see cref="JsonSerializerOptions"/> used within the <see cref="AIFunctionHandler"/> class.
+        /// The options are configured to allow case-insensitive property name matching during JSON deserialization.
+        /// </summary>
+        private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
         
         public AIFunctionHandler(Func<int> getFactionId)
         {
@@ -81,7 +87,7 @@ namespace Perscom.AI
                     return UpdateFaction(factionId, args["updateJsonPayload"].GetString());
 
                 case "UpdateUnitBlueprint":
-                    return UpdateUnitBlueprint(factionId, args["updateJsonPayload"].GetString());
+                    return UpdateUnitBlueprint(factionId, args["unitBlueprintId"].GetInt32(), args["updateJsonPayload"].GetString());
 
                 case "UpdatePositionBlueprint":
                     return UpdatePositionBlueprint(args["updateJsonPayload"].GetString());
@@ -318,22 +324,14 @@ namespace Perscom.AI
         private string GetPosBlueprintSchema(int factionId)
         {
             using var db = new AppDatabase();
-            var echelons = db.Echelons.Select(e => new { e.Id, e.Name }).ToList();
-            var ranks = GetFactionRanks(db, factionId)
-                .Select(r => new { r.Id, r.Name, r.Abbreviation, r.RankClassificationId })
-                .ToList();
             var occupations = db.Occupations.Where(o => o.FactionId == factionId).Select(o => new { o.Id, o.Code, o.Name }).ToList();
             var categories = db.PositionCatagories.Select(c => new { c.Id, c.Name }).ToList();
-            var unitBlueprints = db.UnitBlueprints.Where(b => b.FactionId == factionId).Select(u => new { u.Id, u.Name }).ToList();
 
             var schema = new
             {
                 instructions = "Fill in this template. All ID fields must reference valid IDs from the lookup lists below.",
-                validRanks = ranks,
-                validEchelons = echelons,
                 validOccupations = occupations,
                 validCategories = categories,
-                validUnitBlueprints = unitBlueprints,
                 validFlags = new[] { "NormalAssignment", "SpecialAssignment", "CommandPosition", "StaffPosition" },
                 validSelectionMethods = new[] { "PromotionOrLateral", "PromotionOnly", "LateralOnly", "CreateNewSoldier", "EvaluationBoard" },
                 template = new
@@ -372,8 +370,7 @@ namespace Perscom.AI
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dtos = JsonSerializer.Deserialize<List<UnitBlueprintDto>>(jsonPayload, options);
+                var dtos = JsonSerializer.Deserialize<List<UnitBlueprintDto>>(jsonPayload, JsonOpts );
                 var result = UnitBlueprintService.Create(dtos);
 
                 if (!result.Success)
@@ -415,8 +412,7 @@ namespace Perscom.AI
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dtos = JsonSerializer.Deserialize<List<PositionBlueprintDto>>(jsonPayload, options);
+                var dtos = JsonSerializer.Deserialize<List<PositionBlueprintDto>>(jsonPayload, JsonOpts);
                 var result = PositionBlueprintService.Create(dtos);
 
                 if (!result.Success)
@@ -459,11 +455,14 @@ namespace Perscom.AI
         /// <returns>A list of <c>Rank</c> objects representing the ranks assigned to the specified faction.</returns>
         private List<Rank> GetFactionRanks(AppDatabase db, int factionId)
         {
-            var ranks = db.Ranks.ToList()
-                .Where(r => r.Classification.FactionId == factionId)
+            var classIds = db.RankClassifications
+                .Where(rc => rc.FactionId == factionId)
+                .Select(rc => rc.Id)
                 .ToList();
-            
-            return ranks;
+
+            return db.Ranks
+                .Where(r => r.RankClassificationId.In(classIds))
+                .ToList();
         }
         
         /// <summary>
@@ -471,20 +470,6 @@ namespace Perscom.AI
         /// </summary>
         private string GetRankClassificationSchema(int factionId)
         {
-            using var db = new AppDatabase();
-
-            // Show existing classifications so the AI avoids duplicates
-            var existing = db.RankClassifications
-                .Where(rc => rc.FactionId == factionId)
-                .Select(rc => new
-                {
-                    rc.Id,
-                    Type = rc.Type.ToString(),
-                    rc.PayGrade,
-                    Selection = rc.Selection.ToString(),
-                    rc.HasSplitRankLanes
-                }).ToList();
-
             var schema = new
             {
                 instructions = "Fill in this template to create a RankClassification (pay grade group). " +
@@ -494,7 +479,6 @@ namespace Perscom.AI
                                "Lower enlisted grades typically use Selection='Automatic'. " +
                                "Senior grades use Selection='PromotionBoard'.",
                 factionId,
-                existingClassifications = existing,
                 validTypes = new[] { "Enlisted", "Officer", "Warrant" },
                 validSelections = new[] { "EntryLevel", "Automatic", "PromotionBoard", "SelectionProcedure" },
                 template = new
@@ -522,8 +506,7 @@ namespace Perscom.AI
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dtos = JsonSerializer.Deserialize<List<RankClassificationDto>>(jsonPayload, options);
+                var dtos = JsonSerializer.Deserialize<List<RankClassificationDto>>(jsonPayload, JsonOpts);
                 int factionId = GetFactionId();
                 var result = RankService.CreateClassifications(factionId, dtos);
 
@@ -563,35 +546,6 @@ namespace Perscom.AI
         /// </summary>
         private string GetRankSchema(int factionId)
         {
-            using var db = new AppDatabase();
-
-            // Show valid classifications the rank can belong to
-            var classifications = db.RankClassifications
-                .Where(rc => rc.FactionId == factionId)
-                .Select(rc => new
-                {
-                    rc.Id,
-                    Type = rc.Type.ToString(),
-                    rc.PayGrade,
-                    rc.HasSplitRankLanes
-                }).ToList();
-
-            // Show existing ranks so the AI can reference them for NextRankId and avoid duplicates
-            var factionClassIds = classifications.Select(c => c.Id).ToList();
-            var eExistingRanks = db.Ranks
-                .Where(r => r.RankClassificationId.In(factionClassIds))
-                .Select(r => new
-                {
-                    r.Id,
-                    r.RankClassificationId,
-                    r.Name,
-                    r.Abbreviation,
-                    r.Precedence,
-                    r.IsPositional,
-                    r.NextRankId,
-                    r.Image
-                }).ToList();
-
             var schema = new
             {
                 instructions = "Fill in this template to create a Rank. The RankClassificationId must reference " +
@@ -602,8 +556,6 @@ namespace Perscom.AI
                                "Precedence controls priority within the same classification: " +
                                "entry-level rank = 0, positional/special ranks get higher values.",
                 factionId,
-                validClassifications = classifications,
-                existingRanks = eExistingRanks,
                 template = new
                 {
                     rankClassificationId = "(int, required) FK to RankClassification.Id from validClassifications",
@@ -626,8 +578,7 @@ namespace Perscom.AI
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dtos = JsonSerializer.Deserialize<List<RankDto>>(jsonPayload, options);
+                var dtos = JsonSerializer.Deserialize<List<RankDto>>(jsonPayload, JsonOpts);
                 int factionId = GetFactionId();
                 var result = RankService.CreateRanks(factionId, dtos);
 
@@ -669,8 +620,7 @@ namespace Perscom.AI
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dto = JsonSerializer.Deserialize<UpdateFactionDto>(jsonPayload, options);
+                var dto = JsonSerializer.Deserialize<UpdateFactionDto>(jsonPayload, JsonOpts);
                 var result = FactionService.Update(factionId, dto);
 
                 if (!result.Success)
@@ -692,13 +642,12 @@ namespace Perscom.AI
         /// <summary>
         /// Updates an existing UnitBlueprint entity with partial data from the AI's JSON payload.
         /// </summary>
-        private string UpdateUnitBlueprint(int factionId, string jsonPayload)
+        private string UpdateUnitBlueprint(int factionId, int unitBlueprintId, string jsonPayload)
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dto = JsonSerializer.Deserialize<UpdateUnitBlueprintDto>(jsonPayload, options);
-                var result = UnitBlueprintService.Update(factionId, dto);
+                var dto = JsonSerializer.Deserialize<UpdateUnitBlueprintDto>(jsonPayload, JsonOpts);
+                var result = UnitBlueprintService.Update(factionId, unitBlueprintId, dto);
 
                 if (!result.Success)
                     return JsonSerializer.Serialize(new { success = false, error = result.Error });
@@ -723,8 +672,7 @@ namespace Perscom.AI
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dto = JsonSerializer.Deserialize<UpdatePositionBlueprintDto>(jsonPayload, options);
+                var dto = JsonSerializer.Deserialize<UpdatePositionBlueprintDto>(jsonPayload, JsonOpts);
                 var result = PositionBlueprintService.Update(dto);
 
                 if (!result.Success)
@@ -750,8 +698,7 @@ namespace Perscom.AI
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dto = JsonSerializer.Deserialize<UpdateRankClassificationDto>(jsonPayload, options);
+                var dto = JsonSerializer.Deserialize<UpdateRankClassificationDto>(jsonPayload, JsonOpts);
                 var result = RankService.UpdateClassification(factionId, dto);
 
                 if (!result.Success)
@@ -780,8 +727,7 @@ namespace Perscom.AI
         {
             try
             {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var dtos = JsonSerializer.Deserialize<List<UpdateRankDto>>(jsonPayload, options);
+                var dtos = JsonSerializer.Deserialize<List<UpdateRankDto>>(jsonPayload, JsonOpts);
                 var result = RankService.UpdateRanks(factionId, dtos);
 
                 if (!result.Success)

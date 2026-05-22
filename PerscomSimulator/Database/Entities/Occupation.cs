@@ -44,6 +44,12 @@ namespace Perscom.Database
         [Column, Required]
         public virtual RankType Type { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [Column, Required, Default(0)]
+        public virtual double Stipend { get; set; }
+
         #endregion
         
         #region Parent Database Sets

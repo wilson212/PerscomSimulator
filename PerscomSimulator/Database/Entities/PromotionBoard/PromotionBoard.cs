@@ -88,6 +88,12 @@ namespace Perscom.Database
         /// </summary>
         [Column, Required, Default(0)]
         public virtual int FormRatingMaxPoints { get; set; }
+        
+        /// <summary>
+        /// The maximum score a candidate can achieve for any promotion board metric.
+        /// </summary>
+        [Column, Required, Default(0)]
+        public virtual int PointsCap { get; set; }
 
         #endregion
 

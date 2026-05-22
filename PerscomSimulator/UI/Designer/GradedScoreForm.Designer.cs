@@ -135,7 +135,7 @@ namespace Perscom
             headerPanel.Size = new Size(454, 75);
             headerPanel.TabIndex = 24;
             // 
-            // label6
+            // headerLabel
             // 
             label6.BackColor = Color.Transparent;
             label6.Font = new Font("Segoe UI Semibold", 16F, FontStyle.Italic, GraphicsUnit.Point, 0);

@@ -5,8 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Telerik.WinControls;
 using Telerik.WinControls.UI;
-using Telerik.Windows.Documents.Spreadsheet.Expressions.Functions;
-using static Telerik.Pdf.PdfName;
 
 namespace Perscom
 {
@@ -90,7 +88,6 @@ namespace Perscom
 
             // Button styling
             FormStyling.ApplyControlsTheme(Controls);
-            FormStyling.StyleButtonDarkBlue(applyButton);
 
             // Store rank selectors in an array for easy access
             RankSelectors = new[] { radRankSelector1, radRankSelector2, radRankSelector3, radRankSelector4 };
@@ -110,13 +107,26 @@ namespace Perscom
             ResetFields(true);
 
             // Set the header label to include the faction name
-            label6.Text = $"Rank And Grade Editor for {SelectedFaction.Name}";
+            headerLabel.Text = $"Rank And Grade Editor for {SelectedFaction.Name}";
 
             // Register event handlers
             addGradeMenuItem.Click += AddGradeMenuItem_Click;
             wizardMenuItem.Click += WizardMenuItem_Click;
             deleteGradeMenuItem.Click += DeleteGradeMenuItem_Click;
             aiMenuItem.Click += AiMenuItem_Click;
+            
+            // Disable context menu items until a valid node is selected
+            addGradeMenuItem.Enabled = false;
+            deleteGradeMenuItem.Enabled = false;
+            
+            // Wire up change-detection events for dirty-state styling
+            prevTimeInGradeSpinner.ValueChanged += (s, ev) => UpdateApplyButtonStyle();
+            maxTimeInGradeSpinner.ValueChanged += (s, ev) => UpdateApplyButtonStyle();
+            minTimeInGradeSpinner.ValueChanged += (s, ev) => UpdateApplyButtonStyle();
+            lockInTimeSpinner.ValueChanged += (s, ev) => UpdateApplyButtonStyle();
+            stipendSpinEditor.ValueChanged += (s, ev) => UpdateApplyButtonStyle();
+            selectionTypeDropDownList.SelectedIndexChanged += (s, ev) => UpdateApplyButtonStyle();
+            branchingCheckBox.ToggleStateChanged += (s, ev) => UpdateApplyButtonStyle();
 
             // Wire up rank selector click events
             foreach (var selector in RankSelectors)
@@ -226,6 +236,9 @@ namespace Perscom
 
             // Disable editing controls
             SetFormEnabled(false);
+            
+            // Ensure apply button is disabled (no changes possible when nothing is selected)
+            UpdateApplyButtonStyle();
         }
 
         /// <summary>
@@ -246,7 +259,7 @@ namespace Perscom
             branchingCheckBox.Enabled = enabled;
 
             // Buttons
-            applyButton.Enabled = enabled;
+            // applyButton.Enabled = enabled;  <-- REMOVE THIS LINE
             boardButton.Enabled = enabled;
 
             // Rank selectors
@@ -298,6 +311,9 @@ namespace Perscom
 
             // Enable editing controls
             SetFormEnabled(true);
+            
+            // Now update apply button style (will disable it since snapshot matches)
+            UpdateApplyButtonStyle();
 
             // Load ranks for this classification into the rank selectors
             LoadRanksAndBoardForClassification(classification);
@@ -449,6 +465,9 @@ namespace Perscom
 
                 // Update the clean snapshot after a successful save
                 _lastSavedSnapshot = CaptureSnapshot();
+                
+                // Ensure apply button is disabled
+                UpdateApplyButtonStyle();
 
                 RadMessageBox.Show("Rank grade saved successfully.",
                     "Success", MessageBoxButtons.OK, RadMessageIcon.Info);
@@ -775,6 +794,24 @@ namespace Perscom
                    || current.LockIn != _lastSavedSnapshot.LockIn
                    || current.Stipend != _lastSavedSnapshot.Stipend
                    || current.HasSplitLanes != _lastSavedSnapshot.HasSplitLanes;
+        }
+        
+        /// <summary>
+        /// Updates the Apply button's color based on whether there are unsaved changes.
+        /// Blue when dirty, FluentDefault (disabled) when clean.
+        /// </summary>
+        private void UpdateApplyButtonStyle()
+        {
+            if (HasUnsavedChanges())
+            {
+                FormStyling.StyleButtonBlue(applyButton);
+                applyButton.Enabled = true;
+            }
+            else
+            {
+                FormStyling.StyleButtonFluentDefault(applyButton);
+                applyButton.Enabled = false;
+            }
         }
 
         /// <summary>

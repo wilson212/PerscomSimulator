@@ -12,7 +12,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(2, 0);
+        public static Version CurrentVersion { get; protected set; } = new Version(2, 3);
 
         /// <summary>
         /// Gets the current database tables version
@@ -42,6 +42,16 @@ namespace Perscom.Database
         /// Gets a set of <see cref="PositionBlueprintExperience"/> entites stored in the database
         /// </summary>
         public DbSet<PositionBlueprintExperience> PositionExperience { get; set; }
+        
+        /// <summary>
+        /// Gets a set of <see cref="PositionBlueprintExperience"/> entites stored in the database
+        /// </summary>
+        public DbSet<PositionBlueprintOccupation> PositionOccupations { get; set; }
+        
+        /// <summary>
+        /// Gets a set of <see cref="PositionBlueprintOccupation"/> entites stored in the database
+        /// </summary>
+        public DbSet<PositionBlueprintRank> PositionRanks { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="SelectionFilter"/> entites stored in the database
@@ -160,13 +170,13 @@ namespace Perscom.Database
         /// <summary>
         /// Creates a new instance of BaseDatabase
         /// </summary>
-        /// <param name="Builder"></param>
-        public BaseDatabase(SqliteConnectionStringBuilder Builder) : base(Builder)
+        /// <param name="builder"></param>
+        public BaseDatabase(SqliteConnectionStringBuilder builder) : base(builder)
         {
-            Debug.WriteLine($"Database: {Builder.DataSource}");
+            Debug.WriteLine($"Database: {builder.DataSource}");
+
             // Open connection first
             base.Connect();
-
             Debug.WriteLine("Database connection opened.");
             
             Execute("PRAGMA journal_mode = WAL;");      // Write-Ahead Logging - massive concurrency + write perf
@@ -175,8 +185,9 @@ namespace Perscom.Database
             Execute("PRAGMA temp_store = MEMORY;");      // Temp tables in RAM
             Execute("PRAGMA mmap_io = 268435456;");      // 256MB memory-mapped I/O
             Execute("PRAGMA page_size = 4096;");         // Only effective on new DBs, but good default
-            Execute("PRAGMA busy_timeout = 5000;");   // ← ADD THIS: wait up to 5 seconds for locks
+            Execute("PRAGMA busy_timeout = 5000;");   // Wait up to 5 seconds for locks
 
+            // Debug
             Debug.WriteLine("Database initialized with WAL journal mode, NORMAL synchronous, 20MB cache, MEMORY temp store, 256MB mmap, and 4KB page size.");
 
             // Grab the current tables version
@@ -222,7 +233,9 @@ namespace Perscom.Database
             PositionCatagories = new DbSet<PositionCatagory>(this);
             PositionBlueprints = new DbSet<PositionBlueprint>(this);
             PositionExperience = new DbSet<PositionBlueprintExperience>(this);
+            PositionOccupations = new DbSet<PositionBlueprintOccupation>(this);
             PositionPerformanceModels = new DbSet<PositionPerformanceModel>(this);
+            PositionRanks = new DbSet<PositionBlueprintRank>(this);
             BilletSpecialtyRequirements = new DbSet<PositionOccupationRequirement>(this);
             SelectionFilters = new DbSet<SelectionFilter>(this);
             SelectionGroups = new DbSet<SelectionGroup>(this);
@@ -276,6 +289,8 @@ namespace Perscom.Database
                 this.DropTable<SelectionSorting>();
                 this.DropTable<SelectionGroup>();
                 this.DropTable<SelectionFilter>();
+                this.DropTable<PositionBlueprintRank>();
+                this.DropTable<PositionBlueprintOccupation>();
                 this.DropTable<PositionOccupationRequirement>();
                 this.DropTable<PositionPerformanceModel>();
                 this.DropTable<PositionBlueprintExperience>();
@@ -342,6 +357,8 @@ namespace Perscom.Database
                 this.CreateTable<PositionBlueprintExperience>();    // -> PositionBlueprint, Experience
                 this.CreateTable<PositionPerformanceModel>();       // -> PositionBlueprint
                 this.CreateTable<PositionOccupationRequirement>();  // -> PositionBlueprint, Occupation
+                this.CreateTable<PositionBlueprintRank>();          // -> PositionBlueprint, Rank
+                this.CreateTable<PositionBlueprintOccupation>();    // -> PositionBlueprint, Occupation
                 this.CreateTable<SelectionFilter>();                // -> PositionBlueprint
                 this.CreateTable<SelectionGroup>();                 // -> PositionBlueprint
                 this.CreateTable<SelectionSorting>();

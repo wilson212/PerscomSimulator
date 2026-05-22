@@ -7,28 +7,22 @@ namespace Perscom.Database
     /// <summary>
     /// Represents a relationship between a number of <see cref="Database.UnitBlueprint"/>'s
     /// </summary>
-    [Table]
+    [Table(WithoutRowID = true)]
     [CompositeUnique(nameof(ParentId), nameof(ChildId))]
     public class UnitBlueprintAttachment : EntityBase, IEquatable<UnitBlueprintAttachment>
     {
         #region Column Properties
-
-        /// <summary>
-        /// The IsUnique UnitBlueprintAttachment ID (Row ID)
-        /// </summary>
-        [Column, PrimaryKey]
-        public virtual int Id { get; protected set; }
-
+        
         /// <summary>
         /// Gets or sets the parent <see cref="UnitBlueprint.Id"/>
         /// </summary>
-        [Column, Required]
+        [Column, Required, PrimaryKey]
         public virtual int ParentId { get; set; }
 
         /// <summary>
         /// Gets or sets the child <see cref="UnitBlueprint.Id"/>
         /// </summary>
-        [Column, Required]
+        [Column, Required, PrimaryKey]
         public virtual int ChildId { get; set; }
 
         /// <summary>
@@ -67,7 +61,7 @@ namespace Perscom.Database
         public bool Equals(UnitBlueprintAttachment other)
         {
             if (other == null) return false;
-            return (Id == other.Id);
+            return (ParentId == other.ParentId && ChildId == other.ChildId);
         }
 
         public override bool Equals(object obj)
@@ -75,6 +69,6 @@ namespace Perscom.Database
             return this.Equals(obj as UnitBlueprintAttachment);
         }
 
-        public override int GetHashCode() => Id;
+        public override int GetHashCode() => HashCode.Combine(ParentId, ChildId);
     }
 }

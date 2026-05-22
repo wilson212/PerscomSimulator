@@ -178,7 +178,7 @@ namespace Perscom
             var billets = template.PositionBlueprints.ToList();
 
             // Get a list of sub templates, and convert to real Units
-            var subUnits = template.Attachments.ToList();
+            var subUnits = template.SubUnitBlueprints.ToList();
 
             foreach (PositionBlueprint billet in billets)
             {

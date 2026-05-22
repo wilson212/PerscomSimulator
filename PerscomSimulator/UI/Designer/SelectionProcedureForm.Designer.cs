@@ -89,7 +89,7 @@
             headerPanel.Size = new System.Drawing.Size(1230, 75);
             headerPanel.TabIndex = 20;
             // 
-            // label6
+            // headerLabel
             // 
             label6.BackColor = System.Drawing.Color.Transparent;
             label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);

@@ -50,10 +50,10 @@
             flagPictureBox = new Telerik.WinControls.UI.RadPictureBox();
             radPanorama1 = new Telerik.WinControls.UI.RadPanorama();
             tileGroupElement1 = new Telerik.WinControls.UI.TileGroupElement();
-            RankTileElement = new Telerik.WinControls.UI.RadTileElement();
-            TraitsTileElement = new Telerik.WinControls.UI.RadTileElement();
-            OccupationTileElement = new Telerik.WinControls.UI.RadTileElement();
-            EvalBoardsTileElement = new Telerik.WinControls.UI.RadTileElement();
+            rankTileElement = new Telerik.WinControls.UI.RadTileElement();
+            occupationsTileElement = new Telerik.WinControls.UI.RadTileElement();
+            unitTileElement = new Telerik.WinControls.UI.RadTileElement();
+            evalBoardsTileElement = new Telerik.WinControls.UI.RadTileElement();
             radPanel1 = new Telerik.WinControls.UI.RadPanel();
             radPanel4 = new Telerik.WinControls.UI.RadPanel();
             radTextBox3 = new Telerik.WinControls.UI.RadTextBox();
@@ -101,7 +101,7 @@
             ((System.ComponentModel.ISupportInitialize)this).BeginInit();
             SuspendLayout();
             // 
-            // label6
+            // headerLabel
             // 
             label6.BackColor = System.Drawing.Color.Transparent;
             label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);
@@ -138,7 +138,7 @@
             advisorButton.Size = new System.Drawing.Size(96, 48);
             advisorButton.TabIndex = 7;
             advisorButton.ThemeName = "Fluent";
-            advisorButton.Click += advisorButton_Click;
+            advisorButton.Click += AdvisorButton_Click;
             // 
             // bottomPanel
             // 
@@ -151,7 +151,7 @@
             bottomPanel.TabIndex = 23;
             bottomPanel.Paint += bottomPanel_Paint;
             // 
-            // radTreeView1
+            // unitTreeView
             // 
             radTreeView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
             radTreeView1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -302,7 +302,7 @@
             tileGroupElement1.Bounds = new System.Drawing.Rectangle(0, 0, 940, 200);
             tileGroupElement1.CellSize = new System.Drawing.Size(235, 160);
             tileGroupElement1.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            tileGroupElement1.Items.AddRange(new Telerik.WinControls.RadItem[] { RankTileElement, TraitsTileElement, OccupationTileElement, EvalBoardsTileElement });
+            tileGroupElement1.Items.AddRange(new Telerik.WinControls.RadItem[] { rankTileElement, occupationsTileElement, unitTileElement, evalBoardsTileElement });
             tileGroupElement1.Margin = new System.Windows.Forms.Padding(10, 2, 10, 10);
             tileGroupElement1.Name = "tileGroupElement1";
             tileGroupElement1.StretchHorizontally = false;
@@ -311,50 +311,50 @@
             tileGroupElement1.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
             tileGroupElement1.UseCompatibleTextRendering = false;
             // 
-            // RankTileElement
+            // rankTileElement
             // 
-            RankTileElement.BackgroundImage = Properties.Resources.tile_1;
-            RankTileElement.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            RankTileElement.Name = "RankTileElement";
-            RankTileElement.Text = "Manage Ranks";
-            RankTileElement.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
-            RankTileElement.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            RankTileElement.UseCompatibleTextRendering = false;
-            RankTileElement.Click += RankTileElement_Click;
+            rankTileElement.BackgroundImage = Properties.Resources.tile_1;
+            rankTileElement.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            rankTileElement.Name = "rankTileElement";
+            rankTileElement.Text = "Manage Ranks";
+            rankTileElement.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
+            rankTileElement.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            rankTileElement.UseCompatibleTextRendering = false;
+            rankTileElement.Click += this.RankTileElement_Click;
             // 
-            // TraitsTileElement
+            // occupationsTileElement
             // 
-            TraitsTileElement.BackgroundImage = Properties.Resources.tile_2;
-            TraitsTileElement.Column = 2;
-            TraitsTileElement.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            TraitsTileElement.Name = "TraitsTileElement";
-            TraitsTileElement.Text = "Edit Roles";
-            TraitsTileElement.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            TraitsTileElement.UseCompatibleTextRendering = false;
-            TraitsTileElement.Click += TraitsTileElement_Click;
+            occupationsTileElement.BackgroundImage = Properties.Resources.tile_2;
+            occupationsTileElement.Column = 2;
+            occupationsTileElement.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            occupationsTileElement.Name = "occupationsTileElement";
+            occupationsTileElement.Text = "Manage Occupations";
+            occupationsTileElement.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            occupationsTileElement.UseCompatibleTextRendering = false;
+            occupationsTileElement.Click += OccupationsTileElement_Click;
             // 
-            // OccupationTileElement
+            // unitTileElement
             // 
-            OccupationTileElement.BackgroundImage = Properties.Resources.tile_2;
-            OccupationTileElement.Column = 1;
-            OccupationTileElement.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            OccupationTileElement.Name = "OccupationTileElement";
-            OccupationTileElement.Text = "Unit Designer";
-            OccupationTileElement.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            OccupationTileElement.UseCompatibleTextRendering = false;
-            OccupationTileElement.Click += OccupationTileElement_Click;
+            unitTileElement.BackgroundImage = Properties.Resources.tile_2;
+            unitTileElement.Column = 1;
+            unitTileElement.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            unitTileElement.Name = "unitTileElement";
+            unitTileElement.Text = "Unit Designer";
+            unitTileElement.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            unitTileElement.UseCompatibleTextRendering = false;
+            unitTileElement.Click += UnitTileElement_Click;
             // 
-            // EvalBoardsTileElement
+            // evalBoardsTileElement
             // 
-            EvalBoardsTileElement.BackgroundImage = Properties.Resources.tile_3;
-            EvalBoardsTileElement.Column = 3;
-            EvalBoardsTileElement.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            EvalBoardsTileElement.Name = "EvalBoardsTileElement";
-            EvalBoardsTileElement.Text = "Evaluation Boards";
-            EvalBoardsTileElement.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
-            EvalBoardsTileElement.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            EvalBoardsTileElement.UseCompatibleTextRendering = false;
-            EvalBoardsTileElement.Click += EvalBoardsTileElement_Click;
+            evalBoardsTileElement.BackgroundImage = Properties.Resources.tile_3;
+            evalBoardsTileElement.Column = 3;
+            evalBoardsTileElement.DisabledTextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            evalBoardsTileElement.Name = "EvalBoardsTileElement";
+            evalBoardsTileElement.Text = "Evaluation Boards";
+            evalBoardsTileElement.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+            evalBoardsTileElement.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            evalBoardsTileElement.UseCompatibleTextRendering = false;
+            evalBoardsTileElement.Click += EvalBoardsTileElement_Click;
             // 
             // radPanel1
             // 
@@ -411,7 +411,7 @@
             radLabel5.TabIndex = 4;
             radLabel5.Text = "Short Code / Tag:";
             // 
-            // radTextBox2
+            // codeTextBox
             // 
             radTextBox2.Location = new System.Drawing.Point(295, 101);
             radTextBox2.Name = "radTextBox2";
@@ -427,7 +427,7 @@
             radLabel2.TabIndex = 2;
             radLabel2.Text = "Faction Name:";
             // 
-            // radTextBox1
+            // nameTextBox1
             // 
             radTextBox1.Location = new System.Drawing.Point(21, 101);
             radTextBox1.Name = "radTextBox1";
@@ -476,7 +476,7 @@
             radCommandBar1.TabIndex = 25;
             radCommandBar1.ThemeName = "Fluent";
             // 
-            // radContextMenu1
+            // unitContextMenu
             // 
             radContextMenu1.Items.AddRange(new Telerik.WinControls.RadItem[] { addFactionMenuItem, radMenuSeparatorItem1, deleteFactionMenuItem });
             // 
@@ -571,10 +571,10 @@
         private Telerik.WinControls.UI.RadPanel radPanel3;
         private Telerik.WinControls.UI.RadPanorama radPanorama1;
         private Telerik.WinControls.UI.TileGroupElement tileGroupElement1;
-        private Telerik.WinControls.UI.RadTileElement RankTileElement;
-        private Telerik.WinControls.UI.RadTileElement TraitsTileElement;
-        private Telerik.WinControls.UI.RadTileElement OccupationTileElement;
-        private Telerik.WinControls.UI.RadTileElement EvalBoardsTileElement;
+        private Telerik.WinControls.UI.RadTileElement rankTileElement;
+        private Telerik.WinControls.UI.RadTileElement occupationsTileElement;
+        private Telerik.WinControls.UI.RadTileElement unitTileElement;
+        private Telerik.WinControls.UI.RadTileElement evalBoardsTileElement;
         private Telerik.WinControls.UI.RadPanel radPanel1;
         private Telerik.WinControls.UI.RadPanel radPanel4;
         private Telerik.WinControls.UI.RadButton cancelButton;

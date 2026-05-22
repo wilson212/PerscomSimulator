@@ -46,7 +46,7 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="NodaTime" Version="3.3.2" />
     <PackageReference Include="UI.for.WinForms.AllControls.Net80">
-      <Version>2026.1.415</Version>
+      <Version>2026.2.520</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

@@ -120,7 +120,7 @@
             headerPanel.TabIndex = 16;
             headerPanel.Paint += headerPanel_Paint;
             // 
-            // label6
+            // headerLabel
             // 
             label6.BackColor = System.Drawing.Color.Transparent;
             label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);
@@ -136,7 +136,7 @@
             // 
             // radLabel1
             // 
-            radLabel1.Location = new System.Drawing.Point(32, 266);
+            radLabel1.Location = new System.Drawing.Point(32, 276);
             radLabel1.Name = "radLabel1";
             radLabel1.Size = new System.Drawing.Size(69, 18);
             radLabel1.TabIndex = 18;
@@ -145,7 +145,7 @@
             // 
             // radLabel2
             // 
-            radLabel2.Location = new System.Drawing.Point(32, 317);
+            radLabel2.Location = new System.Drawing.Point(32, 327);
             radLabel2.Name = "radLabel2";
             radLabel2.Size = new System.Drawing.Size(103, 18);
             radLabel2.TabIndex = 19;
@@ -154,7 +154,7 @@
             // 
             // radLabel3
             // 
-            radLabel3.Location = new System.Drawing.Point(32, 363);
+            radLabel3.Location = new System.Drawing.Point(32, 373);
             radLabel3.Name = "radLabel3";
             radLabel3.Size = new System.Drawing.Size(69, 18);
             radLabel3.TabIndex = 20;
@@ -163,7 +163,7 @@
             // 
             // isPositionalCheckBox
             // 
-            isPositionalCheckBox.Location = new System.Drawing.Point(94, 509);
+            isPositionalCheckBox.Location = new System.Drawing.Point(94, 519);
             isPositionalCheckBox.Name = "isPositionalCheckBox";
             isPositionalCheckBox.Size = new System.Drawing.Size(318, 18);
             isPositionalCheckBox.TabIndex = 21;
@@ -172,16 +172,17 @@
             // 
             // radLabel4
             // 
-            radLabel4.Location = new System.Drawing.Point(287, 210);
+            radLabel4.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold);
+            radLabel4.Location = new System.Drawing.Point(124, 240);
             radLabel4.Name = "radLabel4";
-            radLabel4.Size = new System.Drawing.Size(188, 18);
+            radLabel4.Size = new System.Drawing.Size(259, 18);
             radLabel4.TabIndex = 23;
-            radLabel4.Text = "Only select if using Split Rank Lanes ";
+            radLabel4.Text = "Only select Next Rank if using Split Rank Lanes ";
             radLabel4.ThemeName = "Fluent";
             // 
             // rankNameTextBox
             // 
-            rankNameTextBox.Location = new System.Drawing.Point(187, 268);
+            rankNameTextBox.Location = new System.Drawing.Point(187, 278);
             rankNameTextBox.Name = "rankNameTextBox";
             rankNameTextBox.Size = new System.Drawing.Size(275, 24);
             rankNameTextBox.TabIndex = 24;
@@ -189,7 +190,7 @@
             // 
             // rankAbbrTextBox
             // 
-            rankAbbrTextBox.Location = new System.Drawing.Point(187, 316);
+            rankAbbrTextBox.Location = new System.Drawing.Point(187, 326);
             rankAbbrTextBox.Name = "rankAbbrTextBox";
             rankAbbrTextBox.Size = new System.Drawing.Size(275, 24);
             rankAbbrTextBox.TabIndex = 25;
@@ -197,7 +198,7 @@
             // 
             // precedenceSpinEditor
             // 
-            precedenceSpinEditor.Location = new System.Drawing.Point(187, 362);
+            precedenceSpinEditor.Location = new System.Drawing.Point(187, 372);
             precedenceSpinEditor.Name = "precedenceSpinEditor";
             precedenceSpinEditor.Size = new System.Drawing.Size(276, 24);
             precedenceSpinEditor.TabIndex = 26;
@@ -206,12 +207,12 @@
             // rankImageSelector
             // 
             rankImageSelector.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            rankImageSelector.ImagePadding = 8;
-            rankImageSelector.InstructionText = "Click to Add";
-            rankImageSelector.Location = new System.Drawing.Point(32, 81);
+            rankImageSelector.ImagePadding = 4;
+            rankImageSelector.Location = new System.Drawing.Point(37, 81);
             rankImageSelector.Name = "rankImageSelector";
             rankImageSelector.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
-            rankImageSelector.RankText = "This Rank";
+            rankImageSelector.RankText = "This Rank Insignia";
+            rankImageSelector.InstructionText = "Click to Change";
             rankImageSelector.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
             rankImageSelector.Size = new System.Drawing.Size(156, 156);
             rankImageSelector.TabIndex = 29;
@@ -221,7 +222,7 @@
             // 
             nextRankSelector.BackColor = System.Drawing.Color.White;
             nextRankSelector.ImagePadding = 4;
-            nextRankSelector.Location = new System.Drawing.Point(320, 81);
+            nextRankSelector.Location = new System.Drawing.Point(314, 81);
             nextRankSelector.Name = "nextRankSelector";
             nextRankSelector.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
             nextRankSelector.Rank = null;
@@ -229,13 +230,13 @@
             nextRankSelector.RankTitle = "Next Rank";
             nextRankSelector.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
             nextRankSelector.ShowNextRank = false;
-            nextRankSelector.Size = new System.Drawing.Size(128, 128);
+            nextRankSelector.Size = new System.Drawing.Size(156, 156);
             nextRankSelector.TabIndex = 30;
             nextRankSelector.OnClick += nextRankSelector_Click;
             // 
             // stipendAmountSpinEditor
             // 
-            stipendAmountSpinEditor.Location = new System.Drawing.Point(187, 452);
+            stipendAmountSpinEditor.Location = new System.Drawing.Point(187, 462);
             stipendAmountSpinEditor.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             stipendAmountSpinEditor.Name = "stipendAmountSpinEditor";
             stipendAmountSpinEditor.Size = new System.Drawing.Size(276, 24);
@@ -245,7 +246,7 @@
             // 
             // radLabel5
             // 
-            radLabel5.Location = new System.Drawing.Point(32, 453);
+            radLabel5.Location = new System.Drawing.Point(32, 463);
             radLabel5.Name = "radLabel5";
             radLabel5.Size = new System.Drawing.Size(93, 18);
             radLabel5.TabIndex = 31;
@@ -254,7 +255,7 @@
             // 
             // radLabel6
             // 
-            radLabel6.Location = new System.Drawing.Point(32, 414);
+            radLabel6.Location = new System.Drawing.Point(32, 424);
             radLabel6.Name = "radLabel6";
             radLabel6.Size = new System.Drawing.Size(83, 18);
             radLabel6.TabIndex = 33;
@@ -263,7 +264,7 @@
             // 
             // overrideRadioButton
             // 
-            overrideRadioButton.Location = new System.Drawing.Point(287, 414);
+            overrideRadioButton.Location = new System.Drawing.Point(287, 424);
             overrideRadioButton.Name = "overrideRadioButton";
             overrideRadioButton.Size = new System.Drawing.Size(64, 18);
             overrideRadioButton.TabIndex = 34;
@@ -273,7 +274,7 @@
             // 
             // offsetRadioButton
             // 
-            offsetRadioButton.Location = new System.Drawing.Point(398, 414);
+            offsetRadioButton.Location = new System.Drawing.Point(398, 424);
             offsetRadioButton.Name = "offsetRadioButton";
             offsetRadioButton.Size = new System.Drawing.Size(51, 18);
             offsetRadioButton.TabIndex = 35;
@@ -284,7 +285,7 @@
             // inheritRadioButton
             // 
             inheritRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
-            inheritRadioButton.Location = new System.Drawing.Point(187, 414);
+            inheritRadioButton.Location = new System.Drawing.Point(187, 424);
             inheritRadioButton.Name = "inheritRadioButton";
             inheritRadioButton.Size = new System.Drawing.Size(53, 18);
             inheritRadioButton.TabIndex = 36;
@@ -294,9 +295,9 @@
             // radPictureBox1
             // 
             radPictureBox1.Image = Properties.Resources.go_next;
-            radPictureBox1.Location = new System.Drawing.Point(229, 122);
+            radPictureBox1.Location = new System.Drawing.Point(214, 136);
             radPictureBox1.Name = "radPictureBox1";
-            radPictureBox1.Size = new System.Drawing.Size(48, 48);
+            radPictureBox1.Size = new System.Drawing.Size(78, 48);
             radPictureBox1.TabIndex = 37;
             // 
             // boardButton

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CrossLite.CodeFirst;
 
 namespace Perscom.Database
 {
@@ -21,26 +22,45 @@ namespace Perscom.Database
         /// </summary>
         internal void MigrateTables()
         {
-            if (BaseDatabase.CurrentVersion != BaseDatabase.DatabaseVersion)
+            // Check if we need to migrate
+            if (BaseDatabase.CurrentVersion == BaseDatabase.DatabaseVersion) return;
+            
+            // Ensure directory exists
+            var path = Path.Combine(Program.RootPath, "Data", "Backups");
+            if (!Directory.Exists(path))
             {
-                // Ensure directory exists
-                var path = Path.Combine(Program.RootPath, "Data", "Backups");
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
+                Directory.CreateDirectory(path);
+            }
 
-                // Create backup
-                File.Copy(
-                    Path.Combine(Program.RootPath, "data", "AppData.db"),
-                    Path.Combine(path, $"AppData_v{BaseDatabase.DatabaseVersion}_{Epoch.Now}.db")
-                );
+            // Create backup
+            File.Copy(
+                Path.Combine(Program.RootPath, "data", "AppData.db"),
+                Path.Combine(path, $"AppData_v{BaseDatabase.DatabaseVersion}_{Epoch.Now}.db")
+            );
+            
+            // Begin a transaction
+            var transaction = Database.BeginTransaction();
 
+            try
+            {
                 // Perform updates until we are caught up!
                 while (BaseDatabase.CurrentVersion != BaseDatabase.DatabaseVersion)
                 {
                     switch (BaseDatabase.DatabaseVersion.ToString())
                     {
+                        case "2.0":
+                            Database.CreateTable<PositionBlueprintRank>();
+                            Database.Execute("INSERT INTO DbVersion (`Version`, `AppliedOn`) VALUES ('2.1', datetime('now'))");
+                            break;
+                        case "2.1":
+                            Database.CreateTable<PositionBlueprintOccupation>();
+                            Database.Execute("INSERT INTO DbVersion (`Version`, `AppliedOn`) VALUES ('2.2', datetime('now'))");
+                            break;
+                        case "2.2":
+                            Database.DropTable<UnitBlueprintAttachment>();
+                            Database.CreateTable<UnitBlueprintAttachment>();
+                            Database.Execute("INSERT INTO DbVersion (`Version`, `AppliedOn`) VALUES ('2.3', datetime('now'))");
+                            break;
                         default:
                             throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
                     }
@@ -48,9 +68,17 @@ namespace Perscom.Database
                     // Fetch version
                     Database.GetVersion();
                 }
+                
+                // Commit the transaction
+                transaction.Commit();
 
                 // Always perform a vacuum to optimize the database
                 Database.Execute("VACUUM;");
+            }
+            catch (Exception e)
+            {
+                transaction.Rollback();
+                throw;
             }
         }      
 

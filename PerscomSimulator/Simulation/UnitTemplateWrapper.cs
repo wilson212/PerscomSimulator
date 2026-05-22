@@ -29,7 +29,7 @@ namespace Perscom.Simulation
             PromotionPool = blueprint.PromotionEchelon;
 
             SubUnits = new List<UnitTemplateWrapper>();
-            foreach (UnitBlueprintAttachment attachement in blueprint.Attachments)
+            foreach (UnitBlueprintAttachment attachement in blueprint.SubUnitBlueprints)
             {
                 // Skip attachments where this unit is the child
                 if (attachement.ParentId == blueprint.Id)

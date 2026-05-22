@@ -60,17 +60,17 @@ public class UnitBlueprintService
     /// A <see cref="ServiceResult{T}"/> containing the updated <see cref="UnitBlueprint"/>
     /// on success, or an error message on failure.
     /// </returns>
-    public static ServiceResult<UnitBlueprint> Update(int factionId, UpdateUnitBlueprintDto dto)
+    public static ServiceResult<UnitBlueprint> Update(int factionId, int blueprintId, UpdateUnitBlueprintDto dto)
     {
         try
         {
             using var db = new AppDatabase();
-            var blueprint = db.UnitBlueprints.Find(dto.Id);
+            var blueprint = db.UnitBlueprints.Find(blueprintId);
             if (blueprint == null)
-                return ServiceResult<UnitBlueprint>.Fail($"UnitBlueprint with Id {dto.Id} not found.");
+                return ServiceResult<UnitBlueprint>.Fail($"UnitBlueprint with Id {blueprintId} not found.");
 
             if (blueprint.FactionId != factionId)
-                return ServiceResult<UnitBlueprint>.Fail($"UnitBlueprint {dto.Id} belongs to a different faction.");
+                return ServiceResult<UnitBlueprint>.Fail($"UnitBlueprint {blueprintId} belongs to a different faction.");
 
             dto.ApplyTo(blueprint);
 

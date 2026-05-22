@@ -242,7 +242,7 @@
             // 
             // bottomPanel
             // 
-            bottomPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            bottomPanel.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             bottomPanel.BackgroundImage = Properties.Resources.mainPattern;
             bottomPanel.Controls.Add(saveButton);
             bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -1082,7 +1082,7 @@
             radLabel1.TabIndex = 2;
             radLabel1.Text = "Leadership:";
             // 
-            // LeadershipTrackBar
+            // leadershipTrackBar
             // 
             LeadershipTrackBar.LabelStyle = Telerik.WinControls.UI.TrackBarLabelStyle.TopLeft;
             LeadershipTrackBar.Location = new System.Drawing.Point(12, 64);
@@ -1328,7 +1328,7 @@
             headerPanel.TabIndex = 1;
             headerPanel.Paint += HeaderPanel_Paint;
             // 
-            // label6
+            // headerLabel
             // 
             label6.BackColor = System.Drawing.Color.Transparent;
             label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);

@@ -140,7 +140,7 @@
             this.panel2.Size = new System.Drawing.Size(618, 414);
             this.panel2.TabIndex = 1;
             // 
-            // radSpinEditor3
+            // maxTourLengthSpinEditor
             // 
             this.radSpinEditor3.Location = new System.Drawing.Point(35, 344);
             this.radSpinEditor3.Maximum = new decimal(new int[] {

@@ -112,30 +112,26 @@ namespace Perscom.Database
         /// Gets a list of <see cref="PositionBlueprint"/> entities that reference this 
         /// <see cref="UnitBlueprint"/>
         /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration that fetches all Billet entities
-        /// that are bound by the foreign key and this UnitBlueprint.Id.
-        /// </remarks>
         public virtual EntitySet<PositionBlueprint> PositionBlueprints { get; set; }
 
         /// <summary>
         /// Gets a list of <see cref="UnitBlueprintAttachment"/> entities that reference this 
         /// <see cref="UnitBlueprint"/>
         /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration that fetches all Unit template attachements
-        /// that are bound by the foreign key and this UnitBlueprint.Id.
-        /// </remarks>
-        public virtual EntitySet<UnitBlueprintAttachment> Attachments { get; set; }
+        [InverseForeignKey(nameof(UnitBlueprintAttachment.ParentId))]
+        public virtual EntitySet<UnitBlueprintAttachment> SubUnitBlueprints { get; set; }
+        
+        /// <summary>
+        /// Gets a list of <see cref="UnitBlueprintAttachment"/> entities that reference this 
+        /// <see cref="UnitBlueprint"/>
+        /// </summary>
+        [InverseForeignKey(nameof(UnitBlueprintAttachment.ChildId))]
+        public virtual EntitySet<UnitBlueprintAttachment> ParentUnitBlueprints { get; set; }
 
         /// <summary>
         /// Gets a list of <see cref="Unit"/> entities that reference this 
         /// <see cref="UnitBlueprint"/>
         /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration that fetches all Unit entities
-        /// that are bound by the foreign key and this UnitBlueprint.Id.
-        /// </remarks>
         public virtual EntitySet<Unit> Units { get; set; }
 
         #endregion

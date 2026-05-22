@@ -111,18 +111,12 @@ namespace Perscom
                 ScopedRank = rank;
                 ScopedClassification = rankClassification;
                 ScopedOccupation = occupation;
-
-                // If a Rank was provided but no explicit classification, 
-                // grab the classification from the rank for display purposes
-                if (ScopedRank != null && ScopedClassification == null)
-                {
-                    ScopedClassification = ScopedRank.Classification;
-                }
             }
 
             // Lock down the "Board Details" section — user cannot change scope
             SetupScopeDisplay();
 
+            // Recalculate total points based on existing weights and scores
             RecalculateTotalPoints();
 
             // Register for events
@@ -136,6 +130,11 @@ namespace Perscom
             // Context menu enable/disable logic
             gradedItemsContextMenu.DropDownOpening += GradedItemsContextMenu_DropDownOpening;
             additionalContextMenu.DropDownOpening += AdditionalContextMenu_DropDownOpening;
+            
+            // Clear the GridView's Focus, since they will both bug out and be "Focused" on init
+            rankPictureDisplayBox.Focus();
+            RadGridViewHelper.ClearFocusAndSelection(addScoresGridView);
+            RadGridViewHelper.ClearFocusAndSelection(attrWeightsGridView);
         }
 
         private void DeleteScoreMenuItem_Click(object sender, EventArgs e)
@@ -348,11 +347,32 @@ namespace Perscom
         /// </summary>
         private void SetupScopeDisplay()
         {
-            if (ScopedClassification != null)
+            // For display purposes only — derive the classification from the rank if needed
+            var displayClassification = ScopedClassification ?? ScopedRank?.Classification;
+
+            // --- Rank/Classification dropdown: display-only ---
+            rankDropDownList.Items.Clear();
+            if (ScopedRank != null)
             {
-                radLabel2.Text = $"Promotion To Pay Grade: {ScopedClassification}";
-                rankPictureDisplayBox.SetClassification(ScopedClassification);
+                rankDropDownList.Items.Add(new RadListDataItem
+                {
+                    Tag = ScopedRank,
+                    Text = $"{ScopedRank.Name} ({displayClassification})"
+                });
+                rankDropDownList.SelectedIndex = 0;
+                rankPictureDisplayBox.SetRanks([ScopedRank]);
             }
+            else if (displayClassification != null)
+            {
+                rankDropDownList.Items.Add(new RadListDataItem
+                {
+                    Tag = displayClassification,
+                    Text = $"Pay Grade: {displayClassification}"
+                });
+                rankDropDownList.SelectedIndex = 0;
+                rankPictureDisplayBox.SetRanks(displayClassification);
+            }
+            rankDropDownList.ReadOnly = true;
 
             // --- Occupation dropdown: display-only ---
             occupationDropDownList.Items.Clear();
@@ -374,17 +394,16 @@ namespace Perscom
                 });
                 occupationDropDownList.SelectedIndex = 0;
             }
-            occupationDropDownList.ReadOnly = true; //  Locked
+            occupationDropDownList.ReadOnly = true;
 
-            // --- "Apply to all ranks in pay grade" checkbox: display-only ---
-            // Checked = scoped to classification without a specific rank
+            // Checked = scoped to classification WITHOUT a specific rank
             applyAllRanksInGradeCheckBox.Checked = (ScopedRank == null && ScopedClassification != null);
-            applyAllRanksInGradeCheckBox.Enabled = false; // locked
+            applyAllRanksInGradeCheckBox.Enabled = false;
 
             // Update header label
             string scopeText = ScopedRank != null
                 ? $"Promotion Board Editor for {ScopedRank.Name}"
-                : $"Promotion Board Editor for {ScopedClassification}";
+                : $"Promotion Board Editor for {displayClassification}";
             if (ScopedOccupation != null)
                 scopeText += $" ({ScopedOccupation.Code} {ScopedOccupation.Name})";
             headerLabel.Text = scopeText;
@@ -422,7 +441,7 @@ namespace Perscom
             {
                 formRatingRadSpinEditor.Value = Board.FormRatingMaxPoints;
             }
-            
+
             // Expiry
             bool hasExpiry = Board.PromotableLength > 0;
             expiresCheckBox.Checked = hasExpiry;
@@ -446,7 +465,9 @@ namespace Perscom
             if (Board == null) return;
 
             using var db = new AppDatabase();
-            var existingWeights = db.PromotionBoardWeights.FindAll(Board.Id).ToArray();
+            var existingWeights = db.PromotionBoardWeights
+                .Where(w => w.PromotionBoardId == Board.Id)
+                .ToArray();
 
             foreach (var weight in existingWeights)
             {
@@ -469,7 +490,9 @@ namespace Perscom
             if (Board == null) return;
 
             using var db = new AppDatabase();
-            var existing = db.PromotionBoardAddScores.FindAll(Board.Id).ToList();
+            var existing = db.PromotionBoardAddScores
+                .Where(s => s.PromotionBoardId == Board.Id)
+                .ToList();
 
             foreach (var score in existing)
             {
@@ -481,7 +504,8 @@ namespace Perscom
                     functionText,
                     Enum.GetName(typeof(ComparisonOperator), score.Operator),
                     score.ExpectedLevel.ToString(),
-                    score.Points.ToString()
+                    score.Points.ToString(),
+                    "0%"
                 );
             }
         }
@@ -490,6 +514,11 @@ namespace Perscom
 
         #region Calculations
 
+        /// <summary>
+        /// Recalculates the total points for the promotion board by summing up attribute weights,
+        /// additional scores, and other relevant inputs such as Time in Grade (TIG) and Form Scaling factors.
+        /// Updates the total points display and recalculates associated percentages.
+        /// </summary>
         private void RecalculateTotalPoints()
         {
             int total = Weights.Sum(w => w.Points);
@@ -501,13 +530,18 @@ namespace Perscom
             if (formScaleCheckBox.Checked)
                 total += (int)formRatingRadSpinEditor.Value;
 
-            TotalPointsSpinEditor.Value = total;
+            totalPointsLabel.Text = total.ToString();
             RecalculatePercentages();
         }
 
+        /// <summary>
+        /// Recalculates and updates the percentage values for each weight in the attribute weights grid view.
+        /// The percentages are based on the current total points value, ensuring that each weight's
+        /// contribution is proportionally reflected.
+        /// </summary>
         private void RecalculatePercentages()
         {
-            int totalPoints = (int)TotalPointsSpinEditor.Value;
+            int totalPoints = int.Parse(totalPointsLabel.Text);
 
             for (int i = 0; i < Weights.Count && i < attrWeightsGridView.Rows.Count; i++)
             {
@@ -517,12 +551,30 @@ namespace Perscom
                 attrWeightsGridView.Rows[i].Cells["column4"].Value = $"{pct:F1}%";
             }
 
+            // Adjust the width of the "Attribute" column to fit the content
+            RadGridViewHelper.AdjustColumnForScrollBar(attrWeightsGridView, "column1", 180);
             UpdateAdditionalScoresGrid(totalPoints);
         }
 
+        /// <summary>
+        /// Updates the grid displaying additional scores with percentage values
+        /// based on the provided total points. Each score's percentage is calculated
+        /// relative to the total points and displayed in the corresponding cell.
+        /// </summary>
+        /// <param name="totalPoints">The total points used as a basis for calculating percentages.</param>
         private void UpdateAdditionalScoresGrid(int totalPoints)
         {
-
+            for (int i = 0; i < AdditionalScores.Count && i < addScoresGridView.Rows.Count; i++)
+            {
+                double pct = totalPoints > 0
+                    ? (AdditionalScores[i].Points / (double)totalPoints) * 100.0
+                    : 0;
+                addScoresGridView.Rows[i].Cells["column4"].Value = $"{AdditionalScores[i].Points}";
+                addScoresGridView.Rows[i].Cells["column5"].Value = $"{pct:F1}%";
+            }
+            
+            // Adjust the width of the "Function" column to fit the content
+            RadGridViewHelper.AdjustColumnForScrollBar(addScoresGridView, "column1", 235);
         }
 
         #endregion
@@ -545,14 +597,14 @@ namespace Perscom
 
         #region Control Toggle Logic
 
-        private void tigCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
+        private void TigCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
         {
             factorScaleTrackBar.Enabled = tigCheckBox.Checked;
             tigMaxSpinEditor.Enabled = tigCheckBox.Checked;
             RecalculateTotalPoints();
         }
 
-        private void formRatingCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
+        private void FormRatingCheckBox_ToggleStateChanged(object sender, StateChangedEventArgs args)
         {
             formRatingRadSpinEditor.Enabled = formScaleCheckBox.Checked;
             if (!formScaleCheckBox.Checked)
@@ -560,14 +612,14 @@ namespace Perscom
             else
                 RecalculateTotalPoints();
         }
-        
-        private void expiresCheckBox_CheckStateChanged(object sender, EventArgs e)
+
+        private void ExpiresCheckBox_CheckStateChanged(object sender, EventArgs e)
         {
             promtableLenSpinEditor.Enabled = expiresCheckBox.Checked;
             promtableLenSpinEditor.Value = !expiresCheckBox.Checked ? 0 : 12;
         }
 
-        private void boardTypeDropDownList_SelectedIndexChanged(object sender,
+        private void BoardTypeDropDownList_SelectedIndexChanged(object sender,
             Telerik.WinControls.UI.Data.PositionChangedEventArgs e)
         {
             if (boardTypeDropDownList.SelectedIndex > 0)
@@ -589,12 +641,17 @@ namespace Perscom
         private void TigMaxSpinEditor_ValueChanged(object sender, EventArgs e)
             => RecalculateTotalPoints();
 
-        private void formRatingSpinEditor_ValueChanged(object sender, EventArgs e)
+        private void FormRatingSpinEditor_ValueChanged(object sender, EventArgs e)
             => RecalculateTotalPoints();
 
-        private void attrWeightsGridView_DoubleClick(object sender, EventArgs e)
+        private void AttrWeightsGridView_DoubleClick(object sender, EventArgs e)
         {
             EditAttrMenuItem_Click(sender, e);
+        }
+
+        private void AddScoresGridView_DoubleClick(object sender, EventArgs e)
+        {
+            EditScoreMenuItem_Click(sender, e);
         }
 
         private void GradedItemsContextMenu_DropDownOpening(object sender, CancelEventArgs e)
@@ -654,7 +711,7 @@ namespace Perscom
                 Board.Type = (PromotionBoardType)boardTypeDropDownList.SelectedItem.Tag;
                 Board.IsPassFail = passFailCheckBox.Checked;
                 Board.PassThreshold = (int)percentageTrackBar.Value;
-                
+
                 // Form Rating
                 if (formScaleCheckBox.Checked)
                 {
@@ -691,8 +748,8 @@ namespace Perscom
                 }
 
                 // Before re-inserting weights and scores:
-                db.PromotionBoardWeights.Remove(w => w.PromotionBoardId == Board.Id);
-                db.PromotionBoardAddScores.Remove(s => s.PromotionBoardId == Board.Id);
+                db.PromotionBoardWeights.RemoveWhere(w => w.PromotionBoardId == Board.Id);
+                db.PromotionBoardAddScores.RemoveWhere(s => s.PromotionBoardId == Board.Id);
 
                 // Delete old weights, re-insert current
                 foreach (var weight in Weights.Where(w => w.ExpectedLevel > 0))
@@ -753,8 +810,8 @@ namespace Perscom
             try
             {
                 // Clear all references to this board and delete the board itself
-                db.PromotionBoardWeights.Remove(w => w.PromotionBoardId == Board.Id);
-                db.PromotionBoardAddScores.Remove(s => s.PromotionBoardId == Board.Id);
+                db.PromotionBoardWeights.RemoveWhere(w => w.PromotionBoardId == Board.Id);
+                db.PromotionBoardAddScores.RemoveWhere(s => s.PromotionBoardId == Board.Id);
                 db.PromotionBoards.Remove(Board);
 
                 // Commit the transaction
@@ -777,26 +834,7 @@ namespace Perscom
         /// </summary>
         private void GridView_CellFormatting(object sender, CellFormattingEventArgs e)
         {
-            if (e.CellElement.IsCurrent)
-            {
-                // 1. Keep the border enabled so the layout engine doesn't recalculate the size
-                e.CellElement.DrawBorder = true;
-
-                // 2. Make the focus border invisible
-                e.CellElement.BorderColor = Color.Transparent;
-
-                // 3. Force the style to match standard cells so it doesn't try to draw a 3D focus box
-                e.CellElement.BorderBoxStyle = BorderBoxStyle.SingleBorder;
-                e.CellElement.BorderGradientStyle = GradientStyles.Solid;
-            }
-            else
-            {
-                // Restore default theme behavior for non-current cells
-                e.CellElement.ResetValue(LightVisualElement.DrawBorderProperty, ValueResetFlags.Local);
-                e.CellElement.ResetValue(LightVisualElement.BorderColorProperty, ValueResetFlags.Local);
-                e.CellElement.ResetValue(LightVisualElement.BorderBoxStyleProperty, ValueResetFlags.Local);
-                e.CellElement.ResetValue(LightVisualElement.BorderGradientStyleProperty, ValueResetFlags.Local);
-            }
+            RadGridViewHelper.RemoveSelectedCellBorderAndPop(e);
         }
 
         /// <summary>
@@ -805,12 +843,7 @@ namespace Perscom
         private void GridView_Leave(object sender, EventArgs e)
         {
             var gridView = (RadGridView)sender;
-
-            // Clears all highlighted selections
-            gridView.ClearSelection();
-
-            // Removes the internal "active" pointer so the theme completely lets go of the row
-            gridView.CurrentRow = null;
+            RadGridViewHelper.ClearFocusAndSelection(gridView);
         }
     }
 }

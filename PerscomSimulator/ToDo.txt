@@ -4,11 +4,6 @@
  --> Should we Auto promote a soldier if they are promotable?
  - Add statistic tracking of (times passed over on promotion boards)
 
- ---- Ranks:
- - Establish Rank Grades seperate from Ranks in the RankEditorForm (ListView with drop down)
-  --> Previous rank requirements for selection
-  --> Special rank checkbox
-
  ----- Selection Procedures:
  - Used for lateral movements, warrant selection, green to gold and special assignments
 

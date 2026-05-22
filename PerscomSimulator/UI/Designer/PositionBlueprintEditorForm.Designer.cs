@@ -1,6 +1,6 @@
 ﻿using Telerik.WinControls.UI;
 
-namespace Perscom.UI
+namespace Perscom
 {
     partial class PositionBlueprintEditorForm
     {
@@ -41,83 +41,91 @@ namespace Perscom.UI
             radPageView1 = new RadPageView();
             DetailsPage = new RadPageViewPage();
             radPanel1 = new RadPanel();
-            ExpGridView = new RadGridView();
+            expGridView = new RadGridView();
             radGroupBox4 = new RadGroupBox();
-            radRadioButton3 = new RadRadioButton();
+            changeNoneRadioButton = new RadRadioButton();
             radLabel10 = new RadLabel();
-            radRadioButton2 = new RadRadioButton();
-            radRadioButton1 = new RadRadioButton();
+            changeAllRadioButton = new RadRadioButton();
+            changeNewRadioButton = new RadRadioButton();
             radLabel9 = new RadLabel();
-            radDropDownList8 = new RadDropDownList();
+            occupationDropDownList = new RadDropDownList();
             radGroupBox3 = new RadGroupBox();
+            demoteCheckBox = new RadCheckBox();
             radButton1 = new RadButton();
-            radCheckedDropDownList2 = new RadCheckedDropDownList();
+            allowedOccupationsDropDownList = new RadCheckedDropDownList();
             radLabel11 = new RadLabel();
             radCheckBox2 = new RadCheckBox();
             radDropDownList6 = new RadDropDownList();
-            radDropDownList7 = new RadDropDownList();
+            selectionProcedureDropDownList = new RadDropDownList();
             radLabel8 = new RadLabel();
             radGroupBox2 = new RadGroupBox();
+            prestigeSpinEditor = new RadSpinEditor();
+            radLabel32 = new RadLabel();
+            supervisorDropDownList = new RadDropDownList();
+            radLabel31 = new RadLabel();
             radCheckBox5 = new RadCheckBox();
             radCheckBox4 = new RadCheckBox();
             radCheckBox3 = new RadCheckBox();
             radCheckBox1 = new RadCheckBox();
-            radSpinEditor4 = new RadSpinEditor();
+            zIndexSpinEditor = new RadSpinEditor();
             radLabel29 = new RadLabel();
-            radSpinEditor3 = new RadSpinEditor();
+            maxTourLengthSpinEditor = new RadSpinEditor();
             radLabel27 = new RadLabel();
-            radSpinEditor2 = new RadSpinEditor();
+            minTourLengthSpinEditor = new RadSpinEditor();
             radLabel26 = new RadLabel();
-            radSpinEditor1 = new RadSpinEditor();
+            statureSpinEditor = new RadSpinEditor();
             radLabel24 = new RadLabel();
-            radDropDownList4 = new RadDropDownList();
+            promoPoolDropDownList = new RadDropDownList();
             radLabel5 = new RadLabel();
-            radDropDownList3 = new RadDropDownList();
+            flagDropDownList = new RadDropDownList();
             radLabel4 = new RadLabel();
-            radDropDownList2 = new RadDropDownList();
+            catagoryDropDownList = new RadDropDownList();
             radLabel3 = new RadLabel();
-            radTextBox1 = new RadTextBox();
+            nameTextBox1 = new RadTextBox();
             radLabel2 = new RadLabel();
             radGroupBox1 = new RadGroupBox();
+            blockAutoPromoteCheckBox = new RadCheckBox();
+            rankTypeDropDownList = new RadDropDownList();
+            radLabel30 = new RadLabel();
+            radClassificationRankDisplay1 = new RadClassificationRankDisplay();
             radLabel6 = new RadLabel();
-            radDropDownList1 = new RadDropDownList();
-            radCheckedDropDownList1 = new RadCheckedDropDownList();
+            targetRankDropDownList = new RadDropDownList();
+            allowedRanksDropDownList = new RadCheckedDropDownList();
             radLabel1 = new RadLabel();
-            radPictureBox1 = new RadPictureBox();
             radPageViewPage1 = new RadPageViewPage();
             radGroupBox8 = new RadGroupBox();
             radLabel23 = new RadLabel();
             radGroupBox7 = new RadGroupBox();
-            radTrackBar16 = new RadTrackBar();
+            adaptTrackBar = new RadTrackBar();
             radLabel25 = new RadLabel();
             radLabel28 = new RadLabel();
-            radTrackBar17 = new RadTrackBar();
+            intelTrackBar = new RadTrackBar();
             radGroupBox6 = new RadGroupBox();
-            radTrackBar6 = new RadTrackBar();
-            radTrackBar7 = new RadTrackBar();
-            radTrackBar8 = new RadTrackBar();
-            radTrackBar9 = new RadTrackBar();
-            radTrackBar10 = new RadTrackBar();
+            awarenessTrackBar = new RadTrackBar();
+            courageTrackBar = new RadTrackBar();
+            extraversionTrackBar = new RadTrackBar();
+            agreeableTrackBar = new RadTrackBar();
+            conTrackBar = new RadTrackBar();
             radLabel16 = new RadLabel();
             radLabel17 = new RadLabel();
             radLabel18 = new RadLabel();
             radLabel20 = new RadLabel();
             radLabel21 = new RadLabel();
             radLabel22 = new RadLabel();
-            radTrackBar11 = new RadTrackBar();
+            ambitionTrackBar = new RadTrackBar();
             radGroupBox5 = new RadGroupBox();
-            radTrackBar5 = new RadTrackBar();
-            radTrackBar4 = new RadTrackBar();
-            radTrackBar3 = new RadTrackBar();
-            radTrackBar2 = new RadTrackBar();
-            radTrackBar1 = new RadTrackBar();
+            disciplineTrackBar = new RadTrackBar();
+            teamworkTrackBar = new RadTrackBar();
+            fitnessTrackBar = new RadTrackBar();
+            marksmanTrackBar = new RadTrackBar();
+            composureTrackBar = new RadTrackBar();
             radLabel19 = new RadLabel();
             radLabel13 = new RadLabel();
             radLabel7 = new RadLabel();
             radLabel12 = new RadLabel();
             radLabel14 = new RadLabel();
             radLabel15 = new RadLabel();
-            LeadershipTrackBar = new RadTrackBar();
+            leadershipTrackBar = new RadTrackBar();
             fluentTheme1 = new Telerik.WinControls.Themes.FluentTheme();
             bottomPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)saveButton).BeginInit();
@@ -127,92 +135,99 @@ namespace Perscom.UI
             DetailsPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)radPanel1).BeginInit();
             radPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)ExpGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ExpGridView.MasterTemplate).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)expGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)expGridView.MasterTemplate).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox4).BeginInit();
             radGroupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)radRadioButton3).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)changeNoneRadioButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel10).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radRadioButton2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radRadioButton1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)changeAllRadioButton).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)changeNewRadioButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel9).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList8).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)occupationDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox3).BeginInit();
             radGroupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)demoteCheckBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radButton1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radCheckedDropDownList2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)allowedOccupationsDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel11).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radDropDownList6).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList7).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)selectionProcedureDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel8).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox2).BeginInit();
             radGroupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)prestigeSpinEditor).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel32).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)supervisorDropDownList).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel31).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox5).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor4).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)zIndexSpinEditor).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel29).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor3).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)maxTourLengthSpinEditor).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel27).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)minTourLengthSpinEditor).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel26).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)statureSpinEditor).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel24).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList4).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)promoPoolDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel5).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList3).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)flagDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel4).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)catagoryDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel3).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTextBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nameTextBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox1).BeginInit();
             radGroupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)blockAutoPromoteCheckBox).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)rankTypeDropDownList).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel30).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel6).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radCheckedDropDownList1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)targetRankDropDownList).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)allowedRanksDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radPictureBox1).BeginInit();
             radPageViewPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)radGroupBox8).BeginInit();
             radGroupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)radLabel23).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox7).BeginInit();
             radGroupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar16).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)adaptTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel25).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel28).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar17).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)intelTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox6).BeginInit();
             radGroupBox6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar6).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar7).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar8).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar9).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar10).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)awarenessTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)courageTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)extraversionTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)agreeableTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)conTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel16).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel17).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel18).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel20).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel21).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel22).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar11).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ambitionTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox5).BeginInit();
             radGroupBox5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar5).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar4).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar3).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)disciplineTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)teamworkTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)fitnessTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)marksmanTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)composureTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel19).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel13).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel7).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel12).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel14).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel15).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)LeadershipTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)leadershipTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)this).BeginInit();
             SuspendLayout();
             // 
@@ -225,15 +240,17 @@ namespace Perscom.UI
             bottomPanel.Name = "bottomPanel";
             bottomPanel.Size = new System.Drawing.Size(1016, 60);
             bottomPanel.TabIndex = 20;
+            bottomPanel.Paint += BottomPanel_Paint;
             // 
             // saveButton
             // 
             saveButton.Location = new System.Drawing.Point(432, 18);
             saveButton.Name = "saveButton";
             saveButton.Size = new System.Drawing.Size(150, 30);
-            saveButton.TabIndex = 17;
+            saveButton.TabIndex = 25;
             saveButton.Text = "Save Changes";
             saveButton.ThemeName = "Fluent";
+            saveButton.Click += SaveButton_Click;
             // 
             // headerPanel
             // 
@@ -245,6 +262,7 @@ namespace Perscom.UI
             headerPanel.Name = "headerPanel";
             headerPanel.Size = new System.Drawing.Size(1016, 75);
             headerPanel.TabIndex = 19;
+            headerPanel.Paint += HeaderPanel_Paint;
             // 
             // labelHeader
             // 
@@ -258,7 +276,7 @@ namespace Perscom.UI
             labelHeader.ShadowSoftness = 3F;
             labelHeader.Size = new System.Drawing.Size(653, 37);
             labelHeader.TabIndex = 0;
-            labelHeader.Text = "Add New Position";
+            labelHeader.Text = "Add New Position Blueprint";
             // 
             // radPageView1
             // 
@@ -288,186 +306,196 @@ namespace Perscom.UI
             // 
             // radPanel1
             // 
-            radPanel1.Controls.Add(ExpGridView);
+            radPanel1.Controls.Add(expGridView);
             radPanel1.Location = new System.Drawing.Point(515, 367);
             radPanel1.Name = "radPanel1";
             radPanel1.Size = new System.Drawing.Size(480, 228);
             radPanel1.TabIndex = 21;
             radPanel1.ThemeName = "Fluent";
             // 
-            // ExpGridView
+            // expGridView
             // 
-            ExpGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            ExpGridView.Location = new System.Drawing.Point(0, 0);
+            expGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            expGridView.Location = new System.Drawing.Point(0, 0);
             // 
             // 
             // 
-            ExpGridView.MasterTemplate.AllowAddNewRow = false;
-            ExpGridView.MasterTemplate.AllowColumnChooser = false;
-            ExpGridView.MasterTemplate.AllowColumnResize = false;
-            ExpGridView.MasterTemplate.AllowDragToGroup = false;
-            ExpGridView.MasterTemplate.AllowEditRow = false;
-            ExpGridView.MasterTemplate.AllowRowResize = false;
+            expGridView.MasterTemplate.AllowAddNewRow = false;
+            expGridView.MasterTemplate.AllowColumnChooser = false;
+            expGridView.MasterTemplate.AllowColumnResize = false;
+            expGridView.MasterTemplate.AllowDragToGroup = false;
+            expGridView.MasterTemplate.AllowEditRow = false;
+            expGridView.MasterTemplate.AllowRowResize = false;
             gridViewTextBoxColumn1.HeaderText = "Name";
             gridViewTextBoxColumn1.Name = "column2";
             gridViewTextBoxColumn1.Width = 400;
             gridViewTextBoxColumn2.HeaderText = "Rate";
             gridViewTextBoxColumn2.Name = "column3";
-            ExpGridView.MasterTemplate.Columns.AddRange(new GridViewDataColumn[] { gridViewTextBoxColumn1, gridViewTextBoxColumn2 });
-            ExpGridView.MasterTemplate.ViewDefinition = tableViewDefinition1;
-            ExpGridView.Name = "ExpGridView";
-            ExpGridView.Size = new System.Drawing.Size(480, 228);
-            ExpGridView.TabIndex = 18;
-            ExpGridView.ThemeName = "Fluent";
-            ExpGridView.TitleText = "Experience Given";
+            expGridView.MasterTemplate.Columns.AddRange(new GridViewDataColumn[] { gridViewTextBoxColumn1, gridViewTextBoxColumn2 });
+            expGridView.MasterTemplate.ViewDefinition = tableViewDefinition1;
+            expGridView.Name = "expGridView";
+            expGridView.Size = new System.Drawing.Size(480, 228);
+            expGridView.TabIndex = 18;
+            expGridView.ThemeName = "Fluent";
+            expGridView.TitleText = "Experience Given";
             // 
             // radGroupBox4
             // 
             radGroupBox4.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
-            radGroupBox4.Controls.Add(radRadioButton3);
+            radGroupBox4.Controls.Add(changeNoneRadioButton);
             radGroupBox4.Controls.Add(radLabel10);
-            radGroupBox4.Controls.Add(radRadioButton2);
-            radGroupBox4.Controls.Add(radRadioButton1);
+            radGroupBox4.Controls.Add(changeAllRadioButton);
+            radGroupBox4.Controls.Add(changeNewRadioButton);
             radGroupBox4.Controls.Add(radLabel9);
-            radGroupBox4.Controls.Add(radDropDownList8);
+            radGroupBox4.Controls.Add(occupationDropDownList);
             radGroupBox4.HeaderMargin = new System.Windows.Forms.Padding(1);
-            radGroupBox4.HeaderText = "Specialty Role";
-            radGroupBox4.Location = new System.Drawing.Point(515, 222);
+            radGroupBox4.HeaderText = "Occupation Specialty";
+            radGroupBox4.Location = new System.Drawing.Point(515, 230);
             radGroupBox4.Name = "radGroupBox4";
             radGroupBox4.Size = new System.Drawing.Size(480, 124);
             radGroupBox4.TabIndex = 3;
-            radGroupBox4.Text = "Specialty Role";
+            radGroupBox4.Text = "Occupation Specialty";
             radGroupBox4.ThemeName = "Fluent";
             // 
-            // radRadioButton3
+            // changeNoneRadioButton
             // 
-            radRadioButton3.CheckState = System.Windows.Forms.CheckState.Checked;
-            radRadioButton3.Location = new System.Drawing.Point(155, 78);
-            radRadioButton3.Name = "radRadioButton3";
-            radRadioButton3.Size = new System.Drawing.Size(49, 18);
-            radRadioButton3.TabIndex = 12;
-            radRadioButton3.Text = "None";
-            radRadioButton3.ThemeName = "Fluent";
+            changeNoneRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            changeNoneRadioButton.Location = new System.Drawing.Point(155, 78);
+            changeNoneRadioButton.Name = "changeNoneRadioButton";
+            changeNoneRadioButton.Size = new System.Drawing.Size(49, 18);
+            changeNoneRadioButton.TabIndex = 22;
+            changeNoneRadioButton.Text = "None";
+            changeNoneRadioButton.ThemeName = "Fluent";
             // 
             // radLabel10
             // 
             radLabel10.Location = new System.Drawing.Point(29, 43);
             radLabel10.Name = "radLabel10";
-            radLabel10.Size = new System.Drawing.Size(74, 18);
+            radLabel10.Size = new System.Drawing.Size(109, 18);
             radLabel10.TabIndex = 11;
-            radLabel10.Text = "Position Role:";
+            radLabel10.Text = "Position Occupation:";
             // 
-            // radRadioButton2
+            // changeAllRadioButton
             // 
-            radRadioButton2.Location = new System.Drawing.Point(234, 78);
-            radRadioButton2.Name = "radRadioButton2";
-            radRadioButton2.Size = new System.Drawing.Size(77, 18);
-            radRadioButton2.TabIndex = 10;
-            radRadioButton2.TabStop = false;
-            radRadioButton2.Text = "All Soldiers";
-            radRadioButton2.ThemeName = "Fluent";
+            changeAllRadioButton.Location = new System.Drawing.Point(234, 78);
+            changeAllRadioButton.Name = "changeAllRadioButton";
+            changeAllRadioButton.Size = new System.Drawing.Size(77, 18);
+            changeAllRadioButton.TabIndex = 23;
+            changeAllRadioButton.TabStop = false;
+            changeAllRadioButton.Text = "All Soldiers";
+            changeAllRadioButton.ThemeName = "Fluent";
             // 
-            // radRadioButton1
+            // changeNewRadioButton
             // 
-            radRadioButton1.Location = new System.Drawing.Point(334, 78);
-            radRadioButton1.Name = "radRadioButton1";
-            radRadioButton1.Size = new System.Drawing.Size(113, 18);
-            radRadioButton1.TabIndex = 9;
-            radRadioButton1.TabStop = false;
-            radRadioButton1.Text = "New Soldiers Only";
-            radRadioButton1.ThemeName = "Fluent";
+            changeNewRadioButton.Location = new System.Drawing.Point(334, 78);
+            changeNewRadioButton.Name = "changeNewRadioButton";
+            changeNewRadioButton.Size = new System.Drawing.Size(113, 18);
+            changeNewRadioButton.TabIndex = 24;
+            changeNewRadioButton.TabStop = false;
+            changeNewRadioButton.Text = "New Soldiers Only";
+            changeNewRadioButton.ThemeName = "Fluent";
             // 
             // radLabel9
             // 
-            radLabel9.Location = new System.Drawing.Point(29, 78);
+            radLabel9.Location = new System.Drawing.Point(36, 78);
             radLabel9.Name = "radLabel9";
             radLabel9.Size = new System.Drawing.Size(102, 18);
             radLabel9.TabIndex = 6;
             radLabel9.Text = "Force Role Change:";
             // 
-            // radDropDownList8
+            // occupationDropDownList
             // 
-            radDropDownList8.Location = new System.Drawing.Point(155, 40);
-            radDropDownList8.Name = "radDropDownList8";
-            radDropDownList8.Size = new System.Drawing.Size(292, 24);
-            radDropDownList8.TabIndex = 5;
-            radDropDownList8.Text = "Select Position Role";
-            radDropDownList8.ThemeName = "Fluent";
+            occupationDropDownList.Location = new System.Drawing.Point(155, 40);
+            occupationDropDownList.Name = "occupationDropDownList";
+            occupationDropDownList.Size = new System.Drawing.Size(292, 24);
+            occupationDropDownList.TabIndex = 21;
+            occupationDropDownList.Text = "Select Position Occupation";
+            occupationDropDownList.ThemeName = "Fluent";
             // 
             // radGroupBox3
             // 
             radGroupBox3.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
+            radGroupBox3.Controls.Add(demoteCheckBox);
             radGroupBox3.Controls.Add(radButton1);
-            radGroupBox3.Controls.Add(radCheckedDropDownList2);
+            radGroupBox3.Controls.Add(allowedOccupationsDropDownList);
             radGroupBox3.Controls.Add(radLabel11);
             radGroupBox3.Controls.Add(radCheckBox2);
             radGroupBox3.Controls.Add(radDropDownList6);
-            radGroupBox3.Controls.Add(radDropDownList7);
+            radGroupBox3.Controls.Add(selectionProcedureDropDownList);
             radGroupBox3.Controls.Add(radLabel8);
             radGroupBox3.HeaderMargin = new System.Windows.Forms.Padding(1);
             radGroupBox3.HeaderText = "Selection";
             radGroupBox3.Location = new System.Drawing.Point(515, 21);
             radGroupBox3.Name = "radGroupBox3";
-            radGroupBox3.Size = new System.Drawing.Size(480, 182);
+            radGroupBox3.Size = new System.Drawing.Size(480, 197);
             radGroupBox3.TabIndex = 2;
             radGroupBox3.Text = "Selection";
             radGroupBox3.ThemeName = "Fluent";
             // 
+            // demoteCheckBox
+            // 
+            demoteCheckBox.Location = new System.Drawing.Point(155, 165);
+            demoteCheckBox.Name = "demoteCheckBox";
+            demoteCheckBox.Size = new System.Drawing.Size(213, 18);
+            demoteCheckBox.TabIndex = 21;
+            demoteCheckBox.Text = "Demote over-ranked incoming soldier";
+            demoteCheckBox.ThemeName = "Fluent";
+            // 
             // radButton1
             // 
             radButton1.Image = Properties.Resources.plus;
-            radButton1.Location = new System.Drawing.Point(421, 71);
+            radButton1.Location = new System.Drawing.Point(421, 68);
             radButton1.Name = "radButton1";
             radButton1.Size = new System.Drawing.Size(26, 20);
-            radButton1.TabIndex = 11;
+            radButton1.TabIndex = 18;
             radButton1.ThemeName = "Fluent";
             // 
-            // radCheckedDropDownList2
+            // allowedOccupationsDropDownList
             // 
-            radCheckedDropDownList2.Location = new System.Drawing.Point(155, 100);
-            radCheckedDropDownList2.Name = "radCheckedDropDownList2";
-            radCheckedDropDownList2.Size = new System.Drawing.Size(292, 24);
-            radCheckedDropDownList2.TabIndex = 10;
-            radCheckedDropDownList2.ThemeName = "Fluent";
+            allowedOccupationsDropDownList.Location = new System.Drawing.Point(155, 97);
+            allowedOccupationsDropDownList.Name = "allowedOccupationsDropDownList";
+            allowedOccupationsDropDownList.Size = new System.Drawing.Size(292, 24);
+            allowedOccupationsDropDownList.TabIndex = 19;
+            allowedOccupationsDropDownList.ThemeName = "Fluent";
             // 
             // radLabel11
             // 
-            radLabel11.Location = new System.Drawing.Point(29, 104);
+            radLabel11.Location = new System.Drawing.Point(16, 101);
             radLabel11.Name = "radLabel11";
-            radLabel11.Size = new System.Drawing.Size(85, 18);
+            radLabel11.Size = new System.Drawing.Size(121, 18);
             radLabel11.TabIndex = 9;
-            radLabel11.Text = "Accepted Roles:";
+            radLabel11.Text = "Accepted Occupations:";
             // 
             // radCheckBox2
             // 
-            radCheckBox2.Location = new System.Drawing.Point(155, 142);
+            radCheckBox2.Location = new System.Drawing.Point(155, 135);
             radCheckBox2.Name = "radCheckBox2";
             radCheckBox2.Size = new System.Drawing.Size(219, 18);
-            radCheckBox2.TabIndex = 8;
+            radCheckBox2.TabIndex = 20;
             radCheckBox2.Text = "Creates new soldier if position is empty";
             radCheckBox2.ThemeName = "Fluent";
             // 
             // radDropDownList6
             // 
-            radDropDownList6.Location = new System.Drawing.Point(155, 70);
+            radDropDownList6.Location = new System.Drawing.Point(155, 67);
             radDropDownList6.Name = "radDropDownList6";
             radDropDownList6.Size = new System.Drawing.Size(255, 24);
-            radDropDownList6.TabIndex = 7;
-            radDropDownList6.Text = "Select User Defined Procedure";
+            radDropDownList6.TabIndex = 17;
+            radDropDownList6.Text = "Select Evaluation Board";
             radDropDownList6.ThemeName = "Fluent";
             // 
-            // radDropDownList7
+            // selectionProcedureDropDownList
             // 
-            radDropDownList7.Location = new System.Drawing.Point(155, 40);
-            radDropDownList7.Name = "radDropDownList7";
-            radDropDownList7.Size = new System.Drawing.Size(292, 24);
-            radDropDownList7.TabIndex = 5;
-            radDropDownList7.Text = "Select Position Filling Procedure";
-            radDropDownList7.ThemeName = "Fluent";
+            selectionProcedureDropDownList.Location = new System.Drawing.Point(155, 37);
+            selectionProcedureDropDownList.Name = "selectionProcedureDropDownList";
+            selectionProcedureDropDownList.Size = new System.Drawing.Size(292, 24);
+            selectionProcedureDropDownList.TabIndex = 16;
+            selectionProcedureDropDownList.Text = "Select Position Filling Procedure";
+            selectionProcedureDropDownList.ThemeName = "Fluent";
             // 
             // radLabel8
             // 
-            radLabel8.Location = new System.Drawing.Point(29, 45);
+            radLabel8.Location = new System.Drawing.Point(29, 40);
             radLabel8.Name = "radLabel8";
             radLabel8.Size = new System.Drawing.Size(108, 18);
             radLabel8.TabIndex = 4;
@@ -476,270 +504,351 @@ namespace Perscom.UI
             // radGroupBox2
             // 
             radGroupBox2.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
+            radGroupBox2.Controls.Add(prestigeSpinEditor);
+            radGroupBox2.Controls.Add(radLabel32);
+            radGroupBox2.Controls.Add(supervisorDropDownList);
+            radGroupBox2.Controls.Add(radLabel31);
             radGroupBox2.Controls.Add(radCheckBox5);
             radGroupBox2.Controls.Add(radCheckBox4);
             radGroupBox2.Controls.Add(radCheckBox3);
             radGroupBox2.Controls.Add(radCheckBox1);
-            radGroupBox2.Controls.Add(radSpinEditor4);
+            radGroupBox2.Controls.Add(zIndexSpinEditor);
             radGroupBox2.Controls.Add(radLabel29);
-            radGroupBox2.Controls.Add(radSpinEditor3);
+            radGroupBox2.Controls.Add(maxTourLengthSpinEditor);
             radGroupBox2.Controls.Add(radLabel27);
-            radGroupBox2.Controls.Add(radSpinEditor2);
+            radGroupBox2.Controls.Add(minTourLengthSpinEditor);
             radGroupBox2.Controls.Add(radLabel26);
-            radGroupBox2.Controls.Add(radSpinEditor1);
+            radGroupBox2.Controls.Add(statureSpinEditor);
             radGroupBox2.Controls.Add(radLabel24);
-            radGroupBox2.Controls.Add(radDropDownList4);
+            radGroupBox2.Controls.Add(promoPoolDropDownList);
             radGroupBox2.Controls.Add(radLabel5);
-            radGroupBox2.Controls.Add(radDropDownList3);
+            radGroupBox2.Controls.Add(flagDropDownList);
             radGroupBox2.Controls.Add(radLabel4);
-            radGroupBox2.Controls.Add(radDropDownList2);
+            radGroupBox2.Controls.Add(catagoryDropDownList);
             radGroupBox2.Controls.Add(radLabel3);
-            radGroupBox2.Controls.Add(radTextBox1);
+            radGroupBox2.Controls.Add(nameTextBox1);
             radGroupBox2.Controls.Add(radLabel2);
             radGroupBox2.HeaderMargin = new System.Windows.Forms.Padding(1);
             radGroupBox2.HeaderText = "Details";
-            radGroupBox2.Location = new System.Drawing.Point(14, 198);
+            radGroupBox2.Location = new System.Drawing.Point(14, 193);
             radGroupBox2.Name = "radGroupBox2";
-            radGroupBox2.Size = new System.Drawing.Size(480, 397);
+            radGroupBox2.Size = new System.Drawing.Size(480, 402);
             radGroupBox2.TabIndex = 1;
             radGroupBox2.Text = "Details";
             radGroupBox2.ThemeName = "Fluent";
             // 
+            // prestigeSpinEditor
+            // 
+            prestigeSpinEditor.Location = new System.Drawing.Point(155, 208);
+            prestigeSpinEditor.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            prestigeSpinEditor.Name = "prestigeSpinEditor";
+            prestigeSpinEditor.NullableValue = new decimal(new int[] { 1, 0, 0, 0 });
+            prestigeSpinEditor.Size = new System.Drawing.Size(100, 24);
+            prestigeSpinEditor.TabIndex = 20;
+            prestigeSpinEditor.ThemeName = "Fluent";
+            prestigeSpinEditor.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // radLabel32
+            // 
+            radLabel32.Location = new System.Drawing.Point(89, 212);
+            radLabel32.Name = "radLabel32";
+            radLabel32.Size = new System.Drawing.Size(49, 18);
+            radLabel32.TabIndex = 19;
+            radLabel32.Text = "Prestige:";
+            radLabel32.ThemeName = "Fluent";
+            // 
+            // supervisorDropDownList
+            // 
+            supervisorDropDownList.Location = new System.Drawing.Point(155, 165);
+            supervisorDropDownList.Name = "supervisorDropDownList";
+            supervisorDropDownList.Size = new System.Drawing.Size(297, 24);
+            supervisorDropDownList.TabIndex = 18;
+            supervisorDropDownList.Text = "Select Supervisor";
+            supervisorDropDownList.ThemeName = "Fluent";
+            // 
+            // radLabel31
+            // 
+            radLabel31.Location = new System.Drawing.Point(34, 169);
+            radLabel31.Name = "radLabel31";
+            radLabel31.Size = new System.Drawing.Size(104, 18);
+            radLabel31.TabIndex = 17;
+            radLabel31.Text = "Supervisor Position:";
+            radLabel31.ThemeName = "Fluent";
+            // 
             // radCheckBox5
             // 
-            radCheckBox5.Location = new System.Drawing.Point(255, 349);
+            radCheckBox5.Location = new System.Drawing.Point(281, 338);
             radCheckBox5.Name = "radCheckBox5";
-            radCheckBox5.Size = new System.Drawing.Size(182, 18);
-            radCheckBox5.TabIndex = 21;
-            radCheckBox5.Text = "Can Be Promoted Laterally Early";
+            radCheckBox5.Size = new System.Drawing.Size(159, 18);
+            radCheckBox5.TabIndex = 15;
+            radCheckBox5.Text = "Can Be Moved Lateral Early";
             radCheckBox5.ThemeName = "Fluent";
             // 
             // radCheckBox4
             // 
-            radCheckBox4.Location = new System.Drawing.Point(54, 349);
+            radCheckBox4.Location = new System.Drawing.Point(281, 244);
             radCheckBox4.Name = "radCheckBox4";
-            radCheckBox4.Size = new System.Drawing.Size(181, 18);
-            radCheckBox4.TabIndex = 20;
-            radCheckBox4.Text = "Can Be Promoted Forward Early";
+            radCheckBox4.Size = new System.Drawing.Size(138, 18);
+            radCheckBox4.TabIndex = 14;
+            radCheckBox4.Text = "Can Be Promoted Early";
             radCheckBox4.ThemeName = "Fluent";
             // 
             // radCheckBox3
             // 
-            radCheckBox3.Location = new System.Drawing.Point(290, 261);
+            radCheckBox3.Location = new System.Drawing.Point(281, 306);
             radCheckBox3.Name = "radCheckBox3";
             radCheckBox3.Size = new System.Drawing.Size(79, 18);
-            radCheckBox3.TabIndex = 19;
+            radCheckBox3.TabIndex = 12;
             radCheckBox3.Text = "Waiverable";
             radCheckBox3.ThemeName = "Fluent";
             // 
             // radCheckBox1
             // 
-            radCheckBox1.Location = new System.Drawing.Point(290, 220);
+            radCheckBox1.Location = new System.Drawing.Point(281, 275);
             radCheckBox1.Name = "radCheckBox1";
             radCheckBox1.Size = new System.Drawing.Size(101, 18);
-            radCheckBox1.TabIndex = 18;
+            radCheckBox1.TabIndex = 10;
             radCheckBox1.Text = "Can Retire Early";
             radCheckBox1.ThemeName = "Fluent";
             // 
-            // radSpinEditor4
+            // zIndexSpinEditor
             // 
-            radSpinEditor4.Location = new System.Drawing.Point(155, 296);
-            radSpinEditor4.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            radSpinEditor4.Name = "radSpinEditor4";
-            radSpinEditor4.NullableValue = new decimal(new int[] { 1, 0, 0, 0 });
-            radSpinEditor4.Size = new System.Drawing.Size(100, 24);
-            radSpinEditor4.TabIndex = 17;
-            radSpinEditor4.ThemeName = "Fluent";
-            radSpinEditor4.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            zIndexSpinEditor.Location = new System.Drawing.Point(155, 336);
+            zIndexSpinEditor.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            zIndexSpinEditor.Name = "zIndexSpinEditor";
+            zIndexSpinEditor.NullableValue = new decimal(new int[] { 1, 0, 0, 0 });
+            zIndexSpinEditor.Size = new System.Drawing.Size(100, 24);
+            zIndexSpinEditor.TabIndex = 13;
+            zIndexSpinEditor.ThemeName = "Fluent";
+            zIndexSpinEditor.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // radLabel29
             // 
-            radLabel29.Location = new System.Drawing.Point(29, 300);
+            radLabel29.Location = new System.Drawing.Point(91, 338);
             radLabel29.Name = "radLabel29";
             radLabel29.Size = new System.Drawing.Size(47, 18);
             radLabel29.TabIndex = 16;
             radLabel29.Text = "Z-Index:";
+            radLabel29.ThemeName = "Fluent";
             // 
-            // radSpinEditor3
+            // maxTourLengthSpinEditor
             // 
-            radSpinEditor3.Location = new System.Drawing.Point(155, 257);
-            radSpinEditor3.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            radSpinEditor3.Name = "radSpinEditor3";
-            radSpinEditor3.NullableValue = new decimal(new int[] { 24, 0, 0, 0 });
-            radSpinEditor3.Size = new System.Drawing.Size(100, 24);
-            radSpinEditor3.TabIndex = 15;
-            radSpinEditor3.ThemeName = "Fluent";
-            radSpinEditor3.Value = new decimal(new int[] { 24, 0, 0, 0 });
+            maxTourLengthSpinEditor.Location = new System.Drawing.Point(155, 304);
+            maxTourLengthSpinEditor.Name = "maxTourLengthSpinEditor";
+            maxTourLengthSpinEditor.NullableValue = new decimal(new int[] { 24, 0, 0, 0 });
+            maxTourLengthSpinEditor.Size = new System.Drawing.Size(100, 24);
+            maxTourLengthSpinEditor.TabIndex = 11;
+            maxTourLengthSpinEditor.ThemeName = "Fluent";
+            maxTourLengthSpinEditor.Value = new decimal(new int[] { 24, 0, 0, 0 });
             // 
             // radLabel27
             // 
-            radLabel27.Location = new System.Drawing.Point(29, 261);
+            radLabel27.Location = new System.Drawing.Point(45, 306);
             radLabel27.Name = "radLabel27";
             radLabel27.Size = new System.Drawing.Size(93, 18);
             radLabel27.TabIndex = 14;
             radLabel27.Text = "Max Tour Length:";
+            radLabel27.ThemeName = "Fluent";
             // 
-            // radSpinEditor2
+            // minTourLengthSpinEditor
             // 
-            radSpinEditor2.Location = new System.Drawing.Point(155, 218);
-            radSpinEditor2.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            radSpinEditor2.Name = "radSpinEditor2";
-            radSpinEditor2.NullableValue = new decimal(new int[] { 6, 0, 0, 0 });
-            radSpinEditor2.Size = new System.Drawing.Size(100, 24);
-            radSpinEditor2.TabIndex = 13;
-            radSpinEditor2.ThemeName = "Fluent";
-            radSpinEditor2.Value = new decimal(new int[] { 6, 0, 0, 0 });
+            minTourLengthSpinEditor.Location = new System.Drawing.Point(155, 272);
+            minTourLengthSpinEditor.Name = "minTourLengthSpinEditor";
+            minTourLengthSpinEditor.NullableValue = new decimal(new int[] { 6, 0, 0, 0 });
+            minTourLengthSpinEditor.Size = new System.Drawing.Size(100, 24);
+            minTourLengthSpinEditor.TabIndex = 9;
+            minTourLengthSpinEditor.ThemeName = "Fluent";
+            minTourLengthSpinEditor.Value = new decimal(new int[] { 6, 0, 0, 0 });
             // 
             // radLabel26
             // 
-            radLabel26.Location = new System.Drawing.Point(29, 222);
+            radLabel26.Location = new System.Drawing.Point(46, 275);
             radLabel26.Name = "radLabel26";
             radLabel26.Size = new System.Drawing.Size(92, 18);
             radLabel26.TabIndex = 12;
             radLabel26.Text = "Min Tour Length:";
+            radLabel26.ThemeName = "Fluent";
             // 
-            // radSpinEditor1
+            // statureSpinEditor
             // 
-            radSpinEditor1.Location = new System.Drawing.Point(155, 182);
-            radSpinEditor1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            radSpinEditor1.Name = "radSpinEditor1";
-            radSpinEditor1.NullableValue = new decimal(new int[] { 1, 0, 0, 0 });
-            radSpinEditor1.Size = new System.Drawing.Size(100, 24);
-            radSpinEditor1.TabIndex = 11;
-            radSpinEditor1.ThemeName = "Fluent";
-            radSpinEditor1.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            statureSpinEditor.Location = new System.Drawing.Point(155, 240);
+            statureSpinEditor.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            statureSpinEditor.Name = "statureSpinEditor";
+            statureSpinEditor.NullableValue = new decimal(new int[] { 1, 0, 0, 0 });
+            statureSpinEditor.Size = new System.Drawing.Size(100, 24);
+            statureSpinEditor.TabIndex = 8;
+            statureSpinEditor.ThemeName = "Fluent";
+            statureSpinEditor.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // radLabel24
             // 
-            radLabel24.Location = new System.Drawing.Point(29, 186);
+            radLabel24.Location = new System.Drawing.Point(94, 244);
             radLabel24.Name = "radLabel24";
-            radLabel24.Size = new System.Drawing.Size(110, 18);
+            radLabel24.Size = new System.Drawing.Size(44, 18);
             radLabel24.TabIndex = 10;
-            radLabel24.Text = "Stature (Desirability):";
+            radLabel24.Text = "Stature:";
+            radLabel24.ThemeName = "Fluent";
             // 
-            // radDropDownList4
+            // promoPoolDropDownList
             // 
-            radDropDownList4.Location = new System.Drawing.Point(155, 141);
-            radDropDownList4.Name = "radDropDownList4";
-            radDropDownList4.Size = new System.Drawing.Size(297, 24);
-            radDropDownList4.TabIndex = 9;
-            radDropDownList4.Text = "Select Echelon";
-            radDropDownList4.ThemeName = "Fluent";
+            promoPoolDropDownList.Location = new System.Drawing.Point(155, 135);
+            promoPoolDropDownList.Name = "promoPoolDropDownList";
+            promoPoolDropDownList.Size = new System.Drawing.Size(297, 24);
+            promoPoolDropDownList.TabIndex = 7;
+            promoPoolDropDownList.Text = "Select Echelon";
+            promoPoolDropDownList.ThemeName = "Fluent";
             // 
             // radLabel5
             // 
-            radLabel5.Location = new System.Drawing.Point(29, 145);
+            radLabel5.Location = new System.Drawing.Point(51, 137);
             radLabel5.Name = "radLabel5";
             radLabel5.Size = new System.Drawing.Size(87, 18);
             radLabel5.TabIndex = 8;
             radLabel5.Text = "Promotion Pool:";
+            radLabel5.ThemeName = "Fluent";
             // 
-            // radDropDownList3
+            // flagDropDownList
             // 
-            radDropDownList3.Location = new System.Drawing.Point(155, 111);
-            radDropDownList3.Name = "radDropDownList3";
-            radDropDownList3.Size = new System.Drawing.Size(297, 24);
-            radDropDownList3.TabIndex = 7;
-            radDropDownList3.Text = "radDropDownList3";
-            radDropDownList3.ThemeName = "Fluent";
+            flagDropDownList.Location = new System.Drawing.Point(155, 105);
+            flagDropDownList.Name = "flagDropDownList";
+            flagDropDownList.Size = new System.Drawing.Size(297, 24);
+            flagDropDownList.TabIndex = 6;
+            flagDropDownList.Text = "Select Flag";
+            flagDropDownList.ThemeName = "Fluent";
             // 
             // radLabel4
             // 
-            radLabel4.Location = new System.Drawing.Point(29, 115);
+            radLabel4.Location = new System.Drawing.Point(65, 107);
             radLabel4.Name = "radLabel4";
             radLabel4.Size = new System.Drawing.Size(73, 18);
             radLabel4.TabIndex = 6;
             radLabel4.Text = "Position Flag:";
+            radLabel4.ThemeName = "Fluent";
             // 
-            // radDropDownList2
+            // catagoryDropDownList
             // 
-            radDropDownList2.Location = new System.Drawing.Point(155, 81);
-            radDropDownList2.Name = "radDropDownList2";
-            radDropDownList2.Size = new System.Drawing.Size(297, 24);
-            radDropDownList2.TabIndex = 5;
-            radDropDownList2.Text = "radDropDownList2";
-            radDropDownList2.ThemeName = "Fluent";
+            catagoryDropDownList.Location = new System.Drawing.Point(155, 75);
+            catagoryDropDownList.Name = "catagoryDropDownList";
+            catagoryDropDownList.Size = new System.Drawing.Size(297, 24);
+            catagoryDropDownList.TabIndex = 5;
+            catagoryDropDownList.Text = "Select A Category";
+            catagoryDropDownList.ThemeName = "Fluent";
             // 
             // radLabel3
             // 
-            radLabel3.Location = new System.Drawing.Point(29, 86);
+            radLabel3.Location = new System.Drawing.Point(41, 77);
             radLabel3.Name = "radLabel3";
             radLabel3.Size = new System.Drawing.Size(97, 18);
             radLabel3.TabIndex = 4;
             radLabel3.Text = "Position Category:";
+            radLabel3.ThemeName = "Fluent";
             // 
-            // radTextBox1
+            // nameTextBox1
             // 
-            radTextBox1.Location = new System.Drawing.Point(155, 51);
-            radTextBox1.Name = "radTextBox1";
-            radTextBox1.Size = new System.Drawing.Size(297, 24);
-            radTextBox1.TabIndex = 3;
-            radTextBox1.ThemeName = "Fluent";
+            nameTextBox1.Location = new System.Drawing.Point(155, 45);
+            nameTextBox1.Name = "nameTextBox1";
+            nameTextBox1.Size = new System.Drawing.Size(297, 24);
+            nameTextBox1.TabIndex = 4;
+            nameTextBox1.ThemeName = "Fluent";
             // 
             // radLabel2
             // 
-            radLabel2.Location = new System.Drawing.Point(29, 53);
+            radLabel2.Location = new System.Drawing.Point(56, 47);
             radLabel2.Name = "radLabel2";
             radLabel2.Size = new System.Drawing.Size(82, 18);
             radLabel2.TabIndex = 2;
             radLabel2.Text = "Position Name:";
+            radLabel2.ThemeName = "Fluent";
             // 
             // radGroupBox1
             // 
             radGroupBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
+            radGroupBox1.Controls.Add(blockAutoPromoteCheckBox);
+            radGroupBox1.Controls.Add(rankTypeDropDownList);
+            radGroupBox1.Controls.Add(radLabel30);
+            radGroupBox1.Controls.Add(radClassificationRankDisplay1);
             radGroupBox1.Controls.Add(radLabel6);
-            radGroupBox1.Controls.Add(radDropDownList1);
-            radGroupBox1.Controls.Add(radCheckedDropDownList1);
+            radGroupBox1.Controls.Add(targetRankDropDownList);
+            radGroupBox1.Controls.Add(allowedRanksDropDownList);
             radGroupBox1.Controls.Add(radLabel1);
-            radGroupBox1.Controls.Add(radPictureBox1);
             radGroupBox1.HeaderMargin = new System.Windows.Forms.Padding(1);
             radGroupBox1.HeaderText = "Rank";
             radGroupBox1.Location = new System.Drawing.Point(14, 21);
             radGroupBox1.Name = "radGroupBox1";
             radGroupBox1.Size = new System.Drawing.Size(480, 160);
-            radGroupBox1.TabIndex = 0;
+            radGroupBox1.TabIndex = 113;
             radGroupBox1.Text = "Rank";
             radGroupBox1.ThemeName = "Fluent";
             // 
+            // blockAutoPromoteCheckBox
+            // 
+            blockAutoPromoteCheckBox.Location = new System.Drawing.Point(269, 89);
+            blockAutoPromoteCheckBox.Name = "blockAutoPromoteCheckBox";
+            blockAutoPromoteCheckBox.Size = new System.Drawing.Size(137, 18);
+            blockAutoPromoteCheckBox.TabIndex = 10;
+            blockAutoPromoteCheckBox.Text = "Block auto promotions";
+            blockAutoPromoteCheckBox.ThemeName = "Fluent";
+            // 
+            // rankTypeDropDownList
+            // 
+            rankTypeDropDownList.Location = new System.Drawing.Point(248, 21);
+            rankTypeDropDownList.Name = "rankTypeDropDownList";
+            rankTypeDropDownList.Size = new System.Drawing.Size(198, 24);
+            rankTypeDropDownList.TabIndex = 1;
+            rankTypeDropDownList.Text = "Select Rank Type";
+            rankTypeDropDownList.ThemeName = "Fluent";
+            // 
+            // radLabel30
+            // 
+            radLabel30.Location = new System.Drawing.Point(184, 23);
+            radLabel30.Name = "radLabel30";
+            radLabel30.Size = new System.Drawing.Size(58, 18);
+            radLabel30.TabIndex = 9;
+            radLabel30.Text = "Rank Type";
+            radLabel30.ThemeName = "Fluent";
+            // 
+            // radClassificationRankDisplay1
+            // 
+            radClassificationRankDisplay1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            radClassificationRankDisplay1.Location = new System.Drawing.Point(15, 21);
+            radClassificationRankDisplay1.Name = "radClassificationRankDisplay1";
+            radClassificationRankDisplay1.OutlineColor = System.Drawing.Color.FromArgb(180, 0, 0, 0);
+            radClassificationRankDisplay1.ShadowColor = System.Drawing.Color.FromArgb(120, 0, 0, 0);
+            radClassificationRankDisplay1.Size = new System.Drawing.Size(150, 121);
+            radClassificationRankDisplay1.TabIndex = 8;
+            // 
             // radLabel6
             // 
-            radLabel6.Location = new System.Drawing.Point(119, 82);
+            radLabel6.Location = new System.Drawing.Point(174, 91);
             radLabel6.Name = "radLabel6";
             radLabel6.Size = new System.Drawing.Size(81, 18);
             radLabel6.TabIndex = 7;
             radLabel6.Text = "Allowed Ranks:";
             // 
-            // radDropDownList1
+            // targetRankDropDownList
             // 
-            radDropDownList1.Location = new System.Drawing.Point(193, 47);
-            radDropDownList1.Name = "radDropDownList1";
-            radDropDownList1.Size = new System.Drawing.Size(259, 24);
-            radDropDownList1.TabIndex = 6;
-            radDropDownList1.Text = "Select Target Rank";
-            radDropDownList1.ThemeName = "Fluent";
+            targetRankDropDownList.Location = new System.Drawing.Point(248, 56);
+            targetRankDropDownList.Name = "targetRankDropDownList";
+            targetRankDropDownList.Size = new System.Drawing.Size(198, 24);
+            targetRankDropDownList.TabIndex = 2;
+            targetRankDropDownList.Text = "Select Target Rank";
+            targetRankDropDownList.ThemeName = "Fluent";
             // 
-            // radCheckedDropDownList1
+            // allowedRanksDropDownList
             // 
-            radCheckedDropDownList1.Location = new System.Drawing.Point(116, 106);
-            radCheckedDropDownList1.Name = "radCheckedDropDownList1";
-            radCheckedDropDownList1.Size = new System.Drawing.Size(336, 24);
-            radCheckedDropDownList1.TabIndex = 2;
-            radCheckedDropDownList1.ThemeName = "Fluent";
+            allowedRanksDropDownList.Location = new System.Drawing.Point(171, 115);
+            allowedRanksDropDownList.Name = "allowedRanksDropDownList";
+            allowedRanksDropDownList.Size = new System.Drawing.Size(275, 24);
+            allowedRanksDropDownList.TabIndex = 3;
+            allowedRanksDropDownList.ThemeName = "Fluent";
             // 
             // radLabel1
             // 
-            radLabel1.Location = new System.Drawing.Point(119, 50);
+            radLabel1.Location = new System.Drawing.Point(174, 59);
             radLabel1.Name = "radLabel1";
             radLabel1.Size = new System.Drawing.Size(68, 18);
             radLabel1.TabIndex = 1;
             radLabel1.Text = "Target Rank:";
-            // 
-            // radPictureBox1
-            // 
-            radPictureBox1.Location = new System.Drawing.Point(29, 60);
-            radPictureBox1.Name = "radPictureBox1";
-            radPictureBox1.Size = new System.Drawing.Size(64, 64);
-            radPictureBox1.TabIndex = 0;
             // 
             // radPageViewPage1
             // 
@@ -764,6 +873,7 @@ namespace Perscom.UI
             radGroupBox8.Size = new System.Drawing.Size(310, 331);
             radGroupBox8.TabIndex = 6;
             radGroupBox8.Text = "Description";
+            radGroupBox8.ThemeName = "Fluent";
             // 
             // radLabel23
             // 
@@ -779,10 +889,10 @@ namespace Perscom.UI
             // radGroupBox7
             // 
             radGroupBox7.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
-            radGroupBox7.Controls.Add(radTrackBar16);
+            radGroupBox7.Controls.Add(adaptTrackBar);
             radGroupBox7.Controls.Add(radLabel25);
             radGroupBox7.Controls.Add(radLabel28);
-            radGroupBox7.Controls.Add(radTrackBar17);
+            radGroupBox7.Controls.Add(intelTrackBar);
             radGroupBox7.HeaderMargin = new System.Windows.Forms.Padding(3);
             radGroupBox7.HeaderText = "Mental Contribution";
             radGroupBox7.Location = new System.Drawing.Point(684, 12);
@@ -792,17 +902,17 @@ namespace Perscom.UI
             radGroupBox7.Text = "Mental Contribution";
             radGroupBox7.ThemeName = "Fluent";
             // 
-            // radTrackBar16
+            // adaptTrackBar
             // 
-            radTrackBar16.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar16.Location = new System.Drawing.Point(22, 155);
-            radTrackBar16.Name = "radTrackBar16";
-            radTrackBar16.ShowButtons = true;
-            radTrackBar16.Size = new System.Drawing.Size(250, 51);
-            radTrackBar16.TabIndex = 17;
-            radTrackBar16.ThemeName = "Fluent";
-            radTrackBar16.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar16.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            adaptTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            adaptTrackBar.Location = new System.Drawing.Point(22, 155);
+            adaptTrackBar.Name = "adaptTrackBar";
+            adaptTrackBar.ShowButtons = true;
+            adaptTrackBar.Size = new System.Drawing.Size(250, 51);
+            adaptTrackBar.TabIndex = 17;
+            adaptTrackBar.ThemeName = "Fluent";
+            adaptTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            adaptTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
             // radLabel25
             // 
@@ -820,33 +930,33 @@ namespace Perscom.UI
             radLabel28.TabIndex = 2;
             radLabel28.Text = "Intelligence:";
             // 
-            // radTrackBar17
+            // intelTrackBar
             // 
-            radTrackBar17.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar17.Location = new System.Drawing.Point(23, 63);
-            radTrackBar17.Name = "radTrackBar17";
-            radTrackBar17.ShowButtons = true;
-            radTrackBar17.Size = new System.Drawing.Size(250, 51);
-            radTrackBar17.TabIndex = 1;
-            radTrackBar17.ThemeName = "Fluent";
-            radTrackBar17.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar17.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            intelTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            intelTrackBar.Location = new System.Drawing.Point(23, 63);
+            intelTrackBar.Name = "intelTrackBar";
+            intelTrackBar.ShowButtons = true;
+            intelTrackBar.Size = new System.Drawing.Size(250, 51);
+            intelTrackBar.TabIndex = 1;
+            intelTrackBar.ThemeName = "Fluent";
+            intelTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            intelTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
             // radGroupBox6
             // 
             radGroupBox6.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
-            radGroupBox6.Controls.Add(radTrackBar6);
-            radGroupBox6.Controls.Add(radTrackBar7);
-            radGroupBox6.Controls.Add(radTrackBar8);
-            radGroupBox6.Controls.Add(radTrackBar9);
-            radGroupBox6.Controls.Add(radTrackBar10);
+            radGroupBox6.Controls.Add(awarenessTrackBar);
+            radGroupBox6.Controls.Add(courageTrackBar);
+            radGroupBox6.Controls.Add(extraversionTrackBar);
+            radGroupBox6.Controls.Add(agreeableTrackBar);
+            radGroupBox6.Controls.Add(conTrackBar);
             radGroupBox6.Controls.Add(radLabel16);
             radGroupBox6.Controls.Add(radLabel17);
             radGroupBox6.Controls.Add(radLabel18);
             radGroupBox6.Controls.Add(radLabel20);
             radGroupBox6.Controls.Add(radLabel21);
             radGroupBox6.Controls.Add(radLabel22);
-            radGroupBox6.Controls.Add(radTrackBar11);
+            radGroupBox6.Controls.Add(ambitionTrackBar);
             radGroupBox6.HeaderMargin = new System.Windows.Forms.Padding(3);
             radGroupBox6.HeaderText = "Personality Contribution";
             radGroupBox6.Location = new System.Drawing.Point(353, 12);
@@ -856,65 +966,65 @@ namespace Perscom.UI
             radGroupBox6.Text = "Personality Contribution";
             radGroupBox6.ThemeName = "Fluent";
             // 
-            // radTrackBar6
+            // awarenessTrackBar
             // 
-            radTrackBar6.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar6.Location = new System.Drawing.Point(22, 523);
-            radTrackBar6.Name = "radTrackBar6";
-            radTrackBar6.ShowButtons = true;
-            radTrackBar6.Size = new System.Drawing.Size(250, 51);
-            radTrackBar6.TabIndex = 21;
-            radTrackBar6.ThemeName = "Fluent";
-            radTrackBar6.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar6.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            awarenessTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            awarenessTrackBar.Location = new System.Drawing.Point(22, 523);
+            awarenessTrackBar.Name = "awarenessTrackBar";
+            awarenessTrackBar.ShowButtons = true;
+            awarenessTrackBar.Size = new System.Drawing.Size(250, 51);
+            awarenessTrackBar.TabIndex = 21;
+            awarenessTrackBar.ThemeName = "Fluent";
+            awarenessTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            awarenessTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar7
+            // courageTrackBar
             // 
-            radTrackBar7.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar7.Location = new System.Drawing.Point(22, 431);
-            radTrackBar7.Name = "radTrackBar7";
-            radTrackBar7.ShowButtons = true;
-            radTrackBar7.Size = new System.Drawing.Size(250, 51);
-            radTrackBar7.TabIndex = 20;
-            radTrackBar7.ThemeName = "Fluent";
-            radTrackBar7.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar7.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            courageTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            courageTrackBar.Location = new System.Drawing.Point(22, 431);
+            courageTrackBar.Name = "courageTrackBar";
+            courageTrackBar.ShowButtons = true;
+            courageTrackBar.Size = new System.Drawing.Size(250, 51);
+            courageTrackBar.TabIndex = 20;
+            courageTrackBar.ThemeName = "Fluent";
+            courageTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            courageTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar8
+            // extraversionTrackBar
             // 
-            radTrackBar8.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar8.Location = new System.Drawing.Point(23, 339);
-            radTrackBar8.Name = "radTrackBar8";
-            radTrackBar8.ShowButtons = true;
-            radTrackBar8.Size = new System.Drawing.Size(250, 51);
-            radTrackBar8.TabIndex = 19;
-            radTrackBar8.ThemeName = "Fluent";
-            radTrackBar8.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar8.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            extraversionTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            extraversionTrackBar.Location = new System.Drawing.Point(23, 339);
+            extraversionTrackBar.Name = "extraversionTrackBar";
+            extraversionTrackBar.ShowButtons = true;
+            extraversionTrackBar.Size = new System.Drawing.Size(250, 51);
+            extraversionTrackBar.TabIndex = 19;
+            extraversionTrackBar.ThemeName = "Fluent";
+            extraversionTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            extraversionTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar9
+            // agreeableTrackBar
             // 
-            radTrackBar9.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar9.Location = new System.Drawing.Point(22, 247);
-            radTrackBar9.Name = "radTrackBar9";
-            radTrackBar9.ShowButtons = true;
-            radTrackBar9.Size = new System.Drawing.Size(250, 51);
-            radTrackBar9.TabIndex = 18;
-            radTrackBar9.ThemeName = "Fluent";
-            radTrackBar9.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar9.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            agreeableTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            agreeableTrackBar.Location = new System.Drawing.Point(22, 247);
+            agreeableTrackBar.Name = "agreeableTrackBar";
+            agreeableTrackBar.ShowButtons = true;
+            agreeableTrackBar.Size = new System.Drawing.Size(250, 51);
+            agreeableTrackBar.TabIndex = 18;
+            agreeableTrackBar.ThemeName = "Fluent";
+            agreeableTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            agreeableTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar10
+            // conTrackBar
             // 
-            radTrackBar10.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar10.Location = new System.Drawing.Point(22, 155);
-            radTrackBar10.Name = "radTrackBar10";
-            radTrackBar10.ShowButtons = true;
-            radTrackBar10.Size = new System.Drawing.Size(250, 51);
-            radTrackBar10.TabIndex = 17;
-            radTrackBar10.ThemeName = "Fluent";
-            radTrackBar10.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar10.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            conTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            conTrackBar.Location = new System.Drawing.Point(22, 155);
+            conTrackBar.Name = "conTrackBar";
+            conTrackBar.ShowButtons = true;
+            conTrackBar.Size = new System.Drawing.Size(250, 51);
+            conTrackBar.TabIndex = 17;
+            conTrackBar.ThemeName = "Fluent";
+            conTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            conTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
             // radLabel16
             // 
@@ -965,33 +1075,33 @@ namespace Perscom.UI
             radLabel22.TabIndex = 2;
             radLabel22.Text = "Ambition:";
             // 
-            // radTrackBar11
+            // ambitionTrackBar
             // 
-            radTrackBar11.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar11.Location = new System.Drawing.Point(23, 63);
-            radTrackBar11.Name = "radTrackBar11";
-            radTrackBar11.ShowButtons = true;
-            radTrackBar11.Size = new System.Drawing.Size(250, 51);
-            radTrackBar11.TabIndex = 1;
-            radTrackBar11.ThemeName = "Fluent";
-            radTrackBar11.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar11.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            ambitionTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            ambitionTrackBar.Location = new System.Drawing.Point(23, 63);
+            ambitionTrackBar.Name = "ambitionTrackBar";
+            ambitionTrackBar.ShowButtons = true;
+            ambitionTrackBar.Size = new System.Drawing.Size(250, 51);
+            ambitionTrackBar.TabIndex = 1;
+            ambitionTrackBar.ThemeName = "Fluent";
+            ambitionTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            ambitionTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
             // radGroupBox5
             // 
             radGroupBox5.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
-            radGroupBox5.Controls.Add(radTrackBar5);
-            radGroupBox5.Controls.Add(radTrackBar4);
-            radGroupBox5.Controls.Add(radTrackBar3);
-            radGroupBox5.Controls.Add(radTrackBar2);
-            radGroupBox5.Controls.Add(radTrackBar1);
+            radGroupBox5.Controls.Add(disciplineTrackBar);
+            radGroupBox5.Controls.Add(teamworkTrackBar);
+            radGroupBox5.Controls.Add(fitnessTrackBar);
+            radGroupBox5.Controls.Add(marksmanTrackBar);
+            radGroupBox5.Controls.Add(composureTrackBar);
             radGroupBox5.Controls.Add(radLabel19);
             radGroupBox5.Controls.Add(radLabel13);
             radGroupBox5.Controls.Add(radLabel7);
             radGroupBox5.Controls.Add(radLabel12);
             radGroupBox5.Controls.Add(radLabel14);
             radGroupBox5.Controls.Add(radLabel15);
-            radGroupBox5.Controls.Add(LeadershipTrackBar);
+            radGroupBox5.Controls.Add(leadershipTrackBar);
             radGroupBox5.HeaderMargin = new System.Windows.Forms.Padding(3);
             radGroupBox5.HeaderText = "Skill Contribution";
             radGroupBox5.Location = new System.Drawing.Point(13, 12);
@@ -1001,65 +1111,65 @@ namespace Perscom.UI
             radGroupBox5.Text = "Skill Contribution";
             radGroupBox5.ThemeName = "Fluent";
             // 
-            // radTrackBar5
+            // disciplineTrackBar
             // 
-            radTrackBar5.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar5.Location = new System.Drawing.Point(22, 523);
-            radTrackBar5.Name = "radTrackBar5";
-            radTrackBar5.ShowButtons = true;
-            radTrackBar5.Size = new System.Drawing.Size(250, 51);
-            radTrackBar5.TabIndex = 21;
-            radTrackBar5.ThemeName = "Fluent";
-            radTrackBar5.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar5.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            disciplineTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            disciplineTrackBar.Location = new System.Drawing.Point(22, 523);
+            disciplineTrackBar.Name = "disciplineTrackBar";
+            disciplineTrackBar.ShowButtons = true;
+            disciplineTrackBar.Size = new System.Drawing.Size(250, 51);
+            disciplineTrackBar.TabIndex = 21;
+            disciplineTrackBar.ThemeName = "Fluent";
+            disciplineTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            disciplineTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar4
+            // teamworkTrackBar
             // 
-            radTrackBar4.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar4.Location = new System.Drawing.Point(22, 431);
-            radTrackBar4.Name = "radTrackBar4";
-            radTrackBar4.ShowButtons = true;
-            radTrackBar4.Size = new System.Drawing.Size(250, 51);
-            radTrackBar4.TabIndex = 20;
-            radTrackBar4.ThemeName = "Fluent";
-            radTrackBar4.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar4.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            teamworkTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            teamworkTrackBar.Location = new System.Drawing.Point(22, 431);
+            teamworkTrackBar.Name = "teamworkTrackBar";
+            teamworkTrackBar.ShowButtons = true;
+            teamworkTrackBar.Size = new System.Drawing.Size(250, 51);
+            teamworkTrackBar.TabIndex = 20;
+            teamworkTrackBar.ThemeName = "Fluent";
+            teamworkTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            teamworkTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar3
+            // fitnessTrackBar
             // 
-            radTrackBar3.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar3.Location = new System.Drawing.Point(23, 339);
-            radTrackBar3.Name = "radTrackBar3";
-            radTrackBar3.ShowButtons = true;
-            radTrackBar3.Size = new System.Drawing.Size(250, 51);
-            radTrackBar3.TabIndex = 19;
-            radTrackBar3.ThemeName = "Fluent";
-            radTrackBar3.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar3.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            fitnessTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            fitnessTrackBar.Location = new System.Drawing.Point(23, 339);
+            fitnessTrackBar.Name = "fitnessTrackBar";
+            fitnessTrackBar.ShowButtons = true;
+            fitnessTrackBar.Size = new System.Drawing.Size(250, 51);
+            fitnessTrackBar.TabIndex = 19;
+            fitnessTrackBar.ThemeName = "Fluent";
+            fitnessTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            fitnessTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar2
+            // marksmanTrackBar
             // 
-            radTrackBar2.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar2.Location = new System.Drawing.Point(22, 247);
-            radTrackBar2.Name = "radTrackBar2";
-            radTrackBar2.ShowButtons = true;
-            radTrackBar2.Size = new System.Drawing.Size(250, 51);
-            radTrackBar2.TabIndex = 18;
-            radTrackBar2.ThemeName = "Fluent";
-            radTrackBar2.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar2.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            marksmanTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            marksmanTrackBar.Location = new System.Drawing.Point(22, 247);
+            marksmanTrackBar.Name = "marksmanTrackBar";
+            marksmanTrackBar.ShowButtons = true;
+            marksmanTrackBar.Size = new System.Drawing.Size(250, 51);
+            marksmanTrackBar.TabIndex = 18;
+            marksmanTrackBar.ThemeName = "Fluent";
+            marksmanTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            marksmanTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
-            // radTrackBar1
+            // composureTrackBar
             // 
-            radTrackBar1.LabelStyle = TrackBarLabelStyle.TopLeft;
-            radTrackBar1.Location = new System.Drawing.Point(22, 155);
-            radTrackBar1.Name = "radTrackBar1";
-            radTrackBar1.ShowButtons = true;
-            radTrackBar1.Size = new System.Drawing.Size(250, 51);
-            radTrackBar1.TabIndex = 17;
-            radTrackBar1.ThemeName = "Fluent";
-            radTrackBar1.ThumbSize = new System.Drawing.Size(8, 20);
-            radTrackBar1.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            composureTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            composureTrackBar.Location = new System.Drawing.Point(22, 155);
+            composureTrackBar.Name = "composureTrackBar";
+            composureTrackBar.ShowButtons = true;
+            composureTrackBar.Size = new System.Drawing.Size(250, 51);
+            composureTrackBar.TabIndex = 17;
+            composureTrackBar.ThemeName = "Fluent";
+            composureTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            composureTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
             // radLabel19
             // 
@@ -1110,17 +1220,17 @@ namespace Perscom.UI
             radLabel15.TabIndex = 2;
             radLabel15.Text = "Leadership:";
             // 
-            // LeadershipTrackBar
+            // leadershipTrackBar
             // 
-            LeadershipTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
-            LeadershipTrackBar.Location = new System.Drawing.Point(23, 63);
-            LeadershipTrackBar.Name = "LeadershipTrackBar";
-            LeadershipTrackBar.ShowButtons = true;
-            LeadershipTrackBar.Size = new System.Drawing.Size(250, 51);
-            LeadershipTrackBar.TabIndex = 1;
-            LeadershipTrackBar.ThemeName = "Fluent";
-            LeadershipTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
-            LeadershipTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
+            leadershipTrackBar.LabelStyle = TrackBarLabelStyle.TopLeft;
+            leadershipTrackBar.Location = new System.Drawing.Point(23, 63);
+            leadershipTrackBar.Name = "leadershipTrackBar";
+            leadershipTrackBar.ShowButtons = true;
+            leadershipTrackBar.Size = new System.Drawing.Size(250, 51);
+            leadershipTrackBar.TabIndex = 1;
+            leadershipTrackBar.ThemeName = "Fluent";
+            leadershipTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
+            leadershipTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
             // PositionBlueprintEditorForm
             // 
@@ -1136,6 +1246,7 @@ namespace Perscom.UI
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             Text = "Position Blueprint Editor Form";
             ThemeName = "Fluent";
+            FormClosing += PositionBlueprintEditorForm_FormClosing;
             bottomPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)saveButton).EndInit();
             headerPanel.ResumeLayout(false);
@@ -1144,58 +1255,65 @@ namespace Perscom.UI
             DetailsPage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)radPanel1).EndInit();
             radPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)ExpGridView.MasterTemplate).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ExpGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)expGridView.MasterTemplate).EndInit();
+            ((System.ComponentModel.ISupportInitialize)expGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox4).EndInit();
             radGroupBox4.ResumeLayout(false);
             radGroupBox4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)radRadioButton3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)changeNoneRadioButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel10).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radRadioButton2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radRadioButton1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)changeAllRadioButton).EndInit();
+            ((System.ComponentModel.ISupportInitialize)changeNewRadioButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel9).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList8).EndInit();
+            ((System.ComponentModel.ISupportInitialize)occupationDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox3).EndInit();
             radGroupBox3.ResumeLayout(false);
             radGroupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)demoteCheckBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)radButton1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radCheckedDropDownList2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)allowedOccupationsDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel11).EndInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox2).EndInit();
             ((System.ComponentModel.ISupportInitialize)radDropDownList6).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList7).EndInit();
+            ((System.ComponentModel.ISupportInitialize)selectionProcedureDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel8).EndInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox2).EndInit();
             radGroupBox2.ResumeLayout(false);
             radGroupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)prestigeSpinEditor).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel32).EndInit();
+            ((System.ComponentModel.ISupportInitialize)supervisorDropDownList).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel31).EndInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox5).EndInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox4).EndInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox3).EndInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor4).EndInit();
+            ((System.ComponentModel.ISupportInitialize)zIndexSpinEditor).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel29).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)maxTourLengthSpinEditor).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel27).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)minTourLengthSpinEditor).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel26).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radSpinEditor1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)statureSpinEditor).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel24).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList4).EndInit();
+            ((System.ComponentModel.ISupportInitialize)promoPoolDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel5).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)flagDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel4).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)catagoryDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel3).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTextBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nameTextBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel2).EndInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox1).EndInit();
             radGroupBox1.ResumeLayout(false);
             radGroupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)blockAutoPromoteCheckBox).EndInit();
+            ((System.ComponentModel.ISupportInitialize)rankTypeDropDownList).EndInit();
+            ((System.ComponentModel.ISupportInitialize)radLabel30).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel6).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radCheckedDropDownList1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)targetRankDropDownList).EndInit();
+            ((System.ComponentModel.ISupportInitialize)allowedRanksDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radPictureBox1).EndInit();
             radPageViewPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)radGroupBox8).EndInit();
             radGroupBox8.ResumeLayout(false);
@@ -1203,40 +1321,40 @@ namespace Perscom.UI
             ((System.ComponentModel.ISupportInitialize)radGroupBox7).EndInit();
             radGroupBox7.ResumeLayout(false);
             radGroupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar16).EndInit();
+            ((System.ComponentModel.ISupportInitialize)adaptTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel25).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel28).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar17).EndInit();
+            ((System.ComponentModel.ISupportInitialize)intelTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox6).EndInit();
             radGroupBox6.ResumeLayout(false);
             radGroupBox6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar6).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar7).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar8).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar9).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar10).EndInit();
+            ((System.ComponentModel.ISupportInitialize)awarenessTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)courageTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)extraversionTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)agreeableTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)conTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel16).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel17).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel18).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel20).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel21).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel22).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar11).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ambitionTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox5).EndInit();
             radGroupBox5.ResumeLayout(false);
             radGroupBox5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar5).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar4).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar3).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radTrackBar1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)disciplineTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)teamworkTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)fitnessTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)marksmanTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)composureTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel19).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel13).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel7).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel12).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel14).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel15).EndInit();
-            ((System.ComponentModel.ISupportInitialize)LeadershipTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)leadershipTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)this).EndInit();
             ResumeLayout(false);
 
@@ -1252,33 +1370,32 @@ namespace Perscom.UI
         private RadPageViewPage DetailsPage;
         private RadGroupBox radGroupBox1;
         private Telerik.WinControls.Themes.FluentTheme fluentTheme1;
-        private RadPictureBox radPictureBox1;
         private RadLabel radLabel1;
         private RadGroupBox radGroupBox2;
-        private RadTextBox radTextBox1;
+        private RadTextBox nameTextBox1;
         private RadLabel radLabel2;
-        private RadDropDownList radDropDownList2;
+        private RadDropDownList catagoryDropDownList;
         private RadLabel radLabel3;
-        private RadDropDownList radDropDownList3;
+        private RadDropDownList flagDropDownList;
         private RadLabel radLabel4;
-        private RadDropDownList radDropDownList4;
+        private RadDropDownList promoPoolDropDownList;
         private RadLabel radLabel5;
         private RadGroupBox radGroupBox3;
         private RadDropDownList radDropDownList6;
-        private RadDropDownList radDropDownList7;
+        private RadDropDownList selectionProcedureDropDownList;
         private RadLabel radLabel8;
-        private RadCheckedDropDownList radCheckedDropDownList1;
-        private RadDropDownList radDropDownList1;
+        private RadCheckedDropDownList allowedRanksDropDownList;
+        private RadDropDownList targetRankDropDownList;
         private RadLabel radLabel6;
         private RadGroupBox radGroupBox4;
         private RadLabel radLabel9;
-        private RadDropDownList radDropDownList8;
-        private RadRadioButton radRadioButton2;
-        private RadRadioButton radRadioButton1;
+        private RadDropDownList occupationDropDownList;
+        private RadRadioButton changeAllRadioButton;
+        private RadRadioButton changeNewRadioButton;
         private RadCheckBox radCheckBox2;
-        private RadRadioButton radRadioButton3;
+        private RadRadioButton changeNoneRadioButton;
         private RadLabel radLabel10;
-        private RadCheckedDropDownList radCheckedDropDownList2;
+        private RadCheckedDropDownList allowedOccupationsDropDownList;
         private RadLabel radLabel11;
         private RadPageViewPage radPageViewPage1;
         private RadGroupBox radGroupBox5;
@@ -1288,46 +1405,55 @@ namespace Perscom.UI
         private RadLabel radLabel12;
         private RadLabel radLabel14;
         private RadLabel radLabel15;
-        private RadTrackBar LeadershipTrackBar;
-        private RadTrackBar radTrackBar5;
-        private RadTrackBar radTrackBar4;
-        private RadTrackBar radTrackBar3;
-        private RadTrackBar radTrackBar2;
-        private RadTrackBar radTrackBar1;
+        private RadTrackBar leadershipTrackBar;
+        private RadTrackBar disciplineTrackBar;
+        private RadTrackBar teamworkTrackBar;
+        private RadTrackBar fitnessTrackBar;
+        private RadTrackBar marksmanTrackBar;
+        private RadTrackBar composureTrackBar;
         private RadGroupBox radGroupBox6;
-        private RadTrackBar radTrackBar6;
-        private RadTrackBar radTrackBar7;
-        private RadTrackBar radTrackBar8;
-        private RadTrackBar radTrackBar9;
-        private RadTrackBar radTrackBar10;
+        private RadTrackBar awarenessTrackBar;
+        private RadTrackBar courageTrackBar;
+        private RadTrackBar extraversionTrackBar;
+        private RadTrackBar agreeableTrackBar;
+        private RadTrackBar conTrackBar;
         private RadLabel radLabel16;
         private RadLabel radLabel17;
         private RadLabel radLabel18;
         private RadLabel radLabel20;
         private RadLabel radLabel21;
         private RadLabel radLabel22;
-        private RadTrackBar radTrackBar11;
+        private RadTrackBar ambitionTrackBar;
         private RadGroupBox radGroupBox7;
-        private RadTrackBar radTrackBar16;
+        private RadTrackBar adaptTrackBar;
         private RadLabel radLabel25;
         private RadLabel radLabel28;
-        private RadTrackBar radTrackBar17;
+        private RadTrackBar intelTrackBar;
         private RadGroupBox radGroupBox8;
         private RadLabel radLabel23;
         private RadPanel radPanel1;
-        private RadGridView ExpGridView;
+        private RadGridView expGridView;
         private RadButton radButton1;
         private RadLabel radLabel24;
-        private RadSpinEditor radSpinEditor1;
-        private RadSpinEditor radSpinEditor3;
+        private RadSpinEditor statureSpinEditor;
+        private RadSpinEditor maxTourLengthSpinEditor;
         private RadLabel radLabel27;
-        private RadSpinEditor radSpinEditor2;
+        private RadSpinEditor minTourLengthSpinEditor;
         private RadLabel radLabel26;
-        private RadSpinEditor radSpinEditor4;
+        private RadSpinEditor zIndexSpinEditor;
         private RadLabel radLabel29;
         private RadCheckBox radCheckBox3;
         private RadCheckBox radCheckBox1;
         private RadCheckBox radCheckBox5;
         private RadCheckBox radCheckBox4;
+        private RadClassificationRankDisplay radClassificationRankDisplay1;
+        private RadLabel radLabel30;
+        private RadDropDownList rankTypeDropDownList;
+        private RadDropDownList supervisorDropDownList;
+        private RadLabel radLabel31;
+        private RadSpinEditor prestigeSpinEditor;
+        private RadLabel radLabel32;
+        private RadCheckBox demoteCheckBox;
+        private RadCheckBox blockAutoPromoteCheckBox;
     }
 }
