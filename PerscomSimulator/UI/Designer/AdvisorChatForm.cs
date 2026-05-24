@@ -122,6 +122,7 @@ namespace Perscom
                 if (asDialog)
                 {
                     _instance.StartPosition = FormStartPosition.CenterParent;
+                    _instance.chatWindow.IsSpeechToTextButtonVisible = false;
                     _instance.ShowDialog();
                 }
                 else

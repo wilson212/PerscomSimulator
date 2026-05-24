@@ -293,7 +293,7 @@
             verifyDbSourceButton.Text = "Verify Integrity";
             verifyDbSourceButton.ThemeName = "Fluent";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(25, 181);
             radLabel1.Name = "radLabel1";

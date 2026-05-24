@@ -1,5 +1,6 @@
 ﻿using Perscom.Database;
 using Perscom.Simulation;
+using Perscom.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Telerik.WinControls;
+using Telerik.WinControls.Data;
 using Telerik.WinControls.UI;
 
 namespace Perscom
@@ -71,6 +73,11 @@ namespace Perscom
             // Create components and apply theme
             InitializeComponent();
             unitTreeView.TreeViewElement.DrawBorder = false;
+            // Wire up custom visual item for position blueprints
+            positionBlueprintListView.ItemSize = new Size(110, 110);
+            positionBlueprintListView.ItemSpacing = 5;
+            positionBlueprintListView.GroupIndent = 0;
+            positionBlueprintListView.AllowArbitraryItemHeight = true;
 
             // Panel Styling, show only left border
             radPanel2.PanelElement.PanelBorder.BoxStyle = BorderBoxStyle.FourBorders;
@@ -83,9 +90,14 @@ namespace Perscom
             positionContextMenu.ThemeName = Program.ThemeName;
             subunitContextMenu.ThemeName = Program.ThemeName;
 
-            // Button styling
+            // Button and Form styling
             FormStyling.ApplyControlsTheme(Controls);
             FormStyling.StyleButtonBlue(addPosButton);
+
+            // Turn the background of the ListView to match the GroupBox
+            positionBlueprintListView.ListViewElement.ViewElement.BackColor = SystemColors.ControlLightLight;
+            positionBlueprintListView.ListViewElement.ViewElement.DrawFill = true;
+            positionBlueprintListView.ListViewElement.ViewElement.GradientStyle = GradientStyles.Solid;
 
             // Fill the echelon and promotion pool dropdowns
             using (var db = new AppDatabase())
@@ -169,6 +181,14 @@ namespace Perscom
             base.OnPaint(e);
         }
 
+        /// <summary>
+        /// Prevents the selected cell border and "pop" out
+        /// </summary>
+        private void GridView_CellFormatting(object sender, CellFormattingEventArgs e)
+        {
+            RadGridViewHelper.RemoveSelectedCellBorderAndPop(e);
+        }
+
         #endregion
 
         #region Event Handlers
@@ -181,7 +201,7 @@ namespace Perscom
         /// <summary>
         /// Handles the event triggered when the selected node in the RadTreeView changes.
         /// </summary>
-        private void UnitTreeView_SelectedNodeChanged(object sender, RadTreeViewEventArgs e)
+        private void UnitTreeView_NodeMouseDoubleClick(object sender, RadTreeViewEventArgs e)
         {
             // Check for unsaved changes before allowing navigation
             if (HasUnsavedChanges())
@@ -193,13 +213,7 @@ namespace Perscom
                     RadMessageIcon.Question);
 
                 if (result != DialogResult.Yes)
-                {
-                    // Revert selection back to the previous node
-                    unitTreeView.SelectedNodeChanged -= UnitTreeView_SelectedNodeChanged;
-                    unitTreeView.SelectedNode = _selectedNode;
-                    unitTreeView.SelectedNodeChanged += UnitTreeView_SelectedNodeChanged;
                     return;
-                }
             }
 
             var node = e.Node;
@@ -233,6 +247,37 @@ namespace Perscom
             if (form.ShowDialog(this) == DialogResult.OK)
             {
                 FillPositionBlueprintsListView();
+            }
+        }
+
+        /// <summary>
+        /// Handles the event triggered when the selected node in the SubunitTreeView changes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PositionBlueprintListView_VisualItemCreating(object sender, ListViewVisualItemCreatingEventArgs e)
+        {
+            if (!(e.VisualItem is BaseListViewGroupVisualItem))
+            {
+                e.VisualItem = new PositionBlueprintIconVisualItem();
+            }
+        }
+
+        /// <summary>
+        /// Adjusts the display text for group visual items by removing any text preceding an underscore.
+        /// </summary>
+        /// <param name="sender">The source of the event, typically the ListView control.</param>
+        /// <param name="e">Provides data for the VisualItemFormatting event, including the visual item being formatted.</param>
+        private void PositionBlueprintListView_VisualItemFormatting(object sender, ListViewVisualItemEventArgs e)
+        {
+            if (e.VisualItem is BaseListViewGroupVisualItem groupItem)
+            {
+                string text = groupItem.Text;
+                int underscoreIndex = text.IndexOf('_');
+                if (underscoreIndex >= 0 && underscoreIndex < text.Length - 1)
+                {
+                    groupItem.Text = text.Substring(underscoreIndex + 1);
+                }
             }
         }
 
@@ -1102,35 +1147,80 @@ namespace Perscom
         {
             positionBlueprintListView.Items.Clear();
             positionBlueprintListView.Groups.Clear();
+            positionBlueprintListView.GroupDescriptors.Clear();
 
             if (SelectedUnit == null || SelectedUnit.Id == 0) return;
 
-            // Enable grouping
+            foreach (var position in SelectedUnit.PositionBlueprints)
+            {
+                string categoryName = position.Catagory?.Name ?? "Uncategorized";
+
+                var item = new ListViewDataItem();
+                item.Tag = position;
+                item.Text = position.ToString();
+                int orgOrder = (int)(position.Catagory?.OrgChartLevel ?? OrgChartPosition.GeneralStaff);
+                item["Category"] = $"{orgOrder:D2}_{categoryName}";
+
+                // Pre-render at full size with outline + shadow
+                if (position.TargetRank != null && !string.IsNullOrWhiteSpace(position.TargetRank.Image))
+                {
+                    var svgImage = ImageAccessor.GetSvgImage(position.TargetRank.Image);
+                    if (svgImage != null)
+                    {
+                        int iconSize = 80;
+                        int shadowRadius = 3, shadowOffset = 2, outlineWidth = 1;
+                        var shadowColor = Color.FromArgb(120, 0, 0, 0);
+                        var outlineColor = Color.FromArgb(180, 0, 0, 0);
+
+                        int margin = Math.Max(outlineWidth, shadowRadius + shadowOffset);
+                        var paddedSize = new Size(
+                            Math.Max(1, iconSize - (margin * 2)),
+                            Math.Max(1, iconSize - (margin * 2)));
+
+                        var scaledSize = Imager.ScaleToFit(svgImage.Size, paddedSize);
+                        if (scaledSize.Width <= 0 || scaledSize.Height <= 0)
+                            scaledSize = new Size(1, 1);
+
+                        var bmp = svgImage.GetRasterImage(scaledSize);
+                        if (bmp != null && bmp.Width > 0 && bmp.Height > 0)
+                        {
+                            var composite = new Bitmap(iconSize, iconSize);
+                            using (Graphics g = Graphics.FromImage(composite))
+                            {
+                                g.Clear(Color.Transparent);
+                                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                                int x = (iconSize - scaledSize.Width) / 2;
+                                int y = (iconSize - scaledSize.Height) / 2;
+
+                                Imager.DrawDropShadow(g, bmp, x, y, scaledSize.Width, scaledSize.Height,
+                                    shadowRadius, shadowOffset, shadowColor);
+                                Imager.DrawOutline(g, bmp, x, y, scaledSize.Width, scaledSize.Height,
+                                    outlineWidth, outlineColor);
+                                g.DrawImage(bmp, x, y, scaledSize.Width, scaledSize.Height);
+                            }
+
+                            item.Image = composite;
+                        }
+                    }
+                }
+
+                positionBlueprintListView.Items.Add(item);
+            }
+
+            // Use a GroupDescriptor instead of manual group assignment
             positionBlueprintListView.EnableGrouping = true;
             positionBlueprintListView.ShowGroups = true;
 
-            // Build a dictionary of groups keyed by category name
-            var groupMap = new Dictionary<string, ListViewDataItemGroup>();
-
-            foreach (var position in SelectedUnit.PositionBlueprints)
-            {
-                // Get the category name (fallback to "Uncategorized")
-                string categoryName = position.Catagory?.Name ?? "Uncategorized";
-
-                // Create group if it doesn't exist yet
-                if (!groupMap.TryGetValue(categoryName, out var group))
-                {
-                    group = new ListViewDataItemGroup(categoryName);
-                    groupMap[categoryName] = group;
-                    positionBlueprintListView.Groups.Add(group);
-                }
-
-                var item = new ListViewDataItem();
-                item.Text = position.ToString();
-                item.Tag = position;
-                item.Group = group;
-                positionBlueprintListView.Items.Add(item);
-            }
+            positionBlueprintListView.GroupDescriptors.Add(
+                new GroupDescriptor(
+                    [
+                        new SortDescriptor("Category", ListSortDirection.Ascending)
+                    ]
+                )
+            );
         }
 
         /// <summary>
@@ -1227,10 +1317,11 @@ namespace Perscom
             copy.UnitBlueprintId = targetUnit.Id;
             copy.Name = source.Name;
             copy.TargetRankId = source.TargetRankId;
+            copy.Prestige = source.Prestige;
             copy.Stature = source.Stature;
             copy.MaxTourLength = source.MaxTourLength;
             copy.MinTourLength = source.MinTourLength;
-            copy.PromotionPool = source.PromotionPool;
+            copy.PromotionEchelonId = source.PromotionEchelonId;
             copy.CanRetireEarly = source.CanRetireEarly;
             copy.Waiverable = source.Waiverable;
             copy.ZIndex = source.ZIndex;
@@ -1243,12 +1334,42 @@ namespace Perscom
             copy.CanLateralEarly = source.CanLateralEarly;
             copy.ExperienceLogic = source.ExperienceLogic;
             copy.InverseSpecialtyRequirements = source.InverseSpecialtyRequirements;
+            copy.OccupationId = source.OccupationId;
+            copy.PositionalRankId = source.PositionalRankId;
+            copy.SupervisorPositionBlueprintId = (source.UnitBlueprintId != targetUnit.Id)
+                ? null
+                : source.SupervisorPositionBlueprintId;
 
             db.PositionBlueprints.Add(copy);
 
-            // TODO: Copy child relationships (specialties, requirements, careers, etc.)
-            // if your PositionBlueprint has the same child entity sets as the old Billet.
-            // Follow the same pattern from the old DuplicateBillet method.
+            // --- Copy PerformanceModels ---
+            foreach (var model in source.PerformanceModels)
+            {
+                var modelCopy = db.PositionPerformanceModels.Create();
+                modelCopy.PositionBlueprintId = copy.Id;
+                modelCopy.Attribute = model.Attribute;
+                modelCopy.ExpectedLevel = model.ExpectedLevel;
+                db.PositionPerformanceModels.Add(modelCopy);
+            }
+
+            // --- Copy Occupation Requirements ---
+            foreach (var req in source.OccupationRequirements)
+            {
+                var reqCopy = db.PositionOccupations.Create();
+                reqCopy.PositionBlueprintId = copy.Id;
+                reqCopy.OccupationId = req.OccupationId;
+                db.PositionOccupations.Add(reqCopy);
+            }
+
+            // --- Copy Experience Requirements ---
+            foreach (var exp in source.Experience)
+            {
+                var expCopy = db.PositionExperience.Create();
+                expCopy.PositionBlueprintId = copy.Id;
+                expCopy.ExperienceId = exp.ExperienceId;
+                expCopy.Rate = exp.Rate;
+                db.PositionExperience.Add(expCopy);
+            }
         }
 
         #region Drag Drop Events
@@ -1305,9 +1426,8 @@ namespace Perscom
             // Check if already in the SubUnits dictionary
             if (SubUnits.ContainsKey(draggedBlueprint))
             {
-                RadMessageBox.Show(
-                    $"\"{draggedBlueprint.Name}\" is already a sub-unit. Use the context menu to adjust its count.",
-                    "Already Added", MessageBoxButtons.OK, RadMessageIcon.Info);
+                // Incrememnt the count
+                SubUnits[draggedBlueprint]++;
                 return;
             }
 
@@ -1322,5 +1442,18 @@ namespace Perscom
         }
 
         #endregion
+
+        private void OrgChartButton_Click(object sender, EventArgs e)
+        {
+            if (SelectedUnit == null || SelectedUnit.Id == 0)
+            {
+                RadMessageBox.Show("Please save the unit blueprint first.",
+                    "Validation", MessageBoxButtons.OK, RadMessageIcon.Exclamation);
+                return;
+            }
+
+            using var form = new UnitOrgChartForm(SelectedUnit);
+            form.ShowDialog(this);
+        }
     }
 }

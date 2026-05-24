@@ -165,7 +165,10 @@ namespace Perscom
 
         private void EvalBoardsTileElement_Click(object sender, EventArgs e)
         {
-
+            using (var form = new EvaluationBoardListForm(SelectedFaction))
+            {
+                form.ShowDialog(this);
+            }
         }
 
         private void AdvisorButton_Click(object sender, EventArgs e)

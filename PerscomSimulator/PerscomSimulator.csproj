@@ -42,8 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="5.2.1" />
-    <PackageReference Include="Google.GenAI" Version="1.6.1" />
+    <PackageReference Include="Google.GenAI" Version="1.7.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
     <PackageReference Include="NodaTime" Version="3.3.2" />
     <PackageReference Include="UI.for.WinForms.AllControls.Net80">
       <Version>2026.2.520</Version>

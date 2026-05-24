@@ -62,6 +62,12 @@ namespace Perscom.Database
         /// </summary>
         [Column, Default(null)]
         public virtual int? PositionalRankId { get; set; }
+        
+        /// <summary>
+        /// Gets or Sets the <see cref="EvaluationBoard.Id"/> 
+        /// </summary>
+        [Column, Default(null)]
+        public virtual int? EvaluationBoardId { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="PositionFlag"/> of this Billet
@@ -245,6 +251,17 @@ namespace Perscom.Database
             OnUpdate = ReferentialAction.Cascade
         )]
         public virtual Rank PositionalRank { get; set; }
+        
+        /// <summary>
+        /// Gets or Sets the <see cref="Database.EvaluationBoard"/> unit level that 
+        /// this billet will pull soldiers from to fill <see cref="Position"/>s
+        /// </summary>
+        [ForeignKey(nameof(EvaluationBoardId))]
+        [References(nameof(Database.EvaluationBoard.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade
+        )]
+        public virtual EvaluationBoard EvaluationBoard { get; set; }
 
         /// <summary>
         /// Gets or Sets the <see cref="Database.Echelon"/> unit level that 
@@ -282,13 +299,13 @@ namespace Perscom.Database
         public virtual EntitySet<Position> Positions { get; set; }
 
         /// <summary>
-        /// Gets a list of <see cref="PositionOccupationRequirement"/> entities that reference this 
+        /// Gets a list of <see cref="PositionBlueprintOccupation"/> entities that reference this 
         /// <see cref="PositionBlueprint"/>
         /// </summary>
         /// <remarks>
         /// A lazy loaded enumeration
         /// </remarks>
-        public virtual EntitySet<PositionOccupationRequirement> Requirements { get; set; }
+        public virtual EntitySet<PositionBlueprintOccupation> OccupationRequirements { get; set; }
 
         /// <summary>
         /// Gets a list of <see cref="PositionBlueprintExperience"/> entities that reference this 
@@ -298,33 +315,6 @@ namespace Perscom.Database
         /// A lazy loaded enumeration
         /// </remarks>
         public virtual EntitySet<PositionBlueprintExperience> Experience { get; set; }
-
-        /// <summary>
-        /// Gets a list of <see cref="SelectionSorting"/> entities that reference this 
-        /// <see cref="PositionBlueprint"/>
-        /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration
-        /// </remarks>
-        public virtual EntitySet<SelectionSorting> Sorting { get; set; }
-
-        /// <summary>
-        /// Gets a list of <see cref="SelectionGroup"/> entities that reference this 
-        /// <see cref="PositionBlueprint"/>
-        /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration
-        /// </remarks>
-        public virtual EntitySet<SelectionGroup> Grouping { get; set; }
-
-        /// <summary>
-        /// Gets a list of <see cref="SelectionFilter"/> entities that reference this 
-        /// <see cref="PositionBlueprint"/>
-        /// </summary>
-        /// <remarks>
-        /// A lazy loaded enumeration
-        /// </remarks>
-        public virtual EntitySet<SelectionFilter> Filters { get; set; }
         
         /// <summary>
         /// A dictionary associating specific attribute types with their performance values.

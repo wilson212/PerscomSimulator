@@ -113,7 +113,7 @@
             bottomPanel.TabIndex = 15;
             bottomPanel.Paint += bottomPanel_Paint;
             // 
-            // CloseButton
+            // closeButton
             // 
             CloseButton.DisplayStyle = Telerik.WinControls.DisplayStyle.Text;
             CloseButton.Location = new System.Drawing.Point(303, 11);
@@ -198,7 +198,7 @@
             radLabel15.TabIndex = 3;
             radLabel15.Text = "Previous Time In Grade Requirement:";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(289, 34);
             radLabel1.Name = "radLabel1";

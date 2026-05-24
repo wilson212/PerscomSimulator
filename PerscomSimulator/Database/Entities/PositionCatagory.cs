@@ -22,11 +22,28 @@ namespace Perscom.Database
         public virtual string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the ordering of this catagory. Higher value
-        /// means higher up the ladder.
+        /// Gets or sets the ordering of this category when filling in DropDownLists. Higher value
+        /// means it will appear higher in the list.
         /// </summary>
         [Column, Required]
         public virtual int ZIndex { get; set; }
+        
+        /// <summary>
+        /// The vertical tier/level in the org chart. Lower values appear higher.
+        /// E.g., 0 = top (Commander), 1 = staff level, 2 = S-Shop level.
+        /// </summary>
+        [Column, Required, Default(OrgChartPosition.GeneralStaff)]
+        public virtual OrgChartPosition OrgChartLevel { get; set; } = OrgChartPosition.GeneralStaff;
+
+        /// <summary>
+        /// Defines how this category is positioned in the org chart tree.
+        /// Center = hangs straight down from the parent (main trunk).
+        /// Side = branches off to the side, rendered just above the split
+        /// of all Center categories at the next level.
+        /// </summary>
+        [Column, Required, Default(OrgChartAlignment.Center)]
+        public virtual OrgChartAlignment OrgChartAlignment { get; set; } = OrgChartAlignment.Center;
+
 
         #endregion
 

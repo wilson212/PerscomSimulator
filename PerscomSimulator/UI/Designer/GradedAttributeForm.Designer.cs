@@ -109,7 +109,7 @@
             attrDropDownList.Text = "Select Attribute";
             attrDropDownList.ThemeName = "Fluent";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(52, 128);
             radLabel1.Name = "radLabel1";

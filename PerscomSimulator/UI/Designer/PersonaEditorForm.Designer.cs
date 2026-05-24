@@ -1074,7 +1074,7 @@
             MarksmanTrackBar.Value = 10F;
             MarksmanTrackBar.ToolTipTextNeeded += MarksmanTrackBar_ToolTipTextNeeded;
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(22, 39);
             radLabel1.Name = "radLabel1";

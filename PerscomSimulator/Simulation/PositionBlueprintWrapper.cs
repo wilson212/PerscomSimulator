@@ -119,7 +119,7 @@ namespace Perscom.Simulation
             Rank = blueprint.TargetRank;
             Occupation = blueprint.Occupation;
             PromotionPool = blueprint.PromotionPool;
-            RequiredOccupations = blueprint.Requirements.Select(x => x.OccupationId).ToArray();
+            RequiredOccupations = blueprint.OccupationRequirements.Select(x => x.OccupationId).ToArray();
             
             // Cache performance models
             PerformanceModels = new Dictionary<AttributeType, int>();

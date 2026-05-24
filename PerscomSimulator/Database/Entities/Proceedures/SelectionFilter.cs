@@ -17,7 +17,7 @@ namespace Perscom.Database
         /// Gets or Sets the <see cref="PositionBlueprint.Id"/> that this entity references
         /// </summary>
         [Column, PrimaryKey]
-        public virtual int BlueprintId { get; set; }
+        public virtual int EvaluationBoardId { get; set; }
         
         /// <summary>
         /// Indicates the order or priority this condition is applied
@@ -54,11 +54,11 @@ namespace Perscom.Database
         
         #region Foreign Key Navigation Properties
         
-        [ForeignKey(nameof(BlueprintId))]
-        [References(nameof(PositionBlueprint.Id),
+        [ForeignKey(nameof(EvaluationBoardId))]
+        [References(nameof(EvaluationBoard.Id),
             OnDelete = ReferentialAction.Cascade,
             OnUpdate = ReferentialAction.Cascade)]
-        public virtual PositionBlueprint Blueprint { get; set; }
+        public virtual EvaluationBoard EvaluationBoard { get; set; }
         
         #endregion
 

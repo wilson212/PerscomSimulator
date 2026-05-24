@@ -30,6 +30,7 @@ namespace Perscom
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             GridViewTextBoxColumn gridViewTextBoxColumn1 = new GridViewTextBoxColumn();
             GridViewTextBoxColumn gridViewTextBoxColumn2 = new GridViewTextBoxColumn();
             TableViewDefinition tableViewDefinition1 = new TableViewDefinition();
@@ -51,11 +52,11 @@ namespace Perscom
             occupationDropDownList = new RadDropDownList();
             radGroupBox3 = new RadGroupBox();
             demoteCheckBox = new RadCheckBox();
-            radButton1 = new RadButton();
+            evalBoardButton = new RadButton();
             allowedOccupationsDropDownList = new RadCheckedDropDownList();
             radLabel11 = new RadLabel();
             radCheckBox2 = new RadCheckBox();
-            radDropDownList6 = new RadDropDownList();
+            evaluationBoardDropDownList = new RadDropDownList();
             selectionProcedureDropDownList = new RadDropDownList();
             radLabel8 = new RadLabel();
             radGroupBox2 = new RadGroupBox();
@@ -127,6 +128,11 @@ namespace Perscom
             radLabel15 = new RadLabel();
             leadershipTrackBar = new RadTrackBar();
             fluentTheme1 = new Telerik.WinControls.Themes.FluentTheme();
+            radContextMenuManager1 = new RadContextMenuManager();
+            radContextMenu1 = new RadContextMenu(components);
+            addExpMenuItem = new RadMenuItem();
+            radMenuSeparatorItem1 = new RadMenuSeparatorItem();
+            deleteExpMenuItem = new RadMenuItem();
             bottomPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)saveButton).BeginInit();
             headerPanel.SuspendLayout();
@@ -148,11 +154,11 @@ namespace Perscom
             ((System.ComponentModel.ISupportInitialize)radGroupBox3).BeginInit();
             radGroupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)demoteCheckBox).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radButton1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)evalBoardButton).BeginInit();
             ((System.ComponentModel.ISupportInitialize)allowedOccupationsDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel11).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList6).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)evaluationBoardDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)selectionProcedureDropDownList).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radLabel8).BeginInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox2).BeginInit();
@@ -334,6 +340,7 @@ namespace Perscom
             expGridView.MasterTemplate.Columns.AddRange(new GridViewDataColumn[] { gridViewTextBoxColumn1, gridViewTextBoxColumn2 });
             expGridView.MasterTemplate.ViewDefinition = tableViewDefinition1;
             expGridView.Name = "expGridView";
+            radContextMenuManager1.SetRadContextMenu(expGridView, radContextMenu1);
             expGridView.Size = new System.Drawing.Size(480, 228);
             expGridView.TabIndex = 18;
             expGridView.ThemeName = "Fluent";
@@ -416,11 +423,11 @@ namespace Perscom
             // 
             radGroupBox3.AccessibleRole = System.Windows.Forms.AccessibleRole.Grouping;
             radGroupBox3.Controls.Add(demoteCheckBox);
-            radGroupBox3.Controls.Add(radButton1);
+            radGroupBox3.Controls.Add(evalBoardButton);
             radGroupBox3.Controls.Add(allowedOccupationsDropDownList);
             radGroupBox3.Controls.Add(radLabel11);
             radGroupBox3.Controls.Add(radCheckBox2);
-            radGroupBox3.Controls.Add(radDropDownList6);
+            radGroupBox3.Controls.Add(evaluationBoardDropDownList);
             radGroupBox3.Controls.Add(selectionProcedureDropDownList);
             radGroupBox3.Controls.Add(radLabel8);
             radGroupBox3.HeaderMargin = new System.Windows.Forms.Padding(1);
@@ -441,14 +448,15 @@ namespace Perscom
             demoteCheckBox.Text = "Demote over-ranked incoming soldier";
             demoteCheckBox.ThemeName = "Fluent";
             // 
-            // radButton1
+            // evalBoardButton
             // 
-            radButton1.Image = Properties.Resources.plus;
-            radButton1.Location = new System.Drawing.Point(421, 68);
-            radButton1.Name = "radButton1";
-            radButton1.Size = new System.Drawing.Size(26, 20);
-            radButton1.TabIndex = 18;
-            radButton1.ThemeName = "Fluent";
+            evalBoardButton.Image = Properties.Resources.plus;
+            evalBoardButton.Location = new System.Drawing.Point(421, 68);
+            evalBoardButton.Name = "evalBoardButton";
+            evalBoardButton.Size = new System.Drawing.Size(26, 20);
+            evalBoardButton.TabIndex = 18;
+            evalBoardButton.ThemeName = "Fluent";
+            evalBoardButton.Click += EvalBoardButton_Click;
             // 
             // allowedOccupationsDropDownList
             // 
@@ -475,14 +483,14 @@ namespace Perscom
             radCheckBox2.Text = "Creates new soldier if position is empty";
             radCheckBox2.ThemeName = "Fluent";
             // 
-            // radDropDownList6
+            // evaluationBoardDropDownList
             // 
-            radDropDownList6.Location = new System.Drawing.Point(155, 67);
-            radDropDownList6.Name = "radDropDownList6";
-            radDropDownList6.Size = new System.Drawing.Size(255, 24);
-            radDropDownList6.TabIndex = 17;
-            radDropDownList6.Text = "Select Evaluation Board";
-            radDropDownList6.ThemeName = "Fluent";
+            evaluationBoardDropDownList.Location = new System.Drawing.Point(155, 67);
+            evaluationBoardDropDownList.Name = "evaluationBoardDropDownList";
+            evaluationBoardDropDownList.Size = new System.Drawing.Size(255, 24);
+            evaluationBoardDropDownList.TabIndex = 17;
+            evaluationBoardDropDownList.Text = "Select Evaluation Board";
+            evaluationBoardDropDownList.ThemeName = "Fluent";
             // 
             // selectionProcedureDropDownList
             // 
@@ -1232,6 +1240,26 @@ namespace Perscom
             leadershipTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             leadershipTrackBar.TickStyle = Telerik.WinControls.Enumerations.TickStyles.TopLeft;
             // 
+            // radContextMenu1
+            // 
+            radContextMenu1.Items.AddRange(new Telerik.WinControls.RadItem[] { addExpMenuItem, radMenuSeparatorItem1, deleteExpMenuItem });
+            // 
+            // addExpMenuItem
+            // 
+            addExpMenuItem.Name = "addExpMenuItem";
+            addExpMenuItem.Text = "Add Experience";
+            // 
+            // radMenuSeparatorItem1
+            // 
+            radMenuSeparatorItem1.Name = "radMenuSeparatorItem1";
+            radMenuSeparatorItem1.Text = "radMenuSeparatorItem1";
+            radMenuSeparatorItem1.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // deleteExpMenuItem
+            // 
+            deleteExpMenuItem.Name = "deleteExpMenuItem";
+            deleteExpMenuItem.Text = "Delete Experience";
+            // 
             // PositionBlueprintEditorForm
             // 
             AutoScaleBaseSize = new System.Drawing.Size(7, 15);
@@ -1270,11 +1298,11 @@ namespace Perscom
             radGroupBox3.ResumeLayout(false);
             radGroupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)demoteCheckBox).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radButton1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)evalBoardButton).EndInit();
             ((System.ComponentModel.ISupportInitialize)allowedOccupationsDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel11).EndInit();
             ((System.ComponentModel.ISupportInitialize)radCheckBox2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)radDropDownList6).EndInit();
+            ((System.ComponentModel.ISupportInitialize)evaluationBoardDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)selectionProcedureDropDownList).EndInit();
             ((System.ComponentModel.ISupportInitialize)radLabel8).EndInit();
             ((System.ComponentModel.ISupportInitialize)radGroupBox2).EndInit();
@@ -1381,7 +1409,7 @@ namespace Perscom
         private RadDropDownList promoPoolDropDownList;
         private RadLabel radLabel5;
         private RadGroupBox radGroupBox3;
-        private RadDropDownList radDropDownList6;
+        private RadDropDownList evaluationBoardDropDownList;
         private RadDropDownList selectionProcedureDropDownList;
         private RadLabel radLabel8;
         private RadCheckedDropDownList allowedRanksDropDownList;
@@ -1433,7 +1461,7 @@ namespace Perscom
         private RadLabel radLabel23;
         private RadPanel radPanel1;
         private RadGridView expGridView;
-        private RadButton radButton1;
+        private RadButton evalBoardButton;
         private RadLabel radLabel24;
         private RadSpinEditor statureSpinEditor;
         private RadSpinEditor maxTourLengthSpinEditor;
@@ -1455,5 +1483,10 @@ namespace Perscom
         private RadLabel radLabel32;
         private RadCheckBox demoteCheckBox;
         private RadCheckBox blockAutoPromoteCheckBox;
+        private RadContextMenuManager radContextMenuManager1;
+        private RadContextMenu radContextMenu1;
+        private RadMenuItem addExpMenuItem;
+        private RadMenuSeparatorItem radMenuSeparatorItem1;
+        private RadMenuItem deleteExpMenuItem;
     }
 }

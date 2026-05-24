@@ -200,11 +200,6 @@
         /// Goes through each pool in order and rolls until a candidate is found
         /// </summary>
         OrderedPriority,
-
-        /// <summary>
-        /// Selects from one random soldier pool only, and checks for a candidate
-        /// </summary>
-        RandomByProbability
     }
 
     /// <summary>

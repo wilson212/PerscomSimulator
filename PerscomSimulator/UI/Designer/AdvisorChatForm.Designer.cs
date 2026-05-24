@@ -48,7 +48,7 @@
             headerPanel.TabIndex = 23;
             headerPanel.Paint += headerPanel_Paint;
             // 
-            // headerLabel
+            // label6
             // 
             label6.BackColor = System.Drawing.Color.Transparent;
             label6.Font = new System.Drawing.Font("Segoe UI Semibold", 16F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, 0);
@@ -65,6 +65,8 @@
             // chatWindow
             // 
             chatWindow.Dock = System.Windows.Forms.DockStyle.Fill;
+            chatWindow.EnableReplies = false;
+            chatWindow.IsSpeechToTextButtonVisible = false;
             chatWindow.Location = new System.Drawing.Point(0, 75);
             chatWindow.Name = "chatWindow";
             chatWindow.Size = new System.Drawing.Size(626, 732);

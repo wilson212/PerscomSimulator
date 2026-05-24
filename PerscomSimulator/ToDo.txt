@@ -304,3 +304,5 @@ soldier.Burnout = Math.Clamp(soldier.Burnout, 0.0, 100.0);
 Add Ammo statistics and usage
 Add Financial statistics
 Add Vehicles
+
+Evaluation Boards and Selection Procedures get attached to the Unit that is defined as the Candidacy Pool

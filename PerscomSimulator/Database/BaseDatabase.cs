@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using CrossLite;
@@ -12,7 +13,7 @@ namespace Perscom.Database
         /// <summary>
         /// Gets the latest database version
         /// </summary>
-        public static Version CurrentVersion { get; protected set; } = new Version(2, 3);
+        public static Version CurrentVersion { get; protected set; } = new Version(2, 4);
 
         /// <summary>
         /// Gets the current database tables version
@@ -67,11 +68,6 @@ namespace Perscom.Database
         /// Gets a set of <see cref="Database.SelectionSorting"/> entites stored in the database
         /// </summary>
         public DbSet<SelectionSorting> SelectionSortings { get; set; }
-
-        /// <summary>
-        /// Gets a set of <see cref="PositionOccupationRequirement"/> entites stored in the database
-        /// </summary>
-        public DbSet<PositionOccupationRequirement> BilletSpecialtyRequirements { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="CareerLengths"/> entites stored in the database
@@ -136,9 +132,19 @@ namespace Perscom.Database
         public DbSet<SelectionSoldierPool> SelectionSoldierPools { get; set; }
 
         /// <summary>
-        /// Gets a set of <see cref="CustomSelectionProceedure"/> entites stored in the database
+        /// Gets a set of <see cref="EvaluationBoard"/> entites stored in the database
         /// </summary>
-        public DbSet<CustomSelectionProceedure> CustomSelectionProceedures { get; set; }
+        public DbSet<EvaluationBoard> EvaluationBoards { get; set; }
+        
+        /// <summary>
+        /// Gets a set of <see cref="EvaluationBoardRank"/> entites stored in the database
+        /// </summary>
+        public DbSet<EvaluationBoardRank> EvaluationBoardRanks { get; set; }
+        
+        /// <summary>
+        /// Gets a set of <see cref="EvaluationBoardScore"/> entites stored in the database
+        /// </summary>
+        public DbSet<EvaluationBoardScore> EvaluationBoardScores { get; set; }
 
         /// <summary>
         /// Gets a set of <see cref="PositionPerformanceModel"/> entites stored in the database
@@ -236,11 +242,12 @@ namespace Perscom.Database
             PositionOccupations = new DbSet<PositionBlueprintOccupation>(this);
             PositionPerformanceModels = new DbSet<PositionPerformanceModel>(this);
             PositionRanks = new DbSet<PositionBlueprintRank>(this);
-            BilletSpecialtyRequirements = new DbSet<PositionOccupationRequirement>(this);
+            EvaluationBoardRanks = new DbSet<EvaluationBoardRank>(this);
+            EvaluationBoardScores = new DbSet<EvaluationBoardScore>(this);
             SelectionFilters = new DbSet<SelectionFilter>(this);
             SelectionGroups = new DbSet<SelectionGroup>(this);
             SelectionSortings = new DbSet<SelectionSorting>(this);
-            CustomSelectionProceedures = new DbSet<CustomSelectionProceedure>(this);
+            EvaluationBoards = new DbSet<EvaluationBoard>(this);
             SelectionSoldierPools = new DbSet<SelectionSoldierPool>(this);
             PromotionBoards = new DbSet<PromotionBoard>(this);
             PromotionBoardWeights = new DbSet<PromotionBoardWeight>(this);
@@ -289,14 +296,16 @@ namespace Perscom.Database
                 this.DropTable<SelectionSorting>();
                 this.DropTable<SelectionGroup>();
                 this.DropTable<SelectionFilter>();
+                this.DropTable<EvaluationBoardRank>();
+                this.DropTable<EvaluationBoardScore>();
                 this.DropTable<PositionBlueprintRank>();
                 this.DropTable<PositionBlueprintOccupation>();
-                this.DropTable<PositionOccupationRequirement>();
                 this.DropTable<PositionPerformanceModel>();
                 this.DropTable<PositionBlueprintExperience>();
 
                 // Tier 4: Depend on Tier 3 or lower
                 this.DropTable<PromotionBoard>();
+                this.DropTable<EvaluationBoard>();
                 this.DropTable<PositionBlueprint>();
                 this.DropTable<UnitBlueprintAttachment>();
 
@@ -310,7 +319,6 @@ namespace Perscom.Database
                 // Tier 2: Depend on Tier 1 or lower
                 this.DropTable<Persona>();
                 this.DropTable<PersonalityTrait>();
-                this.DropTable<CustomSelectionProceedure>();
                 this.DropTable<PositionCatagory>();
 
                 // Tier 1: No FK dependencies (root tables)
@@ -337,7 +345,7 @@ namespace Perscom.Database
 
                 // Tier 2: Depend on Tier 1
                 this.CreateTable<PositionCatagory>();
-                this.CreateTable<CustomSelectionProceedure>();
+                this.CreateTable<EvaluationBoard>();
                 this.CreateTable<PersonalityTrait>();
                 this.CreateTable<Persona>();                        // -> CareerLength
 
@@ -356,12 +364,13 @@ namespace Perscom.Database
                 // Tier 5: Leaf tables (depend on Tier 4)
                 this.CreateTable<PositionBlueprintExperience>();    // -> PositionBlueprint, Experience
                 this.CreateTable<PositionPerformanceModel>();       // -> PositionBlueprint
-                this.CreateTable<PositionOccupationRequirement>();  // -> PositionBlueprint, Occupation
                 this.CreateTable<PositionBlueprintRank>();          // -> PositionBlueprint, Rank
                 this.CreateTable<PositionBlueprintOccupation>();    // -> PositionBlueprint, Occupation
-                this.CreateTable<SelectionFilter>();                // -> PositionBlueprint
-                this.CreateTable<SelectionGroup>();                 // -> PositionBlueprint
-                this.CreateTable<SelectionSorting>();
+                this.CreateTable<EvaluationBoardRank>();            // -> EvaluationBoard, Rank
+                this.CreateTable<EvaluationBoardScore>();            // -> EvaluationBoard
+                this.CreateTable<SelectionFilter>();                // -> EvaluationBoard
+                this.CreateTable<SelectionGroup>();                 // -> EvaluationBoard
+                this.CreateTable<SelectionSorting>();               // -> EvaluationBoard, SelectionSorting
                 this.CreateTable<SelectionSoldierPool>();           // -> CustomSelectionProceedure, Rank
                 this.CreateTable<PromotionBoardWeight>();           // -> PromotionBoard
                 this.CreateTable<PromotionBoardAddScore>();         // -> PromotionBoard
@@ -389,20 +398,73 @@ namespace Perscom.Database
                     Echelons.Add(ec);
                 }
 
-                // Seed Billet Categories
-                PositionCatagories = new DbSet<PositionCatagory>(this);
-                var catagories = new String[] {
-                    "General", "Special Staff Group", "S6 Staff", "S5 Staff", "S4 Staff",
-                    "S3 Staff", "S2 Staff", "S1 Staff", "Personal Staff Group",
-                    "Chief of Staff", "Leadership", "Command Group"
+                var posCategories = new Dictionary<string, Tuple<OrgChartPosition, OrgChartAlignment>>()
+                {
+                    {
+                        "Leadership", 
+                        new (OrgChartPosition.Leadership, OrgChartAlignment.Center)
+                    },
+                    {
+                        "Personal Staff Group",
+                        new (OrgChartPosition.PersonalStaff, OrgChartAlignment.RightSide)
+                    },
+                    {
+                        "Executive Command", 
+                        new (OrgChartPosition.ExecutiveCommand, OrgChartAlignment.Center)
+                    },
+                    {
+                        "Executive Staff", 
+                        new (OrgChartPosition.ExecutiveStaff, OrgChartAlignment.Center)
+                    },
+                    {
+                        "S1 - Personnel", 
+                        new (OrgChartPosition.CoordinatingStaff, OrgChartAlignment.SplitLeft)
+                    },
+                    {
+                        "S2 - Intelligence", 
+                        new (OrgChartPosition.CoordinatingStaff, OrgChartAlignment.SplitLeft)
+                    },
+                    {
+                        "S3 - Operations", 
+                        new (OrgChartPosition.CoordinatingStaff, OrgChartAlignment.SplitLeft)
+                    },
+                    {
+                        "S4 - Logistics", 
+                        new (OrgChartPosition.CoordinatingStaff, OrgChartAlignment.SplitLeft)
+                    },
+                    {
+                        "S5 - Doctrine & Training", 
+                        new (OrgChartPosition.CoordinatingStaff, OrgChartAlignment.SplitLeft)
+                    },
+                    {
+                        "S6 - Communications", 
+                        new (OrgChartPosition.CoordinatingStaff, OrgChartAlignment.SplitLeft)
+                    },
+                    {
+                        "Special Staff Group", 
+                        new (OrgChartPosition.SpecialStaff, OrgChartAlignment.Center)
+                    },
+                    {
+                        "Support Staff Group", 
+                        new (OrgChartPosition.SupportStaff, OrgChartAlignment.Center)
+                    },
+                    {
+                        "General", 
+                        new (OrgChartPosition.GeneralStaff, OrgChartAlignment.Center)
+                    },
                 };
 
+                // Seed Billet Categories
+                PositionCatagories = new DbSet<PositionCatagory>(this);
+
                 level = 1;
-                foreach (string name in catagories)
+                foreach (var data in posCategories)
                 {
                     var cat = new PositionCatagory();
-                    cat.Name = name;
+                    cat.Name = data.Key;
                     cat.ZIndex = level++;
+                    cat.OrgChartLevel = data.Value.Item1;
+                    cat.OrgChartAlignment = data.Value.Item2;
                     PositionCatagories.Add(cat);
                 }
 

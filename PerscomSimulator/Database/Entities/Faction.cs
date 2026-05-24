@@ -55,4 +55,6 @@ public class Faction : EntityBase
     public virtual string Image { get; set; } = "";
 
     #endregion
+    
+    public override string ToString() => Name;
 }

@@ -144,7 +144,7 @@
             bottomPanel.TabIndex = 23;
             bottomPanel.Paint += bottomPanel_Paint;
             // 
-            // CloseButton
+            // closeButton
             // 
             CloseButton.DisplayStyle = Telerik.WinControls.DisplayStyle.Text;
             CloseButton.Location = new System.Drawing.Point(303, 11);
@@ -269,7 +269,7 @@
             radLabel5.Text = "Occupation Specialty Name:";
             radLabel5.ThemeName = "Fluent";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(274, 34);
             radLabel1.Name = "radLabel1";

@@ -61,6 +61,10 @@ namespace Perscom.Database
                             Database.CreateTable<UnitBlueprintAttachment>();
                             Database.Execute("INSERT INTO DbVersion (`Version`, `AppliedOn`) VALUES ('2.3', datetime('now'))");
                             break;
+                        case "2.3":
+                            Database.MigrateTable<PositionCatagory>();
+                            Database.Execute("INSERT INTO DbVersion (`Version`, `AppliedOn`) VALUES ('2.4', datetime('now'))");
+                            break;
                         default:
                             throw new Exception($"Unexpected database version: {BaseDatabase.DatabaseVersion}");
                     }

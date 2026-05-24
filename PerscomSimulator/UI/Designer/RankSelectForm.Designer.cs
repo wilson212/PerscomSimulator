@@ -102,7 +102,7 @@
             rankDropDownList.Text = "Select Rank";
             rankDropDownList.ThemeName = "Fluent";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(44, 102);
             radLabel1.Name = "radLabel1";

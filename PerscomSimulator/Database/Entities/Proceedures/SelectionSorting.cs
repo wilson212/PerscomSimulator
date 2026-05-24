@@ -15,10 +15,10 @@ namespace Perscom.Database
         #region Columns
 
         /// <summary>
-        /// Gets or Sets the <see cref="PositionBlueprint.Id"/> that this entity references
+        /// Gets or Sets the <see cref="Database.EvaluationBoard.Id"/> that this entity references
         /// </summary>
         [Column, PrimaryKey]
-        public virtual int SelectionProcedureId { get; set; }
+        public virtual int EvaluationBoardId { get; set; }
         
         /// <summary>
         /// Indicates the order or priority this sorting is applied
@@ -45,6 +45,16 @@ namespace Perscom.Database
         [Column, Required, Default(0)]
         public virtual Sorting Direction { get; set; }
 
+        #endregion
+        
+        #region Foreign Key Navigation Properties
+        
+        [ForeignKey(nameof(EvaluationBoardId))]
+        [References(nameof(EvaluationBoard.Id),
+            OnDelete = ReferentialAction.Cascade,
+            OnUpdate = ReferentialAction.Cascade)]
+        public virtual EvaluationBoard EvaluationBoard { get; set; }
+        
         #endregion
 
         public bool IsDuplicateOf(SelectionSorting other)

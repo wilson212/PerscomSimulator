@@ -249,7 +249,7 @@
             percentageTrackBar.ThumbSize = new System.Drawing.Size(8, 20);
             percentageTrackBar.Value = 70F;
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(42, 325);
             radLabel1.Name = "radLabel1";

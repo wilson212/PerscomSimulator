@@ -85,7 +85,7 @@ namespace Perscom
             radLabel2.Text = "Points Value:";
             radLabel2.ThemeName = "Fluent";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new Point(59, 122);
             radLabel1.Name = "radLabel1";

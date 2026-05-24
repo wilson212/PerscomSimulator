@@ -20,6 +20,7 @@ namespace Perscom
         {
             public string Name;
             public int CatagoryIndex;
+            public int EvaluationBoardIndex;
             public int FlagIndex;
             public int PromoPoolIndex;
             public int TargetRankIndex;
@@ -54,7 +55,7 @@ namespace Perscom
             public int Courage;
             public int Intellect;
             public int Adaptability;
-            
+
             public List<int> AllowedRankIds;
             public List<int> AllowedOccupationIds;
         }
@@ -185,7 +186,7 @@ namespace Perscom
             radCheckBox5.ToggleStateChanged += (s, ev) => UpdateSaveButtonStyle();
             demoteCheckBox.ToggleStateChanged += (s, ev) => UpdateSaveButtonStyle();
             blockAutoPromoteCheckBox.ToggleStateChanged += (s, ev) => UpdateSaveButtonStyle();
-            selectionProcedureDropDownList.SelectedIndexChanged += (s, ev) => UpdateSaveButtonStyle();
+            selectionProcedureDropDownList.SelectedIndexChanged += (s, ev) => OnSelectionProcedureChanged();
 
             // Wire up trackbar change events
             foreach (var trackBar in _trackBarMap.Values)
@@ -201,6 +202,11 @@ namespace Perscom
                 UpdateSaveButtonStyle();
             };
             allowedOccupationsDropDownList.ItemCheckedChanged += (s, ev) => UpdateSaveButtonStyle();
+            evaluationBoardDropDownList.SelectedIndexChanged += (s, ev) =>
+            {
+                UpdateEvalBoardButtonIcon();
+                UpdateSaveButtonStyle();
+            };
 
             // Initial button state
             UpdateSaveButtonStyle();
@@ -269,7 +275,7 @@ namespace Perscom
                         Tag = occ
                     });
                 }
-                
+
                 // Allowed Occupations (checked dropdown)
                 foreach (var occ in occupations)
                 {
@@ -298,7 +304,7 @@ namespace Perscom
                         Tag = pos
                     });
                 }
-                
+
                 // Selection Procedures
                 foreach (SelectionProcedure proc in Enum.GetValues(typeof(SelectionProcedure)))
                 {
@@ -412,6 +418,96 @@ namespace Perscom
                 radClassificationRankDisplay1.SetRanks((RankClassification)null);
             }
         }
+        
+        /// <summary>
+        /// Updates the eval board button icon based on the dropdown selection.
+        /// Plus sign when no board is selected (create new), settings icon when a board is selected (edit).
+        /// </summary>
+        private void UpdateEvalBoardButtonIcon()
+        {
+            if (evaluationBoardDropDownList.SelectedIndex == -1)
+            {
+                evalBoardButton.Image = Properties.Resources.plus;
+            }
+            else
+            {
+                evalBoardButton.Image = Properties.Resources.settings;
+            }
+        }
+        
+        /// <summary>
+        /// Called when the Selection Procedure dropdown changes.
+        /// Enables/disables the eval board button and dropdown based on the selected procedure.
+        /// </summary>
+        private void OnSelectionProcedureChanged()
+        {
+            bool isEvalBoard = selectionProcedureDropDownList.SelectedItem?.Tag is SelectionProcedure proc
+                               && proc == SelectionProcedure.EvaluationBoard;
+
+            evalBoardButton.Enabled = isEvalBoard;
+            evaluationBoardDropDownList.Enabled = isEvalBoard;
+
+            if (isEvalBoard)
+            {
+                PopulateEvaluationBoards();
+            }
+            else
+            {
+                evaluationBoardDropDownList.Items.Clear();
+                evaluationBoardDropDownList.Text = string.Empty;
+            }
+
+            UpdateEvalBoardButtonIcon();
+            UpdateSaveButtonStyle();
+        }
+        
+        /// <summary>
+        /// Populates the evaluation board dropdown with boards scoped to this faction.
+        /// </summary>
+        private void PopulateEvaluationBoards()
+        {
+            evaluationBoardDropDownList.Items.Clear();
+
+            try
+            {
+                using var db = new AppDatabase();
+                var boards = db.EvaluationBoards
+                    .Where(b => b.FactionId == OwnerUnit.FactionId)
+                    .ToList();
+
+                foreach (var board in boards)
+                {
+                    evaluationBoardDropDownList.Items.Add(new RadListDataItem
+                    {
+                        Text = board.Name,
+                        Tag = board
+                    });
+                }
+
+                // If editing and the blueprint already has an EvaluationBoardId, select it
+                if (SelectedBlueprint?.EvaluationBoardId.HasValue == true)
+                {
+                    for (int i = 0; i < evaluationBoardDropDownList.Items.Count; i++)
+                    {
+                        if (evaluationBoardDropDownList.Items[i].Tag is EvaluationBoard eb
+                            && eb.Id == SelectedBlueprint.EvaluationBoardId.Value)
+                        {
+                            evaluationBoardDropDownList.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                else if (evaluationBoardDropDownList.Items.Count > 0)
+                {
+                    evaluationBoardDropDownList.SelectedIndex = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                RadMessageBox.Show($"Failed to load evaluation boards: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, RadMessageIcon.Error);
+            }
+        }
 
         /// <summary>
         /// Resets all form fields to their default values.
@@ -426,9 +522,14 @@ namespace Perscom
             rankTypeDropDownList.SelectedIndex = 0;
             selectionProcedureDropDownList.SelectedIndex = 0;
             
+            // Disable eval board controls by default
+            evalBoardButton.Enabled = false;
+            evaluationBoardDropDownList.Enabled = false;
+            evaluationBoardDropDownList.Items.Clear();
+
             // Force-populate ranks for the initially selected rank type
             OnRankTypeChanged();
-            
+
             targetRankDropDownList.SelectedIndex = targetRankDropDownList.Items.Count > 0 ? 0 : -1;
             supervisorDropDownList.SelectedIndex = 0;
             occupationDropDownList.SelectedIndex = occupationDropDownList.Items.Count > 0 ? 0 : -1;
@@ -492,7 +593,7 @@ namespace Perscom
                     break;
                 }
             }
-            
+
             // Selection Procedure
             for (int i = 0; i < selectionProcedureDropDownList.Items.Count; i++)
             {
@@ -502,6 +603,9 @@ namespace Perscom
                     break;
                 }
             }
+            
+            // Trigger eval board enable/populate if the procedure is EvaluationBoard
+            OnSelectionProcedureChanged();
 
             // Rank Type — determine from the target rank's classification
             try
@@ -526,7 +630,7 @@ namespace Perscom
                         }
                     }
                 }
-                
+
                 // Load allowed ranks from PositionBlueprintRank
                 if (blueprint.Id > 0)
                 {
@@ -542,7 +646,7 @@ namespace Perscom
                             checkedItem.Checked = allowedRankIds.Contains(r.Id);
                         }
                     }
-                    
+
                     // Load allowed occupations from PositionOccupations
                     var allowedOccIds = db.PositionOccupations
                         .Where(po => po.PositionBlueprintId == blueprint.Id)
@@ -588,7 +692,7 @@ namespace Perscom
                     }
                 }
             }
-            
+
             // Remove self from the supervisor dropdown
             if (blueprint.Id > 0)
             {
@@ -698,6 +802,7 @@ namespace Perscom
             {
                 Name = nameTextBox1.Text,
                 CatagoryIndex = catagoryDropDownList.SelectedIndex,
+                EvaluationBoardIndex = evaluationBoardDropDownList.SelectedIndex,
                 FlagIndex = flagDropDownList.SelectedIndex,
                 PromoPoolIndex = promoPoolDropDownList.SelectedIndex,
                 TargetRankIndex = targetRankDropDownList.SelectedIndex,
@@ -757,6 +862,7 @@ namespace Perscom
             var current = CaptureSnapshot();
             return current.Name != _lastSavedSnapshot.Name
                    || current.CatagoryIndex != _lastSavedSnapshot.CatagoryIndex
+                   || current.EvaluationBoardIndex != _lastSavedSnapshot.EvaluationBoardIndex
                    || current.FlagIndex != _lastSavedSnapshot.FlagIndex
                    || current.PromoPoolIndex != _lastSavedSnapshot.PromoPoolIndex
                    || current.TargetRankIndex != _lastSavedSnapshot.TargetRankIndex
@@ -912,6 +1018,18 @@ namespace Perscom
                 {
                     SelectedBlueprint.SupervisorPositionBlueprintId = null;
                 }
+                
+                // Evaluation Board (nullable)
+                if (selectionProcedureDropDownList.SelectedItem?.Tag is SelectionProcedure sp
+                    && sp == SelectionProcedure.EvaluationBoard
+                    && evaluationBoardDropDownList.SelectedItem?.Tag is EvaluationBoard evalBoard)
+                {
+                    SelectedBlueprint.EvaluationBoardId = evalBoard.Id;
+                }
+                else
+                {
+                    SelectedBlueprint.EvaluationBoardId = null;
+                }
 
                 if (isNew)
                 {
@@ -924,10 +1042,10 @@ namespace Perscom
 
                 // Save Performance Model
                 SavePerformanceModel(db);
-                
+
                 // Save allowed ranks (PositionBlueprintRank)
                 SaveAllowedRanks(db);
-                
+
                 // Save allowed occupations (PositionOccupations)
                 SaveAllowedOccupations(db);
 
@@ -979,7 +1097,7 @@ namespace Perscom
                 }
             }
         }
-        
+
         private void SaveAllowedRanks(AppDatabase db)
         {
             if (SelectedBlueprint == null || SelectedBlueprint.Id == 0) return;
@@ -999,7 +1117,7 @@ namespace Perscom
                 }
             }
         }
-        
+
         private void SaveAllowedOccupations(AppDatabase db)
         {
             if (SelectedBlueprint == null || SelectedBlueprint.Id == 0) return;
@@ -1036,6 +1154,45 @@ namespace Perscom
                 if (result != DialogResult.Yes)
                 {
                     e.Cancel = true;
+                }
+            }
+        }
+
+        private void EvalBoardButton_Click(object sender, EventArgs e)
+        {
+            if (evaluationBoardDropDownList.SelectedIndex == -1)
+            {
+                // No board selected — create a new one
+                // Pass the current PositionBlueprint context if available, otherwise just open a blank form
+                using var form = SelectedBlueprint != null
+                    ? new EvaluationBoardForm(SelectedBlueprint)
+                    : new EvaluationBoardForm((PositionBlueprint)null);
+
+                var result = form.ShowDialog(this);
+
+                if (result == DialogResult.OK)
+                {
+                    // Refresh dropdown and auto-select the newly created board
+                    PopulateEvaluationBoards();
+
+                    // Select the last item (the newly added board)
+                    if (evaluationBoardDropDownList.Items.Count > 0)
+                        evaluationBoardDropDownList.SelectedIndex = evaluationBoardDropDownList.Items.Count - 1;
+                }
+            }
+            else
+            {
+                // Board is selected — open it for editing
+                if (evaluationBoardDropDownList.SelectedItem?.Tag is not EvaluationBoard board)
+                    return;
+
+                using var form = new EvaluationBoardForm(SelectedBlueprint, board);
+                var result = form.ShowDialog(this);
+
+                if (result == DialogResult.OK || result == DialogResult.Abort)
+                {
+                    // Refresh the dropdown in case the board was renamed or deleted
+                    PopulateEvaluationBoards();
                 }
             }
         }

@@ -139,7 +139,7 @@
             unitTreeView.TabIndex = 16;
             unitTreeView.ThemeName = "Fluent";
             unitTreeView.DragStarting += UnitTreeView_DragStarting;
-            unitTreeView.SelectedNodeChanged += UnitTreeView_SelectedNodeChanged;
+            unitTreeView.NodeMouseDoubleClick += UnitTreeView_NodeMouseDoubleClick;
             // 
             // unitContextMenu
             // 
@@ -200,6 +200,9 @@
             // 
             // positionBlueprintListView
             // 
+            positionBlueprintListView.AllowEdit = false;
+            positionBlueprintListView.AllowRemove = false;
+            positionBlueprintListView.EnableGrouping = true;
             positionBlueprintListView.FullRowSelect = false;
             positionBlueprintListView.Location = new System.Drawing.Point(0, 33);
             positionBlueprintListView.Name = "positionBlueprintListView";
@@ -210,6 +213,8 @@
             positionBlueprintListView.ThemeName = "Fluent";
             positionBlueprintListView.ViewType = Telerik.WinControls.UI.ListViewType.IconsView;
             positionBlueprintListView.ItemMouseDoubleClick += PositionBlueprintListView_ItemMouseDoubleClick;
+            positionBlueprintListView.VisualItemFormatting += PositionBlueprintListView_VisualItemFormatting;
+            positionBlueprintListView.VisualItemCreating += PositionBlueprintListView_VisualItemCreating;
             // 
             // radGroupBox1
             // 
@@ -244,6 +249,7 @@
             orgChartButton.TabIndex = 29;
             orgChartButton.Text = "View Organizational Chart";
             orgChartButton.ThemeName = "Fluent";
+            orgChartButton.Click += OrgChartButton_Click;
             // 
             // radGroupBox3
             // 
@@ -298,6 +304,7 @@
             blueprintNameTextBox.Name = "blueprintNameTextBox";
             blueprintNameTextBox.Size = new System.Drawing.Size(177, 24);
             blueprintNameTextBox.TabIndex = 6;
+            blueprintNameTextBox.TabStop = false;
             blueprintNameTextBox.ThemeName = "Fluent";
             // 
             // echelonDropDownList
@@ -439,6 +446,7 @@
             subUnitsGridView.TabIndex = 30;
             subUnitsGridView.ThemeName = "Fluent";
             subUnitsGridView.TitleText = "Sub Unit Attachments";
+            subUnitsGridView.CellFormatting += GridView_CellFormatting;
             // 
             // subunitContextMenu
             // 

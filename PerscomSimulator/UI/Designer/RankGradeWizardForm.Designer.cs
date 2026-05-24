@@ -115,7 +115,7 @@
             this.radLabel2.TabIndex = 1;
             this.radLabel2.Text = "<html></html>";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             this.radLabel1.Location = new System.Drawing.Point(116, 51);
             this.radLabel1.Name = "radLabel1";

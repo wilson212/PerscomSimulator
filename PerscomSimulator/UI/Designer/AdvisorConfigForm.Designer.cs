@@ -106,7 +106,7 @@
             modelDropDownList.TabIndex = 25;
             modelDropDownList.ThemeName = "Fluent";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(23, 168);
             radLabel1.Name = "radLabel1";

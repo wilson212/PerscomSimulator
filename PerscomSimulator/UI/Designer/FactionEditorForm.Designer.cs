@@ -435,7 +435,7 @@
             radTextBox1.TabIndex = 1;
             radTextBox1.ThemeName = "Fluent";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             radLabel1.ForeColor = System.Drawing.Color.Black;

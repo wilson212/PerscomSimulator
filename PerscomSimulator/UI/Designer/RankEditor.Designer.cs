@@ -134,7 +134,7 @@
             label6.TabIndex = 0;
             label6.Text = "Rank Editor";
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(32, 276);
             radLabel1.Name = "radLabel1";
@@ -262,7 +262,7 @@
             radLabel6.Text = "Stipend Mode: ";
             radLabel6.ThemeName = "Fluent";
             // 
-            // overrideRadioButton
+            // groupByRankRadioButton
             // 
             overrideRadioButton.Location = new System.Drawing.Point(287, 424);
             overrideRadioButton.Name = "overrideRadioButton";
@@ -282,7 +282,7 @@
             offsetRadioButton.Text = "Offset";
             offsetRadioButton.ThemeName = "Fluent";
             // 
-            // inheritRadioButton
+            // collectiveRadioButton
             // 
             inheritRadioButton.CheckState = System.Windows.Forms.CheckState.Checked;
             inheritRadioButton.Location = new System.Drawing.Point(187, 424);
@@ -292,7 +292,7 @@
             inheritRadioButton.Text = "Inherit";
             inheritRadioButton.ThemeName = "Fluent";
             // 
-            // radPictureBox1
+            // rankPictureBox
             // 
             radPictureBox1.Image = Properties.Resources.go_next;
             radPictureBox1.Location = new System.Drawing.Point(214, 136);

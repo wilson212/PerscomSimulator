@@ -174,7 +174,7 @@
             promoBoardsGridView.CellFormatting += GridView_CellFormatting;
             promoBoardsGridView.DoubleClick += PromoBoardsGridView_DoubleClick;
             // 
-            // radLabel1
+            // positionNameLabel
             // 
             radLabel1.Location = new System.Drawing.Point(12, 584);
             radLabel1.Name = "radLabel1";

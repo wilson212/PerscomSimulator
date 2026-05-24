@@ -4,7 +4,7 @@ using CrossLite.CodeFirst;
 namespace Perscom.Database
 {
     [Table]
-    public class PromotionBoardAddScore : EntityBase
+    public class EvaluationBoardScore : EntityBase
     {
         /// <summary>
         /// The unique identifier for this promotion board weight entry.
@@ -13,16 +13,11 @@ namespace Perscom.Database
         public virtual int Id { get; set; }
         
         /// <summary>
-        /// The unique identifier for the related promotion board.
+        /// The unique identifier for the related Evaluation board.
         /// </summary>
         /// <remarks>
-        /// This property establishes a relationship between the current promotion board weight entry and a specific
-        /// promotion board in the database. It is used as a foreign key to reference the <see cref="PromotionBoard.Id"/>
-        /// property, ensuring data consistency and enabling navigation between related entities. It is required
-        /// for each entry in the <see cref="PromotionBoardAddScore"/> table.
-        /// </remarks>
         [Column, Required, Index]
-        public virtual int PromotionBoardId { get; set; }
+        public virtual int EvaluationBoardId { get; set; }
 
         /// <summary>
         /// Specifies the selection criterion or attribute used for comparing a soldier's traits,
@@ -65,11 +60,11 @@ namespace Perscom.Database
         /// <summary>
         /// Represents the promotion board associated with the PromotionBoardWeight entity.
         /// </summary>
-        [ForeignKey(nameof(PromotionBoardId))]
-        [References(nameof(Database.PromotionBoard.Id),
+        [ForeignKey(nameof(EvaluationBoardId))]
+        [References(nameof(Database.EvaluationBoard.Id),
             OnDelete = ReferentialAction.Cascade,
             OnUpdate = ReferentialAction.Cascade)]
-        public virtual PromotionBoard PromotionBoard { get; set; }
+        public virtual EvaluationBoard Board { get; set; }
     
         #endregion
     }
